@@ -49,6 +49,7 @@ type Action =
   | { type: 'ACCEPT_ALL' }
   | { type: 'REJECT_ALL' }
   | { type: 'SET_CATEGORY'; category: Category; value: boolean }
+  | { type: 'SET_PREFERENCES'; preferences: ConsentPreferences }
   | { type: 'OPEN_MODAL' }
   | { type: 'CLOSE_MODAL' }
   | { type: 'RESET' }
@@ -75,6 +76,13 @@ function reducer(state: ConsentState, action: Action): ConsentState {
           ...state.preferences,
           [action.category]: action.value,
         },
+      }
+    case 'SET_PREFERENCES':
+      return {
+        ...state,
+        consented: true,
+        preferences: action.preferences,
+        isModalOpen: false,
       }
     case 'OPEN_MODAL':
       return { ...state, isModalOpen: true }
@@ -170,6 +178,8 @@ export function ConsentProvider({
     const rejectAll = () => dispatch({ type: 'REJECT_ALL' })
     const setPreference = (category: Category, value: boolean) =>
       dispatch({ type: 'SET_CATEGORY', category, value })
+    const setPreferences = (preferences: ConsentPreferences) =>
+      dispatch({ type: 'SET_PREFERENCES', preferences })
     const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })
     const closePreferences = () => dispatch({ type: 'CLOSE_MODAL' })
     const resetConsent = () => {
@@ -183,6 +193,7 @@ export function ConsentProvider({
       acceptAll,
       rejectAll,
       setPreference,
+      setPreferences,
       openPreferences,
       closePreferences,
       resetConsent,

@@ -27,8 +27,8 @@ export function loadScript(
       try {
         const consent = JSON.parse(decodeURIComponent(consentCookie))
 
-        // Verifica se o consentimento foi finalizado
-        if (!consent.consented) {
+        // Verifica se o consentimento foi finalizado E não há modal aberto
+        if (!consent.consented || consent.isModalOpen) {
           setTimeout(checkConsent, 100)
           return
         }

@@ -15,6 +15,7 @@ export function useConsent(): ConsentContextValue {
     acceptAll: actions.acceptAll,
     rejectAll: actions.rejectAll,
     setPreference: actions.setPreference,
+    setPreferences: actions.setPreferences,
     openPreferences: actions.openPreferences,
     closePreferences: actions.closePreferences,
     resetConsent: actions.resetConsent,

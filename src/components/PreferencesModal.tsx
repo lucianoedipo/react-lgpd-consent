@@ -7,7 +7,9 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
+import { useState, useEffect } from 'react'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
+import { ConsentPreferences } from '../types/types'
 
 export interface PreferencesModalProps {
   DialogProps?: Partial<DialogProps>
@@ -16,18 +18,40 @@ export interface PreferencesModalProps {
 export function PreferencesModal({
   DialogProps,
 }: Readonly<PreferencesModalProps>) {
-  const { preferences, setPreference, closePreferences, isModalOpen } =
+  const { preferences, setPreferences, closePreferences, isModalOpen } =
     useConsent()
   const texts = useConsentTexts()
 
+  // Estado local para mudanças temporárias
+  const [tempPreferences, setTempPreferences] = useState(preferences)
+
+  // Sincroniza estado local com contexto quando modal abre
+  useEffect(() => {
+    if (isModalOpen) {
+      setTempPreferences(preferences)
+    }
+  }, [isModalOpen, preferences])
+
   // Se DialogProps.open for fornecido, usa ele. Senão, usa o estado do contexto
   const open = DialogProps?.open ?? isModalOpen ?? false
+
+  const handleSave = () => {
+    // Aplica as mudanças temporárias ao contexto definitivo
+    setPreferences(tempPreferences)
+    // closePreferences já é chamado automaticamente pela ação SET_PREFERENCES
+  }
+
+  const handleCancel = () => {
+    // Descarta mudanças temporárias
+    setTempPreferences(preferences)
+    closePreferences()
+  }
 
   return (
     <Dialog
       aria-labelledby="cookie-pref-title"
       open={open}
-      onClose={closePreferences}
+      onClose={handleCancel}
       {...DialogProps}
     >
       <DialogTitle id="cookie-pref-title">{texts.modalTitle}</DialogTitle>
@@ -39,8 +63,13 @@ export function PreferencesModal({
           <FormControlLabel
             control={
               <Switch
-                checked={preferences.analytics}
-                onChange={(e) => setPreference('analytics', e.target.checked)}
+                checked={tempPreferences.analytics}
+                onChange={(e) =>
+                  setTempPreferences((prev) => ({
+                    ...prev,
+                    analytics: e.target.checked,
+                  }))
+                }
               />
             }
             label="Cookies Analíticos (medem uso do site)"
@@ -48,8 +77,13 @@ export function PreferencesModal({
           <FormControlLabel
             control={
               <Switch
-                checked={preferences.marketing}
-                onChange={(e) => setPreference('marketing', e.target.checked)}
+                checked={tempPreferences.marketing}
+                onChange={(e) =>
+                  setTempPreferences((prev) => ({
+                    ...prev,
+                    marketing: e.target.checked,
+                  }))
+                }
               />
             }
             label="Cookies de Marketing/Publicidade"
@@ -61,7 +95,10 @@ export function PreferencesModal({
         </FormGroup>
       </DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={closePreferences}>
+        <Button variant="outlined" onClick={handleCancel}>
+          Cancelar
+        </Button>
+        <Button variant="contained" onClick={handleSave}>
           {texts.save}
         </Button>
       </DialogActions>
