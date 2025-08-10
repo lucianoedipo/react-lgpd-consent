@@ -1,0 +1,199 @@
+// src/context/ConsentContext.tsx
+import * as React from 'react'
+import {
+  type Category,
+  type ConsentContextValue,
+  type ConsentPreferences,
+  type ConsentProviderProps,
+  type ConsentState,
+  type ConsentTexts,
+} from '../types/types'
+import {
+  readConsentCookie,
+  writeConsentCookie,
+  removeConsentCookie,
+  DEFAULT_COOKIE_OPTS,
+} from '../utils/cookieUtils'
+
+// 🔹 Identificadores internos/contrato público em EN
+const DEFAULT_PREFERENCES: ConsentPreferences = {
+  analytics: false,
+  marketing: false,
+}
+
+// 🔹 Chaves EN, valores padrão pt-BR (UI do usuário final)
+const DEFAULT_TEXTS: ConsentTexts = {
+  bannerMessage: 'Utilizamos cookies para melhorar sua experiência.',
+  acceptAll: 'Aceitar todos',
+  declineAll: 'Recusar',
+  preferences: 'Preferências',
+  policyLink: 'Saiba mais',
+  modalTitle: 'Preferências de Cookies',
+  modalIntro:
+    'Ajuste as categorias de cookies. Cookies necessários são sempre utilizados para funcionalidades básicas.',
+  save: 'Salvar preferências',
+  necessaryAlwaysOn: 'Cookies necessários (sempre ativos)',
+}
+
+// 🔹 Actions em EN
+type Action =
+  | { type: 'ACCEPT_ALL' }
+  | { type: 'REJECT_ALL' }
+  | { type: 'SET_CATEGORY'; category: Category; value: boolean }
+  | { type: 'OPEN_MODAL' }
+  | { type: 'CLOSE_MODAL' }
+  | { type: 'RESET' }
+  | { type: 'HYDRATE'; state: ConsentState }
+
+function reducer(state: ConsentState, action: Action): ConsentState {
+  switch (action.type) {
+    case 'ACCEPT_ALL':
+      return {
+        consented: true,
+        preferences: { analytics: true, marketing: true },
+        isModalOpen: false,
+      }
+    case 'REJECT_ALL':
+      return {
+        consented: true,
+        preferences: { analytics: false, marketing: false },
+        isModalOpen: false,
+      }
+    case 'SET_CATEGORY':
+      return {
+        ...state,
+        preferences: {
+          ...state.preferences,
+          [action.category]: action.value,
+        },
+      }
+    case 'OPEN_MODAL':
+      return { ...state, isModalOpen: true }
+    case 'CLOSE_MODAL':
+      return { ...state, isModalOpen: false, consented: true } // houve interação
+    case 'RESET':
+      return {
+        consented: false,
+        preferences: { ...DEFAULT_PREFERENCES },
+        isModalOpen: false,
+      }
+    case 'HYDRATE':
+      return { ...action.state }
+    default:
+      return state
+  }
+}
+
+const StateCtx = React.createContext<ConsentState | null>(null)
+const ActionsCtx = React.createContext<ConsentContextValue | null>(null)
+const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
+
+export function ConsentProvider({
+  initialState,
+  texts: textsProp,
+  onConsentGiven,
+  onPreferencesSaved,
+  cookie: cookieOpts,
+  children,
+}: Readonly<ConsentProviderProps>) {
+  const texts = React.useMemo(
+    () => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }),
+    [textsProp],
+  )
+  const cookie = React.useMemo(
+    () => ({ ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }),
+    [cookieOpts],
+  )
+
+  // SSR-safe boot: prioriza initialState; senão, cookie no client
+  const boot = React.useMemo<ConsentState>(() => {
+    if (initialState) return { ...initialState, isModalOpen: false }
+    const saved = readConsentCookie<ConsentState>(cookie.name)
+    return (
+      saved ?? {
+        consented: false,
+        preferences: { ...DEFAULT_PREFERENCES },
+        isModalOpen: false,
+      }
+    )
+  }, [initialState, cookie.name])
+
+  const [state, dispatch] = React.useReducer(reducer, boot)
+
+  // Persiste somente após decisão (consented)
+  React.useEffect(() => {
+    if (state.consented) writeConsentCookie(state, cookie)
+  }, [state, cookie])
+
+  // Callbacks externos
+  const prevConsented = React.useRef(state.consented)
+  React.useEffect(() => {
+    if (!prevConsented.current && state.consented && onConsentGiven)
+      onConsentGiven(state)
+    prevConsented.current = state.consented
+  }, [state, onConsentGiven])
+
+  const prevPrefs = React.useRef(state.preferences)
+  React.useEffect(() => {
+    if (
+      state.consented &&
+      onPreferencesSaved &&
+      prevPrefs.current !== state.preferences
+    ) {
+      onPreferencesSaved(state.preferences)
+      prevPrefs.current = state.preferences
+    }
+  }, [state, onPreferencesSaved])
+
+  const api = React.useMemo<ConsentContextValue>(() => {
+    const acceptAll = () => dispatch({ type: 'ACCEPT_ALL' })
+    const rejectAll = () => dispatch({ type: 'REJECT_ALL' })
+    const setPreference = (category: Category, value: boolean) =>
+      dispatch({ type: 'SET_CATEGORY', category, value })
+    const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })
+    const closePreferences = () => dispatch({ type: 'CLOSE_MODAL' })
+    const resetConsent = () => {
+      removeConsentCookie(cookie)
+      dispatch({ type: 'RESET' })
+    }
+    return {
+      consented: !!state.consented,
+      preferences: state.preferences,
+      acceptAll,
+      rejectAll,
+      setPreference,
+      openPreferences,
+      closePreferences,
+      resetConsent,
+    }
+  }, [state, cookie])
+
+  return (
+    <StateCtx.Provider value={state}>
+      <ActionsCtx.Provider value={api}>
+        <TextsCtx.Provider value={texts}>{children}</TextsCtx.Provider>
+      </ActionsCtx.Provider>
+    </StateCtx.Provider>
+  )
+}
+
+// Hooks internos (o público é `useConsent` em hooks/useConsent.ts)
+export function useConsentStateInternal() {
+  const ctx = React.useContext(StateCtx)
+  if (!ctx)
+    throw new Error('useConsentState must be used within ConsentProvider')
+  return ctx
+}
+export function useConsentActionsInternal() {
+  const ctx = React.useContext(ActionsCtx)
+  if (!ctx)
+    throw new Error('useConsentActions must be used within ConsentProvider')
+  return ctx
+}
+export function useConsentTextsInternal() {
+  const ctx = React.useContext(TextsCtx)
+  return ctx // TextsCtx sempre tem fallback, não precisa de throw
+}
+
+// Textos padrão exportáveis (se o integrador quiser referenciar)
+export const defaultTexts = DEFAULT_TEXTS

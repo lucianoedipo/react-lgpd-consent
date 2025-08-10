@@ -1,0 +1,99 @@
+{
+  "name": "react-lgpd-consent",
+  "version": "0.1.0",
+  "description": "Biblioteca de consentimento de cookies (LGPD) para React e Next.js, com contexto, banner e modal personalizáveis usando MUI.",
+  "keywords": [
+    "lgpd",
+    "cookie",
+    "consent",
+    "react",
+    "nextjs",
+    "material-ui",
+    "mui",
+    "typescript",
+    "ssr",
+    "js-cookie",
+    "consentimento",
+    "privacidade",
+    "acessibilidade"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Luciano Édipo",
+    "email": "luciano.psilva@anpd.gov.br",
+    "url": "https://github.com/lucianoedipo"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.18"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
+    "lint": "eslint . --ext .ts,.tsx",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucianoedipo/react-lgpd-consent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
+  },
+  "homepage": "https://github.com/lucianoedipo/react-lgpd-consent#readme",
+  "peerDependencies": {
+    "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mui/icons-material": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5"
+  },
+  "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@mui/material": "^7.3.1",
+    "@mui/icons-material": "^7.3.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "cross-env": "^10.0.0",
+    "eslint": "^9.33.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}
