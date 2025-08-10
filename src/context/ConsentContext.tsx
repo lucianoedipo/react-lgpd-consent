@@ -112,6 +112,7 @@ export function ConsentProvider({
   PreferencesModalComponent,
   preferencesModalProps = {},
   disableAutomaticModal = false,
+  hideBranding = false,
   onConsentGiven,
   onPreferencesSaved,
   cookie: cookieOpts,
@@ -144,6 +145,14 @@ export function ConsentProvider({
   }, [initialState, cookie.name])
 
   const [state, dispatch] = React.useReducer(reducer, boot)
+
+  // Re-sincroniza com cookie após hidratação (SSR fix)
+  React.useEffect(() => {
+    const saved = readConsentCookie<ConsentState>(cookie.name)
+    if (saved && !state.consented && saved.consented) {
+      dispatch({ type: 'HYDRATE', state: saved })
+    }
+  }, [cookie.name, state.consented])
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
@@ -212,7 +221,7 @@ export function ConsentProvider({
                 {PreferencesModalComponent ? (
                   <PreferencesModalComponent {...preferencesModalProps} />
                 ) : (
-                  <PreferencesModal />
+                  <PreferencesModal hideBranding={hideBranding} />
                 )}
               </React.Suspense>
             )}

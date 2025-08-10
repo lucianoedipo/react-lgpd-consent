@@ -2,7 +2,39 @@
 
 [![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
 [![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![TypeScrip```
+
+## 🎛️ Botão Flutuante de Preferências
+
+Para facilitar o acesso às configurações após consentimento inicial:
+
+```tsx
+import { FloatingPreferencesButton } from 'react-lgpd-consent'
+
+function App() {
+  return (
+    <ConsentProvider>
+      <MeuApp />
+      <CookieBanner />
+
+      {/* Botão flutuante opcional */}
+      <FloatingPreferencesButton
+        position="bottom-right"
+        hideWhenConsented={false}
+        tooltip="Configurar Cookies"
+      />
+    </ConsentProvider>
+  )
+}
+```
+
+### Posições Disponíveis
+
+- `bottom-left` | `bottom-right` (padrão)
+- `top-left` | `top-right`
+
+## 🔧 API Completahttps://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Material-UI](https://img.shields.io/badge/MUI-Ready-007FFF?style=for-the-badge&logo=mui)](https://mui.com/)
 
@@ -24,6 +56,7 @@ Solução moderna, acessível e personalizável para gerenciar consentimento de 
 - 🎨 **Sistema de Temas**: Temas customizáveis para integração visual perfeita
 - ⚡ **Carregamento Condicional**: Scripts só executam após consentimento explícito
 - 🔌 **Modal Automático**: Modal de preferências incluído automaticamente com lazy loading
+- 🎛️ **Botão Flutuante**: Componente opcional para acesso fácil às preferências
 
 ## 🚀 Instalação
 
@@ -44,7 +77,11 @@ npm install @mui/material js-cookie
 ## � Exemplo Completo
 
 ```tsx
-import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'
+import {
+  ConsentProvider,
+  CookieBanner,
+  FloatingPreferencesButton,
+} from 'react-lgpd-consent'
 
 function App() {
   return (
@@ -53,8 +90,11 @@ function App() {
         <h1>Meu Site</h1>
         <p>Conteúdo do site...</p>
 
-        {/* Banner de cookies */}
+        {/* Banner de cookies - Modal incluído automaticamente! */}
         <CookieBanner policyLinkUrl="/privacy-policy" blocking={true} />
+
+        {/* Botão flutuante opcional para acesso às preferências */}
+        <FloatingPreferencesButton position="bottom-right" />
       </div>
     </ConsentProvider>
   )
@@ -343,12 +383,13 @@ Para controle total, desabilite o modal automático:
 
 ### Components
 
-| Componente         | Descrição                                        | Props Principais                                                                                  |
-| ------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| `ConsentProvider`  | Provider principal do contexto                   | `initialState`, `texts`, `theme`, `PreferencesModalComponent`, `disableAutomaticModal`, callbacks |
-| `CookieBanner`     | Banner de consentimento                          | `policyLinkUrl`, `blocking`, `debug`, pass-through MUI props                                      |
-| `PreferencesModal` | Modal de preferências (incluído automaticamente) | `DialogProps` (MUI pass-through) - **Opcional**                                                   |
-| `ConsentGate`      | Renderização condicional por categoria           | `category`, `children`                                                                            |
+| Componente                  | Descrição                                        | Props Principais                                                                         |
+| --------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `ConsentProvider`           | Provider principal do contexto                   | `initialState`, `texts`, `theme`, `hideBranding`, `PreferencesModalComponent`, callbacks |
+| `CookieBanner`              | Banner de consentimento                          | `policyLinkUrl`, `blocking`, `hideBranding`, `debug`, pass-through MUI props             |
+| `PreferencesModal`          | Modal de preferências (incluído automaticamente) | `DialogProps`, `hideBranding` - **Opcional**                                             |
+| `FloatingPreferencesButton` | Botão flutuante para abrir preferências          | `position`, `hideWhenConsented`, `tooltip`, `icon`, `FabProps`                           |
+| `ConsentGate`               | Renderização condicional por categoria           | `category`, `children`                                                                   |
 
 ### Hook `useConsent()`
 

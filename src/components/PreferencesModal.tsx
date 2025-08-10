@@ -7,23 +7,27 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { ConsentPreferences } from '../types/types'
+import { Branding } from './Branding'
 
 export interface PreferencesModalProps {
   DialogProps?: Partial<DialogProps>
+  hideBranding?: boolean // Se true, esconde "fornecido por LÉdipO.eti.br"
 }
 
 export function PreferencesModal({
   DialogProps,
+  hideBranding = false,
 }: Readonly<PreferencesModalProps>) {
   const { preferences, setPreferences, closePreferences, isModalOpen } =
     useConsent()
   const texts = useConsentTexts()
 
   // Estado local para mudanças temporárias
-  const [tempPreferences, setTempPreferences] = useState(preferences)
+  const [tempPreferences, setTempPreferences] =
+    useState<ConsentPreferences>(preferences)
 
   // Sincroniza estado local com contexto quando modal abre
   useEffect(() => {
@@ -94,6 +98,10 @@ export function PreferencesModal({
           />
         </FormGroup>
       </DialogContent>
+
+      {/* Branding */}
+      {!hideBranding && <Branding variant="modal" />}
+
       <DialogActions>
         <Button variant="outlined" onClick={handleCancel}>
           Cancelar

@@ -69,6 +69,8 @@ export interface ConsentProviderProps {
   preferencesModalProps?: Record<string, any>
   /** Desabilita o modal automático (para usar componente totalmente customizado). */
   disableAutomaticModal?: boolean
+  /** Esconde branding "fornecido por LÉdipO.eti.br". */
+  hideBranding?: boolean
   /** Callback chamado quando o consentimento é dado. */
   onConsentGiven?: (state: ConsentState) => void
   /** Callback chamado ao salvar preferências. */

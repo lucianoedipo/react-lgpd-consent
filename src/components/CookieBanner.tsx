@@ -1,18 +1,21 @@
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import Link from '@mui/material/Link'
 import Paper from '@mui/material/Paper'
 import type { PaperProps } from '@mui/material/Paper'
 import Snackbar from '@mui/material/Snackbar'
 import type { SnackbarProps } from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
+import React from 'react'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
+import { Branding } from './Branding'
 
 export interface CookieBannerProps {
   policyLinkUrl?: string
   debug?: boolean
   blocking?: boolean // Se true, bloqueia interação até escolher uma opção
+  hideBranding?: boolean // Se true, esconde "fornecido por LÉdipO.eti.br"
   SnackbarProps?: Partial<SnackbarProps>
   PaperProps?: Partial<PaperProps>
 }
@@ -21,6 +24,7 @@ export function CookieBanner({
   policyLinkUrl,
   debug,
   blocking = true, // Por padrão, bloqueia até decisão
+  hideBranding = false,
   SnackbarProps,
   PaperProps,
 }: Readonly<CookieBannerProps>) {
@@ -66,6 +70,9 @@ export function CookieBanner({
             {texts.preferences}
           </Button>
         </Stack>
+
+        {/* Branding */}
+        {!hideBranding && <Branding variant="banner" />}
       </Stack>
     </Paper>
   )
