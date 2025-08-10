@@ -1,7 +1,7 @@
 # react-lgpd-consent 🍪
 
 [![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
-[![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge)](./LICENSE)
+[![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Material-UI](https://img.shields.io/badge/MUI-Ready-007FFF?style=for-the-badge&logo=mui)](https://mui.com/)
