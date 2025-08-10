@@ -20,6 +20,9 @@ Solução moderna, acessível e personalizável para gerenciar consentimento de 
 - 🚀 **TypeScript**: API completamente tipada para melhor DX
 - 📦 **Zero Config**: Funciona out-of-the-box com configurações sensatas
 - 🎯 **Granular Control**: Controle individual de categorias (analytics, marketing, etc.)
+- 🚫 **Banner Bloqueante**: Modo opcional para exigir interação antes de continuar
+- 🎨 **Sistema de Temas**: Temas customizáveis para integração visual perfeita
+- ⚡ **Carregamento Condicional**: Scripts só executam após consentimento explícito
 
 ## 🚀 Instalação
 
@@ -62,7 +65,10 @@ function Layout() {
   return (
     <>
       <YourContent />
-      <CookieBanner policyLinkUrl="/politica-privacidade" />
+      <CookieBanner
+        policyLinkUrl="/politica-privacidade"
+        blocking={true} // Padrão: bloqueia até decisão
+      />
     </>
   )
 }
@@ -89,7 +95,7 @@ function MyComponent() {
 ### 4. Carregamento Condicional de Scripts
 
 ```tsx
-import { ConsentGate, loadScript } from 'react-lgpd-consent'
+import { ConsentGate, loadConditionalScript } from 'react-lgpd-consent'
 
 function Analytics() {
   return (
@@ -99,19 +105,54 @@ function Analytics() {
   )
 }
 
-// Ou carregando scripts dinamicamente
+// Ou carregando scripts que aguardam consentimento
 function MyComponent() {
-  const { preferences } = useConsent()
+  const { preferences, consented } = useConsent()
 
   useEffect(() => {
-    if (preferences.analytics) {
-      loadScript('ga', 'https://www.googletagmanager.com/gtag/js?id=GA_ID')
+    if (consented && preferences.analytics) {
+      loadConditionalScript(
+        'ga',
+        'https://www.googletagmanager.com/gtag/js?id=GA_ID',
+        () => preferences.analytics, // Condição que aguarda
+      )
     }
-  }, [preferences.analytics])
+  }, [preferences, consented])
 }
 ```
 
 ## 🎨 Customização
+
+### Banner Bloqueante vs Não-bloqueante
+
+```tsx
+// Banner bloqueante (padrão) - impede interação até decisão
+<CookieBanner blocking={true} />
+
+// Banner não-intrusivo - permite navegação
+<CookieBanner blocking={false} />
+```
+
+### Tema Personalizado
+
+```tsx
+import { ConsentProvider, defaultConsentTheme } from 'react-lgpd-consent'
+import { createTheme } from '@mui/material/styles'
+
+const meuTema = createTheme({
+  ...defaultConsentTheme,
+  palette: {
+    ...defaultConsentTheme.palette,
+    primary: {
+      main: '#1976d2', // Sua cor principal
+    },
+  },
+})
+
+<ConsentProvider theme={meuTema}>
+  <App />
+</ConsentProvider>
+```
 
 ### Textos Personalizados
 
@@ -152,16 +193,90 @@ function MyComponent() {
 >
 ```
 
-## 🔧 API Completa
+## � Banner Bloqueante
+
+Para cenários onde é necessário bloquear o acesso até obter consentimento explícito:
+
+```tsx
+<CookieBanner blocking />
+```
+
+Com `blocking={true}`, o banner:
+
+- Cria um overlay escuro sobre todo o conteúdo
+- Impede interação com o resto da página
+- É útil para casos críticos onde consentimento é obrigatório
+
+## 🎨 Sistema de Temas
+
+### Tema Personalizado
+
+```tsx
+import { createTheme } from '@mui/material/styles'
+
+const meuTema = createTheme({
+  palette: {
+    primary: { main: '#2196f3' },
+    secondary: { main: '#f50057' },
+  },
+})
+
+<ConsentProvider theme={meuTema}>
+  <App />
+</ConsentProvider>
+```
+
+### Tema Padrão
+
+O tema padrão do react-lgpd-consent está disponível para customização:
+
+```tsx
+import { defaultConsentTheme } from 'react-lgpd-consent'
+
+const temaCustomizado = createTheme({
+  ...defaultConsentTheme,
+  palette: {
+    ...defaultConsentTheme.palette,
+    primary: { main: '#your-color' },
+  },
+})
+```
+
+## ⚡ Carregamento Condicional
+
+### Função loadConditionalScript
+
+Para scripts que devem aguardar consentimento específico:
+
+```tsx
+import { loadConditionalScript } from 'react-lgpd-consent'
+
+// Carrega script apenas quando analytics for aceito
+await loadConditionalScript(
+  'gtag',
+  'https://www.googletagmanager.com/gtag/js?id=GA_ID',
+  () => preferences.analytics,
+  { timeout: 10000 }, // timeout opcional
+)
+```
+
+### Parâmetros
+
+- `id`: Identificador único para o script
+- `src`: URL do script a ser carregado
+- `condition`: Função que retorna boolean indicando se deve carregar
+- `options`: Configurações opcionais (timeout, etc.)
+
+## �🔧 API Completa
 
 ### Components
 
-| Componente         | Descrição                              | Props Principais                                 |
-| ------------------ | -------------------------------------- | ------------------------------------------------ |
-| `ConsentProvider`  | Provider principal do contexto         | `initialState`, `texts`, `cookie`, callbacks     |
-| `CookieBanner`     | Banner de consentimento                | `policyLinkUrl`, `debug`, pass-through MUI props |
-| `PreferencesModal` | Modal de preferências detalhadas       | `DialogProps` (MUI pass-through)                 |
-| `ConsentGate`      | Renderização condicional por categoria | `category`, `children`                           |
+| Componente         | Descrição                              | Props Principais                                             |
+| ------------------ | -------------------------------------- | ------------------------------------------------------------ |
+| `ConsentProvider`  | Provider principal do contexto         | `initialState`, `texts`, `theme`, `cookie`, callbacks        |
+| `CookieBanner`     | Banner de consentimento                | `policyLinkUrl`, `blocking`, `debug`, pass-through MUI props |
+| `PreferencesModal` | Modal de preferências detalhadas       | `DialogProps` (MUI pass-through)                             |
+| `ConsentGate`      | Renderização condicional por categoria | `category`, `children`                                       |
 
 ### Hook `useConsent()`
 
@@ -169,6 +284,7 @@ function MyComponent() {
 interface ConsentContextValue {
   consented: boolean // usuário já consentiu?
   preferences: ConsentPreferences // preferências atuais
+  isModalOpen: boolean // estado do modal de preferências
   acceptAll(): void // aceitar todas as categorias
   rejectAll(): void // recusar opcionais
   setPreference(cat: Category, value: boolean): void // definir categoria específica
@@ -178,9 +294,19 @@ interface ConsentContextValue {
 }
 ```
 
+### Hook `useConsentTexts()`
+
+```typescript
+// Acesso aos textos contextuais
+const texts = useConsentTexts()
+console.log(texts.banner.title) // "Política de Cookies"
+```
+
 ### Utilitários
 
 - `loadScript(id, src, attrs?)` - Carrega scripts dinamicamente
+- `loadConditionalScript(id, src, condition, options?)` - Carrega scripts condicionalmente
+- `defaultConsentTheme` - Tema padrão do Material-UI
 - Tipos TypeScript completos exportados
 
 ## 🌐 SSR / Next.js

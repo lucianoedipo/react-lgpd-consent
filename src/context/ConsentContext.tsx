@@ -1,5 +1,6 @@
 // src/context/ConsentContext.tsx
 import * as React from 'react'
+import { ThemeProvider } from '@mui/material/styles'
 import {
   type Category,
   type ConsentContextValue,
@@ -14,6 +15,7 @@ import {
   removeConsentCookie,
   DEFAULT_COOKIE_OPTS,
 } from '../utils/cookieUtils'
+import { defaultConsentTheme } from '../utils/theme'
 
 // 🔹 Identificadores internos/contrato público em EN
 const DEFAULT_PREFERENCES: ConsentPreferences = {
@@ -91,6 +93,7 @@ const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
 export function ConsentProvider({
   initialState,
   texts: textsProp,
+  theme,
   onConsentGiven,
   onPreferencesSaved,
   cookie: cookieOpts,
@@ -103,6 +106,10 @@ export function ConsentProvider({
   const cookie = React.useMemo(
     () => ({ ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }),
     [cookieOpts],
+  )
+  const appliedTheme = React.useMemo(
+    () => theme || defaultConsentTheme,
+    [theme],
   )
 
   // SSR-safe boot: prioriza initialState; senão, cookie no client
@@ -125,11 +132,13 @@ export function ConsentProvider({
     if (state.consented) writeConsentCookie(state, cookie)
   }, [state, cookie])
 
-  // Callbacks externos
+  // Callbacks externos (com pequeno delay para animações)
   const prevConsented = React.useRef(state.consented)
   React.useEffect(() => {
-    if (!prevConsented.current && state.consented && onConsentGiven)
-      onConsentGiven(state)
+    if (!prevConsented.current && state.consented && onConsentGiven) {
+      // Pequeno delay para permitir animações de fechamento
+      setTimeout(() => onConsentGiven(state), 150)
+    }
     prevConsented.current = state.consented
   }, [state, onConsentGiven])
 
@@ -140,7 +149,8 @@ export function ConsentProvider({
       onPreferencesSaved &&
       prevPrefs.current !== state.preferences
     ) {
-      onPreferencesSaved(state.preferences)
+      // Pequeno delay para permitir animações
+      setTimeout(() => onPreferencesSaved(state.preferences), 150)
       prevPrefs.current = state.preferences
     }
   }, [state, onPreferencesSaved])
@@ -169,11 +179,13 @@ export function ConsentProvider({
   }, [state, cookie])
 
   return (
-    <StateCtx.Provider value={state}>
-      <ActionsCtx.Provider value={api}>
-        <TextsCtx.Provider value={texts}>{children}</TextsCtx.Provider>
-      </ActionsCtx.Provider>
-    </StateCtx.Provider>
+    <ThemeProvider theme={appliedTheme}>
+      <StateCtx.Provider value={state}>
+        <ActionsCtx.Provider value={api}>
+          <TextsCtx.Provider value={texts}>{children}</TextsCtx.Provider>
+        </ActionsCtx.Provider>
+      </StateCtx.Provider>
+    </ThemeProvider>
   )
 }
 

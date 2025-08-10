@@ -16,15 +16,12 @@ export interface PreferencesModalProps {
 export function PreferencesModal({
   DialogProps,
 }: Readonly<PreferencesModalProps>) {
-  const { preferences, setPreference, closePreferences } = useConsent()
+  const { preferences, setPreference, closePreferences, isModalOpen } =
+    useConsent()
   const texts = useConsentTexts()
 
-  // Estado visual do modal vem do contexto? optamos por deduzir: quando o integrador abrir, o Provider marca modalAberto = true
-  // Para simplificar o MVP, vamos assumir que o Provider abre/fecha, e esse componente sempre renderiza.
-  // Porém, podemos expor `open` via prop se preferir — por ora, mantemos simples: DialogProps?.open deve ser fornecido pelo Provider (futuro subpath).
-  const open =
-    (DialogProps && 'open' in DialogProps ? DialogProps.open : undefined) ??
-    true
+  // Usa o estado do contexto como padrão, mas permite override via DialogProps
+  const open = DialogProps?.open ?? isModalOpen ?? false
 
   return (
     <Dialog

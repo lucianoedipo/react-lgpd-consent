@@ -11,6 +11,7 @@ export function useConsent(): ConsentContextValue {
   return {
     consented: state.consented,
     preferences: state.preferences,
+    isModalOpen: state.isModalOpen,
     acceptAll: actions.acceptAll,
     rejectAll: actions.rejectAll,
     setPreference: actions.setPreference,

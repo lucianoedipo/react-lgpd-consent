@@ -61,6 +61,8 @@ export interface ConsentProviderProps {
   initialState?: ConsentState
   /** Textos customizados para a interface. */
   texts?: Partial<ConsentTexts>
+  /** Tema customizado para os componentes MUI. */
+  theme?: any // Theme do MUI (evita dependência circular)
   /** Callback chamado quando o consentimento é dado. */
   onConsentGiven?: (state: ConsentState) => void
   /** Callback chamado ao salvar preferências. */
@@ -79,6 +81,8 @@ export interface ConsentContextValue {
   consented: boolean
   /** Preferências atuais do usuário. */
   preferences: ConsentPreferences
+  /** Indica se o modal de preferências está aberto. */
+  isModalOpen?: boolean
   /** Aceita todas as categorias de consentimento. */
   acceptAll: () => void
   /** Rejeita todas as categorias de consentimento. */
