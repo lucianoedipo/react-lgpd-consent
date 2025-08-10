@@ -1,6 +1,14 @@
 # react-lgpd-consent 🍪
 
-[![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
+[![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.n useEffect(() => {
+if (consented && preferences.analytics) {
+loadScript(
+'ga',
+'https://www.googletagmanager.com/gtag/js?id=GA_ID',
+'analytics' // Aguarda consentimento finalizado
+)
+}
+}, [preferences, consented])package/react-lgpd-consent)
 [![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
@@ -23,6 +31,7 @@ Solução moderna, acessível e personalizável para gerenciar consentimento de 
 - 🚫 **Banner Bloqueante**: Modo opcional para exigir interação antes de continuar
 - 🎨 **Sistema de Temas**: Temas customizáveis para integração visual perfeita
 - ⚡ **Carregamento Condicional**: Scripts só executam após consentimento explícito
+- 🔌 **Modal Automático**: Modal de preferências incluído automaticamente com lazy loading
 
 ## 🚀 Instalação
 
@@ -40,7 +49,27 @@ pnpm add react-lgpd-consent
 npm install @mui/material js-cookie
 ```
 
-## 📖 Uso Básico
+## � Exemplo Completo
+
+```tsx
+import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'
+
+function App() {
+  return (
+    <ConsentProvider>
+      <div>
+        <h1>Meu Site</h1>
+        <p>Conteúdo do site...</p>
+
+        {/* Banner de cookies */}
+        <CookieBanner policyLinkUrl="/privacy-policy" blocking={true} />
+      </div>
+    </ConsentProvider>
+  )
+}
+```
+
+## �📖 Uso Básico
 
 ### 1. Setup do Provider
 
@@ -69,6 +98,7 @@ function Layout() {
         policyLinkUrl="/politica-privacidade"
         blocking={true} // Padrão: bloqueia até decisão
       />
+      {/* Modal de preferências incluído automaticamente! */}
     </>
   )
 }
@@ -92,10 +122,14 @@ function MyComponent() {
 }
 ```
 
+> ✅ **O modal de preferências é incluído automaticamente pelo ConsentProvider!** Não é mais necessário renderizá-lo manualmente.
+
+````
+
 ### 4. Carregamento Condicional de Scripts
 
 ```tsx
-import { ConsentGate, loadConditionalScript } from 'react-lgpd-consent'
+import { ConsentGate, loadScript } from 'react-lgpd-consent'
 
 function Analytics() {
   return (
@@ -119,7 +153,7 @@ function MyComponent() {
     }
   }, [preferences, consented])
 }
-```
+````
 
 ## 🎨 Customização
 
@@ -242,41 +276,87 @@ const temaCustomizado = createTheme({
 })
 ```
 
-## ⚡ Carregamento Condicional
+## ⚡ Carregamento Inteligente de Scripts
 
-### Função loadConditionalScript
+### Função loadScript
 
-Para scripts que devem aguardar consentimento específico:
+Scripts aguardam automaticamente o **consentimento finalizado** (banner fechado ou preferências salvas):
 
 ```tsx
-import { loadConditionalScript } from 'react-lgpd-consent'
+import { loadScript } from 'react-lgpd-consent'
 
-// Carrega script apenas quando analytics for aceito
-await loadConditionalScript(
+// Carrega script apenas após consentimento para analytics
+await loadScript(
   'gtag',
   'https://www.googletagmanager.com/gtag/js?id=GA_ID',
-  () => preferences.analytics,
-  { timeout: 10000 }, // timeout opcional
+  'analytics', // Categoria obrigatória
 )
+
+// Script geral (sempre carrega após consentimento)
+await loadScript('custom-script', 'https://example.com/script.js')
 ```
 
-### Parâmetros
+### Comportamento Inteligente
 
-- `id`: Identificador único para o script
-- `src`: URL do script a ser carregado
-- `condition`: Função que retorna boolean indicando se deve carregar
-- `options`: Configurações opcionais (timeout, etc.)
+- **Aguarda decisão final**: Não executa durante mudanças no modal de preferências
+- **Só executa após salvar**: Scripts só rodam quando o usuário finaliza as preferências
+- **Baseado em categoria**: Respeita as permissões por categoria
+
+## 🎨 Personalização Total
+
+### Modal de Preferências Customizado
+
+Substitua completamente o modal padrão com seu próprio componente:
+
+```tsx
+import { ConsentProvider, useConsent } from 'react-lgpd-consent'
+import MeuModalCustomizado from './MeuModalCustomizado'
+
+function App() {
+  return (
+    <ConsentProvider
+      PreferencesModalComponent={MeuModalCustomizado}
+      preferencesModalProps={{ variant: 'custom' }}
+    >
+      <MeuApp />
+    </ConsentProvider>
+  )
+}
+
+// Seu componente customizado
+function MeuModalCustomizado({ variant }) {
+  const { isModalOpen, closePreferences, setPreference } = useConsent()
+
+  return (
+    <MyCustomDialog open={isModalOpen} onClose={closePreferences}>
+      {/* Seu design personalizado aqui */}
+    </MyCustomDialog>
+  )
+}
+```
+
+### Desabilitar Modal Automático
+
+Para controle total, desabilite o modal automático:
+
+```tsx
+<ConsentProvider disableAutomaticModal>
+  <MeuApp />
+  {/* Renderize seus componentes customizados onde quiser */}
+  <MeuModalTotalmenteCustomizado />
+</ConsentProvider>
+```
 
 ## �🔧 API Completa
 
 ### Components
 
-| Componente         | Descrição                              | Props Principais                                             |
-| ------------------ | -------------------------------------- | ------------------------------------------------------------ |
-| `ConsentProvider`  | Provider principal do contexto         | `initialState`, `texts`, `theme`, `cookie`, callbacks        |
-| `CookieBanner`     | Banner de consentimento                | `policyLinkUrl`, `blocking`, `debug`, pass-through MUI props |
-| `PreferencesModal` | Modal de preferências detalhadas       | `DialogProps` (MUI pass-through)                             |
-| `ConsentGate`      | Renderização condicional por categoria | `category`, `children`                                       |
+| Componente         | Descrição                                        | Props Principais                                                                                  |
+| ------------------ | ------------------------------------------------ | ------------------------------------------------------------------------------------------------- |
+| `ConsentProvider`  | Provider principal do contexto                   | `initialState`, `texts`, `theme`, `PreferencesModalComponent`, `disableAutomaticModal`, callbacks |
+| `CookieBanner`     | Banner de consentimento                          | `policyLinkUrl`, `blocking`, `debug`, pass-through MUI props                                      |
+| `PreferencesModal` | Modal de preferências (incluído automaticamente) | `DialogProps` (MUI pass-through) - **Opcional**                                                   |
+| `ConsentGate`      | Renderização condicional por categoria           | `category`, `children`                                                                            |
 
 ### Hook `useConsent()`
 
@@ -304,12 +384,9 @@ console.log(texts.banner.title) // "Política de Cookies"
 
 ### Utilitários
 
-- `loadScript(id, src, attrs?)` - Carrega scripts dinamicamente
-- `loadConditionalScript(id, src, condition, options?)` - Carrega scripts condicionalmente
+- `loadScript(id, src, category?, attrs?)` - Carrega scripts com consentimento inteligente
 - `defaultConsentTheme` - Tema padrão do Material-UI
-- Tipos TypeScript completos exportados
-
-## 🌐 SSR / Next.js
+- Tipos TypeScript completos exportados## 🌐 SSR / Next.js
 
 Para evitar flash de conteúdo em SSR:
 

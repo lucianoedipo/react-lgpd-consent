@@ -8,7 +8,7 @@ export { useConsent, useConsentTexts } from './hooks/useConsent'
 
 // Utils
 export { ConsentGate } from './utils/ConsentGate'
-export { loadScript, loadConditionalScript } from './utils/scriptLoader'
+export { loadScript } from './utils/scriptLoader'
 export { defaultConsentTheme } from './utils/theme'
 
 // Tipos

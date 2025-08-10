@@ -17,6 +17,13 @@ import {
 } from '../utils/cookieUtils'
 import { defaultConsentTheme } from '../utils/theme'
 
+// Lazy load do PreferencesModal para evitar dependência circular
+const PreferencesModal = React.lazy(() =>
+  import('../components/PreferencesModal').then((m) => ({
+    default: m.PreferencesModal,
+  })),
+)
+
 // 🔹 Identificadores internos/contrato público em EN
 const DEFAULT_PREFERENCES: ConsentPreferences = {
   analytics: false,
@@ -94,6 +101,9 @@ export function ConsentProvider({
   initialState,
   texts: textsProp,
   theme,
+  PreferencesModalComponent,
+  preferencesModalProps = {},
+  disableAutomaticModal = false,
   onConsentGiven,
   onPreferencesSaved,
   cookie: cookieOpts,
@@ -183,7 +193,19 @@ export function ConsentProvider({
     <ThemeProvider theme={appliedTheme}>
       <StateCtx.Provider value={state}>
         <ActionsCtx.Provider value={api}>
-          <TextsCtx.Provider value={texts}>{children}</TextsCtx.Provider>
+          <TextsCtx.Provider value={texts}>
+            {children}
+            {/* Modal de preferências - customizável ou padrão */}
+            {!disableAutomaticModal && (
+              <React.Suspense fallback={null}>
+                {PreferencesModalComponent ? (
+                  <PreferencesModalComponent {...preferencesModalProps} />
+                ) : (
+                  <PreferencesModal />
+                )}
+              </React.Suspense>
+            )}
+          </TextsCtx.Provider>
         </ActionsCtx.Provider>
       </StateCtx.Provider>
     </ThemeProvider>

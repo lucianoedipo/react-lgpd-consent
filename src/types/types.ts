@@ -63,6 +63,12 @@ export interface ConsentProviderProps {
   texts?: Partial<ConsentTexts>
   /** Tema customizado para os componentes MUI. */
   theme?: any // Theme do MUI (evita dependência circular)
+  /** Componente customizado para modal de preferências. */
+  PreferencesModalComponent?: React.ComponentType<any>
+  /** Props adicionais para o modal customizado. */
+  preferencesModalProps?: Record<string, any>
+  /** Desabilita o modal automático (para usar componente totalmente customizado). */
+  disableAutomaticModal?: boolean
   /** Callback chamado quando o consentimento é dado. */
   onConsentGiven?: (state: ConsentState) => void
   /** Callback chamado ao salvar preferências. */

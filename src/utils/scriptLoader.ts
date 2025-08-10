@@ -1,53 +1,60 @@
 /**
- * Carrega um script dinamicamente após verificação de consentimento.
- * Recomenda-se usar com ConsentGate para melhor controle.
+ * Carrega um script dinamicamente após consentimento finalizado.
+ * Aguarda que o usuário tome uma decisão definitiva (banner fechado ou preferências salvas).
  */
 export function loadScript(
   id: string,
   src: string,
+  category: 'analytics' | 'marketing' | null = null,
   attrs: Record<string, string> = {},
-) {
-  if (typeof document === 'undefined') return
-  if (document.getElementById(id)) return
-
-  const s = document.createElement('script')
-  s.id = id
-  s.src = src
-  s.async = true
-  for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v)
-  document.body.appendChild(s)
-}
-
-/**
- * Carrega script condicionalmente baseado no consentimento.
- * Aguarda o consentimento ser dado antes de executar.
- */
-export function loadConditionalScript(
-  id: string,
-  src: string,
-  condition: () => boolean,
-  attrs: Record<string, string> = {},
-  maxWaitMs = 5000,
 ) {
   if (typeof document === 'undefined') return Promise.resolve()
   if (document.getElementById(id)) return Promise.resolve()
 
   return new Promise<void>((resolve, reject) => {
-    const startTime = Date.now()
+    const checkConsent = () => {
+      // Aguarda o contexto estar disponível
+      const consentCookie = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('cookieConsent='))
+        ?.split('=')[1]
 
-    const checkCondition = () => {
-      if (condition()) {
-        loadScript(id, src, attrs)
-        resolve()
-      } else if (Date.now() - startTime > maxWaitMs) {
-        reject(
-          new Error(`Timeout waiting for consent condition for script ${id}`),
-        )
-      } else {
-        setTimeout(checkCondition, 100) // Check every 100ms
+      if (!consentCookie) {
+        setTimeout(checkConsent, 100)
+        return
+      }
+
+      try {
+        const consent = JSON.parse(decodeURIComponent(consentCookie))
+
+        // Verifica se o consentimento foi finalizado
+        if (!consent.consented) {
+          setTimeout(checkConsent, 100)
+          return
+        }
+
+        // Se categoria específica, verifica permissão
+        if (category && !consent.preferences[category]) {
+          reject(new Error(`Consent not given for ${category} scripts`))
+          return
+        }
+
+        // Carrega o script
+        const s = document.createElement('script')
+        s.id = id
+        s.src = src
+        s.async = true
+        for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v)
+
+        s.onload = () => resolve()
+        s.onerror = () => reject(new Error(`Failed to load script: ${src}`))
+
+        document.body.appendChild(s)
+      } catch {
+        setTimeout(checkConsent, 100)
       }
     }
 
-    checkCondition()
+    checkConsent()
   })
 }
