@@ -169,6 +169,7 @@ export function ConsentProvider({
     return {
       consented: !!state.consented,
       preferences: state.preferences,
+      isModalOpen: state.isModalOpen,
       acceptAll,
       rejectAll,
       setPreference,

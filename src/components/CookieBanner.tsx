@@ -71,25 +71,35 @@ export function CookieBanner({
   )
 
   if (blocking) {
-    // Modo bloqueante com overlay escuro
+    // Modo bloqueante com overlay escuro, mas banner na parte inferior
     return (
-      <Box
-        sx={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1300, // Above MUI Modal
-          p: 2,
-        }}
-      >
-        {bannerContent}
-      </Box>
+      <>
+        {/* Overlay que bloqueia interação */}
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            zIndex: 1299, // Abaixo do banner mas acima do conteúdo
+          }}
+        />
+        {/* Banner na parte inferior */}
+        <Box
+          sx={{
+            position: 'fixed',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            zIndex: 1300, // Acima do overlay
+            p: 2,
+          }}
+        >
+          {bannerContent}
+        </Box>
+      </>
     )
   }
 

@@ -20,7 +20,7 @@ export function PreferencesModal({
     useConsent()
   const texts = useConsentTexts()
 
-  // Usa o estado do contexto como padrão, mas permite override via DialogProps
+  // Se DialogProps.open for fornecido, usa ele. Senão, usa o estado do contexto
   const open = DialogProps?.open ?? isModalOpen ?? false
 
   return (
