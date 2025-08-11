@@ -1,17 +1,22 @@
 import { createTheme } from '@mui/material/styles'
 
 /**
- * Tema padrão para os componentes de consentimento.
- * Baseado no design system da ANPD/governo brasileiro.
+ * Tema padrão utilizado pelos componentes de consentimento da biblioteca.
+ *
+ * Inclui configurações de cores, tipografia e estilos para componentes Material-UI,
+ * garantindo aparência consistente e acessível conforme guidelines LGPD.
+ *
+ * @remarks
+ * Pode ser sobrescrito via ThemeProvider externo se necessário.
  */
 export const defaultConsentTheme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2', // Azul institucional
+      main: '#1976d2',
       contrastText: '#ffffff',
     },
     secondary: {
-      main: '#dc004e', // Rosa/vermelho para ações importantes
+      main: '#dc004e',
       contrastText: '#ffffff',
     },
     background: {
@@ -34,7 +39,7 @@ export const defaultConsentTheme = createTheme({
     },
     button: {
       fontWeight: 500,
-      textTransform: 'none', // Manter capitalização original
+      textTransform: 'none',
     },
   },
   components: {
@@ -70,4 +75,9 @@ export const defaultConsentTheme = createTheme({
   },
 })
 
+/**
+ * Tipo do tema de consentimento utilizado na biblioteca.
+ *
+ * Útil para tipar props customizadas de tema ou para extensão do tema padrão.
+ */
 export type ConsentTheme = typeof defaultConsentTheme

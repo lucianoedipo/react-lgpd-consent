@@ -15,6 +15,16 @@ import {
 } from '../hooks/useConsent'
 import { Branding } from './Branding'
 
+/**
+ * Props para o componente CookieBanner.
+ *
+ * @property policyLinkUrl URL da política de privacidade (opcional).
+ * @property debug Força exibição do banner para QA/debug (opcional).
+ * @property blocking Se true, bloqueia interação até decisão do usuário (default: true).
+ * @property hideBranding Se true, oculta o branding "fornecido por LÉdipO.eti.br" (opcional).
+ * @property SnackbarProps Props adicionais para o componente MUI Snackbar (opcional).
+ * @property PaperProps Props adicionais para o componente MUI Paper (opcional).
+ */
 export interface CookieBannerProps {
   policyLinkUrl?: string
   debug?: boolean
@@ -24,6 +34,18 @@ export interface CookieBannerProps {
   PaperProps?: Partial<PaperProps>
 }
 
+/**
+ * Banner de consentimento de cookies conforme LGPD.
+ *
+ * Exibe mensagem informativa, botões de ação e link para política de privacidade.
+ * Compatível com modo bloqueante (overlay) e não bloqueante (Snackbar).
+ *
+ * - Textos em pt-BR, customizáveis via contexto.
+ * - Acessível e responsivo.
+ * - Branding opcional.
+ *
+ * @param props Propriedades do banner de consentimento.
+ */
 export function CookieBanner({
   policyLinkUrl,
   debug,

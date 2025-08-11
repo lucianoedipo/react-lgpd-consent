@@ -1,29 +1,52 @@
-import Fab from '@mui/material/Fab'
+import CookieOutlined from '@mui/icons-material/CookieOutlined'
 import type { FabProps } from '@mui/material/Fab'
+import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
-import SettingsIcon from '@mui/icons-material/Settings'
 import { useTheme } from '@mui/material/styles'
 import { useConsent } from '../hooks/useConsent'
 
+/**
+ * Props para o componente FloatingPreferencesButton.
+ *
+ * Permite configurar posição, ícone, tooltip, e comportamento de exibição do botão flutuante
+ * para abrir o modal de preferências de cookies LGPD.
+ *
+ * Todos os campos são opcionais e possuem valores padrão.
+ */
 export interface FloatingPreferencesButtonProps {
   /** Posição do botão flutuante. Padrão: 'bottom-right' */
   position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
   /** Offset da borda em pixels. Padrão: 24 */
   offset?: number
-  /** Ícone customizado. Padrão: SettingsIcon */
+  /** Ícone customizado. Padrão: CookieOutlined */
   icon?: React.ReactNode
-  /** Tooltip customizado */
+  /** Tooltip customizado exibido ao passar o mouse */
   tooltip?: string
-  /** Props do Fab do MUI */
+  /** Props adicionais para o Fab do MUI */
   FabProps?: Partial<FabProps>
   /** Se deve esconder quando consentimento já foi dado. Padrão: false */
   hideWhenConsented?: boolean
 }
 
+/**
+ * Botão flutuante para abrir o modal de preferências de cookies.
+ *
+ * Permite ao usuário acessar rapidamente as configurações de consentimento LGPD.
+ * Pode ser posicionado em qualquer canto da tela e customizado via props.
+ *
+ * @param position Posição do botão na tela. Padrão: 'bottom-right'.
+ * @param offset Distância da borda em pixels. Padrão: 24.
+ * @param icon Ícone customizado para o botão. Padrão: CookieOutlined.
+ * @param tooltip Texto do tooltip exibido ao passar o mouse. Padrão: 'Gerenciar Preferências de Cookies'.
+ * @param FabProps Props adicionais para o componente Fab do MUI.
+ * @param hideWhenConsented Se verdadeiro, esconde o botão após consentimento. Padrão: false.
+ *
+ * @returns JSX.Element | null
+ */
 export function FloatingPreferencesButton({
   position = 'bottom-right',
   offset = 24,
-  icon = <SettingsIcon />,
+  icon = <CookieOutlined />,
   tooltip,
   FabProps,
   hideWhenConsented = false,
@@ -31,18 +54,16 @@ export function FloatingPreferencesButton({
   const { openPreferences, consented } = useConsent()
   const theme = useTheme()
 
-  // Se deve esconder quando já consentiu
   if (hideWhenConsented && consented) {
     return null
   }
 
   const tooltipText = tooltip ?? 'Gerenciar Preferências de Cookies'
 
-  // Define posição baseada na prop
   const getPosition = () => {
     const styles: Record<string, any> = {
       position: 'fixed',
-      zIndex: 1200, // Abaixo do modal mas acima do conteúdo
+      zIndex: 1200,
     }
 
     switch (position) {

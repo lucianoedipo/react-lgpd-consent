@@ -12,11 +12,26 @@ import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { ConsentPreferences } from '../types/types'
 import { Branding } from './Branding'
 
+/**
+ * Props para o componente PreferencesModal.
+ *
+ * @property DialogProps Props opcionais para customizar o Dialog do Material-UI.
+ * @property hideBranding Se true, oculta o branding "fornecido por LÉdipO.eti.br".
+ */
 export interface PreferencesModalProps {
   DialogProps?: Partial<DialogProps>
   hideBranding?: boolean // Se true, esconde "fornecido por LÉdipO.eti.br"
 }
 
+/**
+ * Modal de preferências de cookies.
+ *
+ * Permite ao usuário ajustar suas preferências de consentimento para cookies analíticos e de marketing.
+ * Utiliza Material-UI Dialog, switches para cada categoria e textos customizáveis via contexto.
+ * Acessível, responsivo e compatível com SSR.
+ *
+ * @param props Props do modal, incluindo customização do Dialog e opção de ocultar branding.
+ */
 export function PreferencesModal({
   DialogProps,
   hideBranding = false,

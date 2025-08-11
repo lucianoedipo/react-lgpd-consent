@@ -1,6 +1,14 @@
 /**
- * Carrega um script dinamicamente após consentimento finalizado.
- * Aguarda que o usuário tome uma decisão definitiva (banner fechado ou preferências salvas).
+ * Carrega dinamicamente um script externo após o consentimento do usuário ser finalizado.
+ *
+ * Aguarda até que o usuário tome uma decisão definitiva (banner fechado ou preferências salvas)
+ * antes de inserir o script na página. Permite restringir o carregamento por categoria de consentimento.
+ *
+ * @param id - Identificador único do elemento script a ser criado.
+ * @param src - URL do script externo.
+ * @param category - Categoria de consentimento exigida para o script ('analytics', 'marketing' ou null).
+ * @param attrs - Atributos adicionais a serem aplicados ao elemento script.
+ * @returns Promise que resolve quando o script é carregado ou rejeita se o consentimento não for dado.
  */
 export function loadScript(
   id: string,

@@ -1,6 +1,16 @@
 import Cookies from 'js-cookie'
 import type { ConsentCookieOptions, ConsentState } from '../types/types'
 
+/**
+ * Opções padrão para persistência do cookie de consentimento.
+ *
+ * @remarks
+ * - `name`: Nome do cookie.
+ * - `maxAgeDays`: Dias de validade.
+ * - `sameSite`: Política SameSite.
+ * - `secure`: Apenas HTTPS.
+ * - `path`: Caminho do cookie.
+ */
 export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
   maxAgeDays: 365,
@@ -12,6 +22,16 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   path: '/',
 }
 
+/**
+ * Lê e desserializa o cookie de consentimento.
+ *
+ * @param name Nome do cookie (default: 'cookieConsent')
+ * @returns Estado de consentimento ou `null` se não existir ou inválido.
+ *
+ * @remarks
+ * - Seguro para SSR (retorna `null` no servidor).
+ * - Faz fallback para `null` em caso de erro de parsing.
+ */
 export function readConsentCookie<T = ConsentState>(
   name: string = DEFAULT_COOKIE_OPTS.name,
 ): T | null {
@@ -26,6 +46,16 @@ export function readConsentCookie<T = ConsentState>(
   }
 }
 
+/**
+ * Persiste o estado de consentimento no cookie.
+ *
+ * @param state Estado de consentimento a ser salvo.
+ * @param opts Opções adicionais para o cookie.
+ *
+ * @remarks
+ * - Seguro para SSR (não executa no servidor).
+ * - Usa opções padrão se não especificado.
+ */
 export function writeConsentCookie(
   state: ConsentState,
   opts?: Partial<ConsentCookieOptions>,
@@ -40,6 +70,15 @@ export function writeConsentCookie(
   })
 }
 
+/**
+ * Remove o cookie de consentimento.
+ *
+ * @param opts Opções adicionais para remoção.
+ *
+ * @remarks
+ * - Seguro para SSR (não executa no servidor).
+ * - Usa opções padrão se não especificado.
+ */
 export function removeConsentCookie(opts?: Partial<ConsentCookieOptions>) {
   if (typeof document === 'undefined') return
   const o = { ...DEFAULT_COOKIE_OPTS, ...opts }

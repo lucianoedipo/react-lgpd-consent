@@ -45,7 +45,7 @@ export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
     >
       fornecido por{' '}
       <Link
-        href="https://ledipo.eti.br"
+        href="https://www.ledipo.eti.br"
         target="_blank"
         rel="noopener noreferrer"
         sx={(theme) => ({

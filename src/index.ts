@@ -1,3 +1,19 @@
+/**
+ * @module react-lgpd-consent
+ * @description
+ * Ponto de entrada público da biblioteca react-lgpd-consent.
+ * Exporta componentes, hooks, utilitários e tipos para gerenciamento de consentimento de cookies conforme LGPD.
+ *
+ * - Componentes de UI baseados em Material-UI
+ * - Context Provider para estado global de consentimento
+ * - Hooks customizados para acesso ao consentimento
+ * - Utilitários para manipulação de cookies e scripts
+ * - Tipos TypeScript para máxima segurança e clareza
+ *
+ * @remarks
+ * Consulte a documentação oficial para exemplos de uso e integração.
+ */
+
 // Componentes
 export { CookieBanner } from './components/CookieBanner'
 export { PreferencesModal } from './components/PreferencesModal'

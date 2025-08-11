@@ -6,6 +6,27 @@ import {
 } from '../context/ConsentContext'
 import type { ConsentContextValue, ConsentTexts } from '../types/types'
 
+/**
+ * Hook principal para acessar e manipular o estado de consentimento de cookies.
+ *
+ * Retorna o estado atual do consentimento, preferências do usuário e métodos para
+ * aceitar, recusar, modificar ou resetar consentimentos. Ideal para integração
+ * com componentes customizados ou lógica de negócio.
+ *
+ * @returns {ConsentContextValue} Estado e ações do consentimento.
+ *
+ * @example
+ * const {
+ *   consented,
+ *   preferences,
+ *   acceptAll,
+ *   rejectAll,
+ *   setPreference,
+ *   openPreferences,
+ *   closePreferences,
+ *   resetConsent,
+ * } = useConsent();
+ */
 export function useConsent(): ConsentContextValue {
   const state = useConsentStateInternal()
   const actions = useConsentActionsInternal()

@@ -24,6 +24,25 @@ export interface ConsentState {
 
 /**
  * Textos utilizados na interface de consentimento.
+ *
+ * @remarks
+ * Esta interface define todos os textos exibidos na UI do banner e modal de consentimento.
+ * Os campos opcionais permitem adequação à ANPD e customização conforme necessidade do projeto.
+ *
+ * @property bannerMessage - Mensagem principal exibida no banner de consentimento.
+ * @property acceptAll - Texto do botão para aceitar todos os cookies.
+ * @property declineAll - Texto do botão para recusar todos os cookies.
+ * @property preferences - Texto do botão para abrir preferências.
+ * @property policyLink - (Opcional) Link para política de privacidade.
+ * @property modalTitle - Título do modal de preferências.
+ * @property modalIntro - Texto introdutório do modal.
+ * @property save - Texto do botão para salvar preferências.
+ * @property necessaryAlwaysOn - Texto explicativo para cookies necessários.
+ * @property controllerInfo - (Opcional) Informação sobre o controlador dos dados.
+ * @property dataTypes - (Opcional) Tipos de dados coletados.
+ * @property thirdPartySharing - (Opcional) Compartilhamento com terceiros.
+ * @property userRights - (Opcional) Direitos do titular dos dados.
+ * @property contactInfo - (Opcional) Informações de contato do DPO.
  */
 export interface ConsentTexts {
   bannerMessage: string

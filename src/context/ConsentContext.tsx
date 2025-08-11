@@ -106,6 +106,21 @@ const ActionsCtx = React.createContext<ConsentContextValue | null>(null)
 const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
 const HydrationCtx = React.createContext<boolean>(false)
 
+/**
+ * Provider principal do contexto de consentimento LGPD.
+ *
+ * Gerencia o estado global de consentimento de cookies, preferências do usuário,
+ * textos customizáveis e integração com SSR. Permite customização do modal de preferências,
+ * callbacks externos e opções de cookie.
+ *
+ * @param props Propriedades do ConsentProvider (ver ConsentProviderProps)
+ * @returns JSX.Element
+ *
+ * @example
+ * <ConsentProvider>
+ *   <App />
+ * </ConsentProvider>
+ */
 export function ConsentProvider({
   initialState,
   texts: textsProp,
