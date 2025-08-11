@@ -2,6 +2,7 @@ import {
   useConsentActionsInternal,
   useConsentStateInternal,
   useConsentTextsInternal,
+  useConsentHydrationInternal,
 } from '../context/ConsentContext'
 import type { ConsentContextValue, ConsentTexts } from '../types/types'
 
@@ -28,4 +29,12 @@ export function useConsent(): ConsentContextValue {
  */
 export function useConsentTexts(): ConsentTexts {
   return useConsentTextsInternal()
+}
+
+/**
+ * Hook para verificar se a hidratação do cookie foi concluída.
+ * Útil para evitar flash do banner antes de verificar cookies existentes.
+ */
+export function useConsentHydration(): boolean {
+  return useConsentHydrationInternal()
 }

@@ -5,7 +5,11 @@ export { FloatingPreferencesButton } from './components/FloatingPreferencesButto
 
 // Contexto + Hooks
 export { ConsentProvider } from './context/ConsentContext'
-export { useConsent, useConsentTexts } from './hooks/useConsent'
+export {
+  useConsent,
+  useConsentTexts,
+  useConsentHydration,
+} from './hooks/useConsent'
 
 // Utils
 export { ConsentGate } from './utils/ConsentGate'

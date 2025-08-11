@@ -8,7 +8,11 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import React from 'react'
-import { useConsent, useConsentTexts } from '../hooks/useConsent'
+import {
+  useConsent,
+  useConsentTexts,
+  useConsentHydration,
+} from '../hooks/useConsent'
 import { Branding } from './Branding'
 
 export interface CookieBannerProps {
@@ -30,8 +34,10 @@ export function CookieBanner({
 }: Readonly<CookieBannerProps>) {
   const { consented, acceptAll, rejectAll, openPreferences } = useConsent()
   const texts = useConsentTexts()
+  const isHydrated = useConsentHydration()
 
-  const open = debug ? true : !consented
+  // Só mostra o banner após hidratação E se não há consentimento (ou debug ativo)
+  const open = debug ? true : isHydrated && !consented
 
   if (!open) return null
 

@@ -5,7 +5,10 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
   maxAgeDays: 365,
   sameSite: 'Lax',
-  secure: true,
+  secure:
+    typeof window !== 'undefined'
+      ? window.location.protocol === 'https:'
+      : false,
   path: '/',
 }
 

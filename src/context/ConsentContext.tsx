@@ -104,6 +104,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
 const StateCtx = React.createContext<ConsentState | null>(null)
 const ActionsCtx = React.createContext<ConsentContextValue | null>(null)
 const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
+const HydrationCtx = React.createContext<boolean>(false)
 
 export function ConsentProvider({
   initialState,
@@ -131,28 +132,34 @@ export function ConsentProvider({
     [theme],
   )
 
-  // SSR-safe boot: prioriza initialState; senão, cookie no client
+  // SSR-safe boot: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {
     if (initialState) return { ...initialState, isModalOpen: false }
-    const saved = readConsentCookie<ConsentState>(cookie.name)
-    return (
-      saved ?? {
-        consented: false,
-        preferences: { ...DEFAULT_PREFERENCES },
-        isModalOpen: false,
-      }
-    )
-  }, [initialState, cookie.name])
+    // Em SSR, sempre começamos com estado padrão (sem consentimento)
+    // O cookie será lido no useEffect para evitar problemas de hidratação
+    return {
+      consented: false,
+      preferences: { ...DEFAULT_PREFERENCES },
+      isModalOpen: false,
+    }
+  }, [initialState])
 
   const [state, dispatch] = React.useReducer(reducer, boot)
+  const [isHydrated, setIsHydrated] = React.useState(false)
 
-  // Re-sincroniza com cookie após hidratação (SSR fix)
+  // Re-sincroniza com cookie após hidratação (SSR fix) - EXECUTA IMEDIATAMENTE
   React.useEffect(() => {
-    const saved = readConsentCookie<ConsentState>(cookie.name)
-    if (saved && !state.consented && saved.consented) {
-      dispatch({ type: 'HYDRATE', state: saved })
+    // Só executa no cliente e apenas se não houver initialState
+    if (typeof window !== 'undefined' && !initialState) {
+      const saved = readConsentCookie<ConsentState>(cookie.name)
+      if (saved?.consented) {
+        console.log('🚀 Immediate hydration: Cookie found', saved)
+        dispatch({ type: 'HYDRATE', state: saved })
+      }
     }
-  }, [cookie.name, state.consented])
+    // Marca como hidratado para permitir exibição do banner (se necessário)
+    setIsHydrated(true)
+  }, [cookie.name, initialState]) // Executa apenas uma vez após mount
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
@@ -214,17 +221,19 @@ export function ConsentProvider({
       <StateCtx.Provider value={state}>
         <ActionsCtx.Provider value={api}>
           <TextsCtx.Provider value={texts}>
-            {children}
-            {/* Modal de preferências - customizável ou padrão */}
-            {!disableAutomaticModal && (
-              <React.Suspense fallback={null}>
-                {PreferencesModalComponent ? (
-                  <PreferencesModalComponent {...preferencesModalProps} />
-                ) : (
-                  <PreferencesModal hideBranding={hideBranding} />
-                )}
-              </React.Suspense>
-            )}
+            <HydrationCtx.Provider value={isHydrated}>
+              {children}
+              {/* Modal de preferências - customizável ou padrão */}
+              {!disableAutomaticModal && (
+                <React.Suspense fallback={null}>
+                  {PreferencesModalComponent ? (
+                    <PreferencesModalComponent {...preferencesModalProps} />
+                  ) : (
+                    <PreferencesModal hideBranding={hideBranding} />
+                  )}
+                </React.Suspense>
+              )}
+            </HydrationCtx.Provider>
           </TextsCtx.Provider>
         </ActionsCtx.Provider>
       </StateCtx.Provider>
@@ -248,6 +257,9 @@ export function useConsentActionsInternal() {
 export function useConsentTextsInternal() {
   const ctx = React.useContext(TextsCtx)
   return ctx // TextsCtx sempre tem fallback, não precisa de throw
+}
+export function useConsentHydrationInternal() {
+  return React.useContext(HydrationCtx)
 }
 
 // Textos padrão exportáveis (se o integrador quiser referenciar)
