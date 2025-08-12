@@ -33,26 +33,51 @@ export interface CategoryDefinition {
 }
 
 /**
- * Preferências de consentimento do usuário para cada categoria.
- * Baseado nas categorias do Guia da ANPD, mas extensível.
+ * Configuração de categorias ativas no projeto.
+ * Define quais categorias fixas serão usadas (além de necessary)
+ * e quais categorias customizadas serão adicionadas.
  */
-export interface ConsentPreferences {
-  necessary: boolean // Sempre true (essencial)
-  analytics: boolean
-  functional: boolean
-  marketing: boolean
-  social: boolean
-  personalization: boolean
-  [key: string]: boolean // Permite categorias customizadas
+export interface ProjectCategoriesConfig {
+  /** Categorias padrão que serão ativadas (necessary sempre incluída automaticamente) */
+  enabledCategories?: Category[]
+  /** Categorias customizadas específicas do projeto */
+  customCategories?: CategoryDefinition[]
 }
 
 /**
- * Estado geral do consentimento, incluindo se o usuário consentiu,
- * suas preferências e se o modal está aberto.
+ * Preferências de consentimento do usuário.
+ * Contém apenas as categorias realmente utilizadas no projeto.
  */
-export interface ConsentState {
+export interface ConsentPreferences {
+  necessary: boolean // Sempre presente e true (essencial)
+  [key: string]: boolean // Apenas categorias habilitadas no projeto
+}
+
+/**
+ * Dados do cookie de consentimento em conformidade com LGPD/ANPD.
+ * Contém apenas informações essenciais para compliance e funcionamento.
+ */
+export interface ConsentCookieData {
+  /** Versão do esquema do cookie para migração futura */
+  version: string
+  /** Se o usuário já prestou consentimento */
   consented: boolean
+  /** Preferências por categoria (apenas categorias ativas) */
   preferences: ConsentPreferences
+  /** Timestamp ISO da primeira interação com o banner */
+  consentDate: string
+  /** Timestamp ISO da última modificação das preferências */
+  lastUpdate: string
+  /** Origem da decisão de consentimento */
+  source: 'banner' | 'modal' | 'programmatic'
+}
+
+/**
+ * Estado interno completo do consentimento (memória + UI).
+ * Inclui dados persistidos + estado da interface.
+ */
+export interface ConsentState extends ConsentCookieData {
+  /** Se o modal de preferências está aberto (NÃO persistido) */
   isModalOpen?: boolean
 }
 
@@ -121,13 +146,18 @@ export interface ConsentCookieOptions {
  * Propriedades aceitas pelo componente ConsentProvider.
  */
 export interface ConsentProviderProps {
-  /** Estado inicial do consentimento. */
+  /** Estado inicial do consentimento (para SSR). */
   initialState?: ConsentState
+  /** Configuração de categorias ativas no projeto. */
+  categories?: ProjectCategoriesConfig
   /** Textos customizados para a interface. */
   texts?: Partial<ConsentTexts>
   /** Tema customizado para os componentes MUI. Aceita qualquer propriedade. */
   theme?: any // Theme do MUI flexível (aceita propriedades customizadas)
-  /** Categorias customizadas de cookies (complementa as padrão). */
+  /**
+   * @deprecated Use `categories.customCategories` em vez disso.
+   * Categorias customizadas de cookies (complementa as padrão).
+   */
   customCategories?: CategoryDefinition[]
   /** Integrações nativas de scripts (Google Analytics, etc.). */
   scriptIntegrations?: import('../utils/scriptIntegrations').ScriptIntegration[]
@@ -137,6 +167,8 @@ export interface ConsentProviderProps {
   preferencesModalProps?: Record<string, any>
   /** Desabilita o modal automático (para usar componente totalmente customizado). */
   disableAutomaticModal?: boolean
+  /** Comportamento do banner: true = bloqueia até decisão, false = não bloqueia */
+  blocking?: boolean
   /** Esconde branding "fornecido por LÉdipO.eti.br". */
   hideBranding?: boolean
   /** Callback chamado quando o consentimento é dado. */

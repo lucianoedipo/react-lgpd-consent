@@ -9,6 +9,7 @@ import {
   type ConsentProviderProps,
   type ConsentState,
   type ConsentTexts,
+  type ProjectCategoriesConfig,
 } from '../types/types'
 import {
   readConsentCookie,
@@ -29,11 +30,6 @@ const PreferencesModal = React.lazy(() =>
 // 🔹 Identificadores internos/contrato público em EN
 const DEFAULT_PREFERENCES: ConsentPreferences = {
   necessary: true, // Sempre ativo (essencial)
-  analytics: false,
-  functional: false,
-  marketing: false,
-  social: false,
-  personalization: false,
 }
 
 /**
@@ -52,6 +48,29 @@ function createInitialPreferences(
   }
 
   return prefs
+}
+
+/**
+ * Cria um estado completo de consentimento com todos os campos obrigatórios.
+ */
+function createFullConsentState(
+  consented: boolean,
+  preferences: ConsentPreferences,
+  source: 'banner' | 'modal' | 'programmatic',
+  isModalOpen: boolean = false,
+  existingState?: ConsentState,
+): ConsentState {
+  const now = new Date().toISOString()
+
+  return {
+    version: '1.0',
+    consented,
+    preferences,
+    consentDate: existingState?.consentDate || now,
+    lastUpdate: now,
+    source,
+    isModalOpen,
+  }
 }
 
 // 🔹 Chaves EN, valores padrão pt-BR (UI do usuário final)
@@ -98,11 +117,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
       Object.keys(prefs).forEach((key) => {
         prefs[key] = true
       })
-      return {
-        consented: true,
-        preferences: prefs,
-        isModalOpen: false,
-      }
+      return createFullConsentState(true, prefs, 'banner', false, state)
     }
     case 'REJECT_ALL': {
       const prefs = createInitialPreferences(action.customCategories)
@@ -114,11 +129,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
           }
         })
       }
-      return {
-        consented: true,
-        preferences: prefs,
-        isModalOpen: false,
-      }
+      return createFullConsentState(true, prefs, 'banner', false, state)
     }
     case 'SET_CATEGORY':
       return {
@@ -127,27 +138,36 @@ function reducer(state: ConsentState, action: Action): ConsentState {
           ...state.preferences,
           [action.category]: action.value,
         },
+        lastUpdate: new Date().toISOString(),
       }
     case 'SET_PREFERENCES':
-      return {
-        ...state,
-        consented: true,
-        preferences: action.preferences,
-        isModalOpen: false,
-      }
+      return createFullConsentState(
+        true,
+        action.preferences,
+        'modal',
+        false,
+        state,
+      )
     case 'OPEN_MODAL':
       return { ...state, isModalOpen: true }
     case 'CLOSE_MODAL':
-      return { ...state, isModalOpen: false, consented: true } // houve interação
+      return createFullConsentState(
+        true,
+        state.preferences,
+        'modal',
+        false,
+        state,
+      )
     case 'RESET': {
-      return {
-        consented: false,
-        preferences: createInitialPreferences(action.customCategories),
-        isModalOpen: false,
-      }
+      return createFullConsentState(
+        false,
+        createInitialPreferences(action.customCategories),
+        'programmatic',
+        false,
+      )
     }
     case 'HYDRATE':
-      return { ...action.state }
+      return { ...action.state, isModalOpen: false } // Nunca hidratar com modal aberto
     default:
       return state
   }
@@ -206,11 +226,12 @@ export function ConsentProvider({
     if (initialState) return { ...initialState, isModalOpen: false }
     // Sempre começamos com estado padrão (sem consentimento)
     // O cookie será lido no useEffect para garantir hidratação correta
-    return {
-      consented: false,
-      preferences: createInitialPreferences(customCategories),
-      isModalOpen: false,
-    }
+    return createFullConsentState(
+      false,
+      createInitialPreferences(customCategories),
+      'banner',
+      false,
+    )
   }, [initialState, customCategories])
 
   const [state, dispatch] = React.useReducer(reducer, boot)
@@ -220,7 +241,7 @@ export function ConsentProvider({
   React.useEffect(() => {
     // Executa apenas se não houver initialState (para permitir controle externo)
     if (!initialState) {
-      const saved = readConsentCookie<ConsentState>(cookie.name)
+      const saved = readConsentCookie(cookie.name)
       if (saved?.consented) {
         console.log('🚀 Immediate hydration: Cookie found', saved)
         dispatch({ type: 'HYDRATE', state: saved })
@@ -232,7 +253,7 @@ export function ConsentProvider({
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
-    if (state.consented) writeConsentCookie(state, cookie)
+    if (state.consented) writeConsentCookie(state, state.source, cookie)
   }, [state, cookie])
 
   // Callbacks externos (com pequeno delay para animações)

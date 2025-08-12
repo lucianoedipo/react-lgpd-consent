@@ -1,12 +1,40 @@
 # react-lgpd-consent 🍪
 
 [![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
-[![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://## 🔧 API Completa
+[![License](https://img.shi## 📖 Uso Básico
 
-> **📖 Documentação Detalhada**: [API v0.2.0](./docs/API-v0.2.0.md) | [API v0.1.x (Legacy)](./docs/API-0.1.x.md)
+### 1. Setup do Provider (Conformidade LGPD)
 
-### Components.typescriptlang.org/)
+````tsx
+import { ConsentProvider } from 'react-lgpd-consent'
+
+function App() {
+  return (
+    <ConsentProvider
+      // 🛡️ Especificar apenas categorias necessárias (Princípio da Minimização)
+      categories={{
+        enabledCategories: ['analytics'], // Apenas analytics + necessary
+      }}
+
+      // 🚫 Banner bloqueante para compliance rigorosa (opcional)
+      blocking={true}
+
+      // 📝 Textos específicos para compliance
+      texts={{
+        bannerMessage: "Utilizamos cookies conforme LGPD...",
+        controllerInfo: "Controlador: Empresa XYZ - CNPJ: 00.000.000/0001-00"
+      }}
+    >
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```eact-lgpd-consent?style=for-the-badge)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
+[![Material-UI](https://img.shields.io/badge/MUI-Ready-007FFF?style=for-the-badge&logo=mui)](https://mui.com/)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&color=green)](https://bundlephobia.com/package/react-lgpd-consent)
+[![Downloads](https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&color=orange)](https://www.npmjs.com/package/react-lgpd-consent)
 
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Material-UI](https://img.shields.io/badge/MUI-Ready-007FFF?style=for-the-badge&logo=mui)](https://mui.com/)
@@ -17,16 +45,18 @@ Solução moderna, acessível e personalizável para gerenciar consentimento de 
 
 ## ✨ Características Principais
 
-- 🇧🇷 **Conformidade LGPD + ANPD**: 6 categorias baseadas no Guia Orientativo da ANPD
-- 🍪 **Categorias Extensíveis**: Sistema dinâmico para categorias customizadas
+- 🇧🇷 **Conformidade LGPD + ANPD**: Cookie otimizado conforme Guia Orientativo da ANPD
+- 🍪 **Categorias Configuráveis**: Sistema dinâmico - apenas categorias necessárias ao projeto
+- 🛡️ **Princípio da Minimização**: Cookie contém apenas dados essenciais para compliance
 - 🚀 **Integrações Nativas**: Google Analytics, Tag Manager, UserWay automatizados
+- ⏰ **Auditoria Completa**: Timestamps e rastreabilidade para prestação de contas
 - ⚡ **Client-Side First**: Arquitetura otimizada para SPA com zero-flash
 - 🎨 **Material-UI Integration**: Componentes prontos e customizáveis com MUI
 - ♿ **Acessibilidade**: Navegação por teclado e leitores de tela nativamente suportados
 - 🌐 **Internacionalização**: Textos totalmente customizáveis (padrão pt-BR)
 - 🚀 **TypeScript**: API completamente tipada para melhor DX
 - 📦 **Zero Config**: Funciona out-of-the-box com configurações sensatas
-- 🎯 **Granular Control**: Controle individual de 6+ categorias de cookies
+- 🎯 **Granular Control**: Controle individual por categoria ativa
 - 🚫 **Banner Bloqueante**: Modo opcional para exigir interação antes de continuar
 - 🎨 **Sistema de Temas**: Temas customizáveis para integração visual perfeita
 - ⚡ **Carregamento Automático**: Scripts só executam após consentimento explícito
@@ -41,7 +71,7 @@ npm install react-lgpd-consent
 yarn add react-lgpd-consent
 # ou
 pnpm add react-lgpd-consent
-```
+````
 
 ### Dependências
 
@@ -61,6 +91,40 @@ A biblioteca agora inclui **6 categorias** baseadas no Guia Orientativo da ANPD:
 - **`marketing`**: Publicidade e marketing direcionado
 - **`social`**: Integração com redes sociais
 - **`personalization`**: Personalização de conteúdo
+
+### 🛡️ Conformidade LGPD Rigorosa (v0.2.1)
+
+**Princípio da Minimização**: Cookie contém apenas categorias realmente utilizadas:
+
+```tsx
+<ConsentProvider
+  categories={{
+    enabledCategories: ['analytics'], // Apenas analytics + necessary
+    customCategories: [{
+      id: 'governo',
+      name: 'Integração Governamental',
+      description: 'Cookies para sistemas gov.br',
+      essential: false
+    }]
+  }}
+  blocking={true} // Banner bloqueia até decisão explícita
+>
+```
+
+**Cookie resultante** (apenas dados essenciais):
+
+```json
+{
+  "version": "1.0",
+  "consented": true,
+  "preferences": { "necessary": true, "analytics": false, "governo": true },
+  "consentDate": "2025-08-12T14:30:00.000Z",
+  "lastUpdate": "2025-08-12T14:30:00.000Z",
+  "source": "banner"
+}
+```
+
+> 📋 **[Guia Completo de Conformidade LGPD](./docs/CONFORMIDADE-LGPD.md)**
 
 ### 🔧 Categorias Customizadas
 
