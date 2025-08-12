@@ -369,9 +369,9 @@ export interface ConsentContextValue {
   /** Rejeita todas as categorias de consentimento. */
   rejectAll: () => void
   /** Define a preferência para uma categoria específica. */
-    setPreference: (cat: Category, value: boolean) => void,
+  setPreference: (cat: Category, value: boolean) => void
   /** Define múltiplas preferências de uma vez e salva. */
-  setPreferences: (preferences: ConsentPreferences) => void,
+  setPreferences: (preferences: ConsentPreferences) => void
   /** Abre o modal de preferências. */
   openPreferences: () => void
   /** Fecha o modal de preferências. */

@@ -21,7 +21,6 @@ Por padrão, os avisos são desativados automaticamente em builds de produção 
 
 A forma anterior de desativar os avisos via `window.__LGPD_DISABLE_GUIDANCE__ = true` ainda funciona, mas o uso da prop é a forma **preferencial e mais idiomática** em React.
 
-
 ## 📖 Uso Básico - Configuração Consciente (v0.2.2)
 
 ### 1. Setup Básico (Compliance LGPD Automática)
@@ -613,13 +612,13 @@ Para controle total, desabilite o modal automático:
 
 ### Components
 
-| Componente                  | Descrição                                        | Props Principais                                                                         |
-| --------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| Componente                  | Descrição                                        | Props Principais                                                                                                     |
+| --------------------------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------- |
 | `ConsentProvider`           | Provider principal do contexto                   | `initialState`, `texts`, `theme`, `hideBranding`, `PreferencesModalComponent`, `disableDeveloperGuidance`, callbacks |
-| `CookieBanner`              | Banner de consentimento                          | `policyLinkUrl`, `blocking`, `hideBranding`, `debug`, pass-through MUI props             |
-| `PreferencesModal`          | Modal de preferências (incluído automaticamente) | `DialogProps`, `hideBranding` - **Opcional**                                             |
-| `FloatingPreferencesButton` | Botão flutuante para abrir preferências          | `position`, `hideWhenConsented`, `tooltip`, `icon`, `FabProps`                           |
-| `ConsentGate`               | Renderização condicional por categoria           | `category`, `children`                                                                   |
+| `CookieBanner`              | Banner de consentimento                          | `policyLinkUrl`, `blocking`, `hideBranding`, `debug`, pass-through MUI props                                         |
+| `PreferencesModal`          | Modal de preferências (incluído automaticamente) | `DialogProps`, `hideBranding` - **Opcional**                                                                         |
+| `FloatingPreferencesButton` | Botão flutuante para abrir preferências          | `position`, `hideWhenConsented`, `tooltip`, `icon`, `FabProps`                                                       |
+| `ConsentGate`               | Renderização condicional por categoria           | `category`, `children`                                                                                               |
 
 ### Hook `useConsent()`
 
@@ -719,7 +718,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 - ✅ **Hooks Avançados**: `useCategories()` e `useCategoryStatus()`
 - ✅ **Validação Automática**: Prevenção de bugs de configuração vs UI
 
-### v0.2.3 - Compliance Avançado (Próxima Release)
+### v0.2.7 - Compliance Avançado (Próxima Release)
 
 **Baseado em feedback de uso real em projetos governamentais:**
 

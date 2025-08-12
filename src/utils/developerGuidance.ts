@@ -3,6 +3,54 @@ import * as React from 'react'
 import type { ProjectCategoriesConfig } from '../types/types'
 
 /**
+ * Detecta se estamos em ambiente de produção de forma robusta.
+ * Múltiplas heurísticas para garantir que logs não apareçam em produção.
+ */
+function isProductionEnvironment(): boolean {
+  // 1. NODE_ENV via globalThis (mais compatível)
+  if (
+    typeof (globalThis as any).process !== 'undefined' &&
+    (globalThis as any).process.env?.NODE_ENV === 'production'
+  ) {
+    return true
+  }
+
+  // 2. Flag customizada global
+  if (
+    typeof globalThis !== 'undefined' &&
+    (globalThis as any).__LGPD_PRODUCTION__ === true
+  ) {
+    return true
+  }
+
+  // 3. Flag window para desabilitar (legacy)
+  if (
+    typeof window !== 'undefined' &&
+    (window as any).__LGPD_DISABLE_GUIDANCE__ === true
+  ) {
+    return true
+  }
+
+  // 4. Heurística baseada em hostname (para casos onde NODE_ENV não está disponível)
+  if (typeof window !== 'undefined' && window.location) {
+    const hostname = window.location.hostname
+    // Se não é localhost/dev/staging, provavelmente é produção
+    if (
+      hostname &&
+      !hostname.includes('localhost') &&
+      !hostname.includes('127.0.0.1') &&
+      !hostname.includes('dev') &&
+      !hostname.includes('staging') &&
+      !hostname.includes('test')
+    ) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * Sistema de orientações para developers sobre configuração de categorias.
  * Ajuda a manter coerência entre configuração da lib e componentes customizados.
  */
@@ -157,76 +205,62 @@ export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
 ): void {
-  try {
-    // Múltiplas formas de detectar ambiente de produção
-    const isProduction =
-      // 1. NODE_ENV de bundlers (Vite, webpack, etc.)
-      (typeof (globalThis as any).process !== 'undefined' &&
-        (globalThis as any).process.env?.NODE_ENV === 'production') ||
-      // 2. Vite/bundler env vars (apenas em ESM)
-      (typeof globalThis !== 'undefined' &&
-        typeof (globalThis as any).import !== 'undefined' &&
-        (globalThis as any).import.meta?.env?.PROD === true) ||
-      // 3. Flag customizada para desabilitar logs
-      (typeof globalThis !== 'undefined' &&
-        (globalThis as any).__LGPD_PRODUCTION__) ||
-      // 4. Flag de desenvolvimento desabilitada via window global (legado)
-      (typeof window !== 'undefined' &&
-        (window as any).__LGPD_DISABLE_GUIDANCE__) ||
-      // 5. Flag de desenvolvimento desabilitada via prop do ConsentProvider (preferencial)
-      disableGuidanceProp
+  // 🚫 PRIMEIRO: Se foi explicitamente desabilitado via prop, sair imediatamente
+  if (disableGuidanceProp === true) {
+    return
+  }
 
-    if (isProduction) return
+  // Múltiplas formas de detectar ambiente de produção
+  const isProduction =
+    // 1. NODE_ENV de bundlers (Vite, webpack, etc.)
+    (typeof (globalThis as any).process !== 'undefined' &&
+      (globalThis as any).process.env?.NODE_ENV === 'production') ||
+    // 2. Flag customizada para desabilitar logs
+    (typeof globalThis !== 'undefined' &&
+      (globalThis as any).__LGPD_PRODUCTION__ === true) ||
+    // 3. Flag de desenvolvimento desabilitada via window global (legado)
+    (typeof window !== 'undefined' &&
+      (window as any).__LGPD_DISABLE_GUIDANCE__ === true)
 
-    // Prefix consistente para fácil filtro
-    const PREFIX = '[🍪 LGPD-CONSENT]'
+  if (isProduction) return
 
-    if (guidance.warnings.length > 0) {
-      console.group(`${PREFIX} ⚠️  Avisos de Configuração`)
-      guidance.warnings.forEach((warning) =>
-        console.warn(`${PREFIX} ${warning}`),
-      )
-      console.groupEnd()
-    }
+  // Prefix consistente para fácil filtro
+  const PREFIX = '[🍪 LGPD-CONSENT]'
 
-    if (guidance.suggestions.length > 0) {
-      console.group(`${PREFIX} 💡 Sugestões`)
-      guidance.suggestions.forEach((suggestion) =>
-        console.info(`${PREFIX} ${suggestion}`),
-      )
-      console.groupEnd()
-    }
+  if (guidance.warnings.length > 0) {
+    console.group(`${PREFIX} ⚠️  Avisos de Configuração`)
+    guidance.warnings.forEach((warning) => console.warn(`${PREFIX} ${warning}`))
+    console.groupEnd()
+  }
 
-    if (guidance.usingDefaults) {
-      console.info(
-        `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
-      )
-    }
-
-    // Log das categorias ativas para orientar UI customizada
-    console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
-    console.table(
-      guidance.activeCategoriesInfo.map((cat) => ({
-        ID: cat.id,
-        Nome: cat.name,
-        'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
-        'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
-      })),
-    )
-    console.info(
-      `${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`,
+  if (guidance.suggestions.length > 0) {
+    console.group(`${PREFIX} 💡 Sugestões`)
+    guidance.suggestions.forEach((suggestion) =>
+      console.info(`${PREFIX} ${suggestion}`),
     )
     console.groupEnd()
-  } catch (error) {
-    // Falha silenciosa se houver problemas com detecção de ambiente
-    // Em desenvolvimento, pelo menos tenta mostrar aviso básico
-    if (typeof console !== 'undefined' && console.warn) {
-      console.warn(
-        '[🍪 LGPD-CONSENT] Sistema de orientações encontrou erro:',
-        error,
-      )
-    }
   }
+
+  if (guidance.usingDefaults) {
+    console.info(
+      `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
+    )
+  }
+
+  // Log das categorias ativas para orientar UI customizada
+  console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
+  console.table(
+    guidance.activeCategoriesInfo.map((cat) => ({
+      ID: cat.id,
+      Nome: cat.name,
+      'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
+      'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
+    })),
+  )
+  console.info(
+    `${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`,
+  )
+  console.groupEnd()
 }
 
 /**
@@ -240,7 +274,10 @@ export function useDeveloperGuidance(
   const guidance = analyzeDeveloperConfiguration(config)
 
   // Stringify config for stable dependency comparison
-  const stringifiedConfig = React.useMemo(() => JSON.stringify(config), [config]);
+  const stringifiedConfig = React.useMemo(
+    () => JSON.stringify(config),
+    [config],
+  )
 
   // Log apenas uma vez quando configuração muda
   React.useEffect(() => {
