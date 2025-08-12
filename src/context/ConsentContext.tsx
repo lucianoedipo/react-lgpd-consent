@@ -195,9 +195,10 @@ const HydrationCtx = React.createContext<boolean>(false)
  */
 export function ConsentProvider({
   initialState,
+  categories, // NOVO: configuração completa de categorias
   texts: textsProp,
   theme,
-  customCategories,
+  customCategories, // LEGACY: compatibilidade
   scriptIntegrations,
   PreferencesModalComponent,
   preferencesModalProps = {},
@@ -220,6 +221,19 @@ export function ConsentProvider({
     () => theme || defaultConsentTheme,
     [theme],
   )
+
+  // Configuração de categorias (nova API ou compatibilidade)
+  const finalCategoriesConfig = React.useMemo(() => {
+    if (categories) return categories
+    // LEGACY: migração automática de customCategories para nova API
+    if (customCategories) {
+      return {
+        enabledCategories: ['analytics'] as Category[], // padrão quando usando API antiga
+        customCategories,
+      }
+    }
+    return undefined // Vai usar padrão no CategoriesProvider
+  }, [categories, customCategories])
 
   // Boot state: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {
@@ -312,7 +326,10 @@ export function ConsentProvider({
         <ActionsCtx.Provider value={api}>
           <TextsCtx.Provider value={texts}>
             <HydrationCtx.Provider value={isHydrated}>
-              <CategoriesProvider categories={customCategories}>
+              <CategoriesProvider
+                config={finalCategoriesConfig}
+                categories={customCategories} // LEGACY fallback
+              >
                 {children}
                 {/* Modal de preferências - customizável ou padrão */}
                 {!disableAutomaticModal && (

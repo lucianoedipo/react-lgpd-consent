@@ -1,27 +1,136 @@
+// src/context/CategoriesContext.tsx
 import * as React from 'react'
-import type { CategoryDefinition } from '../types/types'
+import type {
+  CategoryDefinition,
+  ProjectCategoriesConfig,
+} from '../types/types'
+import {
+  analyzeDeveloperConfiguration,
+  logDeveloperGuidance,
+  DEFAULT_PROJECT_CATEGORIES,
+  type DeveloperGuidance,
+} from '../utils/developerGuidance'
 
-// Context para categorias customizadas
+/**
+ * Context para informações sobre categorias ativas no projeto.
+ * Fornece orientações e validações para components UI.
+ */
+export interface CategoriesContextValue {
+  /** Configuração final das categorias (com padrão aplicado) */
+  config: ProjectCategoriesConfig
+  /** Análise e orientações para developers */
+  guidance: DeveloperGuidance
+  /** Categorias que precisam de toggle na UI */
+  toggleableCategories: DeveloperGuidance['activeCategoriesInfo']
+  /** Todas as categorias ativas */
+  allCategories: DeveloperGuidance['activeCategoriesInfo']
+  /** LEGACY: Apenas categorias customizadas (backward compatibility) */
+  legacyCategories: CategoryDefinition[]
+}
+
+const CategoriesContext = React.createContext<CategoriesContextValue | null>(
+  null,
+)
+
+// LEGACY: Context antigo para backward compatibility
 const CategoriesCtx = React.createContext<CategoryDefinition[]>([])
 
-// Provider para as categorias customizadas
+/**
+ * Provider para contexto de categorias.
+ * Automaticamente analisa configuração e fornece orientações.
+ */
 export function CategoriesProvider({
-  categories,
   children,
+  categories, // LEGACY: prop antiga (apenas customCategories)
+  config, // NOVO: configuração completa
 }: Readonly<{
-  categories?: CategoryDefinition[]
   children: React.ReactNode
+  categories?: CategoryDefinition[] // LEGACY
+  config?: ProjectCategoriesConfig // NOVO
 }>) {
-  const value = React.useMemo(() => categories || [], [categories])
+  const contextValue = React.useMemo(() => {
+    // Migração automática: se usou prop antiga, converte para novo formato
+    let finalConfig: ProjectCategoriesConfig
+
+    if (categories && !config) {
+      // LEGACY: apenas categorias customizadas foram fornecidas
+      finalConfig = {
+        enabledCategories: DEFAULT_PROJECT_CATEGORIES.enabledCategories,
+        customCategories: categories,
+      }
+    } else {
+      // NOVO: usa configuração completa ou padrão
+      finalConfig = config || DEFAULT_PROJECT_CATEGORIES
+    }
+
+    const guidance = analyzeDeveloperConfiguration(
+      config || (categories ? { customCategories: categories } : undefined),
+    )
+
+    // Separa categorias que precisam de toggle das que são sempre ativas
+    const toggleableCategories = guidance.activeCategoriesInfo.filter(
+      (cat) => cat.uiRequired,
+    )
+
+    return {
+      config: finalConfig,
+      guidance,
+      toggleableCategories,
+      allCategories: guidance.activeCategoriesInfo,
+      legacyCategories: categories || [],
+    }
+  }, [config, categories])
+
+  // Log orientações apenas em desenvolvimento
+  React.useEffect(() => {
+    logDeveloperGuidance(contextValue.guidance)
+  }, [contextValue.guidance])
 
   return (
-    <CategoriesCtx.Provider value={value}>{children}</CategoriesCtx.Provider>
+    <CategoriesContext.Provider value={contextValue}>
+      <CategoriesCtx.Provider value={contextValue.legacyCategories}>
+        {children}
+      </CategoriesCtx.Provider>
+    </CategoriesContext.Provider>
   )
 }
 
 /**
- * Hook para acessar as categorias customizadas.
- * Retorna apenas as categorias customizadas (não as padrão analytics/marketing).
+ * Hook para acessar informações sobre categorias ativas.
+ * Usado por componentes UI para renderizar adequadamente.
+ */
+export function useCategories(): CategoriesContextValue {
+  const context = React.useContext(CategoriesContext)
+  if (!context) {
+    throw new Error(
+      'useCategories deve ser usado dentro de CategoriesProvider. ' +
+        'Certifique-se de que o ConsentProvider está envolvendo seu componente.',
+    )
+  }
+  return context
+}
+
+/**
+ * Hook de conveniência para verificar se uma categoria específica está ativa.
+ */
+export function useCategoryStatus(categoryId: string) {
+  const { allCategories } = useCategories()
+  const category = allCategories.find((cat) => cat.id === categoryId)
+
+  return {
+    isActive: !!category,
+    isEssential: category?.essential || false,
+    needsToggle: category?.uiRequired || false,
+    name: category?.name,
+    description: category?.description,
+  }
+}
+
+/**
+ * LEGACY: Hook para acessar as categorias customizadas.
+ * Mantido para backward compatibility.
+ *
+ * @deprecated Use useCategories() ao invés disso para acesso completo às categorias.
  */
 export function useCustomCategories() {
   return React.useContext(CategoriesCtx)

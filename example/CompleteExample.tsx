@@ -6,7 +6,7 @@ import {
   FloatingPreferencesButton,
   ConsentScriptLoader,
   useConsent,
-  useAllCategories,
+  useCategories, // NOVO: hook atualizado
   ConsentGate,
   createGoogleAnalyticsIntegration,
   createUserWayIntegration,
@@ -82,7 +82,7 @@ const anpdTexts = {
 // 📊 Componente para exibir status detalhado
 function ConsentStatus() {
   const { preferences, consented } = useConsent()
-  const allCategories = useAllCategories()
+  const { allCategories } = useCategories() // NOVO: hook atualizado
 
   if (!consented) {
     return (
@@ -127,7 +127,10 @@ function ConsentStatus() {
 function ExampleApp() {
   return (
     <ConsentProvider
-      customCategories={customCategories}
+      categories={{
+        enabledCategories: ['analytics', 'functional'],
+        customCategories: customCategories,
+      }}
       texts={anpdTexts}
       onConsentGiven={(state) => {
         console.log('🎉 Consentimento dado:', state)

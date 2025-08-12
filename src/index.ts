@@ -26,9 +26,12 @@ export {
   useConsentTexts,
   useConsentHydration,
 } from './hooks/useConsent'
+
+// Hooks de categorias - novo sistema
 export {
-  useCustomCategories,
-  useAllCategories,
+  useCategories,
+  useCategoryStatus,
+  useCustomCategories, // LEGACY compatibility
 } from './context/CategoriesContext'
 
 // Utils
@@ -58,4 +61,12 @@ export type {
   ConsentState,
   ConsentTexts,
   ConsentCookieOptions,
+  ProjectCategoriesConfig, // Nova configuração de categorias
 } from './types/types'
+
+// Utilitários de orientação para developers
+export type { DeveloperGuidance } from './utils/developerGuidance'
+export {
+  DEFAULT_PROJECT_CATEGORIES,
+  analyzeDeveloperConfiguration,
+} from './utils/developerGuidance'

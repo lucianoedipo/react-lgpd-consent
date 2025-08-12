@@ -5,7 +5,110 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [Não Lançado] - v0.2.1 - CONFORMIDADE LGPD RIGOROSA
+## [0.2.2] - 2025-08-12 - SISTEMA DE ORIENTAÇÕES PARA DESENVOLVEDORES
+
+### ✨ **Adicionado**
+
+#### **🚨 Sistema Inteligente de Orientações**
+
+- **Console de Desenvolvimento**: Avisos automáticos sobre configuração
+  - ⚠️ **Avisos**: Detecta configuração faltante, inconsistente ou problemática
+  - 💡 **Sugestões**: Recomendações para melhor compliance e UX
+  - 🔧 **Tabela de Categorias**: Lista categorias ativas para orientar UI customizada
+
+- **Novos Hooks para Componentes Customizados**:
+  - `useCategories()`: Informações completas sobre categorias ativas no projeto
+  - `useCategoryStatus(id)`: Verifica se categoria específica está configurada
+  - **Prevenção de Bugs**: Evita inconsistências entre configuração e UI
+
+#### **🎨 UI Dinâmica e Inteligente**
+
+- **PreferencesModal Aprimorado**: Renderiza automaticamente apenas categorias configuradas
+- **Componentes Adaptativos**: UI se ajusta dinamicamente à configuração do projeto
+- **Renderização Condicional**: Não exibe categorias não utilizadas no projeto
+
+#### **📋 Configuração Padrão Defensiva**
+
+- **Padrão Inteligente**: Quando nenhuma categoria especificada, usa `necessary + analytics`
+- **Orientação Automática**: Avisa sobre uso de configuração padrão em desenvolvimento
+- **Migração Transparente**: API antiga (`customCategories`) funciona perfeitamente
+
+#### **🔍 Análise e Validação de Configuração**
+
+- **Função `analyzeDeveloperConfiguration()`**: Valida e orienta sobre configuração
+- **Constante `DEFAULT_PROJECT_CATEGORIES`**: Configuração padrão baseada em casos reais
+- **Detecção Automática**: Identifica muitas categorias, descrições inadequadas, etc.
+
+### 🔧 **Modificado**
+
+#### **ConsentProvider Expandido**
+
+- **Suporte Completo**: Nova prop `categories` mantém compatibilidade com `customCategories`
+- **Sistema de Orientações**: Log automático de orientações em modo desenvolvimento
+- **Configuração Híbrida**: Aceita nova API ou migra automaticamente da antiga
+
+#### **Componentes UI Inteligentes**
+
+- **Inicialização Segura**: `tempPreferences` inicializado corretamente com valores padrão
+- **Sincronização Dinâmica**: Estado local sincroniza apenas com categorias ativas
+- **Renderização Otimizada**: Loops baseados em `toggleableCategories` ao invés de hardcode
+
+### 🐛 **Corrigido**
+
+- **React Warning**: Eliminado "A component is changing an uncontrolled input to be controlled"
+- **Estado de Input**: `PreferencesModal` inicializa switches com valores controlados
+- **Sincronização**: Preferências temporárias sincronizam corretamente com categorias ativas
+- **Performance**: Não renderiza componentes para categorias não configuradas
+
+### 📚 **Documentação**
+
+- **Novo arquivo**: `docs/ORIENTACOES-DESENVOLVIMENTO.md` - Guia completo do sistema
+- **README expandido**: Exemplos práticos da nova API e componentes dinâmicos
+- **Exemplos de uso**: Demonstração de hooks para validação condicional de categorias
+- **Guias de migração**: Como usar nova API mantendo compatibilidade
+
+### 🎯 **Benefícios da v0.2.2**
+
+#### **Para Desenvolvedores**
+
+- 🚨 **Orientação Proativa**: Console indica exatamente quais categorias implementar na UI
+- 🐛 **Prevenção de Bugs**: Validação automática de consistência Configuração ↔ UI
+- 🔧 **Flexibilidade Total**: APIs antigas funcionam, nova API oferece mais controle
+- 📋 **TypeScript Completo**: Tipos específicos para cada hook e configuração
+
+#### **Para Compliance LGPD**
+
+- 🎯 **Configuração Consciente**: Sistema força reflexão sobre quais dados realmente coletar
+- 📝 **Documentação Automática**: Orientações baseadas na configuração real do projeto
+- 🔍 **Auditabilidade**: Logs claros mostram decisões de configuração
+- 🛡️ **Conformidade Ativa**: Alinhamento dinâmico com princípios da ANPD
+
+#### **Para Usuários Finais**
+
+- ⚡ **Performance Superior**: Interface otimizada mostra apenas categorias relevantes
+- 🎯 **Experiência Focada**: Usuários não veem opções irrelevantes para o projeto
+- 🔒 **Transparência Máxima**: Descrições claras apenas de categorias realmente utilizadas
+
+---
+
+## [0.2.1] - 2025-08-12 - CONFORMIDADE LGPD RIGOROSA
+
+### 🛡️ **BREAKING CHANGES - Conformidade ANPD**
+
+#### **Cookie de Consentimento Reestruturado**
+
+- **🍪 Estrutura do Cookie**: Novo formato com campos obrigatórios para compliance
+  - `version`: Controle de migração de schema
+  - `consentDate`: Timestamp da primeira interação as mudanças notáveis neste projeto serão documentadas neste arquivo.
+
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
+e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
+
+## [0.2.1] - 2025-08-12 - CONFORMIDADE LGPD RIGOROSA + SISTEMA DE ORIENTAÇÕES
+
+### 🚨 **NOVO: Sistema de Orientações para Desenvolvedores**
+
+A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolvedores sobre configuração adequada e previne inconsistências entre configuração e UI customizada.
 
 ### 🛡️ **BREAKING CHANGES - Conformidade ANPD**
 

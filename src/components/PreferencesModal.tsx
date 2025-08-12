@@ -8,6 +8,7 @@ import FormGroup from '@mui/material/FormGroup'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
+import { useCategories } from '../context/CategoriesContext'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { ConsentPreferences } from '../types/types'
 import { Branding } from './Branding'
@@ -39,17 +40,36 @@ export function PreferencesModal({
   const { preferences, setPreferences, closePreferences, isModalOpen } =
     useConsent()
   const texts = useConsentTexts()
+  const { toggleableCategories } = useCategories() // Categorias que precisam de toggle
 
-  // Estado local para mudanças temporárias
-  const [tempPreferences, setTempPreferences] =
-    useState<ConsentPreferences>(preferences)
+  // Estado local para mudanças temporárias - INICIALIZADO com valores padrão
+  const [tempPreferences, setTempPreferences] = useState<ConsentPreferences>(
+    () => {
+      // Inicializa com state atual ou valores padrão seguros
+      const initialPrefs: ConsentPreferences = { necessary: true }
 
-  // Sincroniza estado local com contexto quando modal abre
+      // Para cada categoria que precisa de toggle, define valor inicial
+      toggleableCategories.forEach((category) => {
+        initialPrefs[category.id] = preferences[category.id] ?? false
+      })
+
+      return initialPrefs
+    },
+  )
+
+  // Sincroniza estado local com contexto quando modal abre ou preferences mudam
   useEffect(() => {
     if (isModalOpen) {
-      setTempPreferences(preferences)
+      const syncedPrefs: ConsentPreferences = { necessary: true }
+
+      // Sincroniza apenas categorias ativas que precisam de toggle
+      toggleableCategories.forEach((category) => {
+        syncedPrefs[category.id] = preferences[category.id] ?? false
+      })
+
+      setTempPreferences(syncedPrefs)
     }
-  }, [isModalOpen, preferences])
+  }, [isModalOpen, preferences, toggleableCategories])
 
   // Se DialogProps.open for fornecido, usa ele. Senão, usa o estado do contexto
   const open = DialogProps?.open ?? isModalOpen ?? false
@@ -79,34 +99,26 @@ export function PreferencesModal({
           {texts.modalIntro}
         </Typography>
         <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={tempPreferences.analytics}
-                onChange={(e) =>
-                  setTempPreferences((prev) => ({
-                    ...prev,
-                    analytics: e.target.checked,
-                  }))
-                }
-              />
-            }
-            label="Cookies Analíticos (medem uso do site)"
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={tempPreferences.marketing}
-                onChange={(e) =>
-                  setTempPreferences((prev) => ({
-                    ...prev,
-                    marketing: e.target.checked,
-                  }))
-                }
-              />
-            }
-            label="Cookies de Marketing/Publicidade"
-          />
+          {/* Renderiza dinamicamente apenas categorias que precisam de toggle */}
+          {toggleableCategories.map((category) => (
+            <FormControlLabel
+              key={category.id}
+              control={
+                <Switch
+                  checked={tempPreferences[category.id] ?? false}
+                  onChange={(e) =>
+                    setTempPreferences((prev) => ({
+                      ...prev,
+                      [category.id]: e.target.checked,
+                    }))
+                  }
+                />
+              }
+              label={`${category.name} - ${category.description}`}
+            />
+          ))}
+
+          {/* Categoria necessária sempre exibida por último (disabled) */}
           <FormControlLabel
             control={<Switch checked disabled />}
             label={texts.necessaryAlwaysOn}

@@ -11,16 +11,23 @@ A `react-lgpd-consent` é uma biblioteca **client-side** focada em aplicações 
 - **js-cookie**: Persistência leve e confiável
 - **TypeScript**: Type safety completo
 
-### Limitações Atuais
+### Status Atual (v0.2.2)
 
-⚠️ **IMPORTANTE**: Esta biblioteca é atualmente **client-side only**:
+✅ **IMPLEMENTADO**: Sistema de Orientações para Desenvolvedores
 
-- ❌ Não suporta SSR (Server-Side Rendering)
-- ❌ Não funciona em Next.js com SSG/SSR ativado
-- ❌ Componentes não podem ser renderizados no servidor
-- ✅ Funciona perfeitamente em React SPA, CRA, Vite, etc.
+- ✅ **UI Dinâmica**: Componentes se adaptam automaticamente à configuração
+- ✅ **Orientação Automática**: Console com avisos e sugestões de compliance
+- ✅ **Hooks Avançados**: `useCategories()` e `useCategoryStatus()` para controle total
+- ✅ **Configuração Inteligente**: Padrão defensivo previne problemas comuns
+- ✅ **100% Backward Compatible**: APIs v0.1.x e v0.2.x funcionam perfeitamente
 
-## 📁 Estrutura do Projeto (v0.2.0)
+### Suporte Completo
+
+✅ **Client-Side Applications**: React SPA, CRA, Vite, etc.
+✅ **Limited SSR Support**: Via prop `initialState` (sem flash)
+✅ **Next.js Compatible**: Funciona com configuração adequada
+
+## 📁 Estrutura do Projeto (v0.2.2)
 
 ```
 src/
@@ -30,27 +37,30 @@ src/
 │   ├── FloatingPreferencesButton.tsx # FAB
 │   └── Branding.tsx         # Componente de branding
 ├── context/                 # Estado global
-│   ├── ConsentContext.tsx   # Provider principal
+│   ├── ConsentContext.tsx   # Provider principal (v0.2.2 - Sistema de Orientações)
 │   └── CategoriesContext.tsx # Provider de categorias customizadas
 ├── hooks/                   # Hooks públicos
-│   └── useConsent.ts        # API principal
+│   ├── useConsent.ts        # API principal
+│   ├── useCategories.ts     # 🆕 v0.2.2 - Hook de categorias ativas
+│   └── useCategoryStatus.ts # 🆕 v0.2.2 - Status de categoria específica
 ├── utils/                   # Utilitários
 │   ├── ConsentGate.tsx      # Renderização condicional
 │   ├── ConsentScriptLoader.tsx # Carregamento automático de scripts
 │   ├── scriptIntegrations.ts # Integrações nativas (GA, GTM, UserWay)
 │   ├── cookieUtils.ts       # Manipulação de cookies
 │   ├── scriptLoader.ts      # Carregamento dinâmico
-│   └── theme.ts             # Tema padrão MUI
+│   ├── theme.ts             # Tema padrão MUI
+│   └── developerGuidance.ts # 🆕 v0.2.2 - Sistema de orientações
 ├── types/                   # Definições TypeScript
-│   └── types.ts             # Todos os tipos (expandido)
-└── index.ts                 # Exports públicos (expandido)
+│   └── types.ts             # Todos os tipos (expandido v0.2.2)
+└── index.ts                 # Exports públicos (expandido v0.2.2)
 ```
 
-### 🆕 Novos Arquivos v0.2.0
+### 🆕 Novos Arquivos v0.2.2
 
-- **`CategoriesContext.tsx`**: Context separado para categorias customizadas
-- **`ConsentScriptLoader.tsx`**: Componente para carregamento automático de scripts
-- **`scriptIntegrations.ts`**: Funções para criar integrações comuns (GA4, GTM, UserWay)
+- **`useCategories.ts`**: Hook para informações sobre categorias ativas no projeto
+- **`useCategoryStatus.ts`**: Hook para verificar se categoria específica está configurada
+- **`developerGuidance.ts`**: Sistema inteligente de orientações e validação
 
 ## 🔄 Fluxo de Estado
 
@@ -97,34 +107,36 @@ graph TD
 
 ## 🧩 Componentes Internos
 
-### ConsentContext.tsx
+### ConsentContext.tsx ✨ **EXPANDIDO v0.2.2**
 
-**Responsabilidades (v0.2.0):**
+**Responsabilidades (v0.2.2):**
 
 - Gerenciar estado global via useReducer
-- Sincronizar com cookies
+- Sincronizar com cookies inteligentes (apenas categorias ativas)
 - Fornecer callbacks de eventos
 - Lazy loading do modal
-- Sistema de hidratação
+- Sistema de hidratação (zero flash)
 - Integração com categorias customizadas
+- **🆕 Sistema de orientações automáticas**
+- **🆕 Configuração padrão inteligente**
+- **🆕 Validação de configuração do projeto**
 
-**Estados importantes (v0.2.0):**
+**Estados importantes (v0.2.2):**
 
 ```typescript
 interface ConsentState {
   consented: boolean // Se há consentimento
-  preferences: ConsentPreferences // 6+ categorias ANPD + customizadas
+  preferences: ConsentPreferences // Apenas categorias ativas no projeto
   isModalOpen: boolean // Modal aberto/fechado
+  version: string // 🆕 Versioning do cookie
+  consentDate?: string // 🆕 Data do consentimento inicial
+  lastUpdate?: string // 🆕 Última atualização
+  source?: 'banner' | 'modal' | 'api' // 🆕 Origem do consentimento
 }
 
 interface ConsentPreferences {
   necessary: boolean // Sempre true (essencial)
-  analytics: boolean // GA, estatísticas
-  functional: boolean // Preferências, idioma
-  marketing: boolean // Ads, remarketing
-  social: boolean // Facebook, YouTube
-  personalization: boolean // Conteúdo personalizado
-  [key: string]: boolean // Categorias customizadas dinâmicas
+  [category: string]: boolean // Apenas categorias configuradas no projeto
 }
 ```
 

@@ -1,30 +1,41 @@
 # react-lgpd-consent 🍪
 
-[![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
-[![License](https://img.shi## 📖 Uso Básico
+[![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](http### 🚨 Sistema de Orientações para Desenvolvedores (v0.2.2)
 
-### 1. Setup do Provider (Conformidade LGPD)
+A v0.2.2 inclui sistema inteligente que **orienta developers sobre configuração adequada para compliance LGPD**:
+
+- 🧠 **Console Automático**: Avisos e sugestões sobre configuração
+- 🎯 **UI Dinâmica**: Componentes se adaptam à configuração do projeto
+- 🛡️ **Compliance por Design**: Previne problemas de conformidade LGPD
+- 🔧 **Hooks Avançados**: `useCategories()` e `useCategoryStatus()` para controle total
+
+## 📖 Uso Básico - Configuração Consciente (v0.2.2)
+
+### 1. Setup Básico (Compliance LGPD Automática)
 
 ````tsx
-import { ConsentProvider } from 'react-lgpd-consent'
+import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'
 
 function App() {
   return (
     <ConsentProvider
-      // 🛡️ Especificar apenas categorias necessárias (Princípio da Minimização)
+      // 🛡️ Especificar apenas categorias necessárias (Minimização de Dados LGPD)
       categories={{
         enabledCategories: ['analytics'], // Apenas analytics + necessary
       }}
 
-      // 🚫 Banner bloqueante para compliance rigorosa (opcional)
-      blocking={true}
-
-      // 📝 Textos específicos para compliance
+      // � Textos ANPD para compliance (opcionais)
       texts={{
         bannerMessage: "Utilizamos cookies conforme LGPD...",
-        controllerInfo: "Controlador: Empresa XYZ - CNPJ: 00.000.000/0001-00"
+        controllerInfo: "Controlado por: Empresa XYZ - CNPJ: 00.000.000/0001-00",
+        dataTypes: "Coletamos: dados de navegação para análise estatística",
+        userRights: "Direitos: acessar, corrigir, excluir dados (dpo@empresa.com)"
       }}
+
+      // 🔔 Callbacks para auditoria (opcionais)
+      onConsentGiven={(state) => console.log('Consentimento registrado:', state)}
     >
+      <CookieBanner policyLinkUrl="/politica-de-privacidade" />
       <YourApp />
     </ConsentProvider>
   )
@@ -126,9 +137,40 @@ A biblioteca agora inclui **6 categorias** baseadas no Guia Orientativo da ANPD:
 
 > 📋 **[Guia Completo de Conformidade LGPD](./docs/CONFORMIDADE-LGPD.md)**
 
-### 🔧 Categorias Customizadas
+### � Sistema de Orientações para Desenvolvedores
+
+A v0.2.1 inclui sistema inteligente que **orienta developers sobre configuração adequada**:
 
 ```tsx
+// ⚠️ Sem configuração - usa padrão e avisa
+<ConsentProvider>
+  <App />
+</ConsentProvider>
+// Console: "Usando padrão: necessary + analytics. Especificar para produção."
+
+// ✅ Configuração explícita - recomendado
+<ConsentProvider
+  categories={{
+    enabledCategories: ['analytics', 'marketing'],
+    customCategories: [...]
+  }}
+>
+  <App />
+</ConsentProvider>
+```
+
+**Console de desenvolvimento** mostra automaticamente:
+
+- 🟨 **Avisos**: Configuração faltante ou inconsistente
+- 💡 **Sugestões**: Melhorias para compliance
+- 🔧 **Tabela de categorias ativas**: Para UI customizada
+
+> 📋 **[Sistema de Orientações Completo](./docs/ORIENTACOES-DESENVOLVIMENTO.md)**
+
+### 🔧 Categorias Customizadas (API Legacy)
+
+```tsx
+// LEGACY: ainda suportado, mas deprecated
 const customCategories = [
   {
     id: 'governo',
@@ -136,13 +178,6 @@ const customCategories = [
     description: 'Cookies para integração com sistemas governamentais.',
     essential: false,
     cookies: ['gov_session', 'cpf_hash']
-  },
-  {
-    id: 'acessibilidade',
-    name: 'Acessibilidade',
-    description: 'Ferramentas para melhorar acessibilidade.',
-    essential: false,
-    cookies: ['userway_*', 'voice_*']
   }
 ]
 
@@ -150,6 +185,60 @@ const customCategories = [
   {/* Sua aplicação */}
 </ConsentProvider>
 ```
+
+### 🎨 Componentes UI Dinâmicos (v0.2.2)
+
+Os componentes agora **renderizam automaticamente** baseado na configuração:
+
+```tsx
+import { useCategories, useCategoryStatus } from 'react-lgpd-consent'
+
+// ✅ Modal customizado que se adapta às categorias ativas
+function CustomPreferencesModal() {
+  const { toggleableCategories } = useCategories()
+  const { preferences, setPreferences } = useConsent()
+
+  return (
+    <dialog>
+      {/* Renderiza APENAS categorias configuradas no projeto */}
+      {toggleableCategories.map((category) => (
+        <label key={category.id}>
+          <input
+            type="checkbox"
+            checked={preferences[category.id] ?? false} // ✅ Controlado
+            onChange={(e) =>
+              setPreferences({
+                ...preferences,
+                [category.id]: e.target.checked,
+              })
+            }
+          />
+          <strong>{category.name}</strong>
+          <p>{category.description}</p>
+        </label>
+      ))}
+    </dialog>
+  )
+}
+
+// ✅ Feature condicional baseada em configuração
+function AnalyticsDashboard() {
+  const analytics = useCategoryStatus('analytics')
+
+  if (!analytics.isActive) {
+    return null // Categoria não configurada - não renderiza
+  }
+
+  return <div>Dashboard só aparece se analytics estiver configurado!</div>
+}
+```
+
+**Benefícios:**
+
+- ✅ **Zero bugs**: UI sempre consistente com configuração
+- ✅ **Performance**: Não renderiza categorias não utilizadas
+- ✅ **Manutenibilidade**: Mudou configuração? UI atualiza automaticamente
+- ✅ **Orientação**: Console avisa sobre inconsistências
 
 ### 🚀 Integrações Automáticas
 
@@ -608,7 +697,16 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 
 ## 🔮 Roadmap
 
-### v0.2.1 - Compliance Avançado (Próxima Release)
+### ✅ v0.2.2 - Sistema de Orientações (Lançado!)
+
+**Implementado: Sistema inteligente de orientação para desenvolvedores**
+
+- ✅ **Console de Desenvolvimento**: Avisos automáticos e orientações
+- ✅ **UI Dinâmica**: Componentes se adaptam à configuração do projeto
+- ✅ **Hooks Avançados**: `useCategories()` e `useCategoryStatus()`
+- ✅ **Validação Automática**: Prevenção de bugs de configuração vs UI
+
+### v0.2.3 - Compliance Avançado (Próxima Release)
 
 **Baseado em feedback de uso real em projetos governamentais:**
 
@@ -630,7 +728,7 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 - 🔄 **Sync Multi-Domínio**: Consentimento compartilhado
 - 🛡️ **Segurança Empresarial**: Criptografia, audit logs remotos
 
-[📋 Ver plano detalhado v0.2.1](./docs/v0.2.1-PLAN.md)
+> 📋 **Implementado na v0.2.2**: Sistema de orientações para developers e UI dinâmica
 
 ---
 

@@ -1,8 +1,8 @@
-# Conformidade LGPD/ANPD - Guia de Implementação v0.2.1
+# Conformidade LGPD/ANPD - Guia de Implementação v0.2.2
 
-## 🎯 **Resumo das Correções Implementadas**
+## 🎯 **Sistema de Orientações Implementado (v0.2.2)**
 
-### ✅ **1. Cookie de Consentimento Reestruturado**
+### ✅ **1. Cookie Inteligente - Minimização de Dados (LGPD Art. 6º)**
 
 **Antes (v0.2.0):**
 
@@ -21,7 +21,7 @@
 }
 ```
 
-**Depois (v0.2.1 - Conformidade ANPD):**
+**Depois (v0.2.2 - Sistema de Orientações):**
 
 ```json
 {
@@ -33,13 +33,16 @@
   },
   "consentDate": "2025-08-12T14:30:00.000Z",
   "lastUpdate": "2025-08-12T14:30:00.000Z",
-  "source": "banner"
+  "source": "banner",
+  "projectConfig": {
+    "enabledCategories": ["analytics"]
+  }
 }
 ```
 
-### ✅ **2. Configuração de Categorias por Projeto**
+### ✅ **2. UI Dinâmica e Orientação Automática**
 
-**Nova API - Apenas categorias usadas:**
+**Nova API - Configuração Consciente:**
 
 ```tsx
 <ConsentProvider
@@ -108,7 +111,7 @@
 
 ---
 
-## 📋 **Guia de Migração v0.2.0 → v0.2.1**
+## 📋 **Guia de Migração v0.2.1 → v0.2.2**
 
 ### **1. Especificar Categorias Ativas**
 
@@ -284,7 +287,7 @@ const logEntry = {
 
 ## 🎯 **Conclusão**
 
-**v0.2.1 transforma a biblioteca numa solução 100% compliant com LGPD/ANPD:**
+**v0.2.2 transforma a biblioteca numa solução 100% compliant com LGPD/ANPD:**
 
 ✅ **Minimização**: Apenas dados necessários no cookie  
 ✅ **Especificidade**: Consentimento granular por categoria ativa  
