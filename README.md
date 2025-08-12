@@ -2,38 +2,11 @@
 
 [![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
 [![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
-[![TypeScrip```
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://## 🔧 API Completa
 
-## 🎛️ Botão Flutuante de Preferências
+> **📖 Documentação Detalhada**: [API v0.2.0](./docs/API-v0.2.0.md) | [API v0.1.x (Legacy)](./docs/API-0.1.x.md)
 
-Para facilitar o acesso às configurações após consentimento inicial:
-
-```tsx
-import { FloatingPreferencesButton } from 'react-lgpd-consent'
-
-function App() {
-  return (
-    <ConsentProvider>
-      <MeuApp />
-      <CookieBanner />
-
-      {/* Botão flutuante opcional */}
-      <FloatingPreferencesButton
-        position="bottom-right"
-        hideWhenConsented={false}
-        tooltip="Configurar Cookies"
-      />
-    </ConsentProvider>
-  )
-}
-```
-
-### Posições Disponíveis
-
-- `bottom-left` | `bottom-right` (padrão)
-- `top-left` | `top-right`
-
-## 🔧 API Completahttps://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+### Components.typescriptlang.org/)
 
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Material-UI](https://img.shields.io/badge/MUI-Ready-007FFF?style=for-the-badge&logo=mui)](https://mui.com/)
@@ -568,6 +541,32 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 - 📖 [Documentação](./docs)
 - 🐛 [Issues](https://github.com/lucianoedipo/react-lgpd-consent/issues)
 - 💬 [Discussões](https://github.com/lucianoedipo/react-lgpd-consent/discussions)
+
+## 🔮 Roadmap
+
+### v0.2.1 - Compliance Avançado (Próxima Release)
+
+**Baseado em feedback de uso real em projetos governamentais:**
+
+- 📋 **Sistema de Logs de Auditoria**: Rastreamento completo para prestação de contas
+- 📜 **Templates Setoriais**: Textos pré-configurados (governo, saúde, educação)
+- 🎨 **Presets Visuais**: Identidade visual por setor (acessibilidade WCAG AAA)
+- 📊 **Dashboard para DPOs**: Relatórios automáticos de compliance
+- 🔌 **Mais Integrações**: Microsoft Clarity, Hotjar, Intercom, LinkedIn
+
+### v0.3.0 - Multi-Regulamentação
+
+- 🌍 **Suporte GDPR/CCPA**: Detecção automática por geolocalização
+- 🏗️ **Sistema de Plugins**: Extensões de terceiros
+- 🎭 **Temas Avançados**: Design system tokens
+
+### v0.4.0 - Enterprise
+
+- 📈 **Analytics Avançadas**: Dashboards completos
+- 🔄 **Sync Multi-Domínio**: Consentimento compartilhado
+- 🛡️ **Segurança Empresarial**: Criptografia, audit logs remotos
+
+[📋 Ver plano detalhado v0.2.1](./docs/v0.2.1-PLAN.md)
 
 ---
 

@@ -1,6 +1,13 @@
-# Contrato de API - react-lgpd-consent (MVP)
+# Contrato de API - react-lgpd-consent (MVP) - ⚠️ LEGACY
 
-Este documento define a API pública estável da biblioteca `react-lgpd-consent` versão 0.x, garantindo compatibilidade até a versão 1.x.
+> **📢 ATENÇÃO**: Esta documentação é para versão **v0.1.x (LEGACY)**  
+> **Para v0.2.0+** → veja [API-v0.2.0.md](./API-v0.2.0.md)
+
+Este documento define a API pública estável da biblioteca `react-lgpd-consent` versão 0.1.x.
+
+**✅ Compatibilidade**: Toda API v0.1.x continua funcionando em v0.2.0+ sem mudanças.
+
+---
 
 ## Exports Principais
 

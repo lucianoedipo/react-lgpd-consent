@@ -5,6 +5,23 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [Não Lançado]
+
+### 🔧 Corrigido
+
+- **README.md**: Corrigidos badges misturados no meio do conteúdo
+- **Documentação**: Estudo de caso marcado como privado no .gitignore
+- **API**: Criada documentação v0.2.0 separada da legacy v0.1.x
+- **Plano v0.2.1**: Criado plano detalhado baseado em necessidades identificadas no uso real
+
+### 📋 Planejado para v0.2.1
+
+- Sistema de logs de auditoria para compliance governamental
+- Templates de textos por setor (governo, saúde, educação)
+- Presets visuais institucionais com WCAG AAA
+- Dashboard para DPOs com relatórios automáticos
+- Integrações nativas adicionais (Clarity, Hotjar, etc.)
+
 ## [0.2.0] - 2025-08-12
 
 ### 🎉 MAJOR UPDATE - Adequação ANPD Completa
