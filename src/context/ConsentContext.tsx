@@ -9,7 +9,7 @@ import {
   type ConsentProviderProps,
   type ConsentState,
   type ConsentTexts,
-  type ProjectCategoriesConfig,
+  type ProjectCategoriesConfig, // eslint-disable-line no-unused-vars
 } from '../types/types'
 import {
   readConsentCookie,
@@ -200,7 +200,7 @@ export function ConsentProvider({
   texts: textsProp,
   theme,
   customCategories, // LEGACY: compatibilidade
-  scriptIntegrations,
+  scriptIntegrations, // eslint-disable-line no-unused-vars
   PreferencesModalComponent,
   preferencesModalProps = {},
   disableAutomaticModal = false,
@@ -208,6 +208,7 @@ export function ConsentProvider({
   onConsentGiven,
   onPreferencesSaved,
   cookie: cookieOpts,
+  disableDeveloperGuidance, // NOVO: desabilita avisos de dev
   children,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(
@@ -237,7 +238,7 @@ export function ConsentProvider({
   }, [categories, customCategories])
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
-  useDeveloperGuidance(finalCategoriesConfig)
+  useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance)
 
   // Boot state: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {

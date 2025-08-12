@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /**
  * Categorias padrão de consentimento para cookies baseadas no Guia da ANPD.
  *
@@ -342,6 +343,13 @@ export interface ConsentProviderProps {
    */
   cookie?: Partial<ConsentCookieOptions>
 
+  /**
+   * Desabilita os avisos e sugestões para desenvolvedores no console.
+   * Útil para ambientes de produção ou quando os avisos não são desejados.
+   * Por padrão, os avisos já são desabilitados em builds de produção.
+   */
+  disableDeveloperGuidance?: boolean
+
   /** Elementos filhos - toda a aplicação que precisa de contexto de consentimento. */
   children: React.ReactNode
 }
@@ -361,9 +369,9 @@ export interface ConsentContextValue {
   /** Rejeita todas as categorias de consentimento. */
   rejectAll: () => void
   /** Define a preferência para uma categoria específica. */
-  setPreference: (cat: Category, value: boolean) => void
+    setPreference: (cat: Category, value: boolean) => void,
   /** Define múltiplas preferências de uma vez e salva. */
-  setPreferences: (preferences: ConsentPreferences) => void
+  setPreferences: (preferences: ConsentPreferences) => void,
   /** Abre o modal de preferências. */
   openPreferences: () => void
   /** Fecha o modal de preferências. */

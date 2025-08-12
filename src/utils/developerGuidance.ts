@@ -153,7 +153,10 @@ export function analyzeDeveloperConfiguration(
  * Exibe orientações no console durante desenvolvimento.
  * Detecta ambiente de produção através de várias heurísticas.
  */
-export function logDeveloperGuidance(guidance: DeveloperGuidance): void {
+export function logDeveloperGuidance(
+  guidance: DeveloperGuidance,
+  disableGuidanceProp?: boolean,
+): void {
   try {
     // Múltiplas formas de detectar ambiente de produção
     const isProduction =
@@ -167,9 +170,11 @@ export function logDeveloperGuidance(guidance: DeveloperGuidance): void {
       // 3. Flag customizada para desabilitar logs
       (typeof globalThis !== 'undefined' &&
         (globalThis as any).__LGPD_PRODUCTION__) ||
-      // 4. Flag de desenvolvimento desabilitada
+      // 4. Flag de desenvolvimento desabilitada via window global (legado)
       (typeof window !== 'undefined' &&
-        (window as any).__LGPD_DISABLE_GUIDANCE__)
+        (window as any).__LGPD_DISABLE_GUIDANCE__) ||
+      // 5. Flag de desenvolvimento desabilitada via prop do ConsentProvider (preferencial)
+      disableGuidanceProp
 
     if (isProduction) return
 
@@ -228,13 +233,19 @@ export function logDeveloperGuidance(guidance: DeveloperGuidance): void {
  * Hook para developers obterem orientações sobre configuração atual.
  * Útil para componentes customizados verificarem se estão adequados.
  */
-export function useDeveloperGuidance(config?: ProjectCategoriesConfig) {
+export function useDeveloperGuidance(
+  config?: ProjectCategoriesConfig,
+  disableGuidanceProp?: boolean,
+) {
   const guidance = analyzeDeveloperConfiguration(config)
+
+  // Stringify config for stable dependency comparison
+  const stringifiedConfig = React.useMemo(() => JSON.stringify(config), [config]);
 
   // Log apenas uma vez quando configuração muda
   React.useEffect(() => {
-    logDeveloperGuidance(guidance)
-  }, [JSON.stringify(config)])
+    logDeveloperGuidance(guidance, disableGuidanceProp)
+  }, [guidance, stringifiedConfig, disableGuidanceProp]) // Add guidance and use stringifiedConfig
 
   return guidance
 }

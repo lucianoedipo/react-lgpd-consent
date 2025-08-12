@@ -9,6 +9,19 @@ A v0.2.2 inclui sistema inteligente que **orienta developers sobre configuraçã
 - 🛡️ **Compliance por Design**: Previne problemas de conformidade LGPD
 - 🔧 **Hooks Avançados**: `useCategories()` e `useCategoryStatus()` para controle total
 
+**Desativando os Avisos:**
+
+Por padrão, os avisos são desativados automaticamente em builds de produção (`process.env.NODE_ENV === 'production'`). Para desativá-los explicitamente em desenvolvimento, você pode usar a prop `disableDeveloperGuidance` no `ConsentProvider`:
+
+```tsx
+<ConsentProvider disableDeveloperGuidance={true}>
+  {/* Sua aplicação */}
+</ConsentProvider>
+```
+
+A forma anterior de desativar os avisos via `window.__LGPD_DISABLE_GUIDANCE__ = true` ainda funciona, mas o uso da prop é a forma **preferencial e mais idiomática** em React.
+
+
 ## 📖 Uso Básico - Configuração Consciente (v0.2.2)
 
 ### 1. Setup Básico (Compliance LGPD Automática)
@@ -602,7 +615,7 @@ Para controle total, desabilite o modal automático:
 
 | Componente                  | Descrição                                        | Props Principais                                                                         |
 | --------------------------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| `ConsentProvider`           | Provider principal do contexto                   | `initialState`, `texts`, `theme`, `hideBranding`, `PreferencesModalComponent`, callbacks |
+| `ConsentProvider`           | Provider principal do contexto                   | `initialState`, `texts`, `theme`, `hideBranding`, `PreferencesModalComponent`, `disableDeveloperGuidance`, callbacks |
 | `CookieBanner`              | Banner de consentimento                          | `policyLinkUrl`, `blocking`, `hideBranding`, `debug`, pass-through MUI props             |
 | `PreferencesModal`          | Modal de preferências (incluído automaticamente) | `DialogProps`, `hideBranding` - **Opcional**                                             |
 | `FloatingPreferencesButton` | Botão flutuante para abrir preferências          | `position`, `hideWhenConsented`, `tooltip`, `icon`, `FabProps`                           |

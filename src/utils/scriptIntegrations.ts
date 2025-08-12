@@ -56,7 +56,7 @@ export function createGoogleAnalyticsIntegration(
         // @ts-ignore
         function gtag(...args: any[]) {
           // @ts-ignore
-          window.dataLayer.push(arguments)
+          window.dataLayer.push(...args)
         }
         // @ts-ignore
         window.gtag = gtag
