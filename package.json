@@ -1,6 +1,6 @@
 {
   "name": "react-lgpd-consent",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Biblioteca de consentimento de cookies (LGPD) para React client-side, com contexto, banner e modal personalizáveis usando MUI.",
   "keywords": [
     "lgpd",
