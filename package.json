@@ -1,6 +1,6 @@
 {
   "name": "react-lgpd-consent",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Biblioteca completa de consentimento LGPD com 6 categorias ANPD, integrações nativas e sistema extensível para React.",
   "keywords": [
     "lgpd",
