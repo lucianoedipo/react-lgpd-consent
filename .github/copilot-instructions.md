@@ -2,7 +2,7 @@
 
 ## 🎯 Contexto do Projeto
 
-Você está trabalhando na biblioteca **react-lgpd-consent**, uma solução completa para gerenciamento de consentimento de cookies em conformidade com a LGPD (Lei Geral de Proteção de Dados) brasileira.
+Você está trabalhando na biblioteca **react-lgpd-consent**, uma solução completa para gerenciamento de consentimento de cookies em conformidade com a LGPD (Lei Geral de Proteção de Dados) brasileira. A versão atual é a **v0.2.x**, que foca em **compliance rigoroso, minimização de dados e excelente experiência para o desenvolvedor (DX)**.
 
 ### Tecnologias Principais
 
@@ -11,235 +11,124 @@ Você está trabalhando na biblioteca **react-lgpd-consent**, uma solução comp
 - **js-cookie** para persistência
 - **SSR/Next.js** compatível
 
-## 🏗️ Arquitetura e Padrões
+## 🏗️ Arquitetura e Padrões (v0.2.x)
 
 ### Estrutura de Diretórios
 
 ```
 src/
-├── context/ConsentContext.tsx    # Provider principal
-├── components/                   # Componentes UI
-│   ├── CookieBanner.tsx         # Banner de consentimento
-│   └── PreferencesModal.tsx     # Modal de preferências
-├── hooks/useConsent.ts          # Hook principal
-├── utils/                       # Utilitários
-│   ├── cookieUtils.ts          # Manipulação de cookies
-│   ├── scriptLoader.ts         # Carregamento dinâmico
-│   └── ConsentGate.tsx         # Renderização condicional
-├── types/types.ts              # Tipos TypeScript
-└── index.ts                    # Exports públicos
+├── components/         # Componentes UI (CookieBanner, PreferencesModal, etc.)
+├── context/            # Contextos React (ConsentContext, CategoriesContext)
+├── hooks/              # Hooks públicos (useConsent, useCategories, etc.)
+├── types/              # Definições TypeScript
+├── utils/              # Utilitários
+│   ├── cookieUtils.ts        # Manipulação de cookies (com versionamento)
+│   ├── developerGuidance.ts  # Sistema de orientações para dev
+│   ├── scriptIntegrations.ts # Integrações (GA, GTM, etc.)
+│   └── ConsentGate.tsx       # Renderização condicional
+└── index.ts            # Ponto de entrada da API pública
 ```
 
 ### Convenções de Código
 
 #### Nomeação (CRÍTICO)
 
-- **API pública**: SEMPRE em inglês (`consented`, `preferences`, `acceptAll`)
-- **Textos de UI**: padrão pt-BR, customizável via props
-- **Interfaces**: `PascalCase` em inglês
-- **Props**: sempre `Readonly<T>`
+- **API pública**: SEMPRE em inglês (`consented`, `preferences`, `acceptAll`, `categories`).
+- **Textos de UI**: Padrão em pt-BR, customizável via prop `texts`.
+- **Interfaces**: `PascalCase` em inglês (ex: `ConsentProviderProps`).
+- **Props**: Sempre `Readonly<T>`.
 
-#### Material-UI
+#### Configuração (CRÍTICO)
 
-- **Imports individuais**: `import Button from '@mui/material/Button'`
-- **Pass-through props**: `SnackbarProps?: Partial<SnackbarProps>`
-- **Acessibilidade**: sempre incluir `aria-labelledby`, `aria-describedby`
+- **Princípio da Minimização**: A configuração de categorias deve ser feita via prop `categories` no `ConsentProvider`, especificando **apenas** as categorias realmente utilizadas no projeto.
 
-#### TypeScript
-
-```typescript
-// ✅ Correto
-interface ConsentProviderProps {
-  readonly initialState?: ConsentState
-  readonly texts?: Partial<ConsentTexts>
-  readonly children: React.ReactNode
-}
-
-// ❌ Evitar
-interface ConsentProviderProps {
-  initialState?: ConsentState // sem readonly
-  texts?: ConsentTexts // sem Partial
-}
+```tsx
+// ✅ Correto: Apenas as categorias 'analytics' e 'marketing' serão usadas.
+<ConsentProvider
+  categories={{
+    enabledCategories: ['analytics', 'marketing'],
+  }}
+>
 ```
 
-## 🚀 Estado Atual (v0.1.x → v0.2.0)
+## 🚀 Estado Atual (v0.2.x)
 
 ### Já Implementado ✅
 
-- Context Provider com reducer
-- Banner não intrusivo
-- Modal de preferências básico
-- Hook `useConsent()` completo
-- ConsentGate para renderização condicional
-- Suporte SSR via `initialState`
-- Acessibilidade básica
+- **Sistema de Orientações para Desenvolvedores**:
+  - **Console automático** com avisos, sugestões e tabela de categorias ativas em ambiente de desenvolvimento.
+  - **UI Dinâmica**: Componentes como `PreferencesModal` se adaptam automaticamente à configuração do projeto.
+  - **Hooks de Validação**: `useCategories()` para obter a lista de categorias ativas e `useCategoryStatus('id')` para verificar o status de uma categoria específica.
+- **Compliance LGPD/ANPD Rigorosa**:
+  - **Cookie Inteligente**: Estrutura com versionamento, timestamps (`consentDate`, `lastUpdate`) e origem (`source`) para auditoria.
+  - **Minimização de Dados**: O cookie de consentimento armazena **apenas** as preferências para as categorias ativas no projeto, reduzindo o tamanho e a superfície de dados.
+  - **Banner Bloqueante**: Opção `blocking={true}` para exigir interação explícita.
+- **API de Categorias Flexível**:
+  - **6 Categorias ANPD**: `necessary`, `analytics`, `functional`, `marketing`, `social`, `personalization`.
+  - **Categorias Customizadas**: Sistema extensível para necessidades específicas do projeto.
+- **Integrações Nativas**:
+  - Carregamento automático de scripts com `ConsentScriptLoader`.
+  - Funções prontas: `createGoogleAnalyticsIntegration`, `createGoogleTagManagerIntegration`, `createUserWayIntegration`.
+- **Textos ANPD Expandidos**: Campos opcionais na prop `texts` para máxima transparência (`controllerInfo`, `dataTypes`, `userRights`, etc.).
 
-### Em Desenvolvimento (v0.2.0) 🔄
+### Em Desenvolvimento (Próximos Passos) 🔄
 
-Foque nestas funcionalidades para a próxima release:
+Foco na **v0.2.7 - Compliance Avançado**:
 
-#### 1. Textos ANPD Expandidos
-
-```typescript
-// Expandir esta interface (ADITIVO, não quebrar):
-interface ConsentTexts {
-  // Existentes (MANTER)
-  bannerMessage: string
-  acceptAll: string
-  declineAll: string
-  preferences: string
-
-  // NOVOS (opcionais)
-  controllerInfo?: string // "Controlado por [Empresa/CNPJ]"
-  dataTypes?: string // "Coletamos: navegação, preferências..."
-  thirdPartySharing?: string // "Compartilhamos com: Google Analytics..."
-  userRights?: string // "Direitos: acesso, correção, exclusão..."
-  contactInfo?: string // "Contato DPO: dpo@empresa.com"
-}
-```
-
-#### 2. Validação Robusta de Cookies
-
-```typescript
-// Adicionar ao cookieUtils.ts
-interface CookieVersion {
-  version: string // ex: "0.2.0"
-  data: ConsentState
-}
-
-// Sanitizar cookies malformados
-function sanitizeCookie(raw: unknown): ConsentState | null
-```
-
-#### 3. Exibição Condicional de Textos
-
-No CookieBanner e PreferencesModal, exibir blocos adicionais se as props existirem:
-
-```tsx
-{
-  texts.controllerInfo && (
-    <Typography variant="caption" sx={{ mt: 1 }}>
-      {texts.controllerInfo}
-    </Typography>
-  )
-}
-```
+- **Modal Detalhado de Cookies**: Exibição de informações técnicas sobre cada cookie (nome, duração, provedor).
+- **Logs de Auditoria**: Sistema de log client-side para registrar todas as interações de consentimento do usuário.
+- **Templates Setoriais**: Configurações e textos pré-definidos para setores específicos (governo, saúde, e-commerce).
 
 ## 🎨 Guidelines de UI/UX
 
-### Banner de Consentimento
-
-- **Posição**: `position: fixed; bottom: 0` (Snackbar MUI)
-- **Não bloqueante**: usuário pode navegar sem aceitar
-- **Acessível**: foco automático, navegação por teclado
-- **Responsivo**: funcionar em mobile e desktop
-
-### Modal de Preferências
-
-- **Material-UI Dialog**: usar componente padrão
-- **Switches**: para cada categoria (analytics, marketing)
-- **Descrições claras**: explicar cada categoria
-- **Botões de ação**: Salvar, Aceitar Todos, Recusar Todos
-
-### Estados Visuais
-
-- **Loading**: durante salvamento de preferências
-- **Debug mode**: forçar exibição para QA via prop `debug`
-- **SSR**: sem flash, renderização condicional
+- **Consistência**: A UI deve ser consistente com a configuração. Use `useCategories()` para garantir que apenas categorias ativas sejam exibidas.
+- **Clareza**: As descrições das categorias devem ser claras e informativas para o usuário final.
+- **Acessibilidade**: Manter conformidade com WCAG, garantindo navegação por teclado e suporte a leitores de tela.
 
 ## 🔒 Segurança e Compliance
 
-### Cookies
-
-- **SameSite**: `'Lax'` por padrão
-- **Secure**: `true` em HTTPS
-- **HttpOnly**: `false` (precisa ser acessível via JS)
-- **Path**: `'/'` por padrão
-- **MaxAge**: 365 dias padrão, configurável
-
-### Dados Pessoais
-
-- **Não coletar**: IPs, fingerprints, ou identificadores únicos
-- **Minimização**: apenas preferências necessárias
-- **Transparência**: usuário sempre sabe o que foi aceito
-
-### SSR/Hidratação
-
-```typescript
-// Evitar em SSR
-if (typeof window !== 'undefined') {
-  // código que usa window/document
-}
-```
-
-## 🧪 Testes e Qualidade
-
-### Cenários Críticos para Testar
-
-1. **SSR**: sem erros de hidratação
-2. **Cookies malformados**: fallback para estado padrão
-3. **Acessibilidade**: navegação por teclado funcional
-4. **Props opcionais**: renderização condicional correta
-5. **Backward compatibility**: versões antigas funcionam
-
-### Ferramentas
-
-- **Jest**: testes unitários
-- **React Testing Library**: testes de componente
-- **axe-core**: testes de acessibilidade
-- **Lighthouse**: performance e A11y
+- **Minimização é Chave**: Sempre configure o `ConsentProvider` com o mínimo de categorias necessárias. Isso é um princípio fundamental da LGPD.
+- **Transparência**: Use os textos expandidos da ANPD (`controllerInfo`, `dataTypes`, etc.) para fornecer informação completa ao usuário.
+- **Não coletar dados pessoais**: A biblioteca não deve coletar ou armazenar dados que identifiquem o usuário.
 
 ## 🚨 NUNCA Fazer
 
-❌ **Breaking changes** em v0.2.x (apenas aditivos)
-❌ **Window/document** durante render SSR
-❌ **Cookies automáticos** sem consentimento
-❌ **Textos hardcoded** em inglês na UI
-❌ **Imports barrel** do MUI (`@mui/material`)
-❌ **Props mutáveis** (sempre Readonly<>)
+❌ **Breaking changes** em versões minor/patch.
+❌ Usar a prop `customCategories` (legada). **Prefira a nova API `categories`**.
+❌ Deixar a configuração de categorias vazia em produção (o sistema usará um padrão e emitirá um aviso em dev).
+❌ Adicionar lógica de UI para uma categoria sem antes verificar seu status com `useCategoryStatus()`.
 
 ## ✅ Sempre Fazer
 
-✅ **Backward compatibility** em minor versions
-✅ **Props opcionais** para novos recursos
-✅ **Fallbacks seguros** para dados corrompidos  
-✅ **Acessibilidade** desde o primeiro commit
-✅ **Documentação JSDoc** em português
-✅ **Tipos TypeScript** completos e precisos
+✅ **Usar a prop `categories`** para configurar explicitamente as categorias ativas.
+✅ **Utilizar `useCategories()` e `useCategoryStatus()`** para construir UIs customizadas que sejam dinâmicas e consistentes com a configuração.
+✅ **Manter backward compatibility** em minor versions.
+✅ **Adicionar JSDoc** em português para novas funções ou componentes.
+✅ **Priorizar segurança, acessibilidade e transparência**.
 
 ## 📋 Checklist para PRs
 
-Antes de fazer commit, verificar:
-
-- [ ] API pública mantém compatibilidade
-- [ ] Novos campos são opcionais com fallbacks
-- [ ] Acessibilidade testada (Tab, Enter, Escape)
-- [ ] SSR funciona (sem window/document no render)
-- [ ] Tipos TypeScript corretos
-- [ ] Props são Readonly<>
-- [ ] JSDoc atualizado
-- [ ] Testes passando
-- [ ] Bundle size não aumentou significativamente
+- [ ] A configuração `categories` foi usada para definir apenas as categorias necessárias?
+- [ ] A UI customizada usa `useCategories()` para se adaptar dinamicamente?
+- [ ] Os novos textos (se houver) foram adicionados à prop `texts` e não estão hardcoded?
+- [ ] Acessibilidade testada (Tab, Enter, Escape).
+- [ ] SSR funciona (sem `window`/`document` no render inicial).
+- [ ] Tipos TypeScript corretos e `Readonly<>` para props.
+- [ ] JSDoc atualizado.
+- [ ] Testes passando.
 
 ## 🎯 Próximos Marcos
 
-### v0.2.0 - MVP Adequação ANPD
+### v0.2.7 - Compliance Avançado
 
-- Textos opcionais ANPD
-- Validação robusta de cookies
-- Defaults de segurança documentados
+- 📋 Sistema de Logs de Auditoria.
+- 📜 Templates Setoriais (governo, saúde, educação).
+- 🎨 Presets Visuais por setor (WCAG AAA).
 
-### v0.3.0 - Compliance Avançado
+### v0.3.0 - Multi-Regulamentação
 
-- Modal detalhado de cookies
-- Logs de consentimento
-- Base legal por categoria
-
-### v0.4.0 - Ferramentas DPO
-
-- Relatórios de compliance
-- Templates por setor
-- Exportação de dados
+- 🌍 Suporte GDPR/CCPA.
+- 🏗️ Sistema de Plugins.
 
 ---
 
