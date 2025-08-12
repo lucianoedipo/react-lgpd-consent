@@ -20,7 +20,7 @@ A `react-lgpd-consent` é uma biblioteca **client-side** focada em aplicações 
 - ❌ Componentes não podem ser renderizados no servidor
 - ✅ Funciona perfeitamente em React SPA, CRA, Vite, etc.
 
-## 📁 Estrutura do Projeto
+## 📁 Estrutura do Projeto (v0.2.0)
 
 ```
 src/
@@ -30,18 +30,27 @@ src/
 │   ├── FloatingPreferencesButton.tsx # FAB
 │   └── Branding.tsx         # Componente de branding
 ├── context/                 # Estado global
-│   └── ConsentContext.tsx   # Provider principal
+│   ├── ConsentContext.tsx   # Provider principal
+│   └── CategoriesContext.tsx # Provider de categorias customizadas
 ├── hooks/                   # Hooks públicos
 │   └── useConsent.ts        # API principal
 ├── utils/                   # Utilitários
 │   ├── ConsentGate.tsx      # Renderização condicional
+│   ├── ConsentScriptLoader.tsx # Carregamento automático de scripts
+│   ├── scriptIntegrations.ts # Integrações nativas (GA, GTM, UserWay)
 │   ├── cookieUtils.ts       # Manipulação de cookies
 │   ├── scriptLoader.ts      # Carregamento dinâmico
 │   └── theme.ts             # Tema padrão MUI
 ├── types/                   # Definições TypeScript
-│   └── types.ts             # Todos os tipos
-└── index.ts                 # Exports públicos
+│   └── types.ts             # Todos os tipos (expandido)
+└── index.ts                 # Exports públicos (expandido)
 ```
+
+### 🆕 Novos Arquivos v0.2.0
+
+- **`CategoriesContext.tsx`**: Context separado para categorias customizadas
+- **`ConsentScriptLoader.tsx`**: Componente para carregamento automático de scripts
+- **`scriptIntegrations.ts`**: Funções para criar integrações comuns (GA4, GTM, UserWay)
 
 ## 🔄 Fluxo de Estado
 
@@ -90,21 +99,32 @@ graph TD
 
 ### ConsentContext.tsx
 
-**Responsabilidades:**
+**Responsabilidades (v0.2.0):**
 
 - Gerenciar estado global via useReducer
 - Sincronizar com cookies
 - Fornecer callbacks de eventos
 - Lazy loading do modal
 - Sistema de hidratação
+- Integração com categorias customizadas
 
-**Estados importantes:**
+**Estados importantes (v0.2.0):**
 
 ```typescript
 interface ConsentState {
   consented: boolean // Se há consentimento
-  preferences: ConsentPreferences // Categorias aceitas
+  preferences: ConsentPreferences // 6+ categorias ANPD + customizadas
   isModalOpen: boolean // Modal aberto/fechado
+}
+
+interface ConsentPreferences {
+  necessary: boolean // Sempre true (essencial)
+  analytics: boolean // GA, estatísticas
+  functional: boolean // Preferências, idioma
+  marketing: boolean // Ads, remarketing
+  social: boolean // Facebook, YouTube
+  personalization: boolean // Conteúdo personalizado
+  [key: string]: boolean // Categorias customizadas dinâmicas
 }
 ```
 

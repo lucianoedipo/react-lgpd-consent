@@ -18,11 +18,10 @@
  */
 import * as React from 'react'
 import { useConsent } from '../hooks/useConsent'
-import type { Category } from '../types/types'
 
 export function ConsentGate(
   props: Readonly<{
-    category: Category
+    category: string // Aceita qualquer categoria (padrão ou customizada)
     children: React.ReactNode
   }>,
 ) {

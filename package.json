@@ -1,9 +1,10 @@
 {
   "name": "react-lgpd-consent",
-  "version": "0.1.13",
-  "description": "Biblioteca de consentimento de cookies (LGPD) para React client-side, com contexto, banner e modal personalizáveis usando MUI.",
+  "version": "0.2.0",
+  "description": "Biblioteca completa de consentimento LGPD com 6 categorias ANPD, integrações nativas e sistema extensível para React.",
   "keywords": [
     "lgpd",
+    "anpd",
     "cookie",
     "consent",
     "react",
@@ -15,7 +16,11 @@
     "js-cookie",
     "consentimento",
     "privacidade",
-    "acessibilidade"
+    "acessibilidade",
+    "google-analytics",
+    "tag-manager",
+    "userway",
+    "categorias-extensiveis"
   ],
   "publishConfig": {
     "access": "public"

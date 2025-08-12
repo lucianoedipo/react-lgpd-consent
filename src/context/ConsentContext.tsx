@@ -3,6 +3,7 @@ import * as React from 'react'
 import { ThemeProvider } from '@mui/material/styles'
 import {
   type Category,
+  type CategoryDefinition,
   type ConsentContextValue,
   type ConsentPreferences,
   type ConsentProviderProps,
@@ -16,6 +17,7 @@ import {
   DEFAULT_COOKIE_OPTS,
 } from '../utils/cookieUtils'
 import { defaultConsentTheme } from '../utils/theme'
+import { CategoriesProvider } from './CategoriesContext'
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -26,12 +28,35 @@ const PreferencesModal = React.lazy(() =>
 
 // 🔹 Identificadores internos/contrato público em EN
 const DEFAULT_PREFERENCES: ConsentPreferences = {
+  necessary: true, // Sempre ativo (essencial)
   analytics: false,
+  functional: false,
   marketing: false,
+  social: false,
+  personalization: false,
+}
+
+/**
+ * Cria preferências iniciais incluindo categorias customizadas.
+ */
+function createInitialPreferences(
+  customCategories?: CategoryDefinition[],
+): ConsentPreferences {
+  const prefs: ConsentPreferences = { ...DEFAULT_PREFERENCES }
+
+  if (customCategories) {
+    customCategories.forEach((category) => {
+      // Categorias essenciais sempre true, não essenciais false por padrão
+      prefs[category.id] = category.essential === true
+    })
+  }
+
+  return prefs
 }
 
 // 🔹 Chaves EN, valores padrão pt-BR (UI do usuário final)
 const DEFAULT_TEXTS: ConsentTexts = {
+  // Textos básicos
   bannerMessage: 'Utilizamos cookies para melhorar sua experiência.',
   acceptAll: 'Aceitar todos',
   declineAll: 'Recusar',
@@ -42,33 +67,59 @@ const DEFAULT_TEXTS: ConsentTexts = {
     'Ajuste as categorias de cookies. Cookies necessários são sempre utilizados para funcionalidades básicas.',
   save: 'Salvar preferências',
   necessaryAlwaysOn: 'Cookies necessários (sempre ativos)',
+
+  // Textos ANPD expandidos (opcionais)
+  controllerInfo: undefined, // Exibido se definido
+  dataTypes: undefined, // Exibido se definido
+  thirdPartySharing: undefined, // Exibido se definido
+  userRights: undefined, // Exibido se definido
+  contactInfo: undefined, // Exibido se definido
+  retentionPeriod: undefined, // Exibido se definido
+  lawfulBasis: undefined, // Exibido se definido
+  transferCountries: undefined, // Exibido se definido
 }
 
 // 🔹 Actions em EN
 type Action =
-  | { type: 'ACCEPT_ALL' }
-  | { type: 'REJECT_ALL' }
+  | { type: 'ACCEPT_ALL'; customCategories?: CategoryDefinition[] }
+  | { type: 'REJECT_ALL'; customCategories?: CategoryDefinition[] }
   | { type: 'SET_CATEGORY'; category: Category; value: boolean }
   | { type: 'SET_PREFERENCES'; preferences: ConsentPreferences }
   | { type: 'OPEN_MODAL' }
   | { type: 'CLOSE_MODAL' }
-  | { type: 'RESET' }
+  | { type: 'RESET'; customCategories?: CategoryDefinition[] }
   | { type: 'HYDRATE'; state: ConsentState }
 
 function reducer(state: ConsentState, action: Action): ConsentState {
   switch (action.type) {
-    case 'ACCEPT_ALL':
+    case 'ACCEPT_ALL': {
+      const prefs = createInitialPreferences(action.customCategories)
+      // Aceita todas as categorias não essenciais
+      Object.keys(prefs).forEach((key) => {
+        prefs[key] = true
+      })
       return {
         consented: true,
-        preferences: { analytics: true, marketing: true },
+        preferences: prefs,
         isModalOpen: false,
       }
-    case 'REJECT_ALL':
+    }
+    case 'REJECT_ALL': {
+      const prefs = createInitialPreferences(action.customCategories)
+      // Mantém apenas as essenciais como true
+      if (action.customCategories) {
+        action.customCategories.forEach((category) => {
+          if (category.essential) {
+            prefs[category.id] = true
+          }
+        })
+      }
       return {
         consented: true,
-        preferences: { analytics: false, marketing: false },
+        preferences: prefs,
         isModalOpen: false,
       }
+    }
     case 'SET_CATEGORY':
       return {
         ...state,
@@ -88,12 +139,13 @@ function reducer(state: ConsentState, action: Action): ConsentState {
       return { ...state, isModalOpen: true }
     case 'CLOSE_MODAL':
       return { ...state, isModalOpen: false, consented: true } // houve interação
-    case 'RESET':
+    case 'RESET': {
       return {
         consented: false,
-        preferences: { ...DEFAULT_PREFERENCES },
+        preferences: createInitialPreferences(action.customCategories),
         isModalOpen: false,
       }
+    }
     case 'HYDRATE':
       return { ...action.state }
     default:
@@ -125,6 +177,8 @@ export function ConsentProvider({
   initialState,
   texts: textsProp,
   theme,
+  customCategories,
+  scriptIntegrations,
   PreferencesModalComponent,
   preferencesModalProps = {},
   disableAutomaticModal = false,
@@ -154,10 +208,10 @@ export function ConsentProvider({
     // O cookie será lido no useEffect para garantir hidratação correta
     return {
       consented: false,
-      preferences: { ...DEFAULT_PREFERENCES },
+      preferences: createInitialPreferences(customCategories),
       isModalOpen: false,
     }
-  }, [initialState])
+  }, [initialState, customCategories])
 
   const [state, dispatch] = React.useReducer(reducer, boot)
   const [isHydrated, setIsHydrated] = React.useState(false)
@@ -205,8 +259,8 @@ export function ConsentProvider({
   }, [state, onPreferencesSaved])
 
   const api = React.useMemo<ConsentContextValue>(() => {
-    const acceptAll = () => dispatch({ type: 'ACCEPT_ALL' })
-    const rejectAll = () => dispatch({ type: 'REJECT_ALL' })
+    const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', customCategories })
+    const rejectAll = () => dispatch({ type: 'REJECT_ALL', customCategories })
     const setPreference = (category: Category, value: boolean) =>
       dispatch({ type: 'SET_CATEGORY', category, value })
     const setPreferences = (preferences: ConsentPreferences) =>
@@ -215,7 +269,7 @@ export function ConsentProvider({
     const closePreferences = () => dispatch({ type: 'CLOSE_MODAL' })
     const resetConsent = () => {
       removeConsentCookie(cookie)
-      dispatch({ type: 'RESET' })
+      dispatch({ type: 'RESET', customCategories })
     }
     return {
       consented: !!state.consented,
@@ -229,7 +283,7 @@ export function ConsentProvider({
       closePreferences,
       resetConsent,
     }
-  }, [state, cookie])
+  }, [state, cookie, customCategories])
 
   return (
     <ThemeProvider theme={appliedTheme}>
@@ -237,17 +291,19 @@ export function ConsentProvider({
         <ActionsCtx.Provider value={api}>
           <TextsCtx.Provider value={texts}>
             <HydrationCtx.Provider value={isHydrated}>
-              {children}
-              {/* Modal de preferências - customizável ou padrão */}
-              {!disableAutomaticModal && (
-                <React.Suspense fallback={null}>
-                  {PreferencesModalComponent ? (
-                    <PreferencesModalComponent {...preferencesModalProps} />
-                  ) : (
-                    <PreferencesModal hideBranding={hideBranding} />
-                  )}
-                </React.Suspense>
-              )}
+              <CategoriesProvider categories={customCategories}>
+                {children}
+                {/* Modal de preferências - customizável ou padrão */}
+                {!disableAutomaticModal && (
+                  <React.Suspense fallback={null}>
+                    {PreferencesModalComponent ? (
+                      <PreferencesModalComponent {...preferencesModalProps} />
+                    ) : (
+                      <PreferencesModal hideBranding={hideBranding} />
+                    )}
+                  </React.Suspense>
+                )}
+              </CategoriesProvider>
             </HydrationCtx.Provider>
           </TextsCtx.Provider>
         </ActionsCtx.Provider>

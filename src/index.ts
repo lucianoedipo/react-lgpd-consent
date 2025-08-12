@@ -26,15 +26,34 @@ export {
   useConsentTexts,
   useConsentHydration,
 } from './hooks/useConsent'
+export {
+  useCustomCategories,
+  useAllCategories,
+} from './context/CategoriesContext'
 
 // Utils
 export { ConsentGate } from './utils/ConsentGate'
 export { loadScript } from './utils/scriptLoader'
 export { defaultConsentTheme } from './utils/theme'
+export {
+  ConsentScriptLoader,
+  useConsentScriptLoader,
+} from './utils/ConsentScriptLoader'
+export {
+  createGoogleAnalyticsIntegration,
+  createGoogleTagManagerIntegration,
+  createUserWayIntegration,
+  COMMON_INTEGRATIONS,
+  type ScriptIntegration,
+  type GoogleAnalyticsConfig,
+  type GoogleTagManagerConfig,
+  type UserWayConfig,
+} from './utils/scriptIntegrations'
 
 // Tipos
 export type {
   Category,
+  CategoryDefinition,
   ConsentPreferences,
   ConsentState,
   ConsentTexts,

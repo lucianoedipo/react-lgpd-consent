@@ -4,3 +4,6 @@ dist
 .env
 react-lgpd-consent-*.tgz
 test-app/
+
+# Estudo de caso interno - não incluir na distribuição
+docs/estudo-caso/

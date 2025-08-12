@@ -1,15 +1,49 @@
 /**
- * Categoria de consentimento para cookies.
- * Pode ser 'analytics' ou 'marketing'.
+ * Categorias padrão de consentimento para cookies baseadas no Guia da ANPD.
+ *
+ * - necessary: Cookies essenciais (sempre ativos)
+ * - analytics: Análise e estatísticas
+ * - functional: Funcionalidades extras
+ * - marketing: Publicidade e marketing
+ * - social: Integração com redes sociais
+ * - personalization: Personalização de conteúdo
  */
-export type Category = 'analytics' | 'marketing'
+export type Category =
+  | 'necessary'
+  | 'analytics'
+  | 'functional'
+  | 'marketing'
+  | 'social'
+  | 'personalization'
+
+/**
+ * Definição detalhada de uma categoria de cookie.
+ */
+export interface CategoryDefinition {
+  /** ID único da categoria */
+  id: string
+  /** Nome amigável exibido na interface */
+  name: string
+  /** Descrição detalhada da categoria */
+  description: string
+  /** Se é uma categoria essencial (não pode ser desabilitada) */
+  essential?: boolean
+  /** Scripts/cookies específicos desta categoria */
+  cookies?: string[]
+}
 
 /**
  * Preferências de consentimento do usuário para cada categoria.
+ * Baseado nas categorias do Guia da ANPD, mas extensível.
  */
 export interface ConsentPreferences {
+  necessary: boolean // Sempre true (essencial)
   analytics: boolean
+  functional: boolean
   marketing: boolean
+  social: boolean
+  personalization: boolean
+  [key: string]: boolean // Permite categorias customizadas
 }
 
 /**
@@ -45,6 +79,7 @@ export interface ConsentState {
  * @property contactInfo - (Opcional) Informações de contato do DPO.
  */
 export interface ConsentTexts {
+  // Textos básicos (obrigatórios)
   bannerMessage: string
   acceptAll: string
   declineAll: string
@@ -54,6 +89,16 @@ export interface ConsentTexts {
   modalIntro: string
   save: string
   necessaryAlwaysOn: string
+
+  // Textos ANPD expandidos (opcionais - v0.2.0)
+  controllerInfo?: string // "Controlado por [Empresa/CNPJ]"
+  dataTypes?: string // "Coletamos: navegação, preferências..."
+  thirdPartySharing?: string // "Compartilhamos com: Google Analytics..."
+  userRights?: string // "Direitos: acesso, correção, exclusão..."
+  contactInfo?: string // "Contato DPO: dpo@empresa.com"
+  retentionPeriod?: string // "Prazo de armazenamento: 12 meses"
+  lawfulBasis?: string // "Base legal: consentimento/interesse legítimo"
+  transferCountries?: string // "Transferência para: EUA, Irlanda"
 }
 
 /**
@@ -80,8 +125,12 @@ export interface ConsentProviderProps {
   initialState?: ConsentState
   /** Textos customizados para a interface. */
   texts?: Partial<ConsentTexts>
-  /** Tema customizado para os componentes MUI. */
-  theme?: any // Theme do MUI (evita dependência circular)
+  /** Tema customizado para os componentes MUI. Aceita qualquer propriedade. */
+  theme?: any // Theme do MUI flexível (aceita propriedades customizadas)
+  /** Categorias customizadas de cookies (complementa as padrão). */
+  customCategories?: CategoryDefinition[]
+  /** Integrações nativas de scripts (Google Analytics, etc.). */
+  scriptIntegrations?: import('../utils/scriptIntegrations').ScriptIntegration[]
   /** Componente customizado para modal de preferências. */
   PreferencesModalComponent?: React.ComponentType<any>
   /** Props adicionais para o modal customizado. */
