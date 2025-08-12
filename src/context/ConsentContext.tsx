@@ -147,11 +147,11 @@ export function ConsentProvider({
     [theme],
   )
 
-  // SSR-safe boot: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
+  // Boot state: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {
     if (initialState) return { ...initialState, isModalOpen: false }
-    // Em SSR, sempre começamos com estado padrão (sem consentimento)
-    // O cookie será lido no useEffect para evitar problemas de hidratação
+    // Sempre começamos com estado padrão (sem consentimento)
+    // O cookie será lido no useEffect para garantir hidratação correta
     return {
       consented: false,
       preferences: { ...DEFAULT_PREFERENCES },
@@ -162,10 +162,10 @@ export function ConsentProvider({
   const [state, dispatch] = React.useReducer(reducer, boot)
   const [isHydrated, setIsHydrated] = React.useState(false)
 
-  // Re-sincroniza com cookie após hidratação (SSR fix) - EXECUTA IMEDIATAMENTE
+  // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
-    // Só executa no cliente e apenas se não houver initialState
-    if (typeof window !== 'undefined' && !initialState) {
+    // Executa apenas se não houver initialState (para permitir controle externo)
+    if (!initialState) {
       const saved = readConsentCookie<ConsentState>(cookie.name)
       if (saved?.consented) {
         console.log('🚀 Immediate hydration: Cookie found', saved)

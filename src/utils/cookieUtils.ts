@@ -29,13 +29,13 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
  * @returns Estado de consentimento ou `null` se não existir ou inválido.
  *
  * @remarks
- * - Seguro para SSR (retorna `null` no servidor).
+ * - Seguro para ambientes sem `document` (retorna `null`).
  * - Faz fallback para `null` em caso de erro de parsing.
  */
 export function readConsentCookie<T = ConsentState>(
   name: string = DEFAULT_COOKIE_OPTS.name,
 ): T | null {
-  // SSR-safe: Cookies só existe no client
+  // Client-safe: Cookies só existe no browser
   if (typeof document === 'undefined') return null
   const raw = Cookies.get(name)
   if (!raw) return null
