@@ -2,17 +2,22 @@
 
 ## 🎯 **Correções Implementadas**
 
-### 1. 🚨 **Sistema de Orientações CORRIGIDO**
+### 1. 🚨 **Sistema de Orientações CORRIGIDO e APRIMORADO (v0.2.4)**
 
-**Problema**: Sistema criado mas nunca integrado no ConsentProvider.
+**Problema**: Sistema criado mas nunca integrado no ConsentProvider (v0.2.2) e falta de forma idiomática para desabilitar avisos em desenvolvimento (v0.2.3).
 
-**Solução**:
+**Solução (v0.2.3)**:
 
 - ✅ Integrado `useDeveloperGuidance()` no ConsentProvider
 - ✅ Detecção de ambiente robusta (Vite, webpack, Next.js)
 - ✅ Mensagens claras com prefix `[🍪 LGPD-CONSENT]`
 - ✅ Console.table para visualizar categorias ativas
 - ✅ Falha silenciosa em produção
+
+**Melhoria (v0.2.4)**:
+
+- ✅ Nova prop `disableDeveloperGuidance` no `ConsentProvider` para desabilitar avisos de forma idiomática.
+
 
 ### 2. 📚 **Documentação TSDoc EXPANDIDA**
 
@@ -130,4 +135,4 @@
 
 **🎯 Resultado**: Fix v0.2.3 **completo e funcional** - sistema de orientações operacional, documentação TSDoc rica, e experiência de desenvolvedor significativamente melhorada.
 
-**📦 Status**: Pronto para commit e publicação como `0.2.3`
+**📦 Status**: Pronto para commit e publicação como `0.2.4`

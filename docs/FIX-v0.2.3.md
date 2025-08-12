@@ -50,10 +50,12 @@ const isProduction =
   (typeof globalThis !== 'undefined' &&
     typeof (globalThis as any).import !== 'undefined' &&
     (globalThis as any).import.meta?.env?.PROD === true) ||
-  // Flags customizadas
+  // Flags customizadas (legado)
   (typeof globalThis !== 'undefined' &&
     (globalThis as any).__LGPD_PRODUCTION__) ||
-  (typeof window !== 'undefined' && (window as any).__LGPD_DISABLE_GUIDANCE__)
+  (typeof window !== 'undefined' && (window as any).__LGPD_DISABLE_GUIDANCE__) ||
+  // Nova prop para desabilitar (preferencial)
+  disableDeveloperGuidance
 ```
 
 ### 3. 📚 **Documentação TSDoc Insuficiente**
@@ -214,7 +216,7 @@ Ao digitar `<ConsentProvider `, IDE deve mostrar:
 
 ---
 
-**Versão**: 0.2.3  
-**Tipo**: Bug Fix + Developer Experience  
+**Versão**: 0.2.4  
+**Tipo**: Feature + Developer Experience  
 **Data**: 12 de agosto de 2025  
 **Autor**: Sistema de orientações react-lgpd-consent

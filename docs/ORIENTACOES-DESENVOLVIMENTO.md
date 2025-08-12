@@ -243,7 +243,7 @@ A API antiga ainda funciona:
 <ConsentProvider
   categories={{
     enabledCategories: ['analytics', 'marketing'],
-    customCategories: [...]
+    customCategories: [...],
   }}
 >
   <App />
@@ -272,3 +272,15 @@ A API antiga ainda funciona:
 2. **Menos confusão**: Não veem categorias irrelevantes
 3. **Performance**: Menos categorias = UI mais rápida
 4. **Transparência**: Descrições claras de cada categoria ativa
+
+## 🚨 **Para Desabilitar Orientações (Opcional)**
+
+Para desabilitar os avisos e sugestões para desenvolvedores, a forma **preferencial e mais idiomática** é usar a prop `disableDeveloperGuidance` no `ConsentProvider`:
+
+```tsx
+<ConsentProvider disableDeveloperGuidance={true}>
+  {/* Sua aplicação */}
+</ConsentProvider>
+```
+
+A forma anterior via `window.__LGPD_DISABLE_GUIDANCE__ = true` ou `globalThis.__LGPD_PRODUCTION__ = true` ainda funciona, mas é considerada legada.

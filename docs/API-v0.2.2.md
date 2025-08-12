@@ -45,6 +45,7 @@ interface ConsentProviderProps {
   onConsentGiven?: (state: ConsentState) => void
   onPreferencesSaved?: (prefs: ConsentPreferences) => void
   cookie?: Partial<ConsentCookieOptions>
+  disableDeveloperGuidance?: boolean // NOVO: desabilita avisos de dev
   children: React.ReactNode
 }
 ```
@@ -322,13 +323,16 @@ function App() {
 
 ### 🚨 **Para Desabilitar Orientações (Opcional)**
 
-```tsx
-// Se quiser desabilitar avisos em desenvolvimento
-window.__LGPD_DISABLE_GUIDANCE__ = true
+Para desabilitar os avisos e sugestões para desenvolvedores, a forma **preferencial e mais idiomática** é usar a prop `disableDeveloperGuidance` no `ConsentProvider`:
 
-// Ou via bundler
-globalThis.__LGPD_PRODUCTION__ = true
+```tsx
+<ConsentProvider disableDeveloperGuidance={true}>
+  {/* Sua aplicação */}
+</ConsentProvider>
 ```
+
+A forma anterior via `window.__LGPD_DISABLE_GUIDANCE__ = true` ou `globalThis.__LGPD_PRODUCTION__ = true` ainda funciona, mas é considerada legada.
+
 
 ---
 
