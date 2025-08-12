@@ -143,41 +143,206 @@ export interface ConsentCookieOptions {
 }
 
 /**
- * Propriedades aceitas pelo componente ConsentProvider.
+ * Propriedades do componente ConsentProvider - configuração principal da biblioteca.
+ *
+ * @example Uso básico (configuração mínima):
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics'] }}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Configuração completa com textos ANPD:
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{
+ *     enabledCategories: ['analytics', 'functional'],
+ *     customCategories: [{
+ *       id: 'governo',
+ *       name: 'Cookies Governamentais',
+ *       description: 'Coleta para estatísticas públicas',
+ *       essential: false
+ *     }]
+ *   }}
+ *   texts={{
+ *     bannerMessage: 'Utilizamos cookies conforme LGPD...',
+ *     controllerInfo: 'Controlado por: Ministério XYZ - CNPJ: 00.000.000/0001-00',
+ *     dataTypes: 'Coletamos: dados de navegação para análise estatística',
+ *     userRights: 'Direitos: acessar, corrigir, excluir dados',
+ *     contactInfo: 'DPO: dpo@ministerio.gov.br'
+ *   }}
+ *   onConsentGiven={(state) => console.log('Consentimento:', state)}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
  */
 export interface ConsentProviderProps {
-  /** Estado inicial do consentimento (para SSR). */
-  initialState?: ConsentState
-  /** Configuração de categorias ativas no projeto. */
-  categories?: ProjectCategoriesConfig
-  /** Textos customizados para a interface. */
-  texts?: Partial<ConsentTexts>
-  /** Tema customizado para os componentes MUI. Aceita qualquer propriedade. */
-  theme?: any // Theme do MUI flexível (aceita propriedades customizadas)
   /**
-   * @deprecated Use `categories.customCategories` em vez disso.
-   * Categorias customizadas de cookies (complementa as padrão).
+   * Estado inicial do consentimento para hidratação SSR.
+   *
+   * @example
+   * ```tsx
+   * // Em Next.js para evitar flash do banner
+   * <ConsentProvider initialState={{ consented: true, preferences: {...} }}>
+   * ```
+   */
+  initialState?: ConsentState
+
+  /**
+   * Configuração das categorias de cookies utilizadas no projeto.
+   * Define quais categorias padrão serão habilitadas e categorias customizadas.
+   *
+   * @example Apenas analytics:
+   * ```tsx
+   * categories={{ enabledCategories: ['analytics'] }}
+   * ```
+   *
+   * @example Com categoria customizada:
+   * ```tsx
+   * categories={{
+   *   enabledCategories: ['analytics', 'marketing'],
+   *   customCategories: [{
+   *     id: 'pesquisa',
+   *     name: 'Cookies de Pesquisa',
+   *     description: 'Coleta feedback e opinião dos usuários',
+   *     essential: false
+   *   }]
+   * }}
+   * ```
+   */
+  categories?: ProjectCategoriesConfig
+
+  /**
+   * Textos customizados da interface (banner e modal).
+   * Todos os campos são opcionais - valores não fornecidos usam o padrão em português.
+   *
+   * @example Textos básicos:
+   * ```tsx
+   * texts={{
+   *   bannerMessage: 'We use cookies...',
+   *   acceptAll: 'Accept All',
+   *   declineAll: 'Reject'
+   * }}
+   * ```
+   *
+   * @example Textos ANPD para compliance:
+   * ```tsx
+   * texts={{
+   *   controllerInfo: 'Controlado por: Empresa XYZ - CNPJ: 12.345.678/0001-90',
+   *   dataTypes: 'Coletamos: endereço IP, preferências de navegação',
+   *   userRights: 'Você pode solicitar acesso, correção ou exclusão dos dados'
+   * }}
+   * ```
+   */
+  texts?: Partial<ConsentTexts>
+
+  /**
+   * Tema customizado Material-UI aplicado aos componentes.
+   * Aceita qualquer objeto que será passado para ThemeProvider.
+   *
+   * @example
+   * ```tsx
+   * theme={{
+   *   palette: { primary: { main: '#1976d2' } },
+   *   components: { MuiButton: { styleOverrides: { root: { borderRadius: 8 } } } }
+   * }}
+   * ```
+   */
+  theme?: any
+
+  /**
+   * @deprecated Usar `categories.customCategories` em vez disso.
+   * Mantido para compatibilidade com v0.1.x
    */
   customCategories?: CategoryDefinition[]
-  /** Integrações nativas de scripts (Google Analytics, etc.). */
+
+  /**
+   * Integrações nativas de scripts terceiros (Google Analytics, etc.).
+   * Scripts são carregados automaticamente baseado no consentimento.
+   *
+   * @example
+   * ```tsx
+   * import { createGoogleAnalyticsIntegration } from 'react-lgpd-consent'
+   *
+   * scriptIntegrations={[
+   *   createGoogleAnalyticsIntegration('GA_MEASUREMENT_ID')
+   * ]}
+   * ```
+   */
   scriptIntegrations?: import('../utils/scriptIntegrations').ScriptIntegration[]
-  /** Componente customizado para modal de preferências. */
+
+  /**
+   * Componente customizado para substituir o modal padrão de preferências.
+   * Deve implementar a lógica de consentimento usando os hooks da biblioteca.
+   */
   PreferencesModalComponent?: React.ComponentType<any>
-  /** Props adicionais para o modal customizado. */
+
+  /** Props adicionais passadas para o modal customizado. */
   preferencesModalProps?: Record<string, any>
-  /** Desabilita o modal automático (para usar componente totalmente customizado). */
+
+  /**
+   * Desabilita o modal automático de preferências.
+   * Útil quando se quer controle total sobre quando/como exibir as opções.
+   */
   disableAutomaticModal?: boolean
-  /** Comportamento do banner: true = bloqueia até decisão, false = não bloqueia */
+
+  /**
+   * Comportamento do banner de consentimento:
+   * - `false` (padrão): Banner não-intrusivo, usuário pode navegar livremente
+   * - `true`: Banner bloqueia interação até decisão (compliance rigorosa)
+   */
   blocking?: boolean
-  /** Esconde branding "fornecido por LÉdipO.eti.br". */
+
+  /** Oculta o branding "fornecido por LÉdipO.eti.br" dos componentes. */
   hideBranding?: boolean
-  /** Callback chamado quando o consentimento é dado. */
+
+  /**
+   * Callback executado quando usuário dá consentimento pela primeira vez.
+   * Útil para inicializar analytics, registrar evento, etc.
+   *
+   * @example
+   * ```tsx
+   * onConsentGiven={(state) => {
+   *   console.log('Consentimento registrado:', state)
+   *   // Inicializar Google Analytics, etc.
+   * }}
+   * ```
+   */
   onConsentGiven?: (state: ConsentState) => void
-  /** Callback chamado ao salvar preferências. */
+
+  /**
+   * Callback executado quando usuário modifica preferências.
+   * Executado após salvar as mudanças.
+   *
+   * @example
+   * ```tsx
+   * onPreferencesSaved={(prefs) => {
+   *   console.log('Novas preferências:', prefs)
+   *   // Reconfigurar scripts baseado nas preferências
+   * }}
+   * ```
+   */
   onPreferencesSaved?: (prefs: ConsentPreferences) => void
-  /** Configurações customizadas do cookie. */
+
+  /**
+   * Configurações do cookie de consentimento.
+   * Valores não fornecidos usam padrões seguros para LGPD.
+   *
+   * @example
+   * ```tsx
+   * cookie={{
+   *   name: 'meuAppConsent',
+   *   maxAgeDays: 180,
+   *   sameSite: 'Strict'
+   * }}
+   * ```
+   */
   cookie?: Partial<ConsentCookieOptions>
-  /** Elementos filhos do provider. */
+
+  /** Elementos filhos - toda a aplicação que precisa de contexto de consentimento. */
   children: React.ReactNode
 }
 

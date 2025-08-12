@@ -19,6 +19,7 @@ import {
 } from '../utils/cookieUtils'
 import { defaultConsentTheme } from '../utils/theme'
 import { CategoriesProvider } from './CategoriesContext'
+import { useDeveloperGuidance } from '../utils/developerGuidance'
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -234,6 +235,9 @@ export function ConsentProvider({
     }
     return undefined // Vai usar padrão no CategoriesProvider
   }, [categories, customCategories])
+
+  // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
+  useDeveloperGuidance(finalCategoriesConfig)
 
   // Boot state: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {

@@ -151,46 +151,77 @@ export function analyzeDeveloperConfiguration(
 
 /**
  * Exibe orientações no console durante desenvolvimento.
- * Apenas em modo desenvolvimento (NODE_ENV !== 'production').
+ * Detecta ambiente de produção através de várias heurísticas.
  */
 export function logDeveloperGuidance(guidance: DeveloperGuidance): void {
-  // Detecta ambiente de produção através de verificação de variáveis globais
-  const isProduction =
-    (typeof globalThis !== 'undefined' &&
-      (globalThis as any).__LGPD_PRODUCTION__) ||
-    (typeof window !== 'undefined' && !(window as any).__LGPD_DEV__)
+  try {
+    // Múltiplas formas de detectar ambiente de produção
+    const isProduction =
+      // 1. NODE_ENV de bundlers (Vite, webpack, etc.)
+      (typeof (globalThis as any).process !== 'undefined' &&
+        (globalThis as any).process.env?.NODE_ENV === 'production') ||
+      // 2. Vite/bundler env vars (apenas em ESM)
+      (typeof globalThis !== 'undefined' &&
+        typeof (globalThis as any).import !== 'undefined' &&
+        (globalThis as any).import.meta?.env?.PROD === true) ||
+      // 3. Flag customizada para desabilitar logs
+      (typeof globalThis !== 'undefined' &&
+        (globalThis as any).__LGPD_PRODUCTION__) ||
+      // 4. Flag de desenvolvimento desabilitada
+      (typeof window !== 'undefined' &&
+        (window as any).__LGPD_DISABLE_GUIDANCE__)
 
-  if (isProduction) return
+    if (isProduction) return
 
-  if (guidance.warnings.length > 0) {
-    console.group('🟨 LGPD-CONSENT: Avisos de Configuração')
-    guidance.warnings.forEach((warning) => console.warn(warning))
-    console.groupEnd()
-  }
+    // Prefix consistente para fácil filtro
+    const PREFIX = '[🍪 LGPD-CONSENT]'
 
-  if (guidance.suggestions.length > 0) {
-    console.group('💡 LGPD-CONSENT: Sugestões')
-    guidance.suggestions.forEach((suggestion) => console.info(suggestion))
-    console.groupEnd()
-  }
+    if (guidance.warnings.length > 0) {
+      console.group(`${PREFIX} ⚠️  Avisos de Configuração`)
+      guidance.warnings.forEach((warning) =>
+        console.warn(`${PREFIX} ${warning}`),
+      )
+      console.groupEnd()
+    }
 
-  if (guidance.usingDefaults) {
-    console.info(
-      '📋 LGPD-CONSENT: Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.',
+    if (guidance.suggestions.length > 0) {
+      console.group(`${PREFIX} 💡 Sugestões`)
+      guidance.suggestions.forEach((suggestion) =>
+        console.info(`${PREFIX} ${suggestion}`),
+      )
+      console.groupEnd()
+    }
+
+    if (guidance.usingDefaults) {
+      console.info(
+        `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
+      )
+    }
+
+    // Log das categorias ativas para orientar UI customizada
+    console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
+    console.table(
+      guidance.activeCategoriesInfo.map((cat) => ({
+        ID: cat.id,
+        Nome: cat.name,
+        'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
+        'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
+      })),
     )
+    console.info(
+      `${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`,
+    )
+    console.groupEnd()
+  } catch (error) {
+    // Falha silenciosa se houver problemas com detecção de ambiente
+    // Em desenvolvimento, pelo menos tenta mostrar aviso básico
+    if (typeof console !== 'undefined' && console.warn) {
+      console.warn(
+        '[🍪 LGPD-CONSENT] Sistema de orientações encontrou erro:',
+        error,
+      )
+    }
   }
-
-  // Log das categorias ativas para orientar UI customizada
-  console.group('🔧 LGPD-CONSENT: Categorias Ativas (para UI customizada)')
-  console.table(
-    guidance.activeCategoriesInfo.map((cat) => ({
-      ID: cat.id,
-      Nome: cat.name,
-      'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
-      'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
-    })),
-  )
-  console.groupEnd()
 }
 
 /**
