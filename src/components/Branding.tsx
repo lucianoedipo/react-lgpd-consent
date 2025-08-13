@@ -9,18 +9,20 @@ interface BrandingProps {
 const brandingStyles = {
   banner: {
     fontSize: '0.65rem',
-    textAlign: 'center' as const,
+    textAlign: 'right' as const,
     mt: 1,
     opacity: 0.7,
     fontStyle: 'italic',
+    width: '100%',
   },
   modal: {
     fontSize: '0.65rem',
-    textAlign: 'center' as const,
+    textAlign: 'right' as const,
     px: 3,
     pb: 1,
     opacity: 0.7,
     fontStyle: 'italic',
+    width: '100%',
   },
 }
 

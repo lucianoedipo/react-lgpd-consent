@@ -15,9 +15,7 @@
  */
 
 // Componentes
-export { CookieBanner } from './components/CookieBanner'
 export { PreferencesModal } from './components/PreferencesModal'
-export { FloatingPreferencesButton } from './components/FloatingPreferencesButton'
 
 // Contexto + Hooks
 export { ConsentProvider } from './context/ConsentContext'

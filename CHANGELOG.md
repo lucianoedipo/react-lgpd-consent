@@ -5,6 +5,27 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.2.6] - 2025-08-12 - ESTABILIZAÇÃO E CONFORMIDADE
+
+### 🛡️ **Modificado**
+
+-   **Gerenciamento de Estado Unificado**: O `ConsentProvider` foi refatorado para usar uma lógica centralizada (`categoryUtils.ts`) para criar e validar as preferências de consentimento. Isso elimina inconsistências e garante que o estado do consentimento sempre reflita a configuração do projeto (`ProjectCategoriesConfig`).
+-   **Validação na Hidratação**: Ao carregar o estado de um cookie existente, as preferências agora são validadas contra a configuração atual do projeto. Categorias que não existem mais na configuração são removidas, evitando estados inválidos.
+
+### ✨ **Adicionado**
+
+-   **Metadados de Auditoria no Cookie**: O cookie de consentimento agora armazena um snapshot da configuração de categorias (`projectConfig`) que estava ativa no momento em que o consentimento foi dado. Isso fortalece a capacidade de auditoria e a conformidade com a LGPD.
+
+### 📚 **Documentação**
+
+-   **Consolidação**: A pasta `docs` foi significativamente limpa, com a remoção de múltiplos arquivos redundantes e temporários.
+-   **README.md Melhorado**: O arquivo `README.md` principal foi completamente reescrito para seguir um padrão profissional, com estrutura clara, exemplos de código atualizados e badges de status do projeto.
+-   **Guia de Conformidade Unificado**: O arquivo `COMPLIANCE.md` agora centraliza as informações sobre as funcionalidades de conformidade da biblioteca e as orientações para desenvolvedores, incorporando conteúdo de outros documentos que foram removidos.
+
+### 🐛 **Corrigido**
+
+-   **Consistência do Consentimento**: Corrigido o problema onde as ações `ACCEPT_ALL` e `REJECT_ALL` não consideravam a configuração completa do projeto, podendo levar a um estado de preferências incorreto.
+
 ## [0.2.2] - 2025-08-12 - SISTEMA DE ORIENTAÇÕES PARA DESENVOLVEDORES
 
 ### ✨ **Adicionado**

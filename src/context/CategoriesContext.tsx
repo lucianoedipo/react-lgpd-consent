@@ -43,10 +43,12 @@ export function CategoriesProvider({
   children,
   categories, // LEGACY: prop antiga (apenas customCategories)
   config, // NOVO: configuração completa
+  disableDeveloperGuidance,
 }: Readonly<{
   children: React.ReactNode
   categories?: CategoryDefinition[] // LEGACY
   config?: ProjectCategoriesConfig // NOVO
+  disableDeveloperGuidance?: boolean
 }>) {
   const contextValue = React.useMemo(() => {
     // Migração automática: se usou prop antiga, converte para novo formato
@@ -83,8 +85,12 @@ export function CategoriesProvider({
 
   // Log orientações apenas em desenvolvimento
   React.useEffect(() => {
-    logDeveloperGuidance(contextValue.guidance)
-  }, [contextValue.guidance])
+    // Só loga se a prop não estiver explicitamente desabilitada
+    if (disableDeveloperGuidance) {
+      return;
+    }
+    logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
+  }, [contextValue.guidance, disableDeveloperGuidance])
 
   return (
     <CategoriesContext.Provider value={contextValue}>

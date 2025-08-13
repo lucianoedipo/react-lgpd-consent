@@ -13,43 +13,22 @@ import {
   useConsentTexts,
   useConsentHydration,
 } from '../hooks/useConsent'
+import { useDesignTokens } from '../context/DesignContext'
 import { Branding } from './Branding'
 
-/**
- * Props para o componente CookieBanner.
- *
- * @property policyLinkUrl URL da política de privacidade (opcional).
- * @property debug Força exibição do banner para QA/debug (opcional).
- * @property blocking Se true, bloqueia interação até decisão do usuário (default: true).
- * @property hideBranding Se true, oculta o branding "fornecido por LÉdipO.eti.br" (opcional).
- * @property SnackbarProps Props adicionais para o componente MUI Snackbar (opcional).
- * @property PaperProps Props adicionais para o componente MUI Paper (opcional).
- */
 export interface CookieBannerProps {
   policyLinkUrl?: string
   debug?: boolean
-  blocking?: boolean // Se true, bloqueia interação até escolher uma opção
-  hideBranding?: boolean // Se true, esconde "fornecido por LÉdipO.eti.br"
+  blocking?: boolean
+  hideBranding?: boolean
   SnackbarProps?: Partial<SnackbarProps>
   PaperProps?: Partial<PaperProps>
 }
 
-/**
- * Banner de consentimento de cookies conforme LGPD.
- *
- * Exibe mensagem informativa, botões de ação e link para política de privacidade.
- * Compatível com modo bloqueante (overlay) e não bloqueante (Snackbar).
- *
- * - Textos em pt-BR, customizáveis via contexto.
- * - Acessível e responsivo.
- * - Branding opcional.
- *
- * @param props Propriedades do banner de consentimento.
- */
 export function CookieBanner({
   policyLinkUrl,
   debug,
-  blocking = true, // Por padrão, bloqueia até decisão
+  blocking = true,
   hideBranding = false,
   SnackbarProps,
   PaperProps,
@@ -57,20 +36,30 @@ export function CookieBanner({
   const { consented, acceptAll, rejectAll, openPreferences } = useConsent()
   const texts = useConsentTexts()
   const isHydrated = useConsentHydration()
+  const designTokens = useDesignTokens()
 
-  // Só mostra o banner após hidratação E se não há consentimento (ou debug ativo)
   const open = debug ? true : isHydrated && !consented
 
   if (!open) return null
 
+  // Dynamic styles from design tokens
+  const bannerStyle = {
+    p: designTokens?.spacing?.padding?.banner ?? 2,
+    maxWidth: 720,
+    mx: 'auto',
+    backgroundColor: designTokens?.colors?.background,
+    color: designTokens?.colors?.text,
+    borderRadius: designTokens?.spacing?.borderRadius?.banner,
+    fontFamily: designTokens?.typography?.fontFamily,
+  }
+
   const bannerContent = (
-    <Paper
-      elevation={3}
-      sx={{ p: 2, maxWidth: 720, mx: 'auto' }}
-      {...PaperProps}
-    >
+    <Paper elevation={3} sx={bannerStyle} {...PaperProps}>
       <Stack spacing={1}>
-        <Typography variant="body2">
+        <Typography
+          variant="body2"
+          sx={{ fontSize: designTokens?.typography?.fontSize?.banner }}
+        >
           {texts.bannerMessage}{' '}
           {policyLinkUrl && (
             <Link
@@ -78,6 +67,7 @@ export function CookieBanner({
               underline="hover"
               target="_blank"
               rel="noopener noreferrer"
+              sx={{ color: designTokens?.colors?.primary }}
             >
               {texts.policyLink ?? 'Saiba mais'}
             </Link>
@@ -88,28 +78,49 @@ export function CookieBanner({
           spacing={1}
           justifyContent="flex-end"
         >
-          <Button variant="outlined" onClick={rejectAll}>
+          <Button
+            variant="outlined"
+            onClick={rejectAll}
+            sx={{ color: designTokens?.colors?.secondary }}
+          >
             {texts.declineAll}
           </Button>
-          <Button variant="contained" onClick={acceptAll}>
+          <Button
+            variant="contained"
+            onClick={acceptAll}
+            sx={{ backgroundColor: designTokens?.colors?.primary }}
+          >
             {texts.acceptAll}
           </Button>
-          <Button variant="text" onClick={openPreferences}>
+          <Button
+            variant="text"
+            onClick={openPreferences}
+            sx={{ color: designTokens?.colors?.text }}
+          >
             {texts.preferences}
           </Button>
         </Stack>
 
-        {/* Branding */}
         {!hideBranding && <Branding variant="banner" />}
       </Stack>
     </Paper>
   )
 
+  const positionStyle = {
+    position: 'fixed',
+    zIndex: 1300,
+    ...(designTokens?.layout?.position === 'top'
+      ? { top: 0 }
+      : { bottom: 0 }),
+    left: 0,
+    right: 0,
+    width: designTokens?.layout?.width?.desktop ?? '100%',
+    p: 2,
+  }
+
   if (blocking) {
-    // Modo bloqueante com overlay escuro, mas banner na parte inferior
     return (
       <>
-        {/* Overlay que bloqueia interação */}
         <Box
           sx={{
             position: 'fixed',
@@ -117,32 +128,24 @@ export function CookieBanner({
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            zIndex: 1299, // Abaixo do banner mas acima do conteúdo
+            backgroundColor: designTokens?.layout?.backdrop
+              ? 'rgba(0, 0, 0, 0.5)'
+              : 'transparent',
+            zIndex: 1299,
           }}
         />
-        {/* Banner na parte inferior */}
-        <Box
-          sx={{
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1300, // Acima do overlay
-            p: 2,
-          }}
-        >
-          {bannerContent}
-        </Box>
+        <Box sx={positionStyle}>{bannerContent}</Box>
       </>
     )
   }
 
-  // Modo não bloqueante (Snackbar padrão)
   return (
     <Snackbar
       open={open}
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      anchorOrigin={{
+        vertical: designTokens?.layout?.position === 'top' ? 'top' : 'bottom',
+        horizontal: 'center',
+      }}
       {...SnackbarProps}
     >
       {bannerContent}

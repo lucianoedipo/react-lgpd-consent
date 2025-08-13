@@ -41,6 +41,9 @@ export interface UserWayConfig {
 
 /**
  * Cria integração para Google Analytics 4.
+ *
+ * @param config Configuração do Google Analytics, contendo o `measurementId`.
+ * @returns Um objeto de integração de script para ser usado com `ConsentScriptLoader`.
  */
 export function createGoogleAnalyticsIntegration(
   config: GoogleAnalyticsConfig,
@@ -72,6 +75,9 @@ export function createGoogleAnalyticsIntegration(
 
 /**
  * Cria integração para Google Tag Manager.
+ *
+ * @param config Configuração do GTM, contendo o `containerId`.
+ * @returns Um objeto de integração de script.
  */
 export function createGoogleTagManagerIntegration(
   config: GoogleTagManagerConfig,
@@ -96,14 +102,18 @@ export function createGoogleTagManagerIntegration(
 }
 
 /**
- * Cria integração para UserWay (acessibilidade).
+ * Cria integração para UserWay (widget de acessibilidade).
+ * A categoria padrão foi alterada para 'functional', por ser mais apropriada.
+ *
+ * @param config Configuração do UserWay, contendo o `accountId`.
+ * @returns Um objeto de integração de script.
  */
 export function createUserWayIntegration(
   config: UserWayConfig,
 ): ScriptIntegration {
   return {
     id: 'userway',
-    category: 'marketing', // ou poderia ser uma categoria 'accessibility'
+    category: 'functional', // Categoria mais apropriada para acessibilidade
     src: `https://cdn.userway.org/widget.js`,
     init: () => {
       if (typeof window !== 'undefined') {

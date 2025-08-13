@@ -3,6 +3,7 @@ import pluginJs from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import prettierConfig from 'eslint-config-prettier'
+import pluginJest from 'eslint-plugin-jest'
 
 export default [
   {
@@ -30,6 +31,7 @@ export default [
       '@eslint/js': pluginJs,
       '@typescript-eslint': tseslint.plugin,
       'react-hooks': pluginReactHooks,
+      jest: pluginJest,
     },
     rules: {
       semi: ['error', 'never'],
@@ -40,6 +42,10 @@ export default [
       ...pluginReactHooks.configs.recommended.rules,
       ...prettierConfig.rules, // Move prettierConfig.rules to the end
     },
+  },
+  {
+    files: ['**/*.test.{ts,tsx}'], // Apply Jest rules only to test files
+    ...pluginJest.configs['flat/recommended'],
   },
   {
     ignores: ['dist/', 'node_modules/', 'example/'], // Add ignores property as a separate config object

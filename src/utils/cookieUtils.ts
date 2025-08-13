@@ -1,5 +1,9 @@
 import Cookies from 'js-cookie'
-import type { ConsentCookieOptions, ConsentState } from '../types/types'
+import type {
+  ConsentCookieOptions,
+  ConsentState,
+  ProjectCategoriesConfig,
+} from '../types/types'
 
 /**
  * Opções padrão para persistência do cookie de consentimento.
@@ -105,6 +109,7 @@ function migrateLegacyCookie(legacyData: any): ConsentState | null {
 export function writeConsentCookie(
   state: ConsentState,
   source: 'banner' | 'modal' | 'programmatic' = 'banner',
+  config: ProjectCategoriesConfig,
   opts?: Partial<ConsentCookieOptions>,
 ) {
   if (typeof document === 'undefined') return
@@ -120,6 +125,7 @@ export function writeConsentCookie(
     consentDate: state.consentDate || now, // Preservar data original ou usar atual
     lastUpdate: now,
     source: source,
+    projectConfig: config,
     // isModalOpen NÃO é persistido (campo de UI apenas)
   }
 

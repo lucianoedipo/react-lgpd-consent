@@ -3,54 +3,6 @@ import * as React from 'react'
 import type { ProjectCategoriesConfig } from '../types/types'
 
 /**
- * Detecta se estamos em ambiente de produção de forma robusta.
- * Múltiplas heurísticas para garantir que logs não apareçam em produção.
- */
-function isProductionEnvironment(): boolean {
-  // 1. NODE_ENV via globalThis (mais compatível)
-  if (
-    typeof (globalThis as any).process !== 'undefined' &&
-    (globalThis as any).process.env?.NODE_ENV === 'production'
-  ) {
-    return true
-  }
-
-  // 2. Flag customizada global
-  if (
-    typeof globalThis !== 'undefined' &&
-    (globalThis as any).__LGPD_PRODUCTION__ === true
-  ) {
-    return true
-  }
-
-  // 3. Flag window para desabilitar (legacy)
-  if (
-    typeof window !== 'undefined' &&
-    (window as any).__LGPD_DISABLE_GUIDANCE__ === true
-  ) {
-    return true
-  }
-
-  // 4. Heurística baseada em hostname (para casos onde NODE_ENV não está disponível)
-  if (typeof window !== 'undefined' && window.location) {
-    const hostname = window.location.hostname
-    // Se não é localhost/dev/staging, provavelmente é produção
-    if (
-      hostname &&
-      !hostname.includes('localhost') &&
-      !hostname.includes('127.0.0.1') &&
-      !hostname.includes('dev') &&
-      !hostname.includes('staging') &&
-      !hostname.includes('test')
-    ) {
-      return true
-    }
-  }
-
-  return false
-}
-
-/**
  * Sistema de orientações para developers sobre configuração de categorias.
  * Ajuda a manter coerência entre configuração da lib e componentes customizados.
  */
@@ -205,12 +157,10 @@ export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
 ): void {
-  // 🚫 PRIMEIRO: Se foi explicitamente desabilitado via prop, sair imediatamente
-  if (disableGuidanceProp === true) {
+  if (disableGuidanceProp) {
     return
   }
 
-  // Múltiplas formas de detectar ambiente de produção
   const isProduction =
     // 1. NODE_ENV de bundlers (Vite, webpack, etc.)
     (typeof (globalThis as any).process !== 'undefined' &&
@@ -242,7 +192,7 @@ export function logDeveloperGuidance(
   }
 
   if (guidance.usingDefaults) {
-    console.info(
+    console.warn( // Changed from console.info to console.warn
       `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
     )
   }

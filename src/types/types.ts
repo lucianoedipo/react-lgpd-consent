@@ -71,6 +71,8 @@ export interface ConsentCookieData {
   lastUpdate: string
   /** Origem da decisão de consentimento */
   source: 'banner' | 'modal' | 'programmatic'
+  /** Snapshot da configuração de categorias usada para este consentimento */
+  projectConfig?: ProjectCategoriesConfig
 }
 
 /**
@@ -141,6 +143,48 @@ export interface ConsentCookieOptions {
   secure: boolean
   /** Caminho do cookie. Padrão: '/' */
   path: string
+}
+
+/**
+ * Tokens de design para customização visual avançada dos componentes.
+ * Permite um controle mais direto sobre a aparência sem a necessidade de `sx` props complexas.
+ */
+export interface DesignTokens {
+  colors?: {
+    background?: string
+    text?: string
+    primary?: string
+    secondary?: string
+  }
+  typography?: {
+    fontFamily?: string
+    fontSize?: {
+      banner?: string
+      modal?: string
+    }
+    fontWeight?: {
+      normal?: number
+      bold?: number
+    }
+  }
+  spacing?: {
+    padding?: {
+      banner?: string | number
+      modal?: string | number
+    }
+    borderRadius?: {
+      banner?: string | number
+      modal?: string | number
+    }
+  }
+  layout?: {
+    position?: 'bottom' | 'top' | 'floating'
+    width?: {
+      mobile?: string
+      desktop?: string
+    }
+    backdrop?: boolean
+  }
 }
 
 /**
@@ -255,6 +299,21 @@ export interface ConsentProviderProps {
   theme?: any
 
   /**
+   * Tokens de design para customização visual avançada.
+   * Oferece controle direto sobre cores, fontes, espaçamento e layout.
+   *
+   * @example
+   * ```tsx
+   * designTokens={{
+   *   colors: { background: '#000', text: '#fff' },
+   *   typography: { fontFamily: ''Inter', sans-serif' },
+   *   spacing: { borderRadius: { banner: 0 } }
+   * }}
+   * ```
+   */
+  designTokens?: DesignTokens
+
+  /**
    * @deprecated Usar `categories.customCategories` em vez disso.
    * Mantido para compatibilidade com v0.1.x
    */
@@ -277,18 +336,40 @@ export interface ConsentProviderProps {
 
   /**
    * Componente customizado para substituir o modal padrão de preferências.
-   * Deve implementar a lógica de consentimento usando os hooks da biblioteca.
+   * Deve implementar a lógica de consentimento usando as props definidas em `CustomPreferencesModalProps`.
    */
-  PreferencesModalComponent?: React.ComponentType<any>
+  PreferencesModalComponent?: React.ComponentType<CustomPreferencesModalProps>;
 
   /** Props adicionais passadas para o modal customizado. */
-  preferencesModalProps?: Record<string, any>
+  preferencesModalProps?: Record<string, any>;
 
   /**
-   * Desabilita o modal automático de preferências.
-   * Útil quando se quer controle total sobre quando/como exibir as opções.
+   * Componente customizado para substituir o banner padrão de cookies.
+   * Se não fornecido, o `CookieBanner` padrão será renderizado.
+   * Deve implementar a lógica de consentimento usando as props definidas em `CustomCookieBannerProps`.
    */
-  disableAutomaticModal?: boolean
+  CookieBannerComponent?: React.ComponentType<CustomCookieBannerProps>;
+
+  /** Props adicionais passadas para o banner customizado. */
+  cookieBannerProps?: Record<string, any>;
+
+  /**
+   * Componente customizado para substituir o botão flutuante de preferências.
+   * Se não fornecido, o `FloatingPreferencesButton` padrão será renderizado.
+   * Deve implementar a lógica de consentimento usando as props definidas em `CustomFloatingPreferencesButtonProps`.
+   */
+  FloatingPreferencesButtonComponent?: React.ComponentType<CustomFloatingPreferencesButtonProps>;
+
+  /** Props adicionais passadas para o botão flutuante customizado. */
+  floatingPreferencesButtonProps?: Record<string, any>;
+
+  /**
+   * Desabilita o botão flutuante de preferências.
+   * Útil quando o usuário da lib quer ter controle total sobre o acesso às preferências.
+   */
+  disableFloatingPreferencesButton?: boolean
+
+  
 
   /**
    * Comportamento do banner de consentimento:
@@ -352,6 +433,39 @@ export interface ConsentProviderProps {
 
   /** Elementos filhos - toda a aplicação que precisa de contexto de consentimento. */
   children: React.ReactNode
+}
+
+/**
+ * Props esperadas por um componente customizado de CookieBanner.
+ * Fornece acesso ao estado de consentimento e ações necessárias para o banner.
+ */
+export interface CustomCookieBannerProps {
+  consented: boolean;
+  acceptAll: () => void;
+  rejectAll: () => void;
+  openPreferences: () => void;
+  texts: ConsentTexts;
+}
+
+/**
+ * Props esperadas por um componente customizado de PreferencesModal.
+ * Fornece acesso às preferências, ações de modificação e estado do modal.
+ */
+export interface CustomPreferencesModalProps {
+  preferences: ConsentPreferences;
+  setPreferences: (preferences: ConsentPreferences) => void;
+  closePreferences: () => void;
+  isModalOpen?: boolean;
+  texts: ConsentTexts;
+}
+
+/**
+ * Props esperadas por um componente customizado de FloatingPreferencesButton.
+ * Fornece acesso às ações de abertura do modal e ao estado de consentimento.
+ */
+export interface CustomFloatingPreferencesButtonProps {
+  openPreferences: () => void;
+  consented: boolean;
 }
 
 /**
