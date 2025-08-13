@@ -269,7 +269,12 @@ export function ConsentProvider({
   const [state, dispatch] = React.useReducer(reducer, boot)
   const [isHydrated, setIsHydrated] = React.useState(false)
 
-  console.log('ConsentProvider Render - state.consented:', state.consented, 'isHydrated:', isHydrated);
+  console.log(
+    'ConsentProvider Render - state.consented:',
+    state.consented,
+    'isHydrated:',
+    isHydrated,
+  )
 
   // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
@@ -287,13 +292,13 @@ export function ConsentProvider({
     }
     // Marca como hidratado para permitir exibição do banner (se necessário)
     setIsHydrated(true)
-    console.log('useEffect hydration complete. isHydrated set to true.');
+    console.log('useEffect hydration complete. isHydrated set to true.')
   }, [cookie.name, initialState, finalCategoriesConfig]) // Executa apenas uma vez após mount
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
     if (state.consented)
-      writeConsentCookie(state, state.source, finalCategoriesConfig, cookie)
+      writeConsentCookie(state, finalCategoriesConfig, cookie)
   }, [state, cookie, finalCategoriesConfig])
 
   // Callbacks externos (com pequeno delay para animações)
@@ -383,8 +388,9 @@ export function ConsentProvider({
                   </React.Suspense>
 
                   {/* Cookie Banner - renderizado se não houver consentimento e estiver hidratado */}
-                  {!state.consented && isHydrated && (
-                    CookieBannerComponent ? (
+                  {!state.consented &&
+                    isHydrated &&
+                    (CookieBannerComponent ? (
                       <CookieBannerComponent
                         consented={api.consented}
                         acceptAll={api.acceptAll}
@@ -395,12 +401,12 @@ export function ConsentProvider({
                       />
                     ) : (
                       <CookieBanner />
-                    )
-                  )}
+                    ))}
 
                   {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
-                  {state.consented && !disableFloatingPreferencesButton && (
-                    FloatingPreferencesButtonComponent ? (
+                  {state.consented &&
+                    !disableFloatingPreferencesButton &&
+                    (FloatingPreferencesButtonComponent ? (
                       <FloatingPreferencesButtonComponent
                         openPreferences={api.openPreferences}
                         consented={api.consented}
@@ -408,8 +414,7 @@ export function ConsentProvider({
                       />
                     ) : (
                       <FloatingPreferencesButton />
-                    )
-                  )}
+                    ))}
                 </CategoriesProvider>
               </DesignProvider>
             </HydrationCtx.Provider>

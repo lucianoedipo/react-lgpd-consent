@@ -108,9 +108,9 @@ function migrateLegacyCookie(legacyData: any): ConsentState | null {
  */
 export function writeConsentCookie(
   state: ConsentState,
-  source: 'banner' | 'modal' | 'programmatic' = 'banner',
   config: ProjectCategoriesConfig,
   opts?: Partial<ConsentCookieOptions>,
+  source: 'banner' | 'modal' | 'programmatic' = 'banner',
 ) {
   if (typeof document === 'undefined') return
 
