@@ -48,12 +48,13 @@
     "dist",
     "README.md",
     "LICENSE",
-    "COMPLIANCE.md"
+    "COMPLIANCE.md",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=18.18"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@9.15.9",
   "scripts": {
     "clean": "rimraf dist",
     "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
@@ -97,7 +98,7 @@
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^30.0.0",
     "@types/js-cookie": "^3.0.6",
-    "@types/react": "^19.1.9",
+    "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@typescript-eslint/eslint-plugin": "^8.39.1",
     "@typescript-eslint/parser": "^8.39.1",
