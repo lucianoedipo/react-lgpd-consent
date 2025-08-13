@@ -111,6 +111,7 @@ const DEFAULT_TEXTS: ConsentTexts = {
   reject: 'Rejeitar',
 
   // Textos ANPD expandidos (opcionais)
+  brandingPoweredBy: 'fornecido por',
   controllerInfo: undefined, // Exibido se definido
   dataTypes: undefined, // Exibido se definido
   thirdPartySharing: undefined, // Exibido se definido

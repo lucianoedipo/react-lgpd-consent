@@ -128,7 +128,7 @@ export function PreferencesModal({
 
       <DialogActions>
         <Button variant="outlined" onClick={handleCancel}>
-          Cancelar
+          {texts.close}
         </Button>
         <Button variant="contained" onClick={handleSave}>
           {texts.save}

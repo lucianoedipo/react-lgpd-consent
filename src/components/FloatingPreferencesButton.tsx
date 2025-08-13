@@ -3,7 +3,7 @@ import type { FabProps } from '@mui/material/Fab'
 import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { useTheme } from '@mui/material/styles'
-import { useConsent } from '../hooks/useConsent'
+import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { logger } from '../utils/logger'
 
 /**
@@ -79,6 +79,7 @@ export function FloatingPreferencesButton({
   hideWhenConsented = false,
 }: Readonly<FloatingPreferencesButtonProps>) {
   const { openPreferences, consented } = useConsent()
+  const texts = useConsentTexts()
   const safeTheme = useThemeWithFallbacks()
 
   logger.componentRender('FloatingPreferencesButton', {
@@ -95,7 +96,7 @@ export function FloatingPreferencesButton({
     return null
   }
 
-  const tooltipText = tooltip ?? 'Gerenciar Preferências de Cookies'
+  const tooltipText = tooltip ?? texts.preferencesButton ?? 'Gerenciar Preferências de Cookies'
 
   const getPosition = () => {
     const styles: Record<string, any> = {

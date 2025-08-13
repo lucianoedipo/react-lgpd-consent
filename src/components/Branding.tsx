@@ -1,3 +1,4 @@
+import { useConsentTexts } from '../hooks/useConsent'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
@@ -35,6 +36,7 @@ const linkStyles = {
 }
 
 export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
+  const texts = useConsentTexts()
   if (hidden) return null
 
   return (
@@ -45,7 +47,7 @@ export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
         color: theme.palette.text.secondary,
       })}
     >
-      fornecido por{' '}
+      {texts.brandingPoweredBy || 'fornecido por'}{' '}
       <Link
         href="https://www.ledipo.eti.br"
         target="_blank"

@@ -128,6 +128,8 @@ export interface ConsentTexts {
   reject?: string // Texto alternativo rejeitar
 
   // Textos ANPD expandidos (opcionais - v0.2.0)
+  // Textos ANPD expandidos (opcionais - v0.2.0)
+  brandingPoweredBy?: string, // Texto "fornecido por"
   controllerInfo?: string // "Controlado por [Empresa/CNPJ]"
   dataTypes?: string // "Coletamos: navegação, preferências..."
   thirdPartySharing?: string // "Compartilhamos com: Google Analytics..."
