@@ -59,3 +59,63 @@ export function useConsentTexts(): ConsentTexts {
 export function useConsentHydration(): boolean {
   return useConsentHydrationInternal()
 }
+
+/**
+ * Hook para abrir o modal de preferências programaticamente.
+ * Útil quando você tem controle customizado sobre como o modal é aberto.
+ *
+ * @returns Função para abrir o modal de preferências.
+ *
+ * @example
+ * ```tsx
+ * function CustomAccessibilityDock() {
+ *   const openPreferencesModal = useOpenPreferencesModal()
+ *
+ *   return (
+ *     <button onClick={openPreferencesModal}>
+ *       ⚙️ Configurar Cookies
+ *     </button>
+ *   )
+ * }
+ * ```
+ */
+export function useOpenPreferencesModal() {
+  const { openPreferences } = useConsent()
+  return openPreferences
+}
+
+/**
+ * Função utilitária para abrir o modal de preferências de fora do contexto React.
+ * Útil para integração com código não-React.
+ *
+ * @example
+ * ```javascript
+ * // Em código JavaScript puro
+ * import { openPreferencesModal } from 'react-lgpd-consent'
+ *
+ * document.getElementById('cookie-settings').addEventListener('click', () => {
+ *   openPreferencesModal()
+ * })
+ * ```
+ */
+let globalOpenPreferences: (() => void) | null = null
+
+export function openPreferencesModal() {
+  if (globalOpenPreferences) {
+    globalOpenPreferences()
+  } else {
+    console.warn(
+      'openPreferencesModal: ConsentProvider não foi inicializado ou não está disponível.',
+    )
+  }
+}
+
+// Função interna para registrar o handler global
+export function _registerGlobalOpenPreferences(openPreferences: () => void) {
+  globalOpenPreferences = openPreferences
+}
+
+// Função interna para limpar o handler global
+export function _unregisterGlobalOpenPreferences() {
+  globalOpenPreferences = null
+}

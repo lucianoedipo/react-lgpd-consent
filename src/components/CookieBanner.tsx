@@ -15,6 +15,7 @@ import {
 } from '../hooks/useConsent'
 import { useDesignTokens } from '../context/DesignContext'
 import { Branding } from './Branding'
+import { logger } from '../utils/logger'
 
 export interface CookieBannerProps {
   policyLinkUrl?: string
@@ -39,6 +40,14 @@ export function CookieBanner({
   const designTokens = useDesignTokens()
 
   const open = debug ? true : isHydrated && !consented
+
+  logger.componentRender('CookieBanner', {
+    open,
+    consented,
+    isHydrated,
+    blocking,
+    hideBranding,
+  })
 
   if (!open) return null
 
@@ -80,21 +89,30 @@ export function CookieBanner({
         >
           <Button
             variant="outlined"
-            onClick={rejectAll}
+            onClick={() => {
+              logger.apiUsage('rejectAll', { source: 'banner' })
+              rejectAll()
+            }}
             sx={{ color: designTokens?.colors?.secondary }}
           >
             {texts.declineAll}
           </Button>
           <Button
             variant="contained"
-            onClick={acceptAll}
+            onClick={() => {
+              logger.apiUsage('acceptAll', { source: 'banner' })
+              acceptAll()
+            }}
             sx={{ backgroundColor: designTokens?.colors?.primary }}
           >
             {texts.acceptAll}
           </Button>
           <Button
             variant="text"
-            onClick={openPreferences}
+            onClick={() => {
+              logger.apiUsage('openPreferences', { source: 'banner' })
+              openPreferences()
+            }}
             sx={{ color: designTokens?.colors?.text }}
           >
             {texts.preferences}

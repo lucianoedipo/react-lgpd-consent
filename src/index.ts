@@ -45,6 +45,16 @@ export {
    * @returns Booleano indicando hidratação.
    */
   useConsentHydration,
+  /**
+   * Hook para abrir o modal de preferências programaticamente.
+   * @returns Função para abrir o modal.
+   */
+  useOpenPreferencesModal,
+  /**
+   * Função para abrir o modal de preferências de fora do contexto React.
+   * Útil para integração com código JavaScript puro.
+   */
+  openPreferencesModal,
 } from './hooks/useConsent'
 
 // Hooks de categorias - novo sistema
@@ -114,6 +124,22 @@ export type {
   ConsentTexts,
   ConsentCookieOptions,
   ProjectCategoriesConfig,
+  /**
+   * Props do ConsentProvider principal.
+   */
+  ConsentProviderProps,
+  /**
+   * Props esperadas por um componente customizado de CookieBanner.
+   */
+  CustomCookieBannerProps,
+  /**
+   * Props esperadas por um componente customizado de PreferencesModal.
+   */
+  CustomPreferencesModalProps,
+  /**
+   * Props esperadas por um componente customizado de FloatingPreferencesButton.
+   */
+  CustomFloatingPreferencesButtonProps,
 } from './types/types'
 
 // Utilitários de orientação para developers
@@ -130,3 +156,8 @@ export {
   DEFAULT_PROJECT_CATEGORIES,
   analyzeDeveloperConfiguration,
 } from './utils/developerGuidance'
+
+/**
+ * Sistema de logging para debug e troubleshooting.
+ */
+export { setDebugLogging, LogLevel } from './utils/logger'

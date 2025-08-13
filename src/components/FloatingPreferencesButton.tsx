@@ -4,6 +4,33 @@ import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { useTheme } from '@mui/material/styles'
 import { useConsent } from '../hooks/useConsent'
+import { logger } from '../utils/logger'
+
+/**
+ * Função utilitária para acessar propriedades de tema com fallbacks seguros.
+ * Evita erros quando o ThemeProvider não está configurado corretamente.
+ */
+function useThemeWithFallbacks() {
+  const theme = useTheme()
+
+  // Log para debug de compatibilidade de tema
+  logger.themeCompatibility(theme)
+
+  return {
+    palette: {
+      primary: {
+        main: theme?.palette?.primary?.main || '#1976d2',
+        dark: theme?.palette?.primary?.dark || '#1565c0',
+      },
+    },
+    transitions: {
+      duration: {
+        shortest: theme?.transitions?.duration?.shortest || 150,
+        short: theme?.transitions?.duration?.short || 250,
+      },
+    },
+  }
+}
 
 /**
  * Props para o componente FloatingPreferencesButton.
@@ -52,9 +79,19 @@ export function FloatingPreferencesButton({
   hideWhenConsented = false,
 }: Readonly<FloatingPreferencesButtonProps>) {
   const { openPreferences, consented } = useConsent()
-  const theme = useTheme()
+  const safeTheme = useThemeWithFallbacks()
+
+  logger.componentRender('FloatingPreferencesButton', {
+    position,
+    offset,
+    hideWhenConsented,
+    consented,
+  })
 
   if (hideWhenConsented && consented) {
+    logger.debug(
+      'FloatingPreferencesButton: Hidden due to hideWhenConsented=true and consented=true',
+    )
     return null
   }
 
@@ -88,10 +125,11 @@ export function FloatingPreferencesButton({
         onClick={openPreferences}
         sx={{
           ...getPosition(),
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: safeTheme.palette.primary.main,
           '&:hover': {
-            backgroundColor: theme.palette.primary.dark,
+            backgroundColor: safeTheme.palette.primary.dark,
           },
+          transition: `all ${safeTheme.transitions.duration.short}ms`,
         }}
         aria-label={tooltipText}
         {...FabProps}

@@ -1,6 +1,6 @@
 // src/context/ConsentContext.tsx
 import * as React from 'react'
-import { ThemeProvider } from '@mui/material/styles'
+import { SafeThemeProvider } from '../utils/SafeThemeProvider'
 import {
   type Category,
   type ConsentContextValue,
@@ -27,6 +27,30 @@ import {
   useDeveloperGuidance,
   DEFAULT_PROJECT_CATEGORIES,
 } from '../utils/developerGuidance'
+import {
+  _registerGlobalOpenPreferences,
+  _unregisterGlobalOpenPreferences,
+} from '../hooks/useConsent'
+
+// Logger simples para evitar dependência circular
+const log = {
+  debug: (message: string, data?: any) => {
+    if (
+      typeof window !== 'undefined' &&
+      (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__
+    ) {
+      console.debug('[react-lgpd-consent] [DEBUG]', message, data)
+    }
+  },
+  info: (message: string, data?: any) => {
+    if (
+      typeof window !== 'undefined' &&
+      (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__
+    ) {
+      console.info('[react-lgpd-consent] [INFO]', message, data)
+    }
+  },
+}
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -77,6 +101,15 @@ const DEFAULT_TEXTS: ConsentTexts = {
   save: 'Salvar preferências',
   necessaryAlwaysOn: 'Cookies necessários (sempre ativos)',
 
+  // Textos adicionais para UI customizada
+  preferencesButton: 'Configurar Cookies',
+  preferencesTitle: 'Gerenciar Preferências de Cookies',
+  preferencesDescription:
+    'Escolha quais tipos de cookies você permite que sejam utilizados.',
+  close: 'Fechar',
+  accept: 'Aceitar',
+  reject: 'Rejeitar',
+
   // Textos ANPD expandidos (opcionais)
   controllerInfo: undefined, // Exibido se definido
   dataTypes: undefined, // Exibido se definido
@@ -104,10 +137,15 @@ type Action =
   | { type: 'HYDRATE'; state: ConsentState; config: ProjectCategoriesConfig }
 
 function reducer(state: ConsentState, action: Action): ConsentState {
+  log.debug('State transition:', {
+    action: action.type,
+    currentState: state.consented,
+  })
+
   switch (action.type) {
     case 'ACCEPT_ALL': {
       const prefs = createProjectPreferences(action.config, true)
-      return createFullConsentState(
+      const newState = createFullConsentState(
         true,
         prefs,
         'banner',
@@ -115,10 +153,14 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         false,
         state,
       )
+      log.info('User accepted all cookies', {
+        preferences: newState.preferences,
+      })
+      return newState
     }
     case 'REJECT_ALL': {
       const prefs = createProjectPreferences(action.config, false)
-      return createFullConsentState(
+      const newState = createFullConsentState(
         true,
         prefs,
         'banner',
@@ -126,8 +168,16 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         false,
         state,
       )
+      log.info('User rejected all cookies', {
+        preferences: newState.preferences,
+      })
+      return newState
     }
     case 'SET_CATEGORY':
+      log.debug('Category preference changed', {
+        category: action.category,
+        value: action.value,
+      })
       return {
         ...state,
         preferences: {
@@ -137,6 +187,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         lastUpdate: new Date().toISOString(),
       }
     case 'SET_PREFERENCES':
+      log.info('Preferences saved', { preferences: action.preferences })
       return createFullConsentState(
         true,
         action.preferences,
@@ -333,8 +384,14 @@ export function ConsentProvider({
     }
   }, [state, cookie, finalCategoriesConfig, onPreferencesSaved])
 
+  // Registrar função global para openPreferencesModal
+  React.useEffect(() => {
+    _registerGlobalOpenPreferences(api.openPreferences)
+    return () => _unregisterGlobalOpenPreferences()
+  }, [api.openPreferences])
+
   return (
-    <ThemeProvider theme={appliedTheme}>
+    <SafeThemeProvider theme={appliedTheme}>
       <StateCtx.Provider value={state}>
         <ActionsCtx.Provider value={api}>
           <TextsCtx.Provider value={texts}>
@@ -395,7 +452,7 @@ export function ConsentProvider({
           </TextsCtx.Provider>
         </ActionsCtx.Provider>
       </StateCtx.Provider>
-    </ThemeProvider>
+    </SafeThemeProvider>
   )
 }
 

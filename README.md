@@ -17,6 +17,8 @@
 
   <br>
 
+> 🎉 **Novidade v0.3.1**: Correções críticas de produção - Compatibilidade total com Material-UI ThemeProvider + API melhorada para controle programático + Sistema de debug avançado
+
   <p>
     <a href="#-instalação"><strong>Instalação</strong></a> •
     <a href="#-uso-básico"><strong>Começar Agora</strong></a> •
@@ -27,6 +29,35 @@
 </div>
 
 ---
+
+## 🆕 **Novidades v0.3.1 - Production Fixes**
+
+### 🛡️ Correções Críticas Implementadas
+
+- **✅ Theme Provider Compatibility**: Resolvido erro "Cannot read properties of undefined (reading 'duration')" com fallbacks automáticos
+- **✅ FloatingPreferencesButton Fixes**: Corrigido "Element type is invalid" + nova prop `disableFloatingPreferencesButton`
+- **✅ API Programática**: Novos `useOpenPreferencesModal()` hook e `openPreferencesModal()` função global
+- **✅ TypeScript Types**: Exports completos de `CustomCookieBannerProps`, `CustomPreferencesModalProps`, etc.
+- **✅ Sistema de Debug**: `setDebugLogging()` para troubleshooting em produção
+
+### 🎯 Para Quem Estava Com Problemas
+
+```tsx
+// ❌ ANTES v0.3.0 - Erro com ThemeProvider customizado
+<ConsentProvider theme={myCustomTheme}> // Erro: duration undefined
+
+// ✅ AGORA v0.3.1 - Funcionamento garantido
+<ConsentProvider
+  disableFloatingPreferencesButton={true} // Nova prop!
+  theme={myCustomTheme} // Funciona com qualquer tema
+>
+  <MyAccessibilityDock />
+</ConsentProvider>
+
+// ✅ Controle programático - NOVO!
+const openModal = useOpenPreferencesModal() // Hook React
+openPreferencesModal() // Função global JavaScript
+```
 
 ## 🎯 **Por que escolher react-lgpd-consent?**
 

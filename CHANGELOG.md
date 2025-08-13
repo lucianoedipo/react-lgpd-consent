@@ -5,6 +5,114 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.3.1] - 2025-08-13 - CORREÇÕES DE PRODUÇÃO E MELHORIAS DE COMPATIBILIDADE
+
+### 🛡️ **Corrigido - Critical Production Fixes**
+
+#### A) Compatibilidade com ThemeProvider
+
+- **Erro "Cannot read properties of undefined (reading 'duration')"**: Implementado sistema de fallbacks seguros para propriedades de tema MUI inexistentes ou indefinidas
+- **Componentes internos não renderizavam**: Adicionado `SafeThemeProvider` interno que garante compatibilidade com diferentes configurações de ThemeProvider do usuário
+- **Conflitos de tema**: `FloatingPreferencesButton` e outros componentes agora usam `useThemeWithFallbacks()` para acessar propriedades de tema com valores padrão
+
+#### B) API do FloatingPreferencesButton
+
+- **"Element type is invalid: expected string but got object"**: Corrigido erro de renderização no `FloatingPreferencesButton`
+- **Falta de controle sobre botão flutuante**: Adicionada prop `disableFloatingPreferencesButton?: boolean` no `ConsentProvider`
+- **Sem API para abrir modal programaticamente**:
+  - Novo hook `useOpenPreferencesModal()` para componentes React
+  - Nova função `openPreferencesModal()` para uso em JavaScript puro
+  - Integração automática com sistema global para acesso fora do contexto React
+
+#### C) Exports de TypeScript Ausentes
+
+- Adicionados exports públicos para melhor Developer Experience:
+  - `CustomCookieBannerProps` - para componentes de banner customizados
+  - `CustomPreferencesModalProps` - para modal de preferências customizado
+  - `CustomFloatingPreferencesButtonProps` - para botão flutuante customizado
+  - `ConsentProviderProps` - para tipagem das props do provider principal
+
+### ✨ **Novas Funcionalidades**
+
+#### Sistema de Debug e Troubleshooting
+
+- **`setDebugLogging(enabled: boolean, level?: LogLevel)`**: Função para habilitar logs detalhados em produção quando necessário
+- **Logs automáticos**: Sistema de logging que inclui:
+  - Compatibilidade de tema (detection de propriedades MUI faltantes)
+  - Mudanças de estado de consentimento
+  - Operações de cookie (leitura/escrita/remoção)
+  - Renderização de componentes (props e estados)
+  - Integrações de scripts (carregamento/falhas)
+  - Chamadas de API internas
+- **Detecção automática de ambiente**: Logs desabilitados automaticamente em produção, habilitados em desenvolvimento
+
+#### API Melhorada para Controle Programático
+
+- **`useOpenPreferencesModal()`**: Hook que retorna função para abrir modal de preferências
+- **`openPreferencesModal()`**: Função utilitária para acesso global (fora de componentes React)
+- **Integração com AccessibilityDock**: Exemplos de uso em dock de acessibilidade customizado
+
+### 📚 **Documentação**
+
+#### Guia de API v0.3.1
+
+- **Novo arquivo**: `docs/API-v0.3.1.md` com exemplos completos
+- **Casos de uso**: Next.js 14+, Material-UI, componentes totalmente customizados
+- **Troubleshooting**: Guia de resolução dos problemas mais comuns
+- **Migration Guide**: Instruções de atualização (sem breaking changes)
+
+#### Exemplos de Implementação
+
+- **Componentes customizados**: Exemplos completos de `CustomCookieBanner`, `CustomPreferencesModal`
+- **Integração com AccessibilityDock**: Implementação de botão de preferências em dock customizado
+- **SSR/Next.js**: Configuração para evitar flash de conteúdo e hidratação adequada
+- **Debug em produção**: Como habilitar logs para troubleshooting quando necessário
+
+### 🔧 **Melhorias Técnicas**
+
+#### Robustez e Estabilidade
+
+- **SafeThemeProvider**: Componente interno que evita erros de tema em diferentes configurações de Material-UI
+- **Fallbacks automáticos**: Valores padrão para todas as propriedades de tema acessadas pelos componentes
+- **Detecção de ambiente**: Melhorada para funcionar em diferentes build systems e ambientes de execução
+- **Compatibilidade**: Testado com Material-UI v5 e Next.js 14+
+
+#### Developer Experience
+
+- **Tipos mais precisos**: Exports de todos os tipos necessários para customização
+- **Logs informativos**: Sistema de debug que facilita identificação de problemas
+- **Documentação expandida**: Exemplos práticos e casos de uso reais
+- **Zero breaking changes**: Atualização segura desde v0.3.0
+
+### 🛠️ **Contexto de Correção**
+
+Estas correções abordam problemas identificados em produção com:
+
+- **Apps Next.js 14+ usando Material-UI**: Conflitos de ThemeProvider resolvidos
+- **Componentes customizados**: APIs claras para substituição completa da UI
+- **AccessibilityDock integrations**: Controle programático do modal de preferências
+- **Troubleshooting**: Sistema de logs para diagnóstico de problemas em produção
+
+### 📋 **Migration from v0.3.0**
+
+✅ **Zero Breaking Changes**: Atualização direta sem modificações necessárias
+
+**Novos recursos opcionais**:
+
+```tsx
+// Desabilitar botão flutuante padrão
+;<ConsentProvider
+  disableFloatingPreferencesButton={true}
+  // ... outras props
+/>
+
+// Usar controle programático
+const openModal = useOpenPreferencesModal()
+
+// Habilitar debug se necessário
+setDebugLogging(true, LogLevel.DEBUG)
+```
+
 ## [0.3.0] - 2025-08-12 - DX APRIMORADA E UI AUTOMÁTICA
 
 ### 🚨 **MUDANÇAS QUE QUEBRAM A COMPATIBILIDADE**

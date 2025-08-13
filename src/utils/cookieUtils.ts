@@ -4,6 +4,7 @@ import type {
   ConsentState,
   ProjectCategoriesConfig,
 } from '../types/types'
+import { logger } from './logger'
 
 /**
  * Opções padrão para persistência do cookie de consentimento.
@@ -45,29 +46,41 @@ const COOKIE_SCHEMA_VERSION = '1.0'
 export function readConsentCookie(
   name: string = DEFAULT_COOKIE_OPTS.name,
 ): ConsentState | null {
+  logger.debug('Reading consent cookie', { name })
+
   // Client-safe: Cookies só existe no browser
-  if (typeof document === 'undefined') return null
+  if (typeof document === 'undefined') {
+    logger.debug('Cookie read skipped: server-side environment')
+    return null
+  }
+
   const raw = Cookies.get(name)
-  if (!raw) return null
+  if (!raw) {
+    logger.debug('No consent cookie found')
+    return null
+  }
 
   try {
     const data = JSON.parse(raw)
+    logger.cookieOperation('read', name, data)
 
     // Migração de versões antigas (v0.1.x que não tinha versão)
     if (!data.version) {
+      logger.debug('Migrating legacy cookie format')
       return migrateLegacyCookie(data)
     }
 
     // Validação de versão atual
     if (data.version !== COOKIE_SCHEMA_VERSION) {
-      console.warn(
-        `[react-lgpd-consent] Cookie version mismatch: ${data.version} != ${COOKIE_SCHEMA_VERSION}`,
+      logger.warn(
+        `Cookie version mismatch: ${data.version} != ${COOKIE_SCHEMA_VERSION}`,
       )
       return null // Força recriação com versão atual
     }
 
     return data as ConsentState
-  } catch {
+  } catch (error) {
+    logger.error('Error parsing consent cookie', error)
     return null
   }
 }
@@ -112,7 +125,10 @@ export function writeConsentCookie(
   opts?: Partial<ConsentCookieOptions>,
   source: 'banner' | 'modal' | 'programmatic' = 'banner',
 ) {
-  if (typeof document === 'undefined') return
+  if (typeof document === 'undefined') {
+    logger.debug('Cookie write skipped: server-side environment')
+    return
+  }
 
   const now = new Date().toISOString()
   const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
@@ -129,11 +145,19 @@ export function writeConsentCookie(
     // isModalOpen NÃO é persistido (campo de UI apenas)
   }
 
+  logger.cookieOperation('write', o.name, cookieData)
+
   Cookies.set(o.name, JSON.stringify(cookieData), {
     expires: o.maxAgeDays,
     sameSite: o.sameSite,
     secure: o.secure,
     path: o.path,
+  })
+
+  logger.info('Consent cookie saved', {
+    consented: cookieData.consented,
+    source: cookieData.source,
+    preferencesCount: Object.keys(cookieData.preferences).length,
   })
 }
 
@@ -165,7 +189,13 @@ export function createInitialConsentState(): ConsentState {
  * - Usa opções padrão se não especificado.
  */
 export function removeConsentCookie(opts?: Partial<ConsentCookieOptions>) {
-  if (typeof document === 'undefined') return
+  if (typeof document === 'undefined') {
+    logger.debug('Cookie removal skipped: server-side environment')
+    return
+  }
+
   const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
+  logger.cookieOperation('delete', o.name)
   Cookies.remove(o.name, { path: o.path })
+  logger.info('Consent cookie removed')
 }

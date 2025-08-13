@@ -119,6 +119,14 @@ export interface ConsentTexts {
   save: string
   necessaryAlwaysOn: string
 
+  // Textos adicionais para UI customizada
+  preferencesButton?: string // Texto alternativo para botão de preferências
+  preferencesTitle?: string // Título alternativo do modal
+  preferencesDescription?: string // Descrição do modal
+  close?: string // Texto do botão fechar
+  accept?: string // Texto alternativo aceitar
+  reject?: string // Texto alternativo rejeitar
+
   // Textos ANPD expandidos (opcionais - v0.2.0)
   controllerInfo?: string // "Controlado por [Empresa/CNPJ]"
   dataTypes?: string // "Coletamos: navegação, preferências..."
