@@ -2,36 +2,13 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {
   ConsentProvider,
-  CookieBanner,
-  FloatingPreferencesButton,
   ConsentScriptLoader,
   useConsent,
-  useCategories, // NOVO: hook atualizado
+  useCategories,
   ConsentGate,
   createGoogleAnalyticsIntegration,
   createUserWayIntegration,
-  type CategoryDefinition,
 } from 'react-lgpd-consent'
-
-// 🏛️ Categorias customizadas para projeto governamental
-const customCategories: CategoryDefinition[] = [
-  {
-    id: 'governo',
-    name: 'Integração Governamental',
-    description:
-      'Cookies necessários para integração com sistemas do Governo MS.',
-    essential: false,
-    cookies: ['gov.ms_session', 'cpf_hash', 'protocolo_*'],
-  },
-  {
-    id: 'acessibilidade',
-    name: 'Ferramentas de Acessibilidade',
-    description:
-      'Cookies para funcionalidades de acessibilidade como leitores de tela e navegação por voz.',
-    essential: false,
-    cookies: ['userway_*', 'voice_navigation', 'high_contrast'],
-  },
-]
 
 // 🚀 Integrações automáticas
 const scriptIntegrations = [
@@ -42,6 +19,7 @@ const scriptIntegrations = [
       allow_google_signals: false,
     },
   }),
+  // A integração do UserWay está ligada à categoria 'functional'
   createUserWayIntegration({
     accountId: 'USERWAY_ACCOUNT_ID',
   }),
@@ -61,7 +39,7 @@ const anpdTexts = {
   save: 'Salvar Minhas Preferências',
   necessaryAlwaysOn: 'Cookies Essenciais (sempre ativos)',
 
-  // ✅ Textos ANPD expandidos (v0.2.0)
+  // ✅ Textos ANPD expandidos
   controllerInfo:
     'Dados controlados por: Governo do Estado de Mato Grosso do Sul (CNPJ: 03.512.256/0001-48)',
   dataTypes:
@@ -82,7 +60,7 @@ const anpdTexts = {
 // 📊 Componente para exibir status detalhado
 function ConsentStatus() {
   const { preferences, consented } = useConsent()
-  const { allCategories } = useCategories() // NOVO: hook atualizado
+  const { allCategories } = useCategories()
 
   if (!consented) {
     return (
@@ -127,9 +105,10 @@ function ConsentStatus() {
 function ExampleApp() {
   return (
     <ConsentProvider
+      // Habilita as categorias 'analytics' e 'functional' (para UserWay)
+      // e adiciona a categoria customizada 'governo'
       categories={{
         enabledCategories: ['analytics', 'functional'],
-        customCategories: customCategories,
       }}
       texts={anpdTexts}
       onConsentGiven={(state) => {
@@ -138,6 +117,8 @@ function ExampleApp() {
       onPreferencesSaved={(prefs) => {
         console.log('💾 Preferências salvas:', prefs)
       }}
+      // O banner será bloqueante para compliance rigorosa
+      blocking={true}
     >
       {/* 🚀 Scripts carregam automaticamente baseado no consentimento */}
       <ConsentScriptLoader integrations={scriptIntegrations} />
@@ -154,7 +135,7 @@ function ExampleApp() {
           <h1>🏛️ Portal do Cidadão - MS</h1>
           <p>
             Exemplo completo de implementação LGPD/ANPD com react-lgpd-consent
-            v0.2.0
+            v0.3.0
           </p>
         </header>
 
@@ -195,7 +176,7 @@ function ExampleApp() {
               </div>
             </ConsentGate>
 
-            <ConsentGate category="acessibilidade">
+            <ConsentGate category="functional">
               <div
                 style={{
                   padding: '15px',
@@ -211,7 +192,7 @@ function ExampleApp() {
           </section>
 
           <section style={{ margin: '30px 0' }}>
-            <h2>📋 Funcionalidades Demonstradas</h2>
+            <h2>📋 Funcionalidades Demonstradas na v0.3.0</h2>
             <div
               style={{
                 display: 'grid',
@@ -226,15 +207,13 @@ function ExampleApp() {
                   borderRadius: '8px',
                 }}
               >
-                <h3>🍪 6 Categorias ANPD</h3>
-                <ul>
-                  <li>✅ Necessary (essencial)</li>
-                  <li>📊 Analytics</li>
-                  <li>⚙️ Functional</li>
-                  <li>📢 Marketing</li>
-                  <li>👥 Social</li>
-                  <li>🎨 Personalization</li>
-                </ul>
+                <h3>✅ UI Automática</h3>
+                <p>
+                  O <strong>CookieBanner</strong> e o{' '}
+                  <strong>FloatingPreferencesButton</strong> são renderizados
+                  automaticamente pelo <strong>ConsentProvider</strong>. Menos
+                  código, mais simplicidade.
+                </p>
               </div>
 
               <div
@@ -247,7 +226,10 @@ function ExampleApp() {
                 <h3>🔧 Categorias Customizadas</h3>
                 <ul>
                   <li>🏛️ Governo MS</li>
-                  <li>♿ Acessibilidade</li>
+                  <li>
+                    ⚙️ A categoria <strong>functional</strong> agora controla o
+                    widget de acessibilidade.
+                  </li>
                   <li>➕ Facilmente extensível</li>
                 </ul>
               </div>
@@ -288,43 +270,34 @@ function ExampleApp() {
           <section style={{ margin: '30px 0' }}>
             <h2>📚 Documentação</h2>
             <p>
-              Este exemplo demonstra todas as funcionalidades da versão 0.2.0:
+              Este exemplo demonstra as principais funcionalidades da versão
+              0.3.0:
             </p>
             <ul>
               <li>
-                <strong>Categorias ANPD:</strong> 6 categorias baseadas no Guia
-                Orientativo
+                <strong>Renderização Automática:</strong> O Provider gerencia a
+                UI padrão.
               </li>
               <li>
-                <strong>Extensibilidade:</strong> Categorias customizadas para
-                casos específicos
+                <strong>Configuração Explícita:</strong> A prop `categories`
+                define o comportamento.
               </li>
               <li>
                 <strong>Integrações:</strong> Scripts carregam automaticamente
+                após o consentimento.
               </li>
               <li>
-                <strong>Compliance:</strong> Textos ANPD completos e opcionais
-              </li>
-              <li>
-                <strong>UX:</strong> Zero-flash, acessível, responsivo
+                <strong>Compliance:</strong> Textos ANPD completos e opcionais.
               </li>
             </ul>
           </section>
         </main>
 
-        {/* 🍪 Banner de cookies com modo não-bloqueante */}
-        <CookieBanner
-          policyLinkUrl="/politica-privacidade"
-          blocking={false}
-          debug={false}
-        />
-
-        {/* 🎛️ Botão flutuante para fácil acesso */}
-        <FloatingPreferencesButton
-          position="bottom-right"
-          hideWhenConsented={false}
-          tooltip="Configurar Cookies"
-        />
+        {/*
+          Na v0.3.0, não é mais necessário renderizar o CookieBanner
+          ou o FloatingPreferencesButton manualmente. O ConsentProvider
+          faz isso automaticamente para você!
+        */}
       </div>
     </ConsentProvider>
   )

@@ -5,26 +5,45 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.3.0] - 2025-08-12 - DX APRIMORADA E UI AUTOMÁTICA
+
+### 🚨 **MUDANÇAS QUE QUEBRAM A COMPATIBILIDADE**
+
+- **Remoção de Exports Diretos de Componentes UI**: `CookieBanner` e `FloatingPreferencesButton` não são mais exportados diretamente. Eles agora são gerenciados e renderizados automaticamente pelo `ConsentProvider`.
+- **Remoção da Prop `disableAutomaticModal`**: Esta prop foi removida do `ConsentProvider`. O modal de preferências agora é sempre renderizado (seja o padrão ou um componente customizado fornecido) e sua visibilidade é controlada internamente pelo estado `isModalOpen`.
+- **Tipagem Estrita para Componentes UI Customizados**: As props para `PreferencesModalComponent`, `CookieBannerComponent` e `FloatingPreferencesButtonComponent` agora exigem tipos específicos (`CustomPreferencesModalProps`, `CustomCookieBannerProps`, `CustomFloatingPreferencesButtonProps`). Componentes customizados que usavam `React.ComponentType<any>` precisarão ser atualizados.
+- **Remoção do Hook `useConsentComponentProps`**: Este hook utilitário foi removido, pois os componentes internos agora usam `useConsent` e `useConsentTexts` diretamente.
+
+### ✨ **Novas Funcionalidades e Melhorias**
+
+- **Renderização Automática de Componentes UI Padrão**: O `ConsentProvider` agora renderiza automaticamente o `CookieBanner` (quando necessário) e o `FloatingPreferencesButton` (após consentimento), reduzindo o boilerplate.
+- **Componentes UI Sobrescrevíveis com Tipagem Clara**: Permite que desenvolvedores forneçam seus próprios componentes de banner, modal e botão flutuante com total segurança de tipo.
+- **Controle Simplificado do Modal**: A visibilidade do modal é controlada exclusivamente pelo estado interno, eliminando a necessidade da prop `disableAutomaticModal`.
+- **Carregamento Imediato de Banner e Botão Flutuante**: Removido o lazy loading para `CookieBanner` e `FloatingPreferencesButton` para garantir visibilidade imediata e evitar falhas de carregamento.
+- **Prop `disableDeveloperGuidance`**: Permite desabilitar os avisos e sugestões para desenvolvedores no console.
+- **Prop `reloadOnChange` para `ConsentScriptLoader`**: Permite recarregar scripts de integração quando as preferências de consentimento mudam.
+- **Ajuste de Posição da Marca**: A marca "fornecido por LÉdipO.eti.br" agora é exibida no canto inferior direito do banner e modal.
+
 ## [0.2.6] - 2025-08-12 - ESTABILIZAÇÃO E CONFORMIDADE
 
 ### 🛡️ **Modificado**
 
--   **Gerenciamento de Estado Unificado**: O `ConsentProvider` foi refatorado para usar uma lógica centralizada (`categoryUtils.ts`) para criar e validar as preferências de consentimento. Isso elimina inconsistências e garante que o estado do consentimento sempre reflita a configuração do projeto (`ProjectCategoriesConfig`).
--   **Validação na Hidratação**: Ao carregar o estado de um cookie existente, as preferências agora são validadas contra a configuração atual do projeto. Categorias que não existem mais na configuração são removidas, evitando estados inválidos.
+- **Gerenciamento de Estado Unificado**: O `ConsentProvider` foi refatorado para usar uma lógica centralizada (`categoryUtils.ts`) para criar e validar as preferências de consentimento. Isso elimina inconsistências e garante que o estado do consentimento sempre reflita a configuração do projeto (`ProjectCategoriesConfig`).
+- **Validação na Hidratação**: Ao carregar o estado de um cookie existente, as preferências agora são validadas contra a configuração atual do projeto. Categorias que não existem mais na configuração são removidas, evitando estados inválidos.
 
 ### ✨ **Adicionado**
 
--   **Metadados de Auditoria no Cookie**: O cookie de consentimento agora armazena um snapshot da configuração de categorias (`projectConfig`) que estava ativa no momento em que o consentimento foi dado. Isso fortalece a capacidade de auditoria e a conformidade com a LGPD.
+- **Metadados de Auditoria no Cookie**: O cookie de consentimento agora armazena um snapshot da configuração de categorias (`projectConfig`) que estava ativa no momento em que o consentimento foi dado. Isso fortalece a capacidade de auditoria e a conformidade com a LGPD.
 
 ### 📚 **Documentação**
 
--   **Consolidação**: A pasta `docs` foi significativamente limpa, com a remoção de múltiplos arquivos redundantes e temporários.
--   **README.md Melhorado**: O arquivo `README.md` principal foi completamente reescrito para seguir um padrão profissional, com estrutura clara, exemplos de código atualizados e badges de status do projeto.
--   **Guia de Conformidade Unificado**: O arquivo `COMPLIANCE.md` agora centraliza as informações sobre as funcionalidades de conformidade da biblioteca e as orientações para desenvolvedores, incorporando conteúdo de outros documentos que foram removidos.
+- **Consolidação**: A pasta `docs` foi significativamente limpa, com a remoção de múltiplos arquivos redundantes e temporários.
+- **README.md Melhorado**: O arquivo `README.md` principal foi completamente reescrito para seguir um padrão profissional, com estrutura clara, exemplos de código atualizados e badges de status do projeto.
+- **Guia de Conformidade Unificado**: O arquivo `COMPLIANCE.md` agora centraliza as informações sobre as funcionalidades de conformidade da biblioteca e as orientações para desenvolvedores, incorporando conteúdo de outros documentos que foram removidos.
 
 ### 🐛 **Corrigido**
 
--   **Consistência do Consentimento**: Corrigido o problema onde as ações `ACCEPT_ALL` e `REJECT_ALL` não consideravam a configuração completa do projeto, podendo levar a um estado de preferências incorreto.
+- **Consistência do Consentimento**: Corrigido o problema onde as ações `ACCEPT_ALL` e `REJECT_ALL` não consideravam a configuração completa do projeto, podendo levar a um estado de preferências incorreto.
 
 ## [0.2.2] - 2025-08-12 - SISTEMA DE ORIENTAÇÕES PARA DESENVOLVEDORES
 
@@ -52,7 +71,7 @@ e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 - **Padrão Inteligente**: Quando nenhuma categoria especificada, usa `necessary + analytics`
 - **Orientação Automática**: Avisa sobre uso de configuração padrão em desenvolvimento
-- **Migração Transparente**: API antiga (`customCategories`) funciona perfeitamente
+- **Migração Transparente**: API de categorias funciona perfeitamente
 
 #### **🔍 Análise e Validação de Configuração**
 
@@ -64,9 +83,9 @@ e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 #### **ConsentProvider Expandido**
 
-- **Suporte Completo**: Nova prop `categories` mantém compatibilidade com `customCategories`
+- **Suporte Completo**: Prop `categories` com configuração de categorias padrão e personalizadas
 - **Sistema de Orientações**: Log automático de orientações em modo desenvolvimento
-- **Configuração Híbrida**: Aceita nova API ou migra automaticamente da antiga
+- **Configuração Moderna**: Nova estrutura da prop `categories` para maior flexibilidade
 
 #### **Componentes UI Inteligentes**
 
@@ -112,15 +131,7 @@ e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [0.2.1] - 2025-08-12 - CONFORMIDADE LGPD RIGOROSA
-
-### 🛡️ **BREAKING CHANGES - Conformidade ANPD**
-
-#### **Cookie de Consentimento Reestruturado**
-
-- **🍪 Estrutura do Cookie**: Novo formato com campos obrigatórios para compliance
-  - `version`: Controle de migração de schema
-  - `consentDate`: Timestamp da primeira interação as mudanças notáveis neste projeto serão documentadas neste arquivo.
+as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
@@ -156,7 +167,6 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 <ConsentProvider
   categories={{
     enabledCategories: ['analytics', 'functional'], // Apenas essas + necessary
-    customCategories: [{ id: 'governo', name: '...', essential: false }]
   }}
 >
 ```
@@ -224,11 +234,10 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
   - `social`: Integração com redes sociais
   - `personalization`: Personalização de conteúdo
 
-- **🔧 Sistema de Categorias Extensíveis**
-  - Nova interface `CategoryDefinition` para categorias customizadas
-  - Prop `customCategories` no `ConsentProvider`
-  - Hooks `useCustomCategories()` e `useAllCategories()`
+- **🔧 Sistema de Categorias Flexível**
+  - Nova interface `CategoryDefinition` para definições de categorias
   - Suporte a categorias essenciais vs opcionais
+  - Prop `categories` com configuração granular
 
 - **📝 Textos ANPD Expandidos** (todos opcionais para backward compatibility)
   - `controllerInfo`: Identificação do controlador dos dados

@@ -40,12 +40,6 @@ export function createProjectPreferences(
     }
   })
 
-  // Adicionar categorias customizadas
-  const customCategories = config?.customCategories || []
-  customCategories.forEach((category) => {
-    preferences[category.id] = category.essential === true ? true : defaultValue
-  })
-
   return preferences
 }
 
@@ -70,14 +64,6 @@ export function validateProjectPreferences(
   enabledCategories.forEach((category) => {
     if (category !== 'necessary' && preferences[category] !== undefined) {
       validPreferences[category] = preferences[category]
-    }
-  })
-
-  // Categorias customizadas permitidas
-  const customCategories = config?.customCategories || []
-  customCategories.forEach((category) => {
-    if (preferences[category.id] !== undefined) {
-      validPreferences[category.id] = preferences[category.id]
     }
   })
 
@@ -109,10 +95,6 @@ export function getAllProjectCategories(
       allCategories.push(getDefaultCategoryDefinition(category))
     }
   })
-
-  // Adicionar categorias customizadas
-  const customCategories = config?.customCategories || []
-  allCategories.push(...customCategories)
 
   return allCategories
 }
@@ -183,38 +165,6 @@ export function validateCategoriesConfig(
     config.enabledCategories.forEach((category) => {
       if (!DEFAULT_CATEGORIES.includes(category) && category !== 'necessary') {
         errors.push(`Categoria padrão inválida: ${category}`)
-      }
-    })
-  }
-
-  // Validar categorias customizadas
-  if (config.customCategories) {
-    const customIds = new Set<string>()
-
-    config.customCategories.forEach((category, index) => {
-      // Verificar ID único
-      if (customIds.has(category.id)) {
-        errors.push(`ID de categoria duplicado: ${category.id}`)
-      }
-      customIds.add(category.id)
-
-      // Verificar se não conflita com categorias padrão
-      if (
-        DEFAULT_CATEGORIES.includes(category.id as Category) ||
-        category.id === 'necessary'
-      ) {
-        errors.push(
-          `ID de categoria conflita com categoria padrão: ${category.id}`,
-        )
-      }
-
-      // Verificar campos obrigatórios
-      if (!category.name.trim()) {
-        errors.push(`Nome vazio na categoria customizada ${index}`)
-      }
-
-      if (!category.description.trim()) {
-        errors.push(`Descrição vazia na categoria customizada ${index}`)
       }
     })
   }

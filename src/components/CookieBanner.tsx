@@ -109,9 +109,7 @@ export function CookieBanner({
   const positionStyle = {
     position: 'fixed',
     zIndex: 1300,
-    ...(designTokens?.layout?.position === 'top'
-      ? { top: 0 }
-      : { bottom: 0 }),
+    ...(designTokens?.layout?.position === 'top' ? { top: 0 } : { bottom: 0 }),
     left: 0,
     right: 0,
     width: designTokens?.layout?.width?.desktop ?? '100%',

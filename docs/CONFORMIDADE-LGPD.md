@@ -1,6 +1,6 @@
-# Conformidade LGPD/ANPD - Guia de Implementação v0.2.2
+# Conformidade LGPD/ANPD - Guia de Implementação v0.3.0
 
-## 🎯 **Sistema de Orientações Implementado (v0.2.2)**
+## 🎯 **Sistema de Orientações Implementado (v0.3.0)**
 
 ### ✅ **1. Cookie Inteligente - Minimização de Dados (LGPD Art. 6º)**
 
@@ -8,37 +8,40 @@
 
 ```json
 {
-  "consented": true,
+  "version": "0.3.0",
+  "consented": false,
   "preferences": {
-    "necessary": true,
-    "analytics": true,
-    "functional": true,
-    "marketing": true,
-    "social": true,
-    "personalization": true
+    "necessary": true
   },
-  "isModalOpen": false
+  "consentDate": "YYYY-MM-DDTHH:MM:SS.sssZ",
+  "lastUpdate": "YYYY-MM-DDTHH:MM:SS.sssZ",
+  "source": "initial",
+  "projectConfig": {
+    "enabledCategories": []
+  }
 }
 ```
 
 **Depois (v0.2.2 - Sistema de Orientações):**
 
+````json
 ```json
 {
-  "version": "1.0",
-  "consented": true,
+  "version": "0.3.0",
+  "consented": false,
   "preferences": {
-    "necessary": true,
-    "analytics": false
+    "necessary": true
   },
-  "consentDate": "2025-08-12T14:30:00.000Z",
-  "lastUpdate": "2025-08-12T14:30:00.000Z",
-  "source": "banner",
+  "consentDate": "YYYY-MM-DDTHH:MM:SS.sssZ",
+  "lastUpdate": "YYYY-MM-DDTHH:MM:SS.sssZ",
+  "source": "initial",
   "projectConfig": {
-    "enabledCategories": ["analytics"]
+    "enabledCategories": []
   }
 }
-```
+````
+
+````
 
 ### ✅ **2. UI Dinâmica e Orientação Automática**
 
@@ -49,26 +52,27 @@
   categories={{
     // Especificar apenas categorias que serão usadas
     enabledCategories: ['analytics', 'functional'],
-    // Categorias específicas do projeto
-    customCategories: [{
-      id: 'governo',
-      name: 'Integração Governamental',
-      description: 'Cookies para sistemas gov.br',
-      essential: false
-    }]
   }}
 >
-```
+````
 
 **Cookie resultante (apenas categorias ativas):**
 
 ```json
 {
+  "version": "0.3.0",
+  "consented": true,
   "preferences": {
     "necessary": true,
-    "analytics": false,
-    "functional": false,
-    "governo": false
+    "analytics": true,
+    "functional": true,
+    "governo": true
+  },
+  "consentDate": "2025-08-12T14:30:00.000Z",
+  "lastUpdate": "2025-08-12T14:30:00.000Z",
+  "source": "modal",
+  "projectConfig": {
+    "enabledCategories": ["analytics", "functional"]
   }
 }
 ```
@@ -95,6 +99,8 @@
 </ConsentProvider>
 ```
 
+> **⚠️ Importante**: No momento, o fechamento ou a não interação com o banner não-bloqueante **NÃO** implica em rejeição automática de cookies. O banner reaparecerá em visitas futuras até que uma escolha explícita seja feita. A implementação de "dispensar como rejeitar todos" é uma funcionalidade planejada para futuras versões (`v0.+1.0`).
+
 ### ✅ **4. Auditoria e Rastreabilidade**
 
 **Campos obrigatórios no cookie:**
@@ -111,44 +117,10 @@
 
 ---
 
-## 📋 **Guia de Migração v0.2.1 → v0.2.2**
-
-### **1. Especificar Categorias Ativas**
-
-```tsx
-// ❌ Antes - Todas as 6 categorias sempre ativas
-<ConsentProvider>
-
-// ✅ Depois - Apenas categorias necessárias
-<ConsentProvider
-  categories={{
-    enabledCategories: ['analytics'], // Só analytics + necessary
-  }}
->
-```
-
-### **2. Banner Bloqueante**
-
-```tsx
-// ✅ Para compliance rigorosa
-<ConsentProvider blocking={true}>
-  <CookieBanner /> {/* Bloqueia até decisão */}
-```
-
-### **3. Migração Automática de Cookies**
-
-A biblioteca detecta e migra automaticamente cookies v0.2.0:
-
-- Adiciona campos obrigatórios (`version`, timestamps, `source`)
-- Remove `isModalOpen`
-- Preserva preferências existentes
-
----
-
 ## 🏛️ **Exemplo: Projeto Governamental**
 
 ```tsx
-import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'
+import { ConsentProvider } from 'react-lgpd-consent' // CookieBanner não é mais importado diretamente
 
 function App() {
   return (
@@ -156,14 +128,6 @@ function App() {
       // Configuração de categorias específicas
       categories={{
         enabledCategories: ['analytics'],
-        customCategories: [
-          {
-            id: 'governo',
-            name: 'Integração gov.br',
-            description: 'Cookies para login único e serviços governamentais',
-            essential: false,
-          },
-        ],
       }}
       // Banner bloqueante para compliance rigorosa
       blocking={true}
@@ -188,7 +152,7 @@ function App() {
       }}
     >
       <YourApp />
-      <CookieBanner />
+      {/* CookieBanner é renderizado automaticamente pelo ConsentProvider */}
     </ConsentProvider>
   )
 }
@@ -196,20 +160,25 @@ function App() {
 
 **Cookie resultante:**
 
+````json
 ```json
 {
-  "version": "1.0",
+  "version": "0.3.0",
   "consented": true,
   "preferences": {
     "necessary": true,
-    "analytics": false,
-    "governo": true
+    "analytics": true
   },
   "consentDate": "2025-08-12T14:30:00.000Z",
   "lastUpdate": "2025-08-12T14:30:00.000Z",
-  "source": "banner"
+  "source": "banner",
+  "projectConfig": {
+    "enabledCategories": ["analytics"]
+  }
 }
-```
+````
+
+````
 
 ---
 
@@ -243,7 +212,7 @@ function App() {
 
 ## 💡 **Outras Informações para Conformidade**
 
-### **Campos Adicionais Recomendados** (futuro v0.2.2):
+### **Campos Adicionais Recomendados** (futuro v0.+1.0):
 
 ```tsx
 // Informações extras para compliance avançada
@@ -258,7 +227,7 @@ export interface ConsentCookieData {
   language?: string // Idioma preferido
   deviceType?: string // mobile/desktop (para analytics)
 }
-```
+````
 
 ### **Integração com Sistemas de Auditoria:**
 
@@ -287,7 +256,7 @@ const logEntry = {
 
 ## 🎯 **Conclusão**
 
-**v0.2.2 transforma a biblioteca numa solução 100% compliant com LGPD/ANPD:**
+**v0.3.0 transforma a biblioteca numa solução 100% compliant com LGPD/ANPD:**
 
 ✅ **Minimização**: Apenas dados necessários no cookie  
 ✅ **Especificidade**: Consentimento granular por categoria ativa  

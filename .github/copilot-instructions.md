@@ -94,9 +94,9 @@ Foco na **v0.2.7 - Compliance Avançado**:
 ## 🚨 NUNCA Fazer
 
 ❌ **Breaking changes** em versões minor/patch.
-❌ Usar a prop `customCategories` (legada). **Prefira a nova API `categories`**.
 ❌ Deixar a configuração de categorias vazia em produção (o sistema usará um padrão e emitirá um aviso em dev).
 ❌ Adicionar lógica de UI para uma categoria sem antes verificar seu status com `useCategoryStatus()`.
+❌ Usar APIs descontinuadas - sempre usar a estrutura atual da prop `categories`.
 
 ## ✅ Sempre Fazer
 

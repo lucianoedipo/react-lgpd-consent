@@ -203,10 +203,10 @@ const HydrationCtx = React.createContext<boolean>(false)
  */
 export function ConsentProvider({
   initialState,
-  categories, // NOVO: configuração completa de categorias
+  categories, // Nova prop para configuração de categorias
   texts: textsProp,
   theme,
-  customCategories, // LEGACY: compatibilidade
+
   designTokens,
   scriptIntegrations, // eslint-disable-line no-unused-vars
   PreferencesModalComponent,
@@ -236,18 +236,11 @@ export function ConsentProvider({
     [theme],
   )
 
-  // Configuração de categorias (nova API ou compatibilidade)
+  // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
     if (categories) return categories
-    // LEGACY: migração automática de customCategories para nova API
-    if (customCategories) {
-      return {
-        enabledCategories: ['analytics'] as Category[], // padrão quando usando API antiga
-        customCategories,
-      }
-    }
     return DEFAULT_PROJECT_CATEGORIES // Fallback para o padrão
-  }, [categories, customCategories])
+  }, [categories])
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
   useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance)
@@ -311,19 +304,6 @@ export function ConsentProvider({
     prevConsented.current = state.consented
   }, [state, onConsentGiven])
 
-  const prevPrefs = React.useRef(state.preferences)
-  React.useEffect(() => {
-    if (
-      state.consented &&
-      onPreferencesSaved &&
-      prevPrefs.current !== state.preferences
-    ) {
-      // Pequeno delay para permitir animações
-      setTimeout(() => onPreferencesSaved(state.preferences), 150)
-      prevPrefs.current = state.preferences
-    }
-  }, [state, onPreferencesSaved])
-
   const api = React.useMemo<ConsentContextValue>(() => {
     const acceptAll = () =>
       dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
@@ -331,12 +311,16 @@ export function ConsentProvider({
       dispatch({ type: 'REJECT_ALL', config: finalCategoriesConfig })
     const setPreference = (category: Category, value: boolean) =>
       dispatch({ type: 'SET_CATEGORY', category, value })
-    const setPreferences = (preferences: ConsentPreferences) =>
+    const setPreferences = (preferences: ConsentPreferences) => {
       dispatch({
         type: 'SET_PREFERENCES',
         preferences,
         config: finalCategoriesConfig,
       })
+      if (onPreferencesSaved) {
+        setTimeout(() => onPreferencesSaved(preferences), 150)
+      }
+    }
     const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })
     const closePreferences = () =>
       dispatch({ type: 'CLOSE_MODAL', config: finalCategoriesConfig })
@@ -356,7 +340,7 @@ export function ConsentProvider({
       closePreferences,
       resetConsent,
     }
-  }, [state, cookie, finalCategoriesConfig])
+  }, [state, cookie, finalCategoriesConfig, onPreferencesSaved])
 
   return (
     <ThemeProvider theme={appliedTheme}>
@@ -367,7 +351,6 @@ export function ConsentProvider({
               <DesignProvider tokens={designTokens}>
                 <CategoriesProvider
                   config={finalCategoriesConfig}
-                  categories={customCategories} // LEGACY fallback
                   disableDeveloperGuidance={disableDeveloperGuidance}
                 >
                   {children}

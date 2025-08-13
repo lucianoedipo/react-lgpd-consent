@@ -15,31 +15,81 @@
  */
 
 // Componentes
+
+/**
+ * Modal de preferências de cookies conforme configuração do projeto.
+ * Exibe categorias ativas e permite ao usuário ajustar consentimentos.
+ */
 export { PreferencesModal } from './components/PreferencesModal'
 
 // Contexto + Hooks
+
+/**
+ * Provider global de consentimento. Deve envolver sua aplicação para fornecer contexto de consentimento.
+ */
 export { ConsentProvider } from './context/ConsentContext'
+
+/**
+ * Hook para acessar e manipular o estado de consentimento do usuário.
+ * @returns Estado e métodos para consentimento.
+ */
 export {
   useConsent,
+  /**
+   * Hook para acessar os textos customizados de consentimento.
+   * @returns Textos definidos via prop `texts`.
+   */
   useConsentTexts,
+  /**
+   * Hook para verificar se o consentimento já foi hidratado (SSR/CSR).
+   * @returns Booleano indicando hidratação.
+   */
   useConsentHydration,
 } from './hooks/useConsent'
 
 // Hooks de categorias - novo sistema
-export {
-  useCategories,
-  useCategoryStatus,
-  useCustomCategories, // LEGACY compatibility
-} from './context/CategoriesContext'
+
+/**
+ * Hook para obter a lista de categorias ativas no projeto.
+ * @returns Array de categorias configuradas.
+ */
+/**
+ * Hook para verificar o status de consentimento de uma categoria específica.
+ * @param categoryId ID da categoria.
+ * @returns Booleano indicando se a categoria está consentida.
+ */
+export { useCategories, useCategoryStatus } from './context/CategoriesContext'
 
 // Utils
+
+/**
+ * Componente utilitário para renderização condicional baseada em consentimento.
+ */
 export { ConsentGate } from './utils/ConsentGate'
+
+/**
+ * Função utilitária para carregamento dinâmico de scripts externos.
+ */
 export { loadScript } from './utils/scriptLoader'
+
+/**
+ * Tema padrão para componentes de consentimento.
+ */
 export { defaultConsentTheme } from './utils/theme'
+
+/**
+ * Loader de scripts condicionado ao consentimento do usuário.
+ * Inclui hook para uso programático.
+ */
 export {
   ConsentScriptLoader,
   useConsentScriptLoader,
 } from './utils/ConsentScriptLoader'
+
+/**
+ * Integrações prontas para Google Analytics, Google Tag Manager e UserWay.
+ * Tipos auxiliares para configuração dessas integrações.
+ */
 export {
   createGoogleAnalyticsIntegration,
   createGoogleTagManagerIntegration,
@@ -52,6 +102,10 @@ export {
 } from './utils/scriptIntegrations'
 
 // Tipos
+
+/**
+ * Tipos principais para configuração e uso do sistema de consentimento.
+ */
 export type {
   Category,
   CategoryDefinition,
@@ -59,11 +113,19 @@ export type {
   ConsentState,
   ConsentTexts,
   ConsentCookieOptions,
-  ProjectCategoriesConfig, // Nova configuração de categorias
+  ProjectCategoriesConfig,
 } from './types/types'
 
 // Utilitários de orientação para developers
+
+/**
+ * Tipo para orientações automáticas de configuração para desenvolvedores.
+ */
 export type { DeveloperGuidance } from './utils/developerGuidance'
+
+/**
+ * Categorias padrão do projeto e função para análise da configuração do desenvolvedor.
+ */
 export {
   DEFAULT_PROJECT_CATEGORIES,
   analyzeDeveloperConfiguration,

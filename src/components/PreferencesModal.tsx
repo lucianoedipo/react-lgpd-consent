@@ -126,9 +126,6 @@ export function PreferencesModal({
         </FormGroup>
       </DialogContent>
 
-      {/* Branding */}
-      {!hideBranding && <Branding variant="modal" />}
-
       <DialogActions>
         <Button variant="outlined" onClick={handleCancel}>
           Cancelar
@@ -137,6 +134,8 @@ export function PreferencesModal({
           {texts.save}
         </Button>
       </DialogActions>
+      {/* Branding */}
+      {!hideBranding && <Branding variant="modal" />}
     </Dialog>
   )
 }

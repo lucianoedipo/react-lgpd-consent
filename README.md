@@ -1,6 +1,6 @@
 # react-lgpd-consent 🍪
 
-[![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
+[![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent/v0.3.0?style=for-the-badge&color=blue)](https://www.npmjs.com/package/react-lgpd-consent)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&color=green)](https://bundlephobia.com/package/react-lgpd-consent)
 [![Downloads](https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&color=orange)](https://www.npmjs.com/package/react-lgpd-consent)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -20,7 +20,9 @@ Solução moderna, acessível e personalizável para gerenciar o consentimento d
 - ⏰ **Auditoria**: O cookie armazena metadados essenciais como data do consentimento, versão e origem.
 - 🎨 **Customizável**: Personalize textos, tema (Material-UI) e componentes.
 - ♿ **Acessibilidade**: Suporte para navegação por teclado e leitores de tela.
-- 📦 **Leve e Otimizado**: Performance em foco, com lazy-loading e tree-shaking.
+- 📦 **Leve e Otimizado**: Performance em foco, com tree-shaking.
+- ✨ **Renderização Automática de UI**: O `ConsentProvider` agora gerencia a exibição do banner e do botão flutuante por padrão.
+- 🎨 **Componentes UI Sobrescrevíveis**: Forneça seus próprios componentes de UI com tipagem clara para total personalização.
 
 ## 🚀 Instalação
 
@@ -40,11 +42,7 @@ O exemplo abaixo mostra como implementar um banner de consentimento funcional co
 
 ```tsx
 // Em seu componente principal, como App.tsx
-import {
-  ConsentProvider,
-  CookieBanner,
-  FloatingPreferencesButton,
-} from 'react-lgpd-consent'
+import { ConsentProvider } from 'react-lgpd-consent'
 
 function App() {
   return (
@@ -65,11 +63,8 @@ function App() {
       <h1>Meu Site</h1>
       <p>Bem-vindo ao meu site.</p>
 
-      {/* 4. Renderize o banner */}
-      <CookieBanner policyLinkUrl="/politica-de-privacidade" />
-
-      {/* 5. (Opcional) Renderize o botão flutuante para o usuário reabrir as preferências */}
-      <FloatingPreferencesButton />
+      {/* O ConsentProvider agora renderiza automaticamente o banner e o botão flutuante */}
+      {/* Você pode sobrescrevê-los usando as props CookieBannerComponent e FloatingPreferencesButtonComponent */}
     </ConsentProvider>
   )
 }
@@ -88,16 +83,6 @@ A prop `categories` no `ConsentProvider` é o ponto central da biblioteca. Ela f
   categories={{
     // Habilita as categorias padrão 'analytics' e 'functional'
     enabledCategories: ['analytics', 'functional'],
-
-    // Adiciona uma categoria específica para seu projeto
-    customCategories: [
-      {
-        id: 'chat-support',
-        name: 'Suporte via Chat',
-        description: 'Permite o funcionamento do nosso chat de suporte.',
-        essential: false,
-      },
-    ],
   }}
 >
   {/*...*/}
@@ -150,6 +135,14 @@ function MarketingPixel() {
 }
 ```
 
+### API e Funcionalidades
+
+A versão `v0.3.0` simplifica a API e melhora a experiência do desenvolvedor.
+
+- **Componentes UI Sobrescrevíveis com Tipagem Clara**: Agora você pode fornecer seus próprios componentes para o banner, modal e botão flutuante, com props tipadas para garantir a compatibilidade. Consulte `CustomCookieBannerProps`, `CustomPreferencesModalProps` e `CustomFloatingPreferencesButtonProps` para detalhes.
+- **Controle Simplificado do Modal**: A prop `disableAutomaticModal` foi removida. A visibilidade do modal é controlada internamente.
+- **Remoção de Hooks Internos**: O hook `useConsentComponentProps` foi removido para simplificar a API. Use `useConsent()` e `useConsentTexts()` diretamente.
+
 ### Hooks
 
 A biblioteca exporta hooks para controle total e criação de UIs customizadas:
@@ -171,7 +164,7 @@ Para mais detalhes, consulte o nosso **[Guia de Conformidade](docs/CONFORMIDADE-
 
 ## 🤝 Contribuições
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir uma *issue* ou um *pull request*.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir uma _issue_ ou um _pull request_.
 
 ## 📄 Licença
 

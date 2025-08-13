@@ -11,15 +11,24 @@ A `react-lgpd-consent` é uma biblioteca **client-side** focada em aplicações 
 - **js-cookie**: Persistência leve e confiável
 - **TypeScript**: Type safety completo
 
-### Status Atual (v0.2.2)
+### Status Atual (v0.3.0)
 
-✅ **IMPLEMENTADO**: Sistema de Orientações para Desenvolvedores
+🚨 **MUDANÇAS QUE QUEBRAM A COMPATIBILIDADE**
 
-- ✅ **UI Dinâmica**: Componentes se adaptam automaticamente à configuração
-- ✅ **Orientação Automática**: Console com avisos e sugestões de compliance
-- ✅ **Hooks Avançados**: `useCategories()` e `useCategoryStatus()` para controle total
-- ✅ **Configuração Inteligente**: Padrão defensivo previne problemas comuns
-- ✅ **100% Backward Compatible**: APIs v0.1.x e v0.2.x funcionam perfeitamente
+-   **Renderização Automática de Componentes UI Padrão**: O `ConsentProvider` agora gerencia a exibição do `CookieBanner` e do `FloatingPreferencesButton` por padrão.
+-   **Componentes UI Sobrescrevíveis com Tipagem Clara**: Permite que desenvolvedores forneçam seus próprios componentes de banner, modal e botão flutuante com total segurança de tipo.
+-   **Controle Simplificado do Modal**: A prop `disableAutomaticModal` foi removida. A visibilidade do modal é controlada exclusivamente pelo estado interno.
+-   **Carregamento Imediato de Banner e Botão Flutuante**: Removido o lazy loading para `CookieBanner` e `FloatingPreferencesButton` para garantir visibilidade imediata e evitar falhas de carregamento.
+-   **Remoção de Exports Diretos de Componentes UI**: `CookieBanner` e `FloatingPreferencesButton` não são mais exportados diretamente.
+-   **Remoção do Hook `useConsentComponentProps`**: Este hook utilitário foi removido.
+
+✅ **MELHORIAS E NOVAS FUNCIONALIDADES**
+
+-   **Prop `disableDeveloperGuidance`**: Permite desabilitar os avisos e sugestões para desenvolvedores no console.
+-   **Prop `reloadOnChange` para `ConsentScriptLoader`**: Permite recarregar scripts de integração quando as preferências de consentimento mudam.
+-   **Ajuste de Posição da Marca**: A marca "fornecido por LÉdipO.eti.br" agora é exibida no canto inferior direito do banner e modal.
+
+✅ **100% Backward Compatible** (com exceção das quebras de compatibilidade listadas acima)
 
 ### Suporte Completo
 
@@ -27,7 +36,7 @@ A `react-lgpd-consent` é uma biblioteca **client-side** focada em aplicações 
 ✅ **Limited SSR Support**: Via prop `initialState` (sem flash)
 ✅ **Next.js Compatible**: Funciona com configuração adequada
 
-## 📁 Estrutura do Projeto (v0.2.2)
+## 📁 Estrutura do Projeto (v0.3.0)
 
 ```
 src/
@@ -37,12 +46,11 @@ src/
 │   ├── FloatingPreferencesButton.tsx # FAB
 │   └── Branding.tsx         # Componente de branding
 ├── context/                 # Estado global
-│   ├── ConsentContext.tsx   # Provider principal (v0.2.2 - Sistema de Orientações)
-│   └── CategoriesContext.tsx # Provider de categorias customizadas
+│   ├── ConsentContext.tsx   # Provider principal
+│   ├── CategoriesContext.tsx # Provider de categorias customizadas (inclui useCategories e useCategoryStatus)
+│   └── DesignContext.tsx    # Contexto para tokens de design
 ├── hooks/                   # Hooks públicos
-│   ├── useConsent.ts        # API principal
-│   ├── useCategories.ts     # 🆕 v0.2.2 - Hook de categorias ativas
-│   └── useCategoryStatus.ts # 🆕 v0.2.2 - Status de categoria específica
+│   └── useConsent.ts        # API principal
 ├── utils/                   # Utilitários
 │   ├── ConsentGate.tsx      # Renderização condicional
 │   ├── ConsentScriptLoader.tsx # Carregamento automático de scripts
@@ -50,17 +58,11 @@ src/
 │   ├── cookieUtils.ts       # Manipulação de cookies
 │   ├── scriptLoader.ts      # Carregamento dinâmico
 │   ├── theme.ts             # Tema padrão MUI
-│   └── developerGuidance.ts # 🆕 v0.2.2 - Sistema de orientações
+│   └── developerGuidance.ts # Sistema de orientações (lógica integrada ao ConsentContext)
 ├── types/                   # Definições TypeScript
-│   └── types.ts             # Todos os tipos (expandido v0.2.2)
-└── index.ts                 # Exports públicos (expandido v0.2.2)
+│   └── types.ts             # Todos os tipos
+└── index.ts                 # Exports públicos
 ```
-
-### 🆕 Novos Arquivos v0.2.2
-
-- **`useCategories.ts`**: Hook para informações sobre categorias ativas no projeto
-- **`useCategoryStatus.ts`**: Hook para verificar se categoria específica está configurada
-- **`developerGuidance.ts`**: Sistema inteligente de orientações e validação
 
 ## 🔄 Fluxo de Estado
 
@@ -107,31 +109,32 @@ graph TD
 
 ## 🧩 Componentes Internos
 
-### ConsentContext.tsx ✨ **EXPANDIDO v0.2.2**
+### ConsentContext.tsx
 
-**Responsabilidades (v0.2.2):**
+**Responsabilidades:**
 
 - Gerenciar estado global via useReducer
 - Sincronizar com cookies inteligentes (apenas categorias ativas)
 - Fornecer callbacks de eventos
-- Lazy loading do modal
+- Lazy loading do modal (apenas o modal permanece lazy-loaded)
 - Sistema de hidratação (zero flash)
 - Integração com categorias customizadas
-- **🆕 Sistema de orientações automáticas**
-- **🆕 Configuração padrão inteligente**
-- **🆕 Validação de configuração do projeto**
+- Sistema de orientações automáticas
+- Configuração padrão inteligente
+- Validação de configuração do projeto
 
-**Estados importantes (v0.2.2):**
+**Estados importantes:**
 
 ```typescript
 interface ConsentState {
   consented: boolean // Se há consentimento
   preferences: ConsentPreferences // Apenas categorias ativas no projeto
   isModalOpen: boolean // Modal aberto/fechado
-  version: string // 🆕 Versioning do cookie
-  consentDate?: string // 🆕 Data do consentimento inicial
-  lastUpdate?: string // 🆕 Última atualização
-  source?: 'banner' | 'modal' | 'api' // 🆕 Origem do consentimento
+  version: string // Versioning do cookie
+  consentDate?: string // Data do consentimento inicial
+  lastUpdate?: string // Última atualização
+  source?: 'banner' | 'modal' | 'api' // Origem do consentimento
+  projectConfig?: ProjectCategoriesConfig // Snapshot da configuração de categorias
 }
 
 interface ConsentPreferences {
@@ -144,51 +147,48 @@ interface ConsentPreferences {
 
 ```typescript
 type Action =
-  | { type: 'ACCEPT_ALL' } // Aceita todas as categorias
-  | { type: 'REJECT_ALL' } // Rejeita todas as categorias
-  | { type: 'SET_PREFERENCES'; preferences: ConsentPreferences }
+  | { type: 'ACCEPT_ALL'; config: ProjectCategoriesConfig } // Aceita todas as categorias
+  | { type: 'REJECT_ALL'; config: ProjectCategoriesConfig } // Rejeita todas as categorias
+  | { type: 'SET_CATEGORY'; category: Category; value: boolean } // Define preferência específica
+  | { type: 'SET_PREFERENCES'; preferences: ConsentPreferences; config: ProjectCategoriesConfig } // Define múltiplas preferências
   | { type: 'OPEN_MODAL' } // Abre modal de configurações
-  | { type: 'CLOSE_MODAL' } // Fecha modal
-  | { type: 'RESET' } // Reseta para estado inicial
-  | { type: 'HYDRATE'; state: ConsentState } // Restaura do cookie
+  | { type: 'CLOSE_MODAL'; config: ProjectCategoriesConfig } // Fecha modal
+  | { type: 'RESET'; config: ProjectCategoriesConfig } // Reseta para estado inicial
+  | { type: 'HYDRATE'; state: ConsentState; config: ProjectCategoriesConfig } // Restaura do cookie
 ```
 
 ### CookieBanner.tsx
 
 **Responsabilidades:**
 
-- Renderizar banner quando necessário
-- Fornecer botões de ação
-- Suporte a modo bloqueante vs não-bloqueante
-- Integração com sistema de hidratação
+- Renderizar banner quando necessário (controlado pelo `ConsentProvider`).
+- Fornecer botões de ação.
+- Suporte a modo bloqueante vs não-bloqueante.
+- **Recebe props tipadas** (`CustomCookieBannerProps`) do `ConsentProvider`.
 
-**Lógica de exibição:**
+**Lógica de exibição (controlado pelo `ConsentProvider`):**
 
-```typescript
-// ❌ PROBLEMA: Flash do banner
-const open = debug ? true : !consented
-
-// ✅ SOLUÇÃO: Zero flash
-const open = debug ? true : isHydrated && !consented
-```
+O `CookieBanner` é renderizado pelo `ConsentProvider` quando `!state.consented && isHydrated`.
 
 ### PreferencesModal.tsx
 
 **Responsabilidades:**
 
-- Interface de configuração granular
-- Switches para cada categoria
-- Lazy loading para otimizar bundle
-- Acessibilidade completa
+- Interface de configuração granular.
+- Switches para cada categoria.
+- Lazy loading para otimizar bundle (permanece lazy-loaded).
+- Acessibilidade completa.
+- **Recebe props tipadas** (`CustomPreferencesModalProps`) do `ConsentProvider`.
 
 ### FloatingPreferencesButton.tsx
 
 **Responsabilidades:**
 
-- FAB posicionável (4 cantos da tela)
-- Tooltip explicativo
-- Esconder/mostrar baseado em estado
-- Integração com tema MUI
+- FAB posicionável (4 cantos da tela).
+- Tooltip explicativo.
+- Esconder/mostrar baseado em estado (controlado pelo `ConsentProvider`).
+- Integração com tema MUI.
+- **Recebe props tipadas** (`CustomFloatingPreferencesButtonProps`) do `ConsentProvider`.
 
 ## 🍪 Sistema de Cookies
 
@@ -210,16 +210,22 @@ const DEFAULT_COOKIE_OPTS = {
 2. **Segura**: Só salva se `state.consented === true`
 3. **Resiliente**: Fallback para estado padrão se cookie corrompido
 
-### Formato do Cookie
+### Formato do Cookie (v0.3.0)
 
 ```json
 {
+  "version": "1.0",
   "consented": true,
   "preferences": {
-    "analytics": true,
-    "marketing": false
+    "necessary": true,
+    "analytics": false
   },
-  "isModalOpen": false
+  "consentDate": "2025-08-12T14:30:00.000Z",
+  "lastUpdate": "2025-08-12T14:30:00.000Z",
+  "source": "banner",
+  "projectConfig": {
+    "enabledCategories": ["analytics"]
+  }
 }
 ```
 
@@ -238,19 +244,25 @@ function CookieBanner() {
 }
 ```
 
-### Solução Implementada
+### Solução Implementada (v0.3.0)
+
+A lógica de hidratação e a decisão de renderizar o banner agora são gerenciadas centralmente no `ConsentProvider`, garantindo que o banner só apareça após a verificação do cookie e se o consentimento ainda não foi dado.
 
 ```typescript
-// ✅ AGORA: Banner só aparece se realmente necessário
+// ✅ AGORA: Banner só aparece se realmente necessário (lógica no ConsentProvider)
+// O CookieBanner não precisa mais da lógica de hidratação interna.
 function CookieBanner() {
-  const { consented } = useConsent()
-  const isHydrated = useConsentHydration() // 🎯 KEY!
-
-  // Só mostra após verificar cookie existente
-  if (!isHydrated || consented) return null
-  return <Banner />
+  // ... (implementação interna do banner)
+  // Ele recebe as props 'consented' e 'texts' do ConsentProvider
 }
 ```
+
+### Fluxo de Hidratação (v0.3.0)
+
+1. **Mount**: `isHydrated = false`, banner não aparece.
+2. **useEffect no ConsentProvider**: Lê cookie, se existir atualiza estado.
+3. **Conclusão**: `isHydrated = true`.
+4. **Render**: `ConsentProvider` re-renderiza e o `CookieBanner` aparece apenas se `!state.consented && isHydrated` for verdadeiro.
 
 ### Fluxo de Hidratação
 
@@ -276,16 +288,16 @@ export default {
 }
 ```
 
-### Bundle Atual (v0.1.11)
+### Bundle Atual (v0.3.0)
 
-- **ESM**: 6.65 KB + 14.08 KB chunk
-- **CJS**: 26.43 KB
-- **Types**: 6.73 KB
-- **Gzipped**: ~8 KB total
+- **ESM**: (TBD) KB
+- **CJS**: (TBD) KB
+- **Types**: (TBD) KB
+- **Gzipped**: (TBD) KB total
 
 ### Otimizações Implementadas
 
-1. **Lazy Loading**: Modal só carrega quando necessário
+1. **Lazy Loading**: Modal de Preferências só carrega quando necessário (Banner e Botão Flutuante não são lazy-loaded para garantir visibilidade imediata).
 2. **Tree Shaking**: Imports individuais do MUI
 3. **Code Splitting**: Chunk separado para PreferencesModal
 4. **External Dependencies**: React, MUI e js-cookie como peers
@@ -367,51 +379,24 @@ ls -la dist/
 
 ## 🔮 Roadmap Técnico
 
-### v0.2.0 - Robustez
+### v0.3.0 (Atual) - Refatoração e Quebra de Compatibilidade
 
-- [ ] Validação de schema do cookie
-- [ ] Fallback para localStorage se cookies desabilitados
-- [ ] Retry logic para writeConsentCookie
-- [ ] Logging estruturado opcional
+-   **Foco**: Consolidação da arquitetura, melhoria da experiência do desenvolvedor (DX) e preparação para futuras expansões.
 
-### v0.3.0 - DX Melhorado
+### Próximas Versões (Pseudo-Versioning)
 
-- [ ] Storybook para componentes
-- [ ] Playground online
-- [ ] Templates de configuração
-- [ ] CLI para setup inicial
-
-### v0.4.0 - SSR Support (Major)
-
-- [ ] Compatibilidade Next.js
-- [ ] Hidratação sem flash em SSR
-- [ ] Edge runtime support
-- [ ] Streaming SSR compatibility
-
-### v0.5.0 - Enterprise
-
-- [ ] Audit logs
-- [ ] Compliance dashboard
-- [ ] Multi-tenant support
-- [ ] Analytics integration
+-   **v+1.0.0 (Multi-Regulamentação e Conformidade Avançada)**:
+    -   **Geolocalização-based Consent**: Detecção automática da região do usuário para aplicar a regulamentação relevante (LGPD, GDPR, CCPA).
+    -   **Configurable Regulation Profiles**: Definição de perfis de regulamentação com requisitos específicos.
+    -   **Dynamic Text Adaptation**: Textos adaptáveis com base na regulamentação ativa.
+    -   **Modal Detalhado de Cookies**: Exibição de informações técnicas sobre cada cookie (nome, duração, provedor).
+    -   **Logs de Auditoria**: Sistema de log client-side para registrar todas as interações de consentimento do usuário.
+    -   **Templates Setoriais**: Configurações e textos pré-definidos para setores específicos (governo, saúde, e-commerce).
+    -   **Plugin System**: Sistema de plugins para extensibilidade de integrações e lógica customizada.
+    -   **Improved `ConsentGate`**: Controle mais granular (e.g., `analytics AND functional`).
+    -   **Enhanced Developer Guidance**: Mais avisos e sugestões detalhadas.
 
 ## 🐛 Debugging
-
-### Console Logs
-
-A biblioteca usa console.log para debugging em desenvolvimento:
-
-```typescript
-console.log('🚀 Immediate hydration: Cookie found', saved)
-console.log('💾 Saving state to cookie:', state)
-```
-
-### Debug Props
-
-```tsx
-<CookieBanner debug={true} /> // Força exibição
-<FloatingPreferencesButton debug={true} /> // Logs extras
-```
 
 ### Dev Tools
 

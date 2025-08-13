@@ -9,8 +9,13 @@ const DesignContext = React.createContext<DesignTokens | undefined>(undefined)
 /**
  * Provider para o contexto de design.
  */
-export function DesignProvider({ tokens, children }: Readonly<{ tokens?: DesignTokens; children: React.ReactNode }>) {
-  return <DesignContext.Provider value={tokens}>{children}</DesignContext.Provider>
+export function DesignProvider({
+  tokens,
+  children,
+}: Readonly<{ tokens?: DesignTokens; children: React.ReactNode }>) {
+  return (
+    <DesignContext.Provider value={tokens}>{children}</DesignContext.Provider>
+  )
 }
 
 /**

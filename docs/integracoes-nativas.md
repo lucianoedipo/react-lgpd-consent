@@ -1,4 +1,4 @@
-# Integrações Nativas - react-lgpd-consent
+# Integrações Nativas - react-lgpd-consent v0.3.0
 
 ## 🚀 Visão Geral
 
@@ -100,7 +100,7 @@ function App() {
   return (
     <ConsentProvider>
       <ConsentScriptLoader integrations={integrations} />
-      <CookieBanner policyLinkUrl="/privacy" />
+      {/* O CookieBanner e FloatingPreferencesButton são renderizados automaticamente pelo ConsentProvider */}
       {/* Sua aplicação */}
     </ConsentProvider>
   )
@@ -240,22 +240,24 @@ function ScriptStatus() {
 
 ## 🚫 Limitações Atuais
 
-- ⚠️ Scripts carregam apenas uma vez por sessão
-- ⚠️ Sem suporte a recarregamento dinâmico (use `reloadOnChange: true`)
+- ⚠️ Scripts carregam apenas uma vez por sessão (a menos que `reloadOnChange` seja `true`)
 - ⚠️ Inicialização assíncrona pode ter delay de ~150ms
 
 ## 🗺️ Roadmap
 
-### v0.3.0
+### v0.3.0 (Atual)
 
-- [ ] Mais integrações nativas (Hotjar, Intercom, Crisp)
-- [ ] Suporte a condições múltiplas (`analytics AND functional`)
-- [ ] Sistema de prioridades para carregamento
-- [ ] Cache inteligente de scripts
+-   **Foco**: Refatoração da arquitetura, melhoria da experiência do desenvolvedor (DX) e quebra de compatibilidade para simplificação.
 
-### v0.4.0
+### Próximas Versões (Pseudo-Versioning)
 
-- [ ] Plugin system para integrações de terceiros
-- [ ] Integração com CSP (Content Security Policy)
-- [ ] Lazy loading baseado em interação do usuário
-- [ ] Métricas de performance dos scripts
+-   **v0.+1.0 (Multi-Regulamentação e Conformidade Avançada)**:
+    -   **Geolocalização-based Consent**: Detecção automática da região do usuário para aplicar a regulamentação relevante (LGPD, GDPR, CCPA).
+    -   **Configurable Regulation Profiles**: Definição de perfis de regulamentação com requisitos específicos.
+    -   **Dynamic Text Adaptation**: Textos adaptáveis com base na regulamentação ativa.
+    -   **Modal Detalhado de Cookies**: Exibição de informações técnicas sobre cada cookie (nome, duração, provedor).
+    -   **Logs de Auditoria**: Sistema de log client-side para registrar todas as interações de consentimento do usuário.
+    -   **Templates Setoriais**: Configurações e textos pré-definidos para setores específicos (governo, saúde, e-commerce).
+    -   **Plugin System**: Sistema de plugins para extensibilidade de integrações e lógica customizada.
+    -   **Improved `ConsentGate`**: Controle mais granular (e.g., `analytics AND functional`).
+    -   **Enhanced Developer Guidance**: Mais avisos e sugestões detalhadas.

@@ -30,7 +30,6 @@ export interface DeveloperGuidance {
  */
 export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
   enabledCategories: ['analytics'], // Só analytics além de necessary
-  customCategories: [],
 }
 
 /**
@@ -104,18 +103,6 @@ export function analyzeDeveloperConfiguration(
     }
   })
 
-  // 3. Categorias customizadas
-  const customCategories = finalConfig.customCategories || []
-  customCategories.forEach((category) => {
-    guidance.activeCategoriesInfo.push({
-      id: category.id,
-      name: category.name,
-      description: category.description,
-      essential: category.essential === true,
-      uiRequired: category.essential !== true, // Apenas não-essenciais precisam toggle
-    })
-  })
-
   // Validações e sugestões
   const totalToggleable = guidance.activeCategoriesInfo.filter(
     (c) => c.uiRequired,
@@ -132,17 +119,6 @@ export function analyzeDeveloperConfiguration(
     guidance.warnings.push(
       `${totalToggleable} categorias opcionais detectadas. UI com muitas opções pode ' +
       'prejudicar experiência do usuário. Considere agrupar categorias similares.`,
-    )
-  }
-
-  // Verifica se há categorias sem descrição adequada
-  const poorDescriptions = customCategories.filter(
-    (c) => !c.description || c.description.length < 10,
-  )
-  if (poorDescriptions.length > 0) {
-    guidance.warnings.push(
-      `Categorias customizadas com descrições inadequadas: ${poorDescriptions.map((c) => c.id).join(', ')}. ` +
-        'Descrições claras são obrigatórias para compliance LGPD.',
     )
   }
 
@@ -192,7 +168,8 @@ export function logDeveloperGuidance(
   }
 
   if (guidance.usingDefaults) {
-    console.warn( // Changed from console.info to console.warn
+    console.warn(
+      // Changed from console.info to console.warn
       `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
     )
   }
@@ -229,10 +206,14 @@ export function useDeveloperGuidance(
     [config],
   )
 
-  // Log apenas uma vez quando configuração muda
+  // Log apenas uma vez quando configuração muda (se não desabilitado)
   React.useEffect(() => {
+    // Se guidance está explicitamente desabilitado, não chamar a função
+    if (disableGuidanceProp === true) {
+      return
+    }
     logDeveloperGuidance(guidance, disableGuidanceProp)
-  }, [guidance, stringifiedConfig, disableGuidanceProp]) // Add guidance and use stringifiedConfig
+  }, [guidance, stringifiedConfig, disableGuidanceProp])
 
   return guidance
 }

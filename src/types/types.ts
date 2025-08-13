@@ -1,13 +1,15 @@
 /* eslint-disable no-unused-vars */
 /**
- * Categorias padrão de consentimento para cookies baseadas no Guia da ANPD.
+ * Tipos de categorias padrão de consentimento para cookies, conforme definido pela ANPD.
  *
- * - necessary: Cookies essenciais (sempre ativos)
- * - analytics: Análise e estatísticas
- * - functional: Funcionalidades extras
- * - marketing: Publicidade e marketing
- * - social: Integração com redes sociais
- * - personalization: Personalização de conteúdo
+ * @remarks
+ * Use este tipo para identificar as categorias principais de cookies suportadas nativamente pela biblioteca.
+ * - `'necessary'`: Cookies essenciais para funcionamento do site (sempre ativos).
+ * - `'analytics'`: Cookies para análise e estatísticas de uso.
+ * - `'functional'`: Cookies para funcionalidades extras e preferências do usuário.
+ * - `'marketing'`: Cookies para publicidade e marketing direcionado.
+ * - `'social'`: Cookies para integração com redes sociais.
+ * - `'personalization'`: Cookies para personalização de conteúdo e experiência.
  */
 export type Category =
   | 'necessary'
@@ -42,7 +44,6 @@ export interface ProjectCategoriesConfig {
   /** Categorias padrão que serão ativadas (necessary sempre incluída automaticamente) */
   enabledCategories?: Category[]
   /** Categorias customizadas específicas do projeto */
-  customCategories?: CategoryDefinition[]
 }
 
 /**
@@ -204,12 +205,6 @@ export interface DesignTokens {
  * <ConsentProvider
  *   categories={{
  *     enabledCategories: ['analytics', 'functional'],
- *     customCategories: [{
- *       id: 'governo',
- *       name: 'Cookies Governamentais',
- *       description: 'Coleta para estatísticas públicas',
- *       essential: false
- *     }]
  *   }}
  *   texts={{
  *     bannerMessage: 'Utilizamos cookies conforme LGPD...',
@@ -238,24 +233,16 @@ export interface ConsentProviderProps {
 
   /**
    * Configuração das categorias de cookies utilizadas no projeto.
-   * Define quais categorias padrão serão habilitadas e categorias customizadas.
+   * Define quais categorias padrão serão habilitadas.
    *
    * @example Apenas analytics:
    * ```tsx
    * categories={{ enabledCategories: ['analytics'] }}
    * ```
    *
-   * @example Com categoria customizada:
+   * @example Com categoria padrão apenas:
    * ```tsx
-   * categories={{
-   *   enabledCategories: ['analytics', 'marketing'],
-   *   customCategories: [{
-   *     id: 'pesquisa',
-   *     name: 'Cookies de Pesquisa',
-   *     description: 'Coleta feedback e opinião dos usuários',
-   *     essential: false
-   *   }]
-   * }}
+   * categories={{ enabledCategories: ['analytics', 'marketing'] }}
    * ```
    */
   categories?: ProjectCategoriesConfig
@@ -314,12 +301,6 @@ export interface ConsentProviderProps {
   designTokens?: DesignTokens
 
   /**
-   * @deprecated Usar `categories.customCategories` em vez disso.
-   * Mantido para compatibilidade com v0.1.x
-   */
-  customCategories?: CategoryDefinition[]
-
-  /**
    * Integrações nativas de scripts terceiros (Google Analytics, etc.).
    * Scripts são carregados automaticamente baseado no consentimento.
    *
@@ -338,38 +319,36 @@ export interface ConsentProviderProps {
    * Componente customizado para substituir o modal padrão de preferências.
    * Deve implementar a lógica de consentimento usando as props definidas em `CustomPreferencesModalProps`.
    */
-  PreferencesModalComponent?: React.ComponentType<CustomPreferencesModalProps>;
+  PreferencesModalComponent?: React.ComponentType<CustomPreferencesModalProps>
 
   /** Props adicionais passadas para o modal customizado. */
-  preferencesModalProps?: Record<string, any>;
+  preferencesModalProps?: Record<string, any>
 
   /**
    * Componente customizado para substituir o banner padrão de cookies.
    * Se não fornecido, o `CookieBanner` padrão será renderizado.
    * Deve implementar a lógica de consentimento usando as props definidas em `CustomCookieBannerProps`.
    */
-  CookieBannerComponent?: React.ComponentType<CustomCookieBannerProps>;
+  CookieBannerComponent?: React.ComponentType<CustomCookieBannerProps>
 
   /** Props adicionais passadas para o banner customizado. */
-  cookieBannerProps?: Record<string, any>;
+  cookieBannerProps?: Record<string, any>
 
   /**
    * Componente customizado para substituir o botão flutuante de preferências.
    * Se não fornecido, o `FloatingPreferencesButton` padrão será renderizado.
    * Deve implementar a lógica de consentimento usando as props definidas em `CustomFloatingPreferencesButtonProps`.
    */
-  FloatingPreferencesButtonComponent?: React.ComponentType<CustomFloatingPreferencesButtonProps>;
+  FloatingPreferencesButtonComponent?: React.ComponentType<CustomFloatingPreferencesButtonProps>
 
   /** Props adicionais passadas para o botão flutuante customizado. */
-  floatingPreferencesButtonProps?: Record<string, any>;
+  floatingPreferencesButtonProps?: Record<string, any>
 
   /**
    * Desabilita o botão flutuante de preferências.
    * Útil quando o usuário da lib quer ter controle total sobre o acesso às preferências.
    */
   disableFloatingPreferencesButton?: boolean
-
-  
 
   /**
    * Comportamento do banner de consentimento:
@@ -440,23 +419,31 @@ export interface ConsentProviderProps {
  * Fornece acesso ao estado de consentimento e ações necessárias para o banner.
  */
 export interface CustomCookieBannerProps {
-  consented: boolean;
-  acceptAll: () => void;
-  rejectAll: () => void;
-  openPreferences: () => void;
-  texts: ConsentTexts;
+  consented: boolean
+  acceptAll: () => void
+  rejectAll: () => void
+  openPreferences: () => void
+  texts: ConsentTexts
 }
 
 /**
  * Props esperadas por um componente customizado de PreferencesModal.
- * Fornece acesso às preferências, ações de modificação e estado do modal.
+ *
+ * Fornece acesso às preferências atuais do usuário, funções para atualizar e salvar preferências,
+ * fechar o modal e textos customizados da interface.
+ *
+ * @property preferences Preferências atuais de consentimento do usuário.
+ * @property setPreferences Função para atualizar e salvar as preferências.
+ * @property closePreferences Função para fechar o modal de preferências.
+ * @property isModalOpen Indica se o modal está aberto (opcional).
+ * @property texts Textos customizados da interface de consentimento.
  */
 export interface CustomPreferencesModalProps {
-  preferences: ConsentPreferences;
-  setPreferences: (preferences: ConsentPreferences) => void;
-  closePreferences: () => void;
-  isModalOpen?: boolean;
-  texts: ConsentTexts;
+  preferences: ConsentPreferences
+  setPreferences: (preferences: ConsentPreferences) => void
+  closePreferences: () => void
+  isModalOpen?: boolean
+  texts: ConsentTexts
 }
 
 /**
@@ -464,8 +451,8 @@ export interface CustomPreferencesModalProps {
  * Fornece acesso às ações de abertura do modal e ao estado de consentimento.
  */
 export interface CustomFloatingPreferencesButtonProps {
-  openPreferences: () => void;
-  consented: boolean;
+  openPreferences: () => void
+  consented: boolean
 }
 
 /**

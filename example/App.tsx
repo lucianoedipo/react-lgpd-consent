@@ -2,34 +2,19 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {
   ConsentProvider,
-  CookieBanner,
-  FloatingPreferencesButton,
   useConsent,
   useConsentTexts,
   ConsentGate,
-  loadScript,
+  ConsentScriptLoader,
+  createGoogleAnalyticsIntegration,
 } from 'react-lgpd-consent'
 
-// Exemplo de componente que usa analytics
-function GoogleAnalytics() {
-  const { preferences } = useConsent()
-
-  React.useEffect(() => {
-    if (preferences.analytics) {
-      loadScript(
-        'google-analytics', // id
-        'https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID', // src
-        'analytics', // category
-        { async: 'true' }, // attrs
-      ).then(() => {
-        console.log('Google Analytics carregado!')
-        // window.gtag('config', 'GA_MEASUREMENT_ID')
-      })
-    }
-  }, [preferences.analytics])
-
-  return null
-}
+// Integrações de scripts
+const scriptIntegrations = [
+  createGoogleAnalyticsIntegration({
+    measurementId: 'GA_MEASUREMENT_ID', // Substitua pelo seu ID de GA
+  }),
+];
 
 // Exemplo de componente que mostra status
 function ConsentStatus() {
@@ -185,23 +170,23 @@ function App() {
             <ol>
               <li>
                 🔄 <strong>Refresh a página</strong> - Banner não deve aparecer
-                se já há consentimento
+                se já há consentimento.
               </li>
               <li>
-                ✅ <strong>Aceite/Recuse</strong> - Veja os blocos condicionais
-                aparecerem/sumirem
+                ✅ <strong>Aceite/Recuse</strong> - Interaja com o banner para
+                ver os blocos condicionais aparecerem/sumirem.
               </li>
               <li>
                 🎛️ <strong>Use o botão flutuante</strong> - Para reconfigurar
-                após decisão inicial
+                após decisão inicial.
               </li>
               <li>
                 🔍 <strong>Abra DevTools</strong> - Veja os logs de cookie e
-                estado
+                estado.
               </li>
               <li>
                 🗑️ <strong>Limpe cookies</strong> - Para simular primeira visita
-                novamente
+                novamente.
               </li>
             </ol>
           </section>
@@ -220,8 +205,6 @@ function App() {
 
 import {
   ConsentProvider,
-  CookieBanner,
-  FloatingPreferencesButton,
   useConsent,
   ConsentGate,
 } from 'react-lgpd-consent'`}
@@ -229,19 +212,8 @@ import {
           </section>
         </main>
 
-        {/* Components da biblioteca */}
-        <CookieBanner
-          policyLinkUrl="https://exemplo.com/privacy-policy"
-          blocking={true}
-        />
-
-        <FloatingPreferencesButton
-          position="bottom-right"
-          tooltip="Configurar Cookies"
-        />
-
         {/* Componente para carregamento condicional de scripts */}
-        <GoogleAnalytics />
+        <ConsentScriptLoader integrations={scriptIntegrations} />
       </div>
     </ConsentProvider>
   )

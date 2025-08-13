@@ -1,9 +1,6 @@
 // src/context/CategoriesContext.tsx
 import * as React from 'react'
-import type {
-  CategoryDefinition,
-  ProjectCategoriesConfig,
-} from '../types/types'
+import type { ProjectCategoriesConfig } from '../types/types'
 import {
   analyzeDeveloperConfiguration,
   logDeveloperGuidance,
@@ -24,16 +21,11 @@ export interface CategoriesContextValue {
   toggleableCategories: DeveloperGuidance['activeCategoriesInfo']
   /** Todas as categorias ativas */
   allCategories: DeveloperGuidance['activeCategoriesInfo']
-  /** LEGACY: Apenas categorias customizadas (backward compatibility) */
-  legacyCategories: CategoryDefinition[]
 }
 
 const CategoriesContext = React.createContext<CategoriesContextValue | null>(
   null,
 )
-
-// LEGACY: Context antigo para backward compatibility
-const CategoriesCtx = React.createContext<CategoryDefinition[]>([])
 
 /**
  * Provider para contexto de categorias.
@@ -41,33 +33,19 @@ const CategoriesCtx = React.createContext<CategoryDefinition[]>([])
  */
 export function CategoriesProvider({
   children,
-  categories, // LEGACY: prop antiga (apenas customCategories)
   config, // NOVO: configuração completa
   disableDeveloperGuidance,
 }: Readonly<{
   children: React.ReactNode
-  categories?: CategoryDefinition[] // LEGACY
   config?: ProjectCategoriesConfig // NOVO
   disableDeveloperGuidance?: boolean
 }>) {
   const contextValue = React.useMemo(() => {
-    // Migração automática: se usou prop antiga, converte para novo formato
-    let finalConfig: ProjectCategoriesConfig
+    // NOVO: usa configuração completa ou padrão
+    const finalConfig: ProjectCategoriesConfig =
+      config || DEFAULT_PROJECT_CATEGORIES
 
-    if (categories && !config) {
-      // LEGACY: apenas categorias customizadas foram fornecidas
-      finalConfig = {
-        enabledCategories: DEFAULT_PROJECT_CATEGORIES.enabledCategories,
-        customCategories: categories,
-      }
-    } else {
-      // NOVO: usa configuração completa ou padrão
-      finalConfig = config || DEFAULT_PROJECT_CATEGORIES
-    }
-
-    const guidance = analyzeDeveloperConfiguration(
-      config || (categories ? { customCategories: categories } : undefined),
-    )
+    const guidance = analyzeDeveloperConfiguration(config)
 
     // Separa categorias que precisam de toggle das que são sempre ativas
     const toggleableCategories = guidance.activeCategoriesInfo.filter(
@@ -79,24 +57,17 @@ export function CategoriesProvider({
       guidance,
       toggleableCategories,
       allCategories: guidance.activeCategoriesInfo,
-      legacyCategories: categories || [],
     }
-  }, [config, categories])
+  }, [config])
 
   // Log orientações apenas em desenvolvimento
   React.useEffect(() => {
-    // Só loga se a prop não estiver explicitamente desabilitada
-    if (disableDeveloperGuidance) {
-      return;
-    }
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
   }, [contextValue.guidance, disableDeveloperGuidance])
 
   return (
     <CategoriesContext.Provider value={contextValue}>
-      <CategoriesCtx.Provider value={contextValue.legacyCategories}>
-        {children}
-      </CategoriesCtx.Provider>
+      {children}
     </CategoriesContext.Provider>
   )
 }
@@ -133,74 +104,12 @@ export function useCategoryStatus(categoryId: string) {
 }
 
 /**
- * LEGACY: Hook para acessar as categorias customizadas.
- * Mantido para backward compatibility.
- *
- * @deprecated Use useCategories() ao invés disso para acesso completo às categorias.
- */
-export function useCustomCategories() {
-  return React.useContext(CategoriesCtx)
-}
-
-/**
  * Hook para obter todas as categorias (padrão + customizadas).
  */
 export function useAllCategories() {
-  const customCategories = useCustomCategories()
+  const { allCategories } = useCategories()
 
   return React.useMemo(() => {
-    // Categorias baseadas no Guia Orientativo da ANPD sobre Cookies
-    const defaultCategories: CategoryDefinition[] = [
-      {
-        id: 'necessary',
-        name: 'Cookies Necessários',
-        description:
-          'Essenciais para o funcionamento básico do site. Incluem cookies de sessão, autenticação e segurança.',
-        essential: true,
-        cookies: ['PHPSESSID', 'JSESSIONID', 'cookieConsent', 'csrf_token'],
-      },
-      {
-        id: 'analytics',
-        name: 'Analytics e Estatísticas',
-        description:
-          'Permitem medir audiência e desempenho, gerando estatísticas anônimas de uso.',
-        essential: false,
-        cookies: ['_ga', '_ga_*', '_gid', '_gat', 'gtag'],
-      },
-      {
-        id: 'functional',
-        name: 'Cookies Funcionais',
-        description:
-          'Melhoram a experiência do usuário, lembrando preferências e configurações.',
-        essential: false,
-        cookies: ['language', 'theme', 'timezone', 'preferences'],
-      },
-      {
-        id: 'marketing',
-        name: 'Marketing e Publicidade',
-        description:
-          'Utilizados para publicidade direcionada e medição de campanhas publicitárias.',
-        essential: false,
-        cookies: ['_fbp', 'fr', 'tr', 'ads_*', 'doubleclick'],
-      },
-      {
-        id: 'social',
-        name: 'Redes Sociais',
-        description:
-          'Permitem compartilhamento e integração com redes sociais como Facebook, YouTube, etc.',
-        essential: false,
-        cookies: ['__Secure-*', 'sb', 'datr', 'c_user', 'social_*'],
-      },
-      {
-        id: 'personalization',
-        name: 'Personalização',
-        description:
-          'Adaptam o conteúdo e interface às preferências individuais do usuário.',
-        essential: false,
-        cookies: ['personalization_*', 'content_*', 'layout_*'],
-      },
-    ]
-
-    return [...defaultCategories, ...customCategories]
-  }, [customCategories])
+    return allCategories
+  }, [allCategories])
 }
