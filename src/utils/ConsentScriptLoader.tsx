@@ -57,9 +57,6 @@ export function ConsentScriptLoader({
           }
 
           loadedScripts.current.add(integration.id)
-          console.log(
-            `✅ Script loaded: ${integration.id} (${integration.category})`,
-          )
         } catch (error) {
           console.error(`❌ Failed to load script: ${integration.id}`, error)
         }
@@ -121,9 +118,6 @@ export function useConsentScriptLoader() {
           integration.init()
         }
 
-        console.log(
-          `✅ Script loaded: ${integration.id} (${integration.category})`,
-        )
         return true
       } catch (error) {
         console.error(`❌ Failed to load script: ${integration.id}`, error)

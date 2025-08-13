@@ -262,20 +262,12 @@ export function ConsentProvider({
   const [state, dispatch] = React.useReducer(reducer, boot)
   const [isHydrated, setIsHydrated] = React.useState(false)
 
-  console.log(
-    'ConsentProvider Render - state.consented:',
-    state.consented,
-    'isHydrated:',
-    isHydrated,
-  )
-
   // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
     // Executa apenas se não houver initialState (para permitir controle externo)
     if (!initialState) {
       const saved = readConsentCookie(cookie.name)
       if (saved?.consented) {
-        console.log('🚀 Immediate hydration: Cookie found', saved)
         dispatch({
           type: 'HYDRATE',
           state: saved,
@@ -285,7 +277,6 @@ export function ConsentProvider({
     }
     // Marca como hidratado para permitir exibição do banner (se necessário)
     setIsHydrated(true)
-    console.log('useEffect hydration complete. isHydrated set to true.')
   }, [cookie.name, initialState, finalCategoriesConfig]) // Executa apenas uma vez após mount
 
   // Persiste somente após decisão (consented)
