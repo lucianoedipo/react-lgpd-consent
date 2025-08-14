@@ -211,6 +211,8 @@ const HydrationCtx = React.createContext<boolean>(false)
 
 /**
  * @component
+ * @category Context
+ * @since 0.1.0
  * Provider principal da biblioteca. Envolva sua aplicação com este componente para habilitar o gerenciamento de consentimento.
  *
  * @remarks
@@ -448,20 +450,40 @@ export function ConsentProvider({
 }
 
 // Hooks internos (o público é `useConsent` em hooks/useConsent.ts)
+/**
+ * @hook
+ * @category Context
+ * @since 0.1.0
+ */
 export function useConsentStateInternal() {
   const ctx = React.useContext(StateCtx)
   if (!ctx) throw new Error('useConsentState must be used within ConsentProvider')
   return ctx
 }
+/**
+ * @hook
+ * @category Context
+ * @since 0.1.0
+ */
 export function useConsentActionsInternal() {
   const ctx = React.useContext(ActionsCtx)
   if (!ctx) throw new Error('useConsentActions must be used within ConsentProvider')
   return ctx
 }
+/**
+ * @hook
+ * @category Context
+ * @since 0.1.0
+ */
 export function useConsentTextsInternal() {
   const ctx = React.useContext(TextsCtx)
   return ctx // TextsCtx sempre tem fallback, não precisa de throw
 }
+/**
+ * @hook
+ * @category Context
+ * @since 0.1.0
+ */
 export function useConsentHydrationInternal() {
   return React.useContext(HydrationCtx)
 }

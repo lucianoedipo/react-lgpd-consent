@@ -25,16 +25,20 @@ export interface PreferencesModalProps {
 }
 
 /**
- * @component
  * O `PreferencesModal` é o componente de UI que permite ao usuário ajustar suas preferências de consentimento.
- *
+ * @component
+ * @category Components
+ * @since 0.1.0
  * @remarks
  * Este modal é renderizado automaticamente pelo `ConsentProvider` quando o usuário clica para gerenciar as preferências.
  * Você pode substituí-lo passando seu próprio componente para a prop `PreferencesModalComponent`
  * no `ConsentProvider` para ter controle total sobre a aparência e o comportamento do modal.
- *
  * @param {Readonly<PreferencesModalProps>} props As propriedades para customizar o modal.
  * @returns {JSX.Element} O componente do modal de preferências.
+ * @example
+ * ```tsx
+ * <PreferencesModal DialogProps={{ maxWidth: 'md' }} hideBranding={true} />
+ * ```
  */
 export function PreferencesModal({
   DialogProps,

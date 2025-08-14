@@ -29,6 +29,8 @@ const CategoriesContext = React.createContext<CategoriesContextValue | null>(
 
 /**
  * @component
+ * @category Context
+ * @since 0.2.2
  * O `CategoriesProvider` é um componente interno que gerencia e fornece informações sobre as categorias de cookies ativas.
  * Ele analisa a configuração do projeto e fornece orientações para desenvolvedores.
  *
@@ -77,6 +79,8 @@ export function CategoriesProvider({
 
 /**
  * @hook
+ * @category Hooks
+ * @since 0.2.2
  * Hook para acessar informações sobre as categorias de cookies ativas no projeto.
  *
  * @remarks
@@ -100,6 +104,8 @@ export function useCategories(): CategoriesContextValue {
 
 /**
  * @hook
+ * @category Hooks
+ * @since 0.2.2
  * Hook de conveniência para verificar o status de uma categoria de cookie específica.
  *
  * @param {string} categoryId O ID da categoria a ser verificada (ex: 'analytics', 'necessary').
@@ -109,6 +115,13 @@ export function useCategories(): CategoriesContextValue {
  * - `needsToggle`: `true` se a categoria requer um controle (switch) na UI de preferências.
  * - `name`: O nome amigável da categoria.
  * - `description`: A descrição da categoria.
+ * @example
+ * ```tsx
+ * const analyticsStatus = useCategoryStatus('analytics')
+ * if (analyticsStatus.isActive && analyticsStatus.needsToggle) {
+ *   // Renderizar switch para analytics
+ * }
+ * ```
  */
 export function useCategoryStatus(categoryId: string) {
   const { allCategories } = useCategories()
@@ -125,7 +138,16 @@ export function useCategoryStatus(categoryId: string) {
 
 /**
  * @hook
+ * @category Hooks
+ * @since 0.2.2
  * Hook para obter todas as categorias de cookies ativas no projeto (padrão e customizadas).
  *
  * @returns {DeveloperGuidance['activeCategoriesInfo']} Um array com as definições detalhadas de todas as categorias ativas.
+ * @example
+ * ```tsx
+ * const { allCategories } = useCategories()
+ * allCategories.forEach(category => {
+ *   console.log(`Categoria: ${category.name}, Essencial: ${category.essential}`)
+ * })
+ * ```
  */

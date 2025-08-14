@@ -8,6 +8,9 @@ const DesignContext = React.createContext<DesignTokens | undefined>(undefined)
 
 /**
  * Provider para o contexto de design.
+ * @component
+ * @category Context
+ * @since 0.1.0
  */
 export function DesignProvider({
   tokens,
@@ -20,6 +23,9 @@ export function DesignProvider({
 
 /**
  * Hook para acessar os tokens de design.
+ * @hook
+ * @category Hooks
+ * @since 0.1.0
  */
 export function useDesignTokens(): DesignTokens | undefined {
   return React.useContext(DesignContext)

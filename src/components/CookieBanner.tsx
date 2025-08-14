@@ -174,7 +174,8 @@ export interface CookieBannerProps {
 
 /**
  * Banner principal de consentimento LGPD que solicita decisão do usuário sobre cookies.
- *
+ * @component
+ * @category Components
  * @remarks
  * O CookieBanner é o ponto de entrada principal para interação com o sistema de consentimento.
  * Aparece automaticamente quando o usuário ainda não tomou decisão sobre cookies,

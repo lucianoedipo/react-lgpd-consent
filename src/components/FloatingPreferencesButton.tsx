@@ -57,6 +57,8 @@ export interface FloatingPreferencesButtonProps {
 
 /**
  * @component
+ * @category Components
+ * @since 0.3.0
  * Botão flutuante para abrir o modal de preferências de cookies.
  *
  * @remarks
