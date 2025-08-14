@@ -23,9 +23,7 @@ export interface CategoriesContextValue {
   allCategories: DeveloperGuidance['activeCategoriesInfo']
 }
 
-const CategoriesContext = React.createContext<CategoriesContextValue | null>(
-  null,
-)
+const CategoriesContext = React.createContext<CategoriesContextValue | null>(null)
 
 /**
  * @component
@@ -49,14 +47,11 @@ export function CategoriesProvider({
   disableDeveloperGuidance?: boolean
 }>) {
   const contextValue = React.useMemo(() => {
-    const finalConfig: ProjectCategoriesConfig =
-      config || DEFAULT_PROJECT_CATEGORIES
+    const finalConfig: ProjectCategoriesConfig = config || DEFAULT_PROJECT_CATEGORIES
 
     const guidance = analyzeDeveloperConfiguration(config)
 
-    const toggleableCategories = guidance.activeCategoriesInfo.filter(
-      (cat) => cat.uiRequired,
-    )
+    const toggleableCategories = guidance.activeCategoriesInfo.filter((cat) => cat.uiRequired)
 
     return {
       config: finalConfig,
@@ -70,11 +65,7 @@ export function CategoriesProvider({
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
   }, [contextValue.guidance, disableDeveloperGuidance])
 
-  return (
-    <CategoriesContext.Provider value={contextValue}>
-      {children}
-    </CategoriesContext.Provider>
-  )
+  return <CategoriesContext.Provider value={contextValue}>{children}</CategoriesContext.Provider>
 }
 
 /**

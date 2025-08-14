@@ -44,25 +44,22 @@ export function PreferencesModal({
   DialogProps,
   hideBranding = false,
 }: Readonly<PreferencesModalProps>) {
-  const { preferences, setPreferences, closePreferences, isModalOpen } =
-    useConsent()
+  const { preferences, setPreferences, closePreferences, isModalOpen } = useConsent()
   const texts = useConsentTexts()
   const { toggleableCategories } = useCategories() // Categorias que precisam de toggle
 
   // Estado local para mudanças temporárias - INICIALIZADO com valores padrão
-  const [tempPreferences, setTempPreferences] = useState<ConsentPreferences>(
-    () => {
-      // Inicializa com state atual ou valores padrão seguros
-      const initialPrefs: ConsentPreferences = { necessary: true }
+  const [tempPreferences, setTempPreferences] = useState<ConsentPreferences>(() => {
+    // Inicializa com state atual ou valores padrão seguros
+    const initialPrefs: ConsentPreferences = { necessary: true }
 
-      // Para cada categoria que precisa de toggle, define valor inicial
-      toggleableCategories.forEach((category) => {
-        initialPrefs[category.id] = preferences[category.id] ?? false
-      })
+    // Para cada categoria que precisa de toggle, define valor inicial
+    toggleableCategories.forEach((category) => {
+      initialPrefs[category.id] = preferences[category.id] ?? false
+    })
 
-      return initialPrefs
-    },
-  )
+    return initialPrefs
+  })
 
   // Sincroniza estado local com contexto quando modal abre ou preferences mudam
   useEffect(() => {
@@ -94,12 +91,7 @@ export function PreferencesModal({
   }
 
   return (
-    <Dialog
-      aria-labelledby="cookie-pref-title"
-      open={open}
-      onClose={handleCancel}
-      {...DialogProps}
-    >
+    <Dialog aria-labelledby="cookie-pref-title" open={open} onClose={handleCancel} {...DialogProps}>
       <DialogTitle id="cookie-pref-title">{texts.modalTitle}</DialogTitle>
       <DialogContent dividers>
         <Typography variant="body2" sx={{ mb: 2 }}>
@@ -126,10 +118,7 @@ export function PreferencesModal({
           ))}
 
           {/* Categoria necessária sempre exibida por último (disabled) */}
-          <FormControlLabel
-            control={<Switch checked disabled />}
-            label={texts.necessaryAlwaysOn}
-          />
+          <FormControlLabel control={<Switch checked disabled />} label={texts.necessaryAlwaysOn} />
         </FormGroup>
       </DialogContent>
 

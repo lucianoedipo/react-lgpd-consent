@@ -96,8 +96,7 @@ export function FloatingPreferencesButton({
     return null
   }
 
-  const tooltipText =
-    tooltip ?? texts.preferencesButton ?? 'Gerenciar Preferências de Cookies'
+  const tooltipText = tooltip ?? texts.preferencesButton ?? 'Gerenciar Preferências de Cookies'
 
   const getPosition = () => {
     const styles: Record<string, any> = {

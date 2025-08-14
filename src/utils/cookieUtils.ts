@@ -8,11 +8,7 @@ import Cookies from 'js-cookie'
  * Veja `src/types/types.ts` para a definição da estrutura `ConsentCookieData`.
  */
 
-import type {
-  ConsentCookieOptions,
-  ConsentState,
-  ProjectCategoriesConfig,
-} from '../types/types'
+import type { ConsentCookieOptions, ConsentState, ProjectCategoriesConfig } from '../types/types'
 import { logger } from './logger'
 
 /**
@@ -29,10 +25,7 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
   maxAgeDays: 365,
   sameSite: 'Lax',
-  secure:
-    typeof window !== 'undefined'
-      ? window.location.protocol === 'https:'
-      : false,
+  secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : false,
   path: '/',
 }
 
@@ -55,9 +48,7 @@ const COOKIE_SCHEMA_VERSION = '1.0'
  * - Faz fallback para `null` em caso de erro de parsing ou versão de esquema incompatível.
  * - Realiza migração de cookies de versões legadas se necessário.
  */
-export function readConsentCookie(
-  name: string = DEFAULT_COOKIE_OPTS.name,
-): ConsentState | null {
+export function readConsentCookie(name: string = DEFAULT_COOKIE_OPTS.name): ConsentState | null {
   logger.debug('Reading consent cookie', { name })
 
   if (typeof document === 'undefined') {
@@ -81,9 +72,7 @@ export function readConsentCookie(
     }
 
     if (data.version !== COOKIE_SCHEMA_VERSION) {
-      logger.warn(
-        `Cookie version mismatch: ${data.version} != ${COOKIE_SCHEMA_VERSION}`,
-      )
+      logger.warn(`Cookie version mismatch: ${data.version} != ${COOKIE_SCHEMA_VERSION}`)
       return null
     }
 

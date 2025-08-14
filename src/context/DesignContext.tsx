@@ -16,9 +16,7 @@ export function DesignProvider({
   tokens,
   children,
 }: Readonly<{ tokens?: DesignTokens; children: React.ReactNode }>) {
-  return (
-    <DesignContext.Provider value={tokens}>{children}</DesignContext.Provider>
-  )
+  return <DesignContext.Provider value={tokens}>{children}</DesignContext.Provider>
 }
 
 /**

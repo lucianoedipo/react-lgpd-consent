@@ -98,10 +98,7 @@ export interface SafeThemeProviderProps {
  * Componente ThemeProvider interno que garante compatibilidade e fallbacks seguros.
  * Deve ser usado nos componentes internos da biblioteca para evitar erros de tema.
  */
-export function SafeThemeProvider({
-  theme,
-  children,
-}: Readonly<SafeThemeProviderProps>) {
+export function SafeThemeProvider({ theme, children }: Readonly<SafeThemeProviderProps>) {
   const safeTheme = React.useMemo(() => createSafeTheme(theme), [theme])
 
   return <ThemeProvider theme={safeTheme}>{children}</ThemeProvider>

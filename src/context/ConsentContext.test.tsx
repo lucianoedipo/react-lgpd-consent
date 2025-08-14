@@ -11,23 +11,16 @@ let logGuidanceSpy: jest.SpyInstance
 let consoleGroupSpy: jest.SpyInstance
 
 const TestComponent = () => {
-  const { consented, preferences, acceptAll, rejectAll, setPreferences } =
-    useConsent()
+  const { consented, preferences, acceptAll, rejectAll, setPreferences } = useConsent()
   return (
     <div>
       <div data-testid="consented">{consented.toString()}</div>
-      <div data-testid="analytics">
-        {preferences.analytics?.toString() || 'false'}
-      </div>
-      <div data-testid="marketing">
-        {preferences.marketing?.toString() || 'false'}
-      </div>
+      <div data-testid="analytics">{preferences.analytics?.toString() || 'false'}</div>
+      <div data-testid="marketing">{preferences.marketing?.toString() || 'false'}</div>
       <button onClick={acceptAll}>Accept All</button>
       <button onClick={rejectAll}>Reject All</button>
       <button
-        onClick={() =>
-          setPreferences({ necessary: true, analytics: true, marketing: false })
-        }
+        onClick={() => setPreferences({ necessary: true, analytics: true, marketing: false })}
       >
         Set Prefs
       </button>
@@ -51,9 +44,7 @@ describe('ConsentProvider', () => {
   it('deve carregar o estado padrão (sem consentimento)', () => {
     act(() => {
       render(
-        <ConsentProvider
-          categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        >
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
           <TestComponent />
         </ConsentProvider>,
       )
@@ -67,9 +58,7 @@ describe('ConsentProvider', () => {
   it('deve aceitar todas as categorias ao clicar em "Accept All"', () => {
     act(() => {
       render(
-        <ConsentProvider
-          categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        >
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
           <TestComponent />
         </ConsentProvider>,
       )
@@ -88,9 +77,7 @@ describe('ConsentProvider', () => {
   it('deve rejeitar categorias não essenciais ao clicar em "Reject All"', () => {
     act(() => {
       render(
-        <ConsentProvider
-          categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        >
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
           <TestComponent />
         </ConsentProvider>,
       )
@@ -109,9 +96,7 @@ describe('ConsentProvider', () => {
   it('deve definir preferências específicas', () => {
     act(() => {
       render(
-        <ConsentProvider
-          categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        >
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
           <TestComponent />
         </ConsentProvider>,
       )
@@ -141,9 +126,7 @@ describe('ConsentProvider', () => {
 
     act(() => {
       render(
-        <ConsentProvider
-          categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        >
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
           <TestComponent />
         </ConsentProvider>,
       )

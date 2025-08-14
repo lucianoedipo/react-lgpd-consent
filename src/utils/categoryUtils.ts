@@ -120,9 +120,7 @@ export function validateProjectPreferences(
  * // ]
  * ```
  */
-export function getAllProjectCategories(
-  config?: ProjectCategoriesConfig,
-): CategoryDefinition[] {
+export function getAllProjectCategories(config?: ProjectCategoriesConfig): CategoryDefinition[] {
   const allCategories: CategoryDefinition[] = [
     {
       id: 'necessary',
@@ -163,8 +161,7 @@ function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
     functional: {
       id: 'functional',
       name: 'Funcionalidades',
-      description:
-        'Cookies para funcionalidades extras como preferências e idioma',
+      description: 'Cookies para funcionalidades extras como preferências e idioma',
       essential: false,
     },
     marketing: {
@@ -176,8 +173,7 @@ function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
     social: {
       id: 'social',
       name: 'Redes Sociais',
-      description:
-        'Cookies para integração com redes sociais e compartilhamento',
+      description: 'Cookies para integração com redes sociais e compartilhamento',
       essential: false,
     },
     personalization: {
@@ -202,9 +198,7 @@ function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
  * alertar o desenvolvedor sobre possíveis erros de digitação ou uso de categorias
  * que não existem na biblioteca.
  */
-export function validateCategoriesConfig(
-  config?: ProjectCategoriesConfig,
-): string[] {
+export function validateCategoriesConfig(config?: ProjectCategoriesConfig): string[] {
   const errors: string[] = []
 
   if (!config) return errors

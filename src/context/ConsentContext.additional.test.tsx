@@ -23,30 +23,20 @@ const TestComponent = () => {
     <div>
       <div data-testid="consented">{consented.toString()}</div>
       <div data-testid="isModalOpen">{isModalOpen?.toString() || 'false'}</div>
-      <div data-testid="analytics">
-        {preferences.analytics?.toString() || 'false'}
-      </div>
-      <div data-testid="marketing">
-        {preferences.marketing?.toString() || 'false'}
-      </div>
-      <div data-testid="custom-category">
-        {preferences.custom?.toString() || 'false'}
-      </div>
+      <div data-testid="analytics">{preferences.analytics?.toString() || 'false'}</div>
+      <div data-testid="marketing">{preferences.marketing?.toString() || 'false'}</div>
+      <div data-testid="custom-category">{preferences.custom?.toString() || 'false'}</div>
       <button onClick={acceptAll}>Accept All</button>
       <button onClick={rejectAll}>Reject All</button>
       <button onClick={() => setPreference('analytics' as Category, true)}>
         Set Analytics True
       </button>
       <button
-        onClick={() =>
-          setPreferences({ necessary: true, analytics: true, marketing: false })
-        }
+        onClick={() => setPreferences({ necessary: true, analytics: true, marketing: false })}
       >
         Set Prefs
       </button>
-      <button onClick={() => setPreference('custom' as Category, true)}>
-        Set Custom True
-      </button>
+      <button onClick={() => setPreference('custom' as Category, true)}>Set Custom True</button>
       <button onClick={openPreferences}>Open Modal</button>
       <button onClick={closePreferences}>Close Modal</button>
       <button onClick={resetConsent}>Reset Consent</button>
@@ -174,9 +164,7 @@ describe('ConsentProvider Additional Tests', () => {
     act(() => {
       fireEvent.click(screen.getByText('Accept All'))
     })
-    await waitFor(() =>
-      expect(screen.getByTestId('consented').textContent).toBe('true'),
-    )
+    await waitFor(() => expect(screen.getByTestId('consented').textContent).toBe('true'))
     onPreferencesSaved.mockClear() // Clear calls from initial consent
 
     // Agora, altere as preferências
