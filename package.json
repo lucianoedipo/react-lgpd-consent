@@ -72,7 +72,7 @@
   "bugs": {
     "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
   },
-  "homepage": "https://github.com/lucianoedipo/react-lgpd-consent#readme",
+  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/",
   "peerDependencies": {
     "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
     "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
