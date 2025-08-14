@@ -3,6 +3,37 @@
   "entryPoints": ["src/index.ts"],
   "out": "docs",
   "tsconfig": "tsconfig.typedoc.json",
+
+  "name": "react-lgpd-consent",
+  "includeVersion": true,
+  "readme": "README.md",
+
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "compactFolders": true
+  },
+
+  "categorizeByGroup": false,
+  "categoryOrder": ["Components", "Hooks", "Context", "Utils", "Types", "Other"],
+  "groupReferencesByType": true,
+  "sort": ["kind", "visibility", "alphabetical"],
+
+  "visibilityFilters": {
+    "protected": false,
+    "inherited": false,
+    "private": false,
+    "external": false
+  },
+
+  "hostedBaseUrl": "https://lucianoedipo.github.io/react-lgpd-consent/",
+  "useHostedBaseUrlForAbsoluteLinks": true,
+
+  "navigationLinks": {
+    "GitHub": "https://github.com/lucianoedipo/react-lgpd-consent",
+    "NPM": "https://www.npmjs.com/package/react-lgpd-consent"
+  },
+
   "blockTags": [
     "@component",
     "@module",
@@ -18,5 +49,36 @@
     "@hook",
     "@constant",
     "@defaultValue"
+  ],
+
+  "externalSymbolLinkMappings": {
+    "@types/react": {
+      "Component": "https://react.dev/reference/react/Component"
+    },
+    "react": {
+      "FC": "https://react.dev/reference/react/Component#function-components"
+    },
+    "typescript": {
+      "Promise": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
+    }
+  },
+
+  "notRenderedTags": ["@internalNote"],
+
+  "lang": "pt-BR",
+  "locales": {
+    "pt-BR": {
+      "flag_private": "Privado",
+      "flag_protected": "Protegido",
+      "search_placeholder": "Buscar…"
+    }
+  },
+  "hideGenerator": true,
+  "projectDocuments": [
+    "README.md",
+    "CHANGELOG.md",
+    "DEVELOPMENT.md",
+    "CONFORMIDADE.md",
+    "INTEGRACOES.md"
   ]
 }

@@ -7,6 +7,7 @@ import type {
 
 /**
  * Categorias padrão disponíveis (exceto necessary que é sempre incluída).
+ * @internal
  */
 const DEFAULT_CATEGORIES: Category[] = [
   'analytics',
@@ -17,13 +18,30 @@ const DEFAULT_CATEGORIES: Category[] = [
 ]
 
 /**
- * @function
  * Cria um objeto de preferências de consentimento inicial baseado na configuração de categorias do projeto.
- * Inclui apenas as categorias especificadas na configuração, com `necessary` sempre como `true`.
+ * @category Utils
+ * @param config A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @param defaultValue O valor padrão para categorias não essenciais. Por padrão, `false` para conformidade LGPD (rejeitar por padrão).
+ * @returns Um objeto `ConsentPreferences` com as categorias e seus valores iniciais.
+ * @remarks
+ * Esta função é crucial para inicializar o estado de consentimento. Ela garante que apenas as categorias
+ * definidas no `ConsentProvider` sejam incluídas no objeto de preferências, alinhando-se ao princípio
+ * de minimização de dados da LGPD.
+ * @example
+ * ```ts
+ * // Gera preferências com 'analytics' e 'marketing' desabilitados por padrão
+ * const initialPrefs = createProjectPreferences({
+ *   enabledCategories: ['analytics', 'marketing']
+ * })
+ * // Result: { necessary: true, analytics: false, marketing: false }
  *
- * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
- * @param {boolean} [defaultValue=false] O valor padrão para categorias não essenciais. Por padrão, `false` para conformidade LGPD.
- * @returns {ConsentPreferences} Um objeto `ConsentPreferences` com as categorias e seus valores iniciais.
+ * // Gera preferências com todas as categorias habilitadas
+ * const allAcceptedPrefs = createProjectPreferences(
+ *   { enabledCategories: ['analytics', 'marketing'] },
+ *   true
+ * )
+ * // Result: { necessary: true, analytics: true, marketing: true }
+ * ```
  */
 export function createProjectPreferences(
   config?: ProjectCategoriesConfig,
@@ -44,13 +62,23 @@ export function createProjectPreferences(
 }
 
 /**
- * @function
  * Valida um objeto de preferências de consentimento, removendo categorias que não estão permitidas pela configuração do projeto.
- * Categorias não autorizadas são removidas silenciosamente para garantir a integridade dos dados.
+ * @category Utils
+ * @param preferences O objeto de preferências a ser validado.
+ * @param config A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @returns Um novo objeto `ConsentPreferences` contendo apenas categorias válidas.
+ * @remarks
+ * Garante a integridade dos dados ao carregar o estado de um cookie. Se a configuração do projeto mudou
+ * (ex: uma categoria foi removida), esta função limpa as preferências obsoletas do estado,
+ * evitando inconsistências.
+ * @example
+ * ```ts
+ * const savedPrefs = { necessary: true, analytics: true, oldCategory: false }
+ * const currentConfig = { enabledCategories: ['analytics'] }
  *
- * @param {ConsentPreferences} preferences O objeto de preferências a ser validado.
- * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
- * @returns {ConsentPreferences} Um novo objeto `ConsentPreferences` contendo apenas categorias válidas.
+ * const validPrefs = validateProjectPreferences(savedPrefs, currentConfig)
+ * // Result: { necessary: true, analytics: true }
+ * ```
  */
 export function validateProjectPreferences(
   preferences: ConsentPreferences,
@@ -71,12 +99,23 @@ export function validateProjectPreferences(
 }
 
 /**
- * @function
  * Retorna um array com as definições detalhadas de todas as categorias de cookies ativas no projeto.
- * Inclui categorias padrão e customizadas, se houver.
- *
- * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
- * @returns {CategoryDefinition[]} Um array de objetos `CategoryDefinition`.
+ * @category Utils
+ * @param config A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @returns Um array de objetos `CategoryDefinition`.
+ * @remarks
+ * Útil para construir UIs de preferência customizadas, pois fornece os nomes e descrições
+ * de todas as categorias que devem ser exibidas ao usuário.
+ * @example
+ * ```ts
+ * const config = { enabledCategories: ['analytics'] }
+ * const categories = getAllProjectCategories(config)
+ * // Result:
+ * // [
+ * //   { id: 'necessary', name: 'Necessários', ... },
+ * //   { id: 'analytics', name: 'Análise e Estatísticas', ... }
+ * // ]
+ * ```
  */
 export function getAllProjectCategories(
   config?: ProjectCategoriesConfig,
@@ -102,6 +141,7 @@ export function getAllProjectCategories(
 
 /**
  * Retorna a definição padrão de uma categoria baseada no Guia da ANPD.
+ * @internal
  */
 function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
   const definitions: Record<Category, CategoryDefinition> = {
@@ -149,11 +189,14 @@ function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
 }
 
 /**
- * @function
  * Verifica se uma configuração de categorias é válida, identificando categorias padrão inválidas.
- *
- * @param {ProjectCategoriesConfig} [config] A configuração de categorias a ser validada.
- * @returns {string[]} Uma lista de strings, onde cada string é uma mensagem de erro. A lista estará vazia se a configuração for válida.
+ * @category Utils
+ * @param config A configuração de categorias a ser validada.
+ * @returns Uma lista de strings, onde cada string é uma mensagem de erro. A lista estará vazia se a configuração for válida.
+ * @remarks
+ * Esta é uma função de diagnóstico usada internamente pelo sistema de orientações para
+ * alertar o desenvolvedor sobre possíveis erros de digitação ou uso de categorias
+ * que não existem na biblioteca.
  */
 export function validateCategoriesConfig(
   config?: ProjectCategoriesConfig,
