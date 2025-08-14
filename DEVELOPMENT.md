@@ -11,9 +11,9 @@ A `react-lgpd-consent` é uma biblioteca **client-side** focada em aplicações 
 - **js-cookie**: Persistência leve e confiável das preferências do usuário.
 - **TypeScript**: Type safety completo para uma melhor experiência de desenvolvimento.
 
-### Status Atual (v0.3.1)
+### Status Atual (v0.3.1+)
 
-A versão atual é estável e focada em correções de produção e melhorias de compatibilidade. A arquitetura foi consolidada na v0.3.0 para renderizar a UI (banner, modal) automaticamente através do `ConsentProvider`, simplificando o uso. A v0.3.1 introduziu melhorias no controle programático do modal e na compatibilidade de temas.
+A versão atual é estável e focada em correções de produção e melhorias de compatibilidade. A arquitetura foi consolidada na v0.3.0 para renderizar a UI (banner, modal) automaticamente através do `ConsentProvider`, simplificando o uso. A v0.3.1+ introduziu melhorias no controle programático do modal e na compatibilidade de temas.
 
 ### Suporte
 
