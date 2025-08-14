@@ -1,5 +1,7 @@
 /**
  * @enum LogLevel
+ * @category Utils
+ * @since 0.3.1
  * Define os níveis de severidade para os logs da biblioteca.
  */
 export enum LogLevel {
@@ -187,6 +189,8 @@ export const logger = new ConsentLogger()
 
 /**
  * @function
+ * @category Utils
+ * @since 0.3.1
  * Habilita ou desabilita o sistema de logging de debug da biblioteca externamente.
  * Útil para troubleshooting em produção quando necessário, pois os logs são desabilitados por padrão em builds de produção.
  *

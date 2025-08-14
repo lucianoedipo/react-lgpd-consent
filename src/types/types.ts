@@ -12,6 +12,8 @@
 
 /**
  * Tipos de categorias padrão de consentimento para cookies, conforme definido pela ANPD.
+ * @category Types
+ * @since 0.2.0
  *
  * @remarks
  * Use este tipo para identificar as categorias principais de cookies suportadas nativamente pela biblioteca.
@@ -41,6 +43,8 @@ export type Category =
 
 /**
  * Definição detalhada de uma categoria de cookie para uso interno.
+ * @category Types
+ * @since 0.2.0
  *
  * @remarks
  * Esta interface define a estrutura completa de uma categoria de cookies,

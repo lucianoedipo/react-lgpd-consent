@@ -1,0 +1,11 @@
+# .github/dependabot.yml
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: typescript
+        versions: ['>=6'] # segure majors se quiser

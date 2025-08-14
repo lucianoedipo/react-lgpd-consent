@@ -48,6 +48,8 @@ export interface UserWayConfig {
 
 /**
  * @function
+ * @category Utils
+ * @since 0.2.0
  * Cria um objeto de integração para o Google Analytics 4 (GA4).
  *
  * @param {GoogleAnalyticsConfig} config A configuração do GA4, incluindo o `measurementId`.
@@ -81,6 +83,8 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
 
 /**
  * @function
+ * @category Utils
+ * @since 0.2.0
  * Cria um objeto de integração para o Google Tag Manager (GTM).
  *
  * @param {GoogleTagManagerConfig} config A configuração do GTM, incluindo o `containerId`.
@@ -110,6 +114,8 @@ export function createGoogleTagManagerIntegration(
 
 /**
  * @function
+ * @category Utils
+ * @since 0.2.0
  * Cria um objeto de integração para o widget de acessibilidade UserWay.
  *
  * @param {UserWayConfig} config A configuração do UserWay, incluindo o `accountId`.
@@ -134,6 +140,8 @@ export function createUserWayIntegration(config: UserWayConfig): ScriptIntegrati
 
 /**
  * @constant
+ * @category Utils
+ * @since 0.2.0
  * Objeto contendo as factory functions para as integrações pré-configuradas mais comuns.
  *
  * @example

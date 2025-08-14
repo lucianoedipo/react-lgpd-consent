@@ -470,7 +470,9 @@ export function useConsentHydration(): boolean {
 
 /**
  * Hook que retorna uma função para abrir o modal de preferências de forma programática.
- *
+ * @hook
+ * @category Hooks
+ * @since 0.3.1+
  * @remarks
  * Este hook oferece uma maneira ReactJS-idiomática de abrir o modal de preferências
  * em qualquer lugar da aplicação. Diferente do botão flutuante padrão, permite
@@ -607,7 +609,8 @@ export function useOpenPreferencesModal() {
 
 /**
  * Função utilitária para abrir o modal de preferências de fora de um componente React.
- *
+ * @category Utils
+ * @since 0.3.1+
  * @remarks
  * Esta função permite acesso ao sistema de consentimento a partir de código que não está
  * dentro do contexto React, como scripts vanilla JS, bibliotecas de terceiros, ou
@@ -701,7 +704,6 @@ export function useOpenPreferencesModal() {
  * @see {@link ConsentProvider} - Provider que registra esta função automaticamente
  *
  * @public
- * @since 0.3.0
  */
 let globalOpenPreferences: (() => void) | null = null
 

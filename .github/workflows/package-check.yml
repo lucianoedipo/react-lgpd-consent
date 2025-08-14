@@ -1,0 +1,20 @@
+# .github/workflows/package-check.yml
+name: Package Check
+on:
+  pull_request:
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - run: npm pack --json > pack.json
+      - name: Exibir arquivos do tarball
+        run: node -e "console.log(JSON.parse(require('fs').readFileSync('pack.json','utf8'))[0].files.map(f=>f.path).join('\n'))"

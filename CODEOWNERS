@@ -1,0 +1,68 @@
+# This is the CODEOWNERS file.
+
+# It specifies the individuals or teams responsible for code in this repository.
+
+# When a pull request modifies code owned by someone, they will be automatically
+
+# requested for review.
+
+# Each line consists of a file pattern followed by one or more @username or email addresses.
+
+# The patterns are matched in the order they appear in the file.
+
+# The last matching pattern takes precedence.
+
+# Examples:
+
+#
+
+# # Default owner for all files
+
+# \* @your-username
+
+#
+
+# # Owners for specific directories
+
+# /src/components/ @component-owner
+
+# /src/hooks/ @hook-owner
+
+#
+
+# # Owners for specific file types
+
+# \*.js @javascript-owner
+
+# \*.ts @typescript-owner
+
+#
+
+# # Owners for a specific file
+
+# /src/index.js @main-owner
+
+# Default owner for all files
+
+- @lucianoedipo
+
+# Owners for specific directories
+
+/src/components/ @lucianoedipo
+/src/hooks/ @lucianoedipo
+/src/context/ @lucianoedipo
+/src/utils/ @lucianoedipo
+/src/types/ @lucianoedipo
+/src/constants/ @lucianoedipo
+
+# Owners for documentation files
+
+/docs/ @lucianoedipo
+\*.md @lucianoedipo
+
+# Owners for configuration files
+
+_.json @lucianoedipo
+_.yml @lucianoedipo
+_.yaml @lucianoedipo
+.env_ @lucianoedipo

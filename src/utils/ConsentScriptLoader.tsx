@@ -18,6 +18,8 @@ export interface ConsentScriptLoaderProps {
 
 /**
  * @component
+ * @category Utils
+ * @since 0.2.0
  * Componente que não renderiza UI, mas gerencia o carregamento de scripts de terceiros
  * (como Google Analytics) com base nas preferências de consentimento do usuário.
  *
@@ -76,6 +78,9 @@ export function ConsentScriptLoader({
 }
 
 /**
+ * @hook
+ * @category Hooks
+ * @since 0.2.0
  * Hook para carregamento programático de um script baseado no consentimento.
  *
  * @returns Uma função assíncrona que recebe um objeto de integração de script e tenta carregá-lo.

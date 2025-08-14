@@ -43,6 +43,8 @@ const COOKIE_SCHEMA_VERSION = '1.0'
 
 /**
  * @function
+ * @category Utils
+ * @since 0.1.0
  * Lê e desserializa o cookie de consentimento do navegador.
  *
  * @param {string} [name=DEFAULT_COOKIE_OPTS.name] O nome do cookie a ser lido.
@@ -119,6 +121,8 @@ function migrateLegacyCookie(legacyData: any): ConsentState | null {
 
 /**
  * @function
+ * @category Utils
+ * @since 0.1.0
  * Persiste o estado de consentimento atual no cookie do navegador.
  *
  * @param {ConsentState} state O estado de consentimento a ser salvo.
@@ -173,6 +177,8 @@ export function writeConsentCookie(
 
 /**
  * @function
+ * @category Utils
+ * @since 0.1.0
  * Cria um estado inicial de consentimento para a biblioteca, conforme as diretrizes da LGPD.
  * Por padrão, o usuário ainda não interagiu e apenas os cookies necessários são considerados ativos.
  *
@@ -194,6 +200,8 @@ export function createInitialConsentState(): ConsentState {
 
 /**
  * @function
+ * @category Utils
+ * @since 0.1.0
  * Remove o cookie de consentimento do navegador.
  *
  * @param {Partial<ConsentCookieOptions>} [opts] Opções adicionais para a remoção do cookie (ex: `path`).

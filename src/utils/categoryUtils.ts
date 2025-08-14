@@ -20,6 +20,7 @@ const DEFAULT_CATEGORIES: Category[] = [
 /**
  * Cria um objeto de preferências de consentimento inicial baseado na configuração de categorias do projeto.
  * @category Utils
+ * @since 0.2.0
  * @param config A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
  * @param defaultValue O valor padrão para categorias não essenciais. Por padrão, `false` para conformidade LGPD (rejeitar por padrão).
  * @returns Um objeto `ConsentPreferences` com as categorias e seus valores iniciais.
@@ -64,6 +65,7 @@ export function createProjectPreferences(
 /**
  * Valida um objeto de preferências de consentimento, removendo categorias que não estão permitidas pela configuração do projeto.
  * @category Utils
+ * @since 0.2.6
  * @param preferences O objeto de preferências a ser validado.
  * @param config A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
  * @returns Um novo objeto `ConsentPreferences` contendo apenas categorias válidas.
@@ -101,6 +103,7 @@ export function validateProjectPreferences(
 /**
  * Retorna um array com as definições detalhadas de todas as categorias de cookies ativas no projeto.
  * @category Utils
+ * @since 0.2.2
  * @param config A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
  * @returns Um array de objetos `CategoryDefinition`.
  * @remarks
@@ -191,6 +194,7 @@ function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
 /**
  * Verifica se uma configuração de categorias é válida, identificando categorias padrão inválidas.
  * @category Utils
+ * @since 0.2.2
  * @param config A configuração de categorias a ser validada.
  * @returns Uma lista de strings, onde cada string é uma mensagem de erro. A lista estará vazia se a configuração for válida.
  * @remarks

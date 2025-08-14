@@ -2,6 +2,8 @@ import { createTheme } from '@mui/material/styles'
 
 /**
  * @constant
+ * @category Utils
+ * @since 0.1.0
  * Tema padrão utilizado pelos componentes de consentimento da biblioteca.
  *
  * Inclui configurações de cores, tipografia e estilos para componentes Material-UI,
@@ -78,6 +80,8 @@ export const defaultConsentTheme = createTheme({
 
 /**
  * @type
+ * @category Types
+ * @since 0.1.0
  * Tipo do tema de consentimento utilizado na biblioteca.
  *
  * Útil para tipar props customizadas de tema ou para extensão do tema padrão.

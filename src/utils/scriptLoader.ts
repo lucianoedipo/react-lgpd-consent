@@ -1,5 +1,7 @@
 /**
  * @function
+ * @category Utils
+ * @since 0.1.0
  * Carrega dinamicamente um script externo no DOM.
  *
  * @remarks
@@ -12,6 +14,13 @@
  * @param {'analytics' | 'marketing' | null} [category=null] A categoria de consentimento exigida para o script. Se o consentimento para esta categoria não for dado, o script não será carregado.
  * @param {Record<string, string>} [attrs={}] Atributos adicionais a serem aplicados ao elemento `<script>` (ex: `{ async: 'true' }`).
  * @returns {Promise<void>} Uma Promise que resolve quando o script é carregado com sucesso, ou rejeita se o consentimento não for dado ou ocorrer um erro de carregamento.
+ * @example
+ * ```ts
+ * // Carregar um script de analytics após o consentimento
+ * loadScript('my-analytics-script', 'https://example.com/analytics.js', 'analytics')
+ *   .then(() => console.log('Script de analytics carregado!'))
+ *   .catch(error => console.error('Erro ao carregar script:', error))
+ * ```
  */
 export function loadScript(
   id: string,

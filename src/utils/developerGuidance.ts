@@ -27,6 +27,8 @@ export interface DeveloperGuidance {
 
 /**
  * @constant
+ * @category Utils
+ * @since 0.2.2
  * Configuração padrão de categorias de cookies utilizada quando o desenvolvedor não especifica nenhuma configuração.
  * Inclui apenas a categoria 'analytics' além da 'necessary' (que é sempre incluída).
  */
@@ -36,6 +38,8 @@ export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
 
 /**
  * @function
+ * @category Utils
+ * @since 0.2.2
  * Analisa a configuração de categorias do projeto e gera um objeto de orientação para o desenvolvedor.
  * Este objeto contém avisos, sugestões e informações detalhadas sobre as categorias ativas.
  *
@@ -124,6 +128,8 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
 
 /**
  * @function
+ * @category Utils
+ * @since 0.2.2
  * Exibe orientações e avisos no console do navegador durante o desenvolvimento.
  * Esta função é automaticamente desativada em builds de produção.
  *
@@ -190,6 +196,8 @@ export function logDeveloperGuidance(
 
 /**
  * @hook
+ * @category Hooks
+ * @since 0.2.2
  * Hook para desenvolvedores obterem orientações sobre a configuração atual da biblioteca.
  * Útil para componentes customizados verificarem se estão adequados à configuração do `ConsentProvider`.
  *

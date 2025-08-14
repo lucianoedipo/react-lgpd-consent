@@ -92,6 +92,9 @@ export interface SafeThemeProviderProps {
 }
 
 /**
+ * @component
+ * @category Utils
+ * @since 0.3.1
  * Componente ThemeProvider interno que garante compatibilidade e fallbacks seguros.
  * Deve ser usado nos componentes internos da biblioteca para evitar erros de tema.
  */
