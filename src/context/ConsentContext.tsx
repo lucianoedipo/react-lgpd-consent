@@ -1,3 +1,15 @@
+/**
+ * @fileoverview
+ * Contexto principal do sistema de consentimento LGPD/ANPD para React.
+ *
+ * Este arquivo implementa o contexto global que gerencia o estado de consentimento,
+ * coordena componentes de UI (banner, modal, botão flutuante) e fornece integração
+ * com cookies, temas Material-UI e sistema de debug/logging.
+ *
+ * @author Luciano Édipo
+ * @since 0.1.0
+ */
+
 // src/context/ConsentContext.tsx
 import * as React from 'react'
 import { SafeThemeProvider } from '../utils/SafeThemeProvider'
@@ -39,6 +51,22 @@ import { FloatingPreferencesButton } from '../components/FloatingPreferencesButt
 
 /**
  * Cria um estado completo de consentimento com todos os campos obrigatórios.
+ *
+ * @remarks
+ * Esta função utilitária garante que um objeto `ConsentState` seja criado com
+ * todos os campos necessários, aplicando defaults seguros e validações.
+ * É usada internamente pelo reducer e pelos handlers de ações do usuário.
+ *
+ * @param consented - Se o usuário deu consentimento geral
+ * @param preferences - Preferências detalhadas por categoria
+ * @param source - Origem da ação ('banner' | 'modal' | 'programmatic')
+ * @param projectConfig - Configuração de categorias do projeto
+ * @param isModalOpen - Se o modal está aberto (padrão: false)
+ * @param existingState - Estado anterior para preservar timestamps
+ *
+ * @returns Estado de consentimento completo e válido
+ *
+ * @internal
  */
 function createFullConsentState(
   consented: boolean,

@@ -1,14 +1,35 @@
 /**
+ * @fileoverview
+ * Definições de tipos TypeScript para o sistema de consentimento LGPD/ANPD.
+ *
+ * Este arquivo contém todas as interfaces, tipos e estruturas de dados utilizadas
+ * pela biblioteca react-lgpd-consent, incluindo definições de categorias,
+ * estado de consentimento, configurações e textos da interface.
+ *
+ * @author Luciano Édipo
+ * @since 0.1.0
+ */
+
+/**
  * Tipos de categorias padrão de consentimento para cookies, conforme definido pela ANPD.
  *
  * @remarks
  * Use este tipo para identificar as categorias principais de cookies suportadas nativamente pela biblioteca.
+ * Cada categoria representa um tipo específico de processamento de dados:
+ *
  * - `'necessary'`: Cookies essenciais para funcionamento do site (sempre ativos).
  * - `'analytics'`: Cookies para análise e estatísticas de uso.
  * - `'functional'`: Cookies para funcionalidades extras e preferências do usuário.
  * - `'marketing'`: Cookies para publicidade e marketing direcionado.
  * - `'social'`: Cookies para integração com redes sociais.
  * - `'personalization'`: Cookies para personalização de conteúdo e experiência.
+ *
+ * @example
+ * ```typescript
+ * const categories: Category[] = ['analytics', 'marketing'];
+ * ```
+ *
+ * @public
  */
 export type Category =
   | 'necessary'
@@ -19,88 +40,396 @@ export type Category =
   | 'personalization'
 
 /**
- * Definição detalhada de uma categoria de cookie.
+ * Definição detalhada de uma categoria de cookie para uso interno.
+ *
+ * @remarks
+ * Esta interface define a estrutura completa de uma categoria de cookies,
+ * incluindo metadados e configurações específicas para processamento
+ * e exibição na interface do usuário.
+ *
+ * @example
+ * ```typescript
+ * const analyticsCategory: CategoryDefinition = {
+ *   id: 'analytics',
+ *   name: 'Cookies Analíticos',
+ *   description: 'Utilizados para análise de uso do site',
+ *   essential: false,
+ *   cookies: ['_ga', '_ga_*', '_gid']
+ * };
+ * ```
+ *
+ * @public
  */
 export interface CategoryDefinition {
-  /** ID único da categoria */
+  /**
+   * Identificador único da categoria.
+   * @example 'analytics'
+   */
   id: string
-  /** Nome amigável exibido na interface */
+
+  /**
+   * Nome amigável exibido na interface do usuário.
+   * @example 'Cookies Analíticos'
+   */
   name: string
-  /** Descrição detalhada da categoria */
+
+  /**
+   * Descrição detalhada da finalidade da categoria.
+   * @example 'Utilizados para análise de uso e comportamento no site'
+   */
   description: string
-  /** Se é uma categoria essencial (não pode ser desabilitada) */
+
+  /**
+   * Indica se é uma categoria essencial que não pode ser desabilitada pelo usuário.
+   * @defaultValue false
+   */
   essential?: boolean
-  /** Scripts/cookies específicos desta categoria */
+
+  /**
+   * Lista de nomes de cookies ou padrões específicos desta categoria.
+   * @example ['_ga', '_ga_*', '_gid']
+   */
   cookies?: string[]
 }
 
 /**
  * Configuração de categorias ativas no projeto.
- * Define quais categorias fixas serão usadas (além de necessary)
- * e quais categorias customizadas serão adicionadas.
- */
-export interface ProjectCategoriesConfig {
-  /** Categorias padrão que serão ativadas (necessary sempre incluída automaticamente) */
-  enabledCategories?: Category[]
-  /** Categorias customizadas específicas do projeto */
-}
-
-/**
- * Preferências de consentimento do usuário.
- * Contém apenas as categorias realmente utilizadas no projeto.
- */
-export interface ConsentPreferences {
-  necessary: boolean // Sempre presente e true (essencial)
-  [key: string]: boolean // Apenas categorias habilitadas no projeto
-}
-
-/**
- * Dados do cookie de consentimento em conformidade com LGPD/ANPD.
- * Contém apenas informações essenciais para compliance e funcionamento.
  *
  * @remarks
- * A estrutura deste cookie é um formato JSON simples e legível, projetado para ser autoexplicativo
- * e atender diretamente aos requisitos da LGPD para sites de primeira parte (first-party contexts).
+ * Define quais categorias fixas serão usadas (além de 'necessary' que é sempre incluída)
+ * e permite extensão com categorias customizadas específicas do projeto.
  *
- * Ele **não** implementa o padrão IAB Transparency and Consent Framework (TCF), que é mais complexo
- * e voltado para o ecossistema de publicidade programática (ad-tech).
- * A adoção do TCF pode ser uma evolução futura para a biblioteca em um modo avançado.
+ * A categoria 'necessary' é sempre incluída automaticamente e não precisa ser
+ * especificada em `enabledCategories`.
  *
- * - **LGPD**: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm
- * - **Guia de Cookies ANPD**: https://www.gov.br/anpd/pt-br/documentos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf
+ * @example
+ * ```typescript
+ * // Configuração básica
+ * const config: ProjectCategoriesConfig = {
+ *   enabledCategories: ['analytics', 'marketing']
+ * };
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Configuração com categorias customizadas
+ * const config: ProjectCategoriesConfig = {
+ *   enabledCategories: ['analytics'],
+ *   customCategories: [{
+ *     id: 'support',
+ *     name: 'Suporte',
+ *     description: 'Cookies para sistema de suporte ao cliente'
+ *   }]
+ * };
+ * ```
+ *
+ * @public
+ */
+export interface ProjectCategoriesConfig {
+  /**
+   * Categorias padrão que serão ativadas.
+   * A categoria 'necessary' é sempre incluída automaticamente.
+   * @example ['analytics', 'marketing']
+   */
+  enabledCategories?: Category[]
+
+  /**
+   * Categorias customizadas específicas do projeto.
+   * Permite extensão além das categorias padrão da biblioteca.
+   */
+  customCategories?: CategoryDefinition[]
+}
+
+/**
+ * Preferências de consentimento do usuário por categoria.
+ *
+ * @remarks
+ * Contém o estado de consentimento para cada categoria ativa no projeto.
+ * A categoria 'necessary' está sempre presente e definida como `true`,
+ * pois cookies essenciais não podem ser desabilitados pelo usuário.
+ *
+ * ### Comportamento Dinâmico
+ * - As chaves são determinadas pela configuração de `enabledCategories` no `ConsentProvider`
+ * - Categorias não habilitadas no projeto não aparecem no objeto
+ * - TypeScript infere automaticamente as chaves baseado na configuração
+ * - Estado é persistido no cookie e restaurado em novas sessões
+ *
+ * ### Valores e Significados
+ * - `true`: Usuário consentiu explicitamente para a categoria
+ * - `false`: Usuário rejeitou explicitamente a categoria
+ * - Ausência da chave: Categoria não está habilitada no projeto
+ *
+ * ### Integração com Scripts
+ * - Use com `ConsentScriptLoader` para carregamento condicional
+ * - Estado é automaticamente reativo - mudanças atualizam scripts
+ * - Compatível com Google Analytics Enhanced Consent Mode
+ * - Suporta integração com ferramentas de tag management
+ *
+ * @example Configuração típica
+ * ```typescript
+ * const preferences: ConsentPreferences = {
+ *   necessary: true,    // Sempre true (cookies essenciais)
+ *   analytics: false,   // Usuário rejeitou análise
+ *   marketing: true     // Usuário aceitou marketing
+ * };
+ * ```
+ *
+ * @example Integração condicional com features
+ * ```typescript
+ * function MyComponent() {
+ *   const { preferences } = useConsent();
+ *
+ *   return (
+ *     <div>
+ *       {preferences.analytics && <AnalyticsComponent />}
+ *       {preferences.marketing && <PersonalizationEngine />}
+ *       {preferences.functional && <ChatWidget />}
+ *     </div>
+ *   );
+ * }
+ * ```
+ *
+ * @example Verificação programática de múltiplas categorias
+ * ```typescript
+ * function hasConsentForFeature(preferences: ConsentPreferences): boolean {
+ *   // Feature requer analytics OU marketing
+ *   return preferences.analytics || preferences.marketing;
+ * }
+ *
+ * function hasFullConsent(preferences: ConsentPreferences): boolean {
+ *   // Verificar se todas as categorias opcionais foram aceitas
+ *   const optionalCategories = Object.keys(preferences).filter(key => key !== 'necessary');
+ *   return optionalCategories.every(key => preferences[key] === true);
+ * }
+ * ```
+ *
+ * @public
+ * @since 0.1.0
+ */
+export interface ConsentPreferences {
+  /**
+   * Categoria de cookies necessários - sempre presente e verdadeira.
+   * Cookies essenciais não podem ser desabilitados pelo usuário.
+   */
+  necessary: boolean
+
+  /**
+   * Estado de consentimento para outras categorias ativas no projeto.
+   * As chaves correspondem aos IDs das categorias configuradas.
+   */
+  [key: string]: boolean
+}
+
+/**
+ * Estrutura do cookie de consentimento em conformidade com LGPD/ANPD.
+ *
+ * @remarks
+ * Esta interface define o formato do cookie persistido no navegador do usuário,
+ * contendo todas as informações necessárias para compliance com a LGPD e
+ * para o funcionamento correto da biblioteca.
+ *
+ * **Importante**: A estrutura utiliza um formato JSON simples e legível, projetado
+ * para ser autoexplicativo e atender diretamente aos requisitos da LGPD para sites
+ * de primeira parte (first-party contexts).
+ *
+ * **Não implementa IAB TCF**: Este formato **não** segue o padrão IAB Transparency
+ * and Consent Framework (TCF), que é mais complexo e voltado para o ecossistema
+ * de publicidade programática (ad-tech). A adoção do TCF pode ser uma evolução
+ * futura da biblioteca.
+ *
+ * @example
+ * ```typescript
+ * const cookieData: ConsentCookieData = {
+ *   version: '1.0',
+ *   consented: true,
+ *   preferences: {
+ *     necessary: true,
+ *     analytics: true,
+ *     marketing: false
+ *   },
+ *   consentDate: '2024-01-15T10:30:00.000Z',
+ *   lastUpdate: '2024-01-15T10:30:00.000Z',
+ *   source: 'banner',
+ *   projectConfig: {
+ *     enabledCategories: ['analytics', 'marketing']
+ *   }
+ * };
+ * ```
+ *
+ * @see {@link https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm | LGPD - Lei 13.709/2018}
+ * @see {@link https://www.gov.br/anpd/pt-br/documentos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf | Guia de Cookies ANPD}
+ *
+ * @public
  */
 export interface ConsentCookieData {
-  /** Versão do esquema do cookie para migração futura */
+  /**
+   * Versão do esquema do cookie para compatibilidade e migração futura.
+   * @example '1.0'
+   */
   version: string
-  /** Se o usuário já prestou consentimento */
+
+  /**
+   * Indica se o usuário já prestou consentimento explícito.
+   * @example true
+   */
   consented: boolean
-  /** Preferências por categoria (apenas categorias ativas) */
+
+  /**
+   * Preferências detalhadas por categoria de cookies.
+   * Contém apenas as categorias ativas no projeto.
+   */
   preferences: ConsentPreferences
-  /** Timestamp ISO da primeira interação com o banner */
+
+  /**
+   * Timestamp ISO 8601 da primeira interação com o banner de consentimento.
+   * @example '2024-01-15T10:30:00.000Z'
+   */
   consentDate: string
-  /** Timestamp ISO da última modificação das preferências */
+
+  /**
+   * Timestamp ISO 8601 da última modificação das preferências.
+   * Atualizado sempre que o usuário muda suas preferências.
+   * @example '2024-01-15T10:30:00.000Z'
+   */
   lastUpdate: string
-  /** Origem da decisão de consentimento */
+
+  /**
+   * Origem da decisão de consentimento para auditoria.
+   * - 'banner': Decisão tomada no banner principal
+   * - 'modal': Decisão tomada no modal de preferências
+   * - 'programmatic': Decisão tomada via API programática
+   */
   source: 'banner' | 'modal' | 'programmatic'
-  /** Snapshot da configuração de categorias usada para este consentimento */
+
+  /**
+   * Snapshot da configuração de categorias no momento do consentimento.
+   * Útil para detectar mudanças na configuração e solicitar novo consentimento.
+   */
   projectConfig?: ProjectCategoriesConfig
 }
 
 /**
- * Estado interno completo do consentimento (memória + UI).
- * Inclui dados persistidos + estado da interface.
+ * Estado interno completo do sistema de consentimento.
+ *
+ * @remarks
+ * Estende {@link ConsentCookieData} com informações de estado da interface
+ * que não são persistidas no cookie, como o estado de abertura do modal.
+ *
+ * Este é o estado completo mantido em memória pelo React Context e
+ * utilizado por todos os componentes da biblioteca.
+ *
+ * ### Dados Persistidos vs. Temporários
+ * - **Persistidos**: Herdados de `ConsentCookieData` - salvos no cookie
+ * - **Temporários**: `isModalOpen` - apenas em memória durante a sessão
+ *
+ * ### Ciclo de Vida do Estado
+ * 1. **Inicialização**: Estado padrão ou lido do cookie
+ * 2. **Hidratação**: Restauração do cookie no lado cliente (SSR)
+ * 3. **Interação**: Usuário modifica preferências via UI
+ * 4. **Persistência**: Estado é salvo no cookie automaticamente
+ * 5. **Sincronização**: Componentes reagem às mudanças via Context
+ *
+ * ### Performance e Reatividade
+ * - Estado é imutável - mudanças criam novo objeto
+ * - Optimized com `useMemo` para evitar re-renders desnecessários
+ * - Subscriber pattern para notificações de mudança
+ * - Integração automática com React DevTools
+ *
+ * @example Estado típico com consentimento dado
+ * ```typescript
+ * const state: ConsentState = {
+ *   version: '1.0',
+ *   consented: true,
+ *   preferences: { necessary: true, analytics: true, marketing: false },
+ *   consentDate: '2024-01-15T10:30:00.000Z',
+ *   lastUpdate: '2024-01-15T10:30:00.000Z',
+ *   source: 'banner',
+ *   projectConfig: { enabledCategories: ['analytics', 'marketing'] },
+ *   isModalOpen: false  // Estado da UI não persistido
+ * };
+ * ```
+ *
+ * @example Estado inicial antes do consentimento
+ * ```typescript
+ * const initialState: ConsentState = {
+ *   version: '1.0',
+ *   consented: false,
+ *   preferences: { necessary: true }, // Apenas essenciais
+ *   isModalOpen: false
+ *   // consentDate, lastUpdate, source serão definidos após consentimento
+ * };
+ * ```
+ *
+ * @example Uso em componente para verificação de estado
+ * ```typescript
+ * function ConsentAwareComponent() {
+ *   const { consented, preferences, isModalOpen } = useConsent();
+ *
+ *   if (!consented) {
+ *     return <div>Aguardando decisão do usuário sobre cookies...</div>;
+ *   }
+ *
+ *   if (isModalOpen) {
+ *     return <div>Modal de preferências está aberto</div>;
+ *   }
+ *
+ *   return (
+ *     <div>
+ *       Analytics ativo: {preferences.analytics ? 'Sim' : 'Não'}
+ *       Marketing ativo: {preferences.marketing ? 'Sim' : 'Não'}
+ *     </div>
+ *   );
+ * }
+ * ```
+ *
+ * @see {@link ConsentCookieData} - Interface base com dados persistidos
+ * @see {@link useConsent} - Hook para acessar este estado
+ * @see {@link ConsentProvider} - Provider que mantém este estado
+ *
+ * @public
+ * @since 0.1.0
  */
 export interface ConsentState extends ConsentCookieData {
-  /** Se o modal de preferências está aberto (NÃO persistido) */
+  /**
+   * Estado de abertura do modal de preferências.
+   * Esta informação não é persistida no cookie, apenas mantida em memória.
+   * @defaultValue false
+   */
   isModalOpen?: boolean
 }
 
 /**
- * Textos utilizados na interface de consentimento.
+ * Interface de textos personalizáveis para todos os componentes da UI de consentimento LGPD.
  *
  * @remarks
  * Esta interface define todos os textos exibidos na UI do banner e modal de consentimento.
- * Os campos opcionais permitem adequação à ANPD e customização conforme necessidade do projeto.
+ * Os campos opcionais permitem adequação completa aos requisitos da ANPD e customização
+ * conforme necessidade específica do projeto. Todos os campos possuem valores padrão em português.
+ *
+ * A interface é dividida em três seções:
+ * - **Textos básicos**: Elementos essenciais do banner e modal (obrigatórios)
+ * - **Textos alternativos**: Variações para UI customizada (opcionais)
+ * - **Textos ANPD expandidos**: Informações de compliance com LGPD (opcionais)
+ *
+ * @example Configuração básica em inglês
+ * ```typescript
+ * const customTexts: Partial<ConsentTexts> = {
+ *   bannerMessage: 'We use cookies to enhance your experience.',
+ *   acceptAll: 'Accept All',
+ *   declineAll: 'Reject All',
+ *   preferences: 'Preferences'
+ * };
+ * ```
+ *
+ * @example Configuração completa ANPD
+ * ```typescript
+ * const anpdTexts: Partial<ConsentTexts> = {
+ *   controllerInfo: 'Controlado por: Empresa XYZ - CNPJ: 12.345.678/0001-90',
+ *   dataTypes: 'Coletamos: endereço IP, preferências de navegação, dados de uso',
+ *   userRights: 'Você pode solicitar acesso, correção ou exclusão dos seus dados',
+ *   contactInfo: 'DPO: dpo@empresa.com.br | Tel: (11) 1234-5678'
+ * };
+ * ```
  *
  * @property bannerMessage - Mensagem principal exibida no banner de consentimento.
  * @property acceptAll - Texto do botão para aceitar todos os cookies.
@@ -111,11 +440,27 @@ export interface ConsentState extends ConsentCookieData {
  * @property modalIntro - Texto introdutório do modal.
  * @property save - Texto do botão para salvar preferências.
  * @property necessaryAlwaysOn - Texto explicativo para cookies necessários.
+ * @property preferencesButton - (Opcional) Texto alternativo para botão de preferências.
+ * @property preferencesTitle - (Opcional) Título alternativo do modal.
+ * @property preferencesDescription - (Opcional) Descrição do modal.
+ * @property close - (Opcional) Texto do botão fechar.
+ * @property accept - (Opcional) Texto alternativo aceitar.
+ * @property reject - (Opcional) Texto alternativo rejeitar.
+ * @property brandingPoweredBy - (Opcional) Texto "fornecido por".
  * @property controllerInfo - (Opcional) Informação sobre o controlador dos dados.
  * @property dataTypes - (Opcional) Tipos de dados coletados.
  * @property thirdPartySharing - (Opcional) Compartilhamento com terceiros.
  * @property userRights - (Opcional) Direitos do titular dos dados.
  * @property contactInfo - (Opcional) Informações de contato do DPO.
+ * @property retentionPeriod - (Opcional) Prazo de armazenamento dos dados.
+ * @property lawfulBasis - (Opcional) Base legal para o processamento.
+ * @property transferCountries - (Opcional) Países para transferência de dados.
+ *
+ * @see {@link ConsentProvider} - Para usar os textos personalizados
+ * @see {@link useConsentTexts} - Hook para acessar textos no contexto
+ *
+ * @public
+ * @since 0.1.0
  */
 export interface ConsentTexts {
   // Textos básicos (obrigatórios)
