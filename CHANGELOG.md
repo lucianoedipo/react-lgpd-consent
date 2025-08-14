@@ -53,7 +53,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ### 📚 **Documentação**
 
-#### Guia de API v0.3.1
+#### Guia de API v0.3.1+
 
 - **Novo arquivo**: `docs/API-v0.3.1.md` com exemplos completos
 - **Casos de uso**: Next.js 14+, Material-UI, componentes totalmente customizados
