@@ -1,5 +1,11 @@
 # Guia de Conformidade LGPD
 
+Este documento descreve as medidas de conformidade da biblioteca **react-lgpd-consent** com a Lei Geral de Proteção de Dados (LGPD) e as diretrizes da ANPD, detalhando as ferramentas que auxiliam os desenvolvedores a manter a conformidade.
+
+**Referências Oficiais:**
+- [Lei Geral de Proteção de Dados (Lei Nº 13.709/2018)](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)
+- [Guia Orientativo de Cookies e Proteção de Dados Pessoais da ANPD](https://www.gov.br/anpd/pt-br/documentos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf)
+
 ## 📜 Objetivo
 
 Este documento descreve as medidas de conformidade da biblioteca **react-lgpd-consent** com a Lei Geral de Proteção de Dados (LGPD) e as diretrizes da ANPD, detalhando as ferramentas que auxiliam os desenvolvedores a manter a conformidade.

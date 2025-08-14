@@ -17,15 +17,37 @@ import { useDesignTokens } from '../context/DesignContext'
 import { Branding } from './Branding'
 import { logger } from '../utils/logger'
 
+/**
+ * @interface CookieBannerProps
+ * Propriedades para customizar o componente `CookieBanner`.
+ */
 export interface CookieBannerProps {
+  /** URL para a política de privacidade ou cookies do seu site. */
   policyLinkUrl?: string
+  /** Se `true`, o banner será exibido em modo de depuração, independentemente do estado de consentimento. */
   debug?: boolean
+  /** Se `true`, o banner bloqueia a interação com o restante da página até que o usuário tome uma decisão. Padrão: `true`. */
   blocking?: boolean
+  /** Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" no banner. Padrão: `false`. */
   hideBranding?: boolean
+  /** Propriedades adicionais para o componente `Snackbar` do Material-UI, quando o banner não é bloqueante. */
   SnackbarProps?: Partial<SnackbarProps>
+  /** Propriedades adicionais para o componente `Paper` do Material-UI que envolve o conteúdo do banner. */
   PaperProps?: Partial<PaperProps>
 }
 
+/**
+ * @component
+ * O `CookieBanner` é o componente de UI que solicita o consentimento inicial do usuário.
+ * Ele é renderizado automaticamente pelo `ConsentProvider` quando o consentimento ainda não foi dado.
+ *
+ * @remarks
+ * Você pode substituir este componente padrão passando seu próprio componente para a prop `CookieBannerComponent`
+ * no `ConsentProvider` para ter controle total sobre a aparência e o comportamento do banner.
+ *
+ * @param {Readonly<CookieBannerProps>} props As propriedades para customizar o banner.
+ * @returns {JSX.Element | null} O componente do banner ou `null` se não for necessário exibi-lo.
+ */
 export function CookieBanner({
   policyLinkUrl,
   debug,

@@ -63,7 +63,8 @@
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\" \"eslint.config.js\"",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "docs:generate": "typedoc --out docs"
   },
   "repository": {
     "type": "git",
@@ -115,6 +116,8 @@
     "rimraf": "^6.0.1",
     "ts-jest": "^29.4.1",
     "tsup": "^8.5.0",
+    "typedoc": "^0.26.5",
+    "typedoc-plugin-markdown": "^4.2.3",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.39.1"
   }

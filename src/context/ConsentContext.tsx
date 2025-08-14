@@ -217,19 +217,49 @@ const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
 const HydrationCtx = React.createContext<boolean>(false)
 
 /**
- * Provider principal do contexto de consentimento LGPD.
+ * @component
+ * Provider principal da biblioteca. Envolva sua aplicação com este componente para habilitar o gerenciamento de consentimento.
  *
- * Gerencia o estado global de consentimento de cookies, preferências do usuário,
- * textos customizáveis e integração com SSR. Permite customização do modal de preferências,
- * callbacks externos e opções de cookie.
+ * @remarks
+ * Este provider gerencia o estado de consentimento, renderiza a UI (banner, modal) e fornece o contexto para todos os hooks, como o `useConsent`.
+ * A configuração é feita através de props, permitindo desde um uso "zero-config" (além da prop obrigatória `categories`) até customizações avançadas.
  *
- * @param props Propriedades do ConsentProvider (ver ConsentProviderProps)
- * @returns JSX.Element
+ * @param {Readonly<ConsentProviderProps>} props - As propriedades para configurar o provider.
+ * @param {ProjectCategoriesConfig} props.categories - **Obrigatório**. Define as categorias de cookies que seu projeto utiliza, em conformidade com o princípio de minimização da LGPD.
+ * @param {Partial<ConsentTexts>} [props.texts] - Objeto para customizar todos os textos exibidos na UI.
+ * @param {boolean} [props.blocking=false] - Se `true`, exibe um overlay que impede a interação com o site até uma decisão do usuário.
+ * @param {(state: ConsentState) => void} [props.onConsentGiven] - Callback executado na primeira vez que o usuário dá o consentimento.
+ * @param {(prefs: ConsentPreferences) => void} [props.onPreferencesSaved] - Callback executado sempre que o usuário salva novas preferências.
+ * @param {boolean} [props.disableDeveloperGuidance=false] - Desativa as mensagens de orientação no console em ambiente de desenvolvimento.
+ * @param {boolean} [props.disableFloatingPreferencesButton=false] - Desabilita o botão flutuante para reabrir as preferências.
+ * @param {React.ComponentType<CustomCookieBannerProps>} [props.CookieBannerComponent] - Permite substituir o componente de banner padrão por um customizado.
+ * @param {React.ComponentType<CustomPreferencesModalProps>} [props.PreferencesModalComponent] - Permite substituir o modal de preferências padrão por um customizado.
+ * @param {any} [props.theme] - Objeto de tema do Material-UI para estilizar os componentes padrão.
+ * @param {ConsentState} [props.initialState] - Estado inicial para hidratação em SSR, evitando o "flash" do banner.
+ * @param {Partial<ConsentCookieOptions>} [props.cookie] - Opções para customizar o nome, duração e outros atributos do cookie de consentimento.
+ * @param {React.ReactNode} props.children - A aplicação ou parte dela que terá acesso ao contexto de consentimento.
  *
  * @example
- * <ConsentProvider>
- *   <App />
+ * ```tsx
+ * // Uso básico
+ * <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+ *   <MyApp />
  * </ConsentProvider>
+ * ```
+ *
+ * @example
+ * ```tsx
+ * // Uso avançado com UI customizada e callbacks
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics', 'marketing'] }}
+ *   blocking={true}
+ *   texts={{ bannerMessage: 'Usamos cookies!' }}
+ *   onPreferencesSaved={(prefs) => console.log('Preferências salvas:', prefs)}
+ *   CookieBannerComponent={MeuBannerCustomizado}
+ * >
+ *   <MyApp />
+ * </ConsentProvider>
+ * ```
  */
 export function ConsentProvider({
   initialState,

@@ -1,4 +1,13 @@
 import Cookies from 'js-cookie'
+
+/**
+ * @fileoverview
+ * Utilitários para manipulação do cookie de consentimento.
+ * A estrutura de dados do cookie é um JSON simples para atender aos requisitos da LGPD,
+ * e não implementa o padrão IAB TCF, que é mais complexo.
+ * Veja `src/types/types.ts` para a definição da estrutura `ConsentCookieData`.
+ */
+
 import type {
   ConsentCookieOptions,
   ConsentState,

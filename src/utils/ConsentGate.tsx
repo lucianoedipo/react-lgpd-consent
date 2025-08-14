@@ -1,18 +1,17 @@
 /**
- * @module ConsentGate
- * @description
- * Componente condicional para renderização de conteúdo baseado no consentimento do usuário para uma categoria específica de cookies.
- * Utiliza o contexto de consentimento para verificar se a categoria informada foi aceita.
+ * @component
+ * Renderiza componentes filhos apenas se o usuário deu consentimento para uma categoria de cookie específica.
  *
- * @param props.category Categoria de consentimento a ser verificada (ex: 'analytics', 'marketing').
- * @param props.children Elementos React a serem renderizados caso o consentimento esteja ativo para a categoria.
+ * @param props As propriedades do componente.
+ * @param {string} props.category A categoria de consentimento a ser verificada (ex: 'analytics', 'marketing').
+ * @param {React.ReactNode} props.children Os componentes a serem renderizados se o consentimento para a categoria for `true`.
  *
- * @returns Os filhos fornecidos se o consentimento para a categoria estiver ativo, ou `null` caso contrário.
+ * @returns {React.ReactNode | null} Os componentes filhos se o consentimento foi dado, ou `null`.
  *
  * @example
  * ```tsx
  * <ConsentGate category="analytics">
- *   <AnalyticsScript />
+ *   <GoogleAnalyticsScript />
  * </ConsentGate>
  * ```
  */

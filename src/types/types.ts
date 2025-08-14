@@ -58,6 +58,17 @@ export interface ConsentPreferences {
 /**
  * Dados do cookie de consentimento em conformidade com LGPD/ANPD.
  * Contém apenas informações essenciais para compliance e funcionamento.
+ *
+ * @remarks
+ * A estrutura deste cookie é um formato JSON simples e legível, projetado para ser autoexplicativo
+ * e atender diretamente aos requisitos da LGPD para sites de primeira parte (first-party contexts).
+ *
+ * Ele **não** implementa o padrão IAB Transparency and Consent Framework (TCF), que é mais complexo
+ * e voltado para o ecossistema de publicidade programática (ad-tech).
+ * A adoção do TCF pode ser uma evolução futura para a biblioteca em um modo avançado.
+ *
+ * - **LGPD**: https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm
+ * - **Guia de Cookies ANPD**: https://www.gov.br/anpd/pt-br/documentos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf
  */
 export interface ConsentCookieData {
   /** Versão do esquema do cookie para migração futura */
