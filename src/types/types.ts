@@ -98,6 +98,8 @@ export interface CategoryDefinition {
 
 /**
  * Configuração de categorias ativas no projeto.
+ * @category Types
+ * @since 0.2.0
  *
  * @remarks
  * Define quais categorias fixas serão usadas (além de 'necessary' que é sempre incluída)
@@ -146,6 +148,8 @@ export interface ProjectCategoriesConfig {
 
 /**
  * Preferências de consentimento do usuário por categoria.
+ * @category Types
+ * @since 0.1.0
  *
  * @remarks
  * Contém o estado de consentimento para cada categoria ativa no projeto.
@@ -208,7 +212,6 @@ export interface ProjectCategoriesConfig {
  * ```
  *
  * @public
- * @since 0.1.0
  */
 export interface ConsentPreferences {
   /**
@@ -226,6 +229,8 @@ export interface ConsentPreferences {
 
 /**
  * Estrutura do cookie de consentimento em conformidade com LGPD/ANPD.
+ * @category Types
+ * @since 0.2.1
  *
  * @remarks
  * Esta interface define o formato do cookie persistido no navegador do usuário,
@@ -314,6 +319,8 @@ export interface ConsentCookieData {
 
 /**
  * Estado interno completo do sistema de consentimento.
+ * @category Types
+ * @since 0.1.0
  *
  * @remarks
  * Estende {@link ConsentCookieData} com informações de estado da interface
@@ -391,7 +398,6 @@ export interface ConsentCookieData {
  * @see {@link ConsentProvider} - Provider que mantém este estado
  *
  * @public
- * @since 0.1.0
  */
 export interface ConsentState extends ConsentCookieData {
   /**
@@ -404,6 +410,8 @@ export interface ConsentState extends ConsentCookieData {
 
 /**
  * Interface de textos personalizáveis para todos os componentes da UI de consentimento LGPD.
+ * @category Types
+ * @since 0.1.0
  *
  * @remarks
  * Esta interface define todos os textos exibidos na UI do banner e modal de consentimento.
@@ -464,7 +472,6 @@ export interface ConsentState extends ConsentCookieData {
  * @see {@link useConsentTexts} - Hook para acessar textos no contexto
  *
  * @public
- * @since 0.1.0
  */
 export interface ConsentTexts {
   // Textos básicos (obrigatórios)
@@ -501,6 +508,8 @@ export interface ConsentTexts {
 
 /**
  * Opções para configuração do cookie de consentimento.
+ * @category Types
+ * @since 0.1.0
  */
 export interface ConsentCookieOptions {
   /** Nome do cookie. Padrão: 'cookieConsent' */
@@ -517,6 +526,8 @@ export interface ConsentCookieOptions {
 
 /**
  * Tokens de design para customização visual avançada dos componentes.
+ * @category Types
+ * @since 0.1.3
  * Permite um controle mais direto sobre a aparência sem a necessidade de `sx` props complexas.
  */
 export interface DesignTokens {
@@ -559,6 +570,8 @@ export interface DesignTokens {
 
 /**
  * Propriedades do componente ConsentProvider - configuração principal da biblioteca.
+ * @category Types
+ * @since 0.1.0
  *
  * @example Uso básico (configuração mínima):
  * ```tsx
@@ -770,6 +783,8 @@ export interface ConsentProviderProps {
 
 /**
  * Props esperadas por um componente customizado de CookieBanner.
+ * @category Types
+ * @since 0.3.1
  * Fornece acesso ao estado de consentimento e ações necessárias para o banner.
  */
 export interface CustomCookieBannerProps {
@@ -782,6 +797,8 @@ export interface CustomCookieBannerProps {
 
 /**
  * Props esperadas por um componente customizado de PreferencesModal.
+ * @category Types
+ * @since 0.3.1
  *
  * Fornece acesso às preferências atuais do usuário, funções para atualizar e salvar preferências,
  * fechar o modal e textos customizados da interface.
@@ -802,6 +819,8 @@ export interface CustomPreferencesModalProps {
 
 /**
  * Props esperadas por um componente customizado de FloatingPreferencesButton.
+ * @category Types
+ * @since 0.3.1
  * Fornece acesso às ações de abertura do modal e ao estado de consentimento.
  */
 export interface CustomFloatingPreferencesButtonProps {
@@ -811,6 +830,8 @@ export interface CustomFloatingPreferencesButtonProps {
 
 /**
  * Valor do contexto de consentimento, incluindo estado e métodos de manipulação.
+ * @category Types
+ * @since 0.1.0
  */
 export interface ConsentContextValue {
   /** Indica se o usuário consentiu. */
