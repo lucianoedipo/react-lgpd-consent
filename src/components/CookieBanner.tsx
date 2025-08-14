@@ -15,7 +15,7 @@
  * - Acessibilidade completa com ARIA labels
  *
  * @author Luciano Édipo
- * @version 0.3.1
+ * @version 0.3.3
  * @since 0.1.0
  */
 
@@ -214,7 +214,7 @@ export interface CookieBannerProps {
  * <ConsentProvider CookieBannerComponent={CustomBanner}>
  * ```
  *
- * @param props - Propriedades para customizar comportamento e aparência do banner
+ * @param props - Propriedades para customizar comportamento e aparência do banner (tipado via CookieBannerProps)
  * @returns Banner de consentimento ou `null` se não deve ser exibido
  *
  * @example Uso básico (renderizado automaticamente pelo ConsentProvider)
@@ -289,6 +289,20 @@ export function CookieBanner({
   if (!open) return null
 
   // Dynamic styles from design tokens
+  /**
+   * Inline style object for the cookie banner component.
+   *
+   * @remarks
+   * Uses design tokens for consistent theming across the application.
+   *
+   * @property {number} p - Padding for the banner, defaults to 2 if not specified in design tokens.
+   * @property {number} maxWidth - Maximum width of the banner in pixels.
+   * @property {'auto'} mx - Horizontal margin set to 'auto' for centering.
+   * @property {string | undefined} backgroundColor - Background color from design tokens.
+   * @property {string | undefined} color - Text color from design tokens.
+   * @property {string | number | undefined} borderRadius - Border radius for the banner from design tokens.
+   * @property {string | undefined} fontFamily - Font family for the banner text from design tokens.
+   */
   const bannerStyle = {
     p: designTokens?.spacing?.padding?.banner ?? 2,
     maxWidth: 720,
@@ -299,6 +313,9 @@ export function CookieBanner({
     fontFamily: designTokens?.typography?.fontFamily,
   }
 
+  /**
+   * Conteúdo JSX do banner de cookies: mensagem, botões de ação e branding opcional.
+   */
   const bannerContent = (
     <Paper elevation={3} sx={bannerStyle} {...PaperProps}>
       <Stack spacing={1}>
@@ -354,6 +371,30 @@ export function CookieBanner({
     </Paper>
   )
 
+  /**
+   * Estilos para posicionamento do banner de cookies.
+   *
+   * Fornece um objeto de estilos utilizado para fixar o banner na tela,
+   * cobrindo toda a largura horizontal e sobrepondo outros elementos.
+   *
+   * Comportamento:
+   * - position: "fixed" para torná-lo fixo em relação à viewport.
+   * - zIndex: 1300 para garantir que o banner fique acima da maioria dos elementos.
+   * - Define top: 0 quando designTokens.layout.position === "top", caso contrário define bottom: 0.
+   * - left: 0 e right: 0 para estender o banner de ponta a ponta horizontalmente.
+   * - width: utiliza designTokens.layout.width.desktop quando disponível; caso contrário, "100%".
+   * - p: 2 representa shorthand de padding conforme a escala de espaçamento do tema/sistema de estilos.
+   *
+   * Observações:
+   * - O campo `p` pressupõe uso de um sistema de estilos (por exemplo, Theme UI ou Material-UI `sx`) que interprete a escala de espaçamento.
+   * - `designTokens` é consultado de forma defensiva (opcional), então valores padrão são aplicados quando ausentes.
+   *
+   * @constant positionStyle
+   * @type {object}
+   * @example
+   * // Uso típico com um componente que aceita objeto de estilos/sx:
+   * // <Box sx={positionStyle}>...</Box>
+   */
   const positionStyle = {
     position: 'fixed',
     zIndex: 1300,
@@ -363,6 +404,35 @@ export function CookieBanner({
     width: designTokens?.layout?.width?.desktop ?? '100%',
     p: 2,
   }
+
+  /**
+   * Cor do backdrop usado quando o banner está em modo bloqueante.
+   *
+   * @remarks
+   * A cor é decidida de forma condicional conforme os tokens de design:
+   * - Se `designTokens.layout.backdrop === false` => `'transparent'` (sem backdrop).
+   * - Se `designTokens.layout.backdrop` for uma string => usa essa string como cor (ex.: `'#00000088'`).
+   * - Caso contrário => padrão seguro `'rgba(0, 0, 0, 0.4)'`.
+   *
+   * Esse valor é aplicado ao elemento que cobre a viewport para bloquear a interação
+   * quando o banner está em modo bloqueante (modal).
+   *
+   * @constant
+   * @type {string}
+   * @example
+   * // Sem backdrop
+   * designTokens.layout.backdrop = false // => 'transparent'
+   *
+   * @example
+   * // Cor customizada
+   * designTokens.layout.backdrop = '#12345680' // => '#12345680'
+   */
+  const backdropColor =
+    designTokens?.layout?.backdrop === false
+      ? 'transparent'
+      : typeof designTokens?.layout?.backdrop === 'string'
+        ? designTokens.layout.backdrop
+        : 'rgba(0, 0, 0, 0.4)'
 
   if (blocking) {
     return (
@@ -374,7 +444,7 @@ export function CookieBanner({
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: designTokens?.layout?.backdrop ? 'rgba(0, 0, 0, 0.5)' : 'transparent',
+            backgroundColor: backdropColor,
             zIndex: 1299,
           }}
         />
