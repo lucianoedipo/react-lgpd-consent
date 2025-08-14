@@ -3,5 +3,20 @@
   "entryPoints": ["src/index.ts"],
   "out": "docs",
   "tsconfig": "tsconfig.typedoc.json",
-  "blockTags": ["@component"]
+  "blockTags": [
+    "@component",
+    "@module",
+    "@description",
+    "@remarks",
+    "@returns",
+    "@param",
+    "@throws",
+    "@example",
+    "@see",
+    "@since",
+    "@property",
+    "@hook",
+    "@constant",
+    "@defaultValue"
+  ]
 }

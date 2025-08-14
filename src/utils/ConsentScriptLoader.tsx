@@ -9,7 +9,7 @@ import { loadScript } from './scriptLoader'
 import { logger } from './logger'
 import type { ScriptIntegration } from './scriptIntegrations'
 
-interface ConsentScriptLoaderProps {
+export interface ConsentScriptLoaderProps {
   /** Lista de integrações de scripts para carregar baseado no consentimento */
   integrations: ScriptIntegration[]
   /** Se true, força recarregamento se consentimento mudar */
@@ -105,9 +105,7 @@ export function useConsentScriptLoader() {
   return React.useCallback(
     async (integration: ScriptIntegration) => {
       if (!consented) {
-        logger.warn(
-          `⚠️ Cannot load script ${integration.id}: No consent given`,
-        )
+        logger.warn(`⚠️ Cannot load script ${integration.id}: No consent given`)
         return false
       }
 

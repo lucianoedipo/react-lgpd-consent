@@ -91,10 +91,7 @@ export { defaultConsentTheme } from './utils/theme'
  * Loader de scripts condicionado ao consentimento do usuário.
  * Inclui hook para uso programático.
  */
-export {
-  ConsentScriptLoader,
-  useConsentScriptLoader,
-} from './utils/ConsentScriptLoader'
+export { ConsentScriptLoader, useConsentScriptLoader } from './utils/ConsentScriptLoader'
 
 /**
  * Integrações prontas para Google Analytics, Google Tag Manager e UserWay.
@@ -123,7 +120,10 @@ export type {
   ConsentState,
   ConsentTexts,
   ConsentCookieOptions,
+  ConsentCookieData,
   ProjectCategoriesConfig,
+  DesignTokens,
+  ConsentContextValue,
   /**
    * Props do ConsentProvider principal.
    */
@@ -145,9 +145,14 @@ export type {
 // Utilitários de orientação para developers
 
 /**
- * Tipo para orientações automáticas de configuração para desenvolvedores.
+ * Utilitários de orientação para developers
  */
 export type { DeveloperGuidance } from './utils/developerGuidance'
+
+/**
+ * Tipo do contexto de categorias para acesso avançado.
+ */
+export type { CategoriesContextValue } from './context/CategoriesContext'
 
 /**
  * Categorias padrão do projeto e função para análise da configuração do desenvolvedor.
@@ -165,6 +170,12 @@ export { setDebugLogging, LogLevel } from './utils/logger'
 // Componentes padrão (para wrapping ou uso avançado)
 export { CookieBanner } from './components/CookieBanner'
 export { FloatingPreferencesButton } from './components/FloatingPreferencesButton'
+
+// Tipos de props dos componentes para uso avançado
+export type { CookieBannerProps } from './components/CookieBanner'
+export type { FloatingPreferencesButtonProps } from './components/FloatingPreferencesButton'
+export type { PreferencesModalProps } from './components/PreferencesModal'
+export type { ConsentScriptLoaderProps } from './utils/ConsentScriptLoader'
 
 // Utilitários e constantes (para customização avançada)
 export { defaultTexts } from './context/ConsentContext'
