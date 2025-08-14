@@ -7,3 +7,7 @@ react-lgpd-consent-*.tgz
 test-app/
 
 GEMINI.md
+
+
+# Ensure lockfile is tracked (required by CI)
+!package-lock.json
