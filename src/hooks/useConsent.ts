@@ -4,6 +4,7 @@ import {
   useConsentTextsInternal,
   useConsentHydrationInternal,
 } from '../context/ConsentContext'
+import { logger } from '../utils/logger'
 import type { ConsentContextValue, ConsentTexts } from '../types/types'
 
 /**
@@ -104,7 +105,7 @@ export function openPreferencesModal() {
   if (globalOpenPreferences) {
     globalOpenPreferences()
   } else {
-    console.warn(
+    logger.warn(
       'openPreferencesModal: ConsentProvider não foi inicializado ou não está disponível.',
     )
   }

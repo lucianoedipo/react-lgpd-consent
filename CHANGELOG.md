@@ -2,8 +2,7 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
-e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [0.3.1] - 2025-08-13 - CORREÇÕES DE PRODUÇÃO E MELHORIAS DE COMPATIBILIDADE
 
@@ -239,11 +238,6 @@ setDebugLogging(true, LogLevel.DEBUG)
 
 ---
 
-as mudanças notáveis neste projeto serão documentadas neste arquivo.
-
-O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
-e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
-
 ## [0.2.1] - 2025-08-12 - CONFORMIDADE LGPD RIGOROSA + SISTEMA DE ORIENTAÇÕES
 
 ### 🚨 **NOVO: Sistema de Orientações para Desenvolvedores**
@@ -254,7 +248,7 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 
 #### **Cookie de Consentimento Reestruturado**
 
-- **� Estrutura do Cookie**: Novo formato com campos obrigatórios para compliance
+- **🍪 Estrutura do Cookie**: Novo formato com campos obrigatórios para compliance
   - `version`: Controle de migração de schema
   - `consentDate`: Timestamp da primeira interação
   - `lastUpdate`: Timestamp da última modificação
@@ -466,14 +460,7 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 
 ## [Unreleased]
 
-### 🚀 Planejado para v0.2.0
-
-- [ ] Textos ANPD expandidos (campos opcionais)
-- [ ] Validação robusta de cookies com versioning
-- [ ] Logs de consentimento básicos
-- [ ] Mais categorias de cookies
-
-### 🔮 Futuro (v0.3.0+)
+### 🔮 Futuro (v0.4.0+)
 
 - [ ] Modal detalhado com lista de cookies
 - [ ] Base legal por categoria

@@ -161,3 +161,15 @@ export {
  * Sistema de logging para debug e troubleshooting.
  */
 export { setDebugLogging, LogLevel } from './utils/logger'
+
+// Componentes padrão (para wrapping ou uso avançado)
+export { CookieBanner } from './components/CookieBanner'
+export { FloatingPreferencesButton } from './components/FloatingPreferencesButton'
+
+// Utilitários e constantes (para customização avançada)
+export { defaultTexts } from './context/ConsentContext'
+export {
+  createProjectPreferences,
+  validateProjectPreferences,
+  getAllProjectCategories,
+} from './utils/categoryUtils'

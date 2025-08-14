@@ -31,26 +31,7 @@ import {
   _registerGlobalOpenPreferences,
   _unregisterGlobalOpenPreferences,
 } from '../hooks/useConsent'
-
-// Logger simples para evitar dependência circular
-const log = {
-  debug: (message: string, data?: any) => {
-    if (
-      typeof window !== 'undefined' &&
-      (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__
-    ) {
-      console.debug('[react-lgpd-consent] [DEBUG]', message, data)
-    }
-  },
-  info: (message: string, data?: any) => {
-    if (
-      typeof window !== 'undefined' &&
-      (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__
-    ) {
-      console.info('[react-lgpd-consent] [INFO]', message, data)
-    }
-  },
-}
+import { logger } from '../utils/logger'
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -138,10 +119,7 @@ type Action =
   | { type: 'HYDRATE'; state: ConsentState; config: ProjectCategoriesConfig }
 
 function reducer(state: ConsentState, action: Action): ConsentState {
-  log.debug('State transition:', {
-    action: action.type,
-    currentState: state.consented,
-  })
+  logger.consentState(action.type, state)
 
   switch (action.type) {
     case 'ACCEPT_ALL': {
@@ -154,7 +132,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         false,
         state,
       )
-      log.info('User accepted all cookies', {
+      logger.info('User accepted all cookies', {
         preferences: newState.preferences,
       })
       return newState
@@ -169,13 +147,13 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         false,
         state,
       )
-      log.info('User rejected all cookies', {
+      logger.info('User rejected all cookies', {
         preferences: newState.preferences,
       })
       return newState
     }
     case 'SET_CATEGORY':
-      log.debug('Category preference changed', {
+      logger.debug('Category preference changed', {
         category: action.category,
         value: action.value,
       })
@@ -188,7 +166,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         lastUpdate: new Date().toISOString(),
       }
     case 'SET_PREFERENCES':
-      log.info('Preferences saved', { preferences: action.preferences })
+      logger.info('Preferences saved', { preferences: action.preferences })
       return createFullConsentState(
         true,
         action.preferences,

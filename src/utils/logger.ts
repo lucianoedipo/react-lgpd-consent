@@ -4,10 +4,8 @@
  */
 
 const IS_DEVELOPMENT =
-  (typeof window !== 'undefined' &&
-    (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__) ||
-  (typeof globalThis !== 'undefined' &&
-    (globalThis as any).process?.env?.NODE_ENV === 'development')
+  typeof globalThis !== 'undefined' &&
+  (globalThis as any).process?.env?.NODE_ENV === 'development'
 
 const LOG_PREFIX = '[react-lgpd-consent]'
 
