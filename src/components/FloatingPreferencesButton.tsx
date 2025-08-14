@@ -56,19 +56,17 @@ export interface FloatingPreferencesButtonProps {
 }
 
 /**
+ * @component
  * Botão flutuante para abrir o modal de preferências de cookies.
  *
- * Permite ao usuário acessar rapidamente as configurações de consentimento LGPD.
- * Pode ser posicionado em qualquer canto da tela e customizado via props.
+ * @remarks
+ * Este componente é renderizado automaticamente pelo `ConsentProvider` após o consentimento inicial.
+ * Ele permite ao usuário acessar rapidamente as configurações de consentimento LGPD a qualquer momento.
+ * Você pode substituí-lo passando seu próprio componente para a prop `FloatingPreferencesButtonComponent`
+ * no `ConsentProvider`.
  *
- * @param position Posição do botão na tela. Padrão: 'bottom-right'.
- * @param offset Distância da borda em pixels. Padrão: 24.
- * @param icon Ícone customizado para o botão. Padrão: CookieOutlined.
- * @param tooltip Texto do tooltip exibido ao passar o mouse. Padrão: 'Gerenciar Preferências de Cookies'.
- * @param FabProps Props adicionais para o componente Fab do MUI.
- * @param hideWhenConsented Se verdadeiro, esconde o botão após consentimento. Padrão: false.
- *
- * @returns JSX.Element | null
+ * @param {Readonly<FloatingPreferencesButtonProps>} props As propriedades para customizar o botão.
+ * @returns {JSX.Element | null} O componente do botão flutuante ou `null` se não for necessário exibi-lo.
  */
 export function FloatingPreferencesButton({
   position = 'bottom-right',

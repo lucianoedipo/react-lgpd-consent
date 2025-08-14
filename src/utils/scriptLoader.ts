@@ -1,14 +1,17 @@
 /**
- * Carrega dinamicamente um script externo após o consentimento do usuário ser finalizado.
+ * @function
+ * Carrega dinamicamente um script externo no DOM.
  *
- * Aguarda até que o usuário tome uma decisão definitiva (banner fechado ou preferências salvas)
- * antes de inserir o script na página. Permite restringir o carregamento por categoria de consentimento.
+ * @remarks
+ * Esta função é utilizada internamente pela biblioteca para carregar scripts de integração
+ * após o consentimento do usuário. Ela garante que o script só seja inserido na página
+ * se o consentimento for dado e o contexto estiver disponível.
  *
- * @param id - Identificador único do elemento script a ser criado.
- * @param src - URL do script externo.
- * @param category - Categoria de consentimento exigida para o script ('analytics', 'marketing' ou null).
- * @param attrs - Atributos adicionais a serem aplicados ao elemento script.
- * @returns Promise que resolve quando o script é carregado ou rejeita se o consentimento não for dado.
+ * @param {string} id Um identificador único para o elemento `<script>` a ser criado.
+ * @param {string} src A URL do script externo a ser carregado.
+ * @param {'analytics' | 'marketing' | null} [category=null] A categoria de consentimento exigida para o script. Se o consentimento para esta categoria não for dado, o script não será carregado.
+ * @param {Record<string, string>} [attrs={}] Atributos adicionais a serem aplicados ao elemento `<script>` (ex: `{ async: 'true' }`).
+ * @returns {Promise<void>} Uma Promise que resolve quando o script é carregado com sucesso, ou rejeita se o consentimento não for dado ou ocorrer um erro de carregamento.
  */
 export function loadScript(
   id: string,

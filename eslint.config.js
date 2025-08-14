@@ -2,8 +2,8 @@ import * as globals from 'globals'
 import pluginJs from '@eslint/js'
 import tseslint from 'typescript-eslint'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
-import prettierConfig from 'eslint-config-prettier'
 import pluginJest from 'eslint-plugin-jest'
+import prettierConfig from 'eslint-config-prettier'
 
 export default [
   {
@@ -11,43 +11,44 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
+        ecmaFeatures: { jsx: true },
         ecmaVersion: 'latest',
         sourceType: 'module',
       },
-      globals: {
-        ...globals.browser,
-        ...globals.node,
-        React: true, // Explicitly define React global
-        console: true, // Explicitly define console global
-        window: true, // Explicitly define window global
-        document: true, // Explicitly define document global
-        setTimeout: true, // Explicitly define setTimeout global
-      },
+      globals: { ...globals.browser, ...globals.node, console: 'readonly' },
     },
     plugins: {
       '@eslint/js': pluginJs,
       '@typescript-eslint': tseslint.plugin,
       'react-hooks': pluginReactHooks,
-      jest: pluginJest,
     },
     rules: {
-      semi: ['error', 'never'],
-      quotes: ['error', 'single'],
-      'react-hooks/exhaustive-deps': 'warn',
       ...pluginJs.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
       ...pluginReactHooks.configs.recommended.rules,
-      ...prettierConfig.rules, // Move prettierConfig.rules to the end
+      ...prettierConfig.rules,
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrors: 'none',
+        },
+      ],
+      semi: ['error', 'never'],
+      quotes: ['error', 'single'],
     },
   },
   {
-    files: ['**/*.test.{ts,tsx}'], // Apply Jest rules only to test files
+    files: ['**/*.test.{ts,tsx}'],
     ...pluginJest.configs['flat/recommended'],
+    languageOptions: { globals: globals.jest },
   },
   {
-    ignores: ['dist/', 'node_modules/', 'example/'], // Add ignores property as a separate config object
+    files: ['**/*.test.{ts,tsx,js,jsx}'],
+    languageOptions: { globals: globals.jest },
   },
+  { ignores: ['dist/', 'node_modules/', 'example/', 'docs/'] },
 ]

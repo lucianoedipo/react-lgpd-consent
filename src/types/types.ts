@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /**
  * Tipos de categorias padrão de consentimento para cookies, conforme definido pela ANPD.
  *
@@ -320,21 +319,6 @@ export interface ConsentProviderProps {
    * ```
    */
   designTokens?: DesignTokens
-
-  /**
-   * Integrações nativas de scripts terceiros (Google Analytics, etc.).
-   * Scripts são carregados automaticamente baseado no consentimento.
-   *
-   * @example
-   * ```tsx
-   * import { createGoogleAnalyticsIntegration } from 'react-lgpd-consent'
-   *
-   * scriptIntegrations={[
-   *   createGoogleAnalyticsIntegration('GA_MEASUREMENT_ID')
-   * ]}
-   * ```
-   */
-  scriptIntegrations?: import('../utils/scriptIntegrations').ScriptIntegration[]
 
   /**
    * Componente customizado para substituir o modal padrão de preferências.

@@ -9,17 +9,17 @@ import {
 } from '../utils/developerGuidance'
 
 /**
- * Context para informações sobre categorias ativas no projeto.
- * Fornece orientações e validações para components UI.
+ * @interface CategoriesContextValue
+ * O valor fornecido pelo `CategoriesContext`, contendo informações sobre as categorias de cookies ativas no projeto.
  */
 export interface CategoriesContextValue {
-  /** Configuração final das categorias (com padrão aplicado) */
+  /** A configuração final das categorias, incluindo padrões aplicados. */
   config: ProjectCategoriesConfig
-  /** Análise e orientações para developers */
+  /** Análise e orientações para desenvolvedores, incluindo avisos e sugestões. */
   guidance: DeveloperGuidance
-  /** Categorias que precisam de toggle na UI */
+  /** Um array de categorias que requerem um toggle na UI de preferências (não essenciais). */
   toggleableCategories: DeveloperGuidance['activeCategoriesInfo']
-  /** Todas as categorias ativas */
+  /** Um array contendo todas as categorias ativas no projeto (essenciais e não essenciais). */
   allCategories: DeveloperGuidance['activeCategoriesInfo']
 }
 
@@ -28,26 +28,30 @@ const CategoriesContext = React.createContext<CategoriesContextValue | null>(
 )
 
 /**
- * Provider para contexto de categorias.
- * Automaticamente analisa configuração e fornece orientações.
+ * @component
+ * O `CategoriesProvider` é um componente interno que gerencia e fornece informações sobre as categorias de cookies ativas.
+ * Ele analisa a configuração do projeto e fornece orientações para desenvolvedores.
+ *
+ * @param {object} props As propriedades do componente.
+ * @param {React.ReactNode} props.children Os elementos filhos que terão acesso ao contexto de categorias.
+ * @param {ProjectCategoriesConfig} [props.config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @param {boolean} [props.disableDeveloperGuidance] Se `true`, desativa as mensagens de orientação no console.
  */
 export function CategoriesProvider({
   children,
-  config, // NOVO: configuração completa
+  config,
   disableDeveloperGuidance,
 }: Readonly<{
   children: React.ReactNode
-  config?: ProjectCategoriesConfig // NOVO
+  config?: ProjectCategoriesConfig
   disableDeveloperGuidance?: boolean
 }>) {
   const contextValue = React.useMemo(() => {
-    // NOVO: usa configuração completa ou padrão
     const finalConfig: ProjectCategoriesConfig =
       config || DEFAULT_PROJECT_CATEGORIES
 
     const guidance = analyzeDeveloperConfiguration(config)
 
-    // Separa categorias que precisam de toggle das que são sempre ativas
     const toggleableCategories = guidance.activeCategoriesInfo.filter(
       (cat) => cat.uiRequired,
     )
@@ -60,7 +64,6 @@ export function CategoriesProvider({
     }
   }, [config])
 
-  // Log orientações apenas em desenvolvimento
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
   }, [contextValue.guidance, disableDeveloperGuidance])
@@ -73,8 +76,16 @@ export function CategoriesProvider({
 }
 
 /**
- * Hook para acessar informações sobre categorias ativas.
- * Usado por componentes UI para renderizar adequadamente.
+ * @hook
+ * Hook para acessar informações sobre as categorias de cookies ativas no projeto.
+ *
+ * @remarks
+ * Este hook deve ser usado dentro do `ConsentProvider` (que internamente renderiza o `CategoriesProvider`).
+ * Ele é útil para construir componentes de UI customizados que precisam se adaptar dinamicamente às categorias configuradas.
+ *
+ * @returns {CategoriesContextValue} Um objeto contendo a configuração, orientações e listas de categorias.
+ *
+ * @throws {Error} Se usado fora do `CategoriesProvider`.
  */
 export function useCategories(): CategoriesContextValue {
   const context = React.useContext(CategoriesContext)
@@ -88,7 +99,16 @@ export function useCategories(): CategoriesContextValue {
 }
 
 /**
- * Hook de conveniência para verificar se uma categoria específica está ativa.
+ * @hook
+ * Hook de conveniência para verificar o status de uma categoria de cookie específica.
+ *
+ * @param {string} categoryId O ID da categoria a ser verificada (ex: 'analytics', 'necessary').
+ * @returns {object} Um objeto com o status da categoria:
+ * - `isActive`: `true` se a categoria está configurada e ativa no projeto.
+ * - `isEssential`: `true` se a categoria é essencial (não pode ser desativada pelo usuário).
+ * - `needsToggle`: `true` se a categoria requer um controle (switch) na UI de preferências.
+ * - `name`: O nome amigável da categoria.
+ * - `description`: A descrição da categoria.
  */
 export function useCategoryStatus(categoryId: string) {
   const { allCategories } = useCategories()
@@ -104,12 +124,8 @@ export function useCategoryStatus(categoryId: string) {
 }
 
 /**
- * Hook para obter todas as categorias (padrão + customizadas).
+ * @hook
+ * Hook para obter todas as categorias de cookies ativas no projeto (padrão e customizadas).
+ *
+ * @returns {DeveloperGuidance['activeCategoriesInfo']} Um array com as definições detalhadas de todas as categorias ativas.
  */
-export function useAllCategories() {
-  const { allCategories } = useCategories()
-
-  return React.useMemo(() => {
-    return allCategories
-  }, [allCategories])
-}

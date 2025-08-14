@@ -42,22 +42,22 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
 const COOKIE_SCHEMA_VERSION = '1.0'
 
 /**
- * Lê e desserializa o cookie de consentimento.
+ * @function
+ * Lê e desserializa o cookie de consentimento do navegador.
  *
- * @param name Nome do cookie (default: 'cookieConsent')
- * @returns Estado de consentimento ou `null` se não existir ou inválido.
+ * @param {string} [name=DEFAULT_COOKIE_OPTS.name] O nome do cookie a ser lido.
+ * @returns {ConsentState | null} O estado de consentimento lido do cookie, ou `null` se o cookie não existir, for inválido ou em ambiente de servidor.
  *
  * @remarks
- * - Seguro para ambientes sem `document` (retorna `null`).
- * - Faz fallback para `null` em caso de erro de parsing.
- * - Valida versão do esquema e migra se necessário.
+ * - Retorna `null` em ambientes sem `document` (ex: SSR).
+ * - Faz fallback para `null` em caso de erro de parsing ou versão de esquema incompatível.
+ * - Realiza migração de cookies de versões legadas se necessário.
  */
 export function readConsentCookie(
   name: string = DEFAULT_COOKIE_OPTS.name,
 ): ConsentState | null {
   logger.debug('Reading consent cookie', { name })
 
-  // Client-safe: Cookies só existe no browser
   if (typeof document === 'undefined') {
     logger.debug('Cookie read skipped: server-side environment')
     return null
@@ -73,18 +73,16 @@ export function readConsentCookie(
     const data = JSON.parse(raw)
     logger.cookieOperation('read', name, data)
 
-    // Migração de versões antigas (v0.1.x que não tinha versão)
     if (!data.version) {
       logger.debug('Migrating legacy cookie format')
       return migrateLegacyCookie(data)
     }
 
-    // Validação de versão atual
     if (data.version !== COOKIE_SCHEMA_VERSION) {
       logger.warn(
         `Cookie version mismatch: ${data.version} != ${COOKIE_SCHEMA_VERSION}`,
       )
-      return null // Força recriação com versão atual
+      return null
     }
 
     return data as ConsentState
@@ -95,7 +93,11 @@ export function readConsentCookie(
 }
 
 /**
- * Migra cookies da versão legacy (v0.1.x) para o formato atual.
+ * @function
+ * Migra cookies de versões legadas (anteriores à v1.0 do esquema) para o formato atual.
+ *
+ * @param {any} legacyData Os dados do cookie no formato legado.
+ * @returns {ConsentState | null} O estado de consentimento migrado para o formato atual, ou `null` se a migração falhar.
  */
 function migrateLegacyCookie(legacyData: any): ConsentState | null {
   try {
@@ -105,10 +107,10 @@ function migrateLegacyCookie(legacyData: any): ConsentState | null {
       version: COOKIE_SCHEMA_VERSION,
       consented: legacyData.consented || false,
       preferences: legacyData.preferences || { necessary: true },
-      consentDate: now, // Não temos o original, usar data atual
+      consentDate: now,
       lastUpdate: now,
-      source: 'banner', // Assumir origem banner
-      isModalOpen: false, // Nunca persistir estado de UI
+      source: 'banner',
+      isModalOpen: false,
     }
   } catch {
     return null
@@ -116,17 +118,18 @@ function migrateLegacyCookie(legacyData: any): ConsentState | null {
 }
 
 /**
- * Persiste o estado de consentimento no cookie.
- * Remove dados de UI (isModalOpen) antes de salvar.
+ * @function
+ * Persiste o estado de consentimento atual no cookie do navegador.
  *
- * @param state Estado de consentimento a ser salvo.
- * @param source Origem da decisão de consentimento.
- * @param opts Opções adicionais para o cookie.
+ * @param {ConsentState} state O estado de consentimento a ser salvo.
+ * @param {ProjectCategoriesConfig} config A configuração de categorias do projeto associada a este consentimento.
+ * @param {Partial<ConsentCookieOptions>} [opts] Opções adicionais para o cookie (ex: `maxAgeDays`, `sameSite`).
+ * @param {'banner' | 'modal' | 'programmatic'} [source='banner'] A origem da decisão de consentimento.
  *
  * @remarks
- * - Seguro para SSR (não executa no servidor).
- * - Remove campos de UI que não devem ser persistidos.
- * - Inclui timestamps para auditoria.
+ * - Não executa em ambiente de servidor (SSR).
+ * - Remove campos de UI (`isModalOpen`) que não devem ser persistidos no cookie.
+ * - Inclui timestamps (`consentDate`, `lastUpdate`) e a configuração do projeto (`projectConfig`) para fins de auditoria.
  */
 export function writeConsentCookie(
   state: ConsentState,
@@ -142,16 +145,14 @@ export function writeConsentCookie(
   const now = new Date().toISOString()
   const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
 
-  // Criar dados do cookie sem estado de UI
   const cookieData = {
     version: COOKIE_SCHEMA_VERSION,
     consented: state.consented,
     preferences: state.preferences,
-    consentDate: state.consentDate || now, // Preservar data original ou usar atual
+    consentDate: state.consentDate || now,
     lastUpdate: now,
     source: source,
     projectConfig: config,
-    // isModalOpen NÃO é persistido (campo de UI apenas)
   }
 
   logger.cookieOperation('write', o.name, cookieData)
@@ -171,31 +172,35 @@ export function writeConsentCookie(
 }
 
 /**
- * Cria um estado inicial de consentimento conforme LGPD.
- * Por padrão, rejeita tudo exceto necessários.
+ * @function
+ * Cria um estado inicial de consentimento para a biblioteca, conforme as diretrizes da LGPD.
+ * Por padrão, o usuário ainda não interagiu e apenas os cookies necessários são considerados ativos.
+ *
+ * @returns {ConsentState} Um objeto `ConsentState` representando o estado inicial do consentimento.
  */
 export function createInitialConsentState(): ConsentState {
   const now = new Date().toISOString()
 
   return {
     version: COOKIE_SCHEMA_VERSION,
-    consented: false, // Usuário ainda não interagiu
-    preferences: { necessary: true }, // Apenas essenciais por padrão
+    consented: false,
+    preferences: { necessary: true },
     consentDate: now,
     lastUpdate: now,
     source: 'banner',
-    isModalOpen: false, // Estado de UI
+    isModalOpen: false,
   }
 }
 
 /**
- * Remove o cookie de consentimento.
+ * @function
+ * Remove o cookie de consentimento do navegador.
  *
- * @param opts Opções adicionais para remoção.
+ * @param {Partial<ConsentCookieOptions>} [opts] Opções adicionais para a remoção do cookie (ex: `path`).
  *
  * @remarks
- * - Seguro para SSR (não executa no servidor).
- * - Usa opções padrão se não especificado.
+ * - Não executa em ambiente de servidor (SSR).
+ * - Usa as opções padrão do cookie se não forem especificadas.
  */
 export function removeConsentCookie(opts?: Partial<ConsentCookieOptions>) {
   if (typeof document === 'undefined') {

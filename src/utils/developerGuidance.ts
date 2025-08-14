@@ -1,18 +1,19 @@
+/* eslint-env browser, node */
+
 // src/utils/developerGuidance.ts
-import * as React from 'react'
+import React from 'react'
 import type { ProjectCategoriesConfig } from '../types/types'
 
 /**
- * Sistema de orientações para developers sobre configuração de categorias.
- * Ajuda a manter coerência entre configuração da lib e componentes customizados.
+ * @interface DeveloperGuidance
+ * Define a estrutura do objeto de orientação para desenvolvedores, contendo avisos, sugestões e informações sobre categorias ativas.
  */
-
 export interface DeveloperGuidance {
-  /** Avisos sobre configuração inconsistente */
+  /** Um array de strings, cada uma representando um aviso sobre a configuração. */
   warnings: string[]
-  /** Sugestões de melhoria */
+  /** Um array de strings, cada uma representando uma sugestão para melhorar a conformidade ou UX. */
   suggestions: string[]
-  /** Informações sobre categorias ativas */
+  /** Um array de objetos, cada um descrevendo uma categoria de cookie ativa e suas propriedades relevantes para a UI. */
   activeCategoriesInfo: {
     id: string
     name: string
@@ -20,24 +21,28 @@ export interface DeveloperGuidance {
     essential: boolean
     uiRequired: boolean
   }[]
-  /** Se usa configuração padrão (não explícita) */
+  /** Indica se a configuração padrão da biblioteca está sendo utilizada (quando nenhuma configuração explícita é fornecida). */
   usingDefaults: boolean
 }
 
 /**
- * Configuração padrão quando developer não especifica categorias.
- * Baseado nas necessidades mais comuns em conformidade LGPD.
+ * @constant
+ * Configuração padrão de categorias de cookies utilizada quando o desenvolvedor não especifica nenhuma configuração.
+ * Inclui apenas a categoria 'analytics' além da 'necessary' (que é sempre incluída).
  */
 export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
-  enabledCategories: ['analytics'], // Só analytics além de necessary
+  enabledCategories: ['analytics'],
 }
 
 /**
- * Analisa configuração do projeto e retorna orientações para o developer.
+ * @function
+ * Analisa a configuração de categorias do projeto e gera um objeto de orientação para o desenvolvedor.
+ * Este objeto contém avisos, sugestões e informações detalhadas sobre as categorias ativas.
+ *
+ * @param {ProjectCategoriesConfig} [config] A configuração de categorias fornecida pelo desenvolvedor. Se não for fornecida, a configuração padrão será utilizada.
+ * @returns {DeveloperGuidance} Um objeto `DeveloperGuidance` com a análise da configuração.
  */
-export function analyzeDeveloperConfiguration(
-  config?: ProjectCategoriesConfig,
-): DeveloperGuidance {
+export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig): DeveloperGuidance {
   const guidance: DeveloperGuidance = {
     warnings: [],
     suggestions: [],
@@ -45,7 +50,6 @@ export function analyzeDeveloperConfiguration(
     usingDefaults: !config,
   }
 
-  // Se nenhuma configuração foi fornecida, usa padrão e avisa
   const finalConfig = config || DEFAULT_PROJECT_CATEGORIES
 
   if (!config) {
@@ -55,17 +59,14 @@ export function analyzeDeveloperConfiguration(
     )
   }
 
-  // Monta informações sobre categorias ativas
-  // 1. Necessary (sempre presente)
   guidance.activeCategoriesInfo.push({
     id: 'necessary',
     name: 'Cookies Necessários',
     description: 'Essenciais para funcionamento básico do site',
     essential: true,
-    uiRequired: false, // Não precisa de toggle (sempre ativo)
+    uiRequired: false,
   })
 
-  // 2. Categorias padrão habilitadas
   const enabledCategories = finalConfig.enabledCategories || []
   const categoryNames: Record<string, { name: string; description: string }> = {
     analytics: {
@@ -98,15 +99,12 @@ export function analyzeDeveloperConfiguration(
         name: categoryInfo.name,
         description: categoryInfo.description,
         essential: false,
-        uiRequired: true, // Precisa de toggle na UI
+        uiRequired: true,
       })
     }
   })
 
-  // Validações e sugestões
-  const totalToggleable = guidance.activeCategoriesInfo.filter(
-    (c) => c.uiRequired,
-  ).length
+  const totalToggleable = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
 
   if (totalToggleable === 0) {
     guidance.suggestions.push(
@@ -117,8 +115,7 @@ export function analyzeDeveloperConfiguration(
 
   if (totalToggleable > 5) {
     guidance.warnings.push(
-      `${totalToggleable} categorias opcionais detectadas. UI com muitas opções pode ' +
-      'prejudicar experiência do usuário. Considere agrupar categorias similares.`,
+      `${totalToggleable} categorias opcionais detectadas. UI com muitas opções pode prejudicar experiência do usuário. Considere agrupar categorias similares.`,
     )
   }
 
@@ -126,94 +123,93 @@ export function analyzeDeveloperConfiguration(
 }
 
 /**
- * Exibe orientações no console durante desenvolvimento.
- * Detecta ambiente de produção através de várias heurísticas.
+ * @function
+ * Exibe orientações e avisos no console do navegador durante o desenvolvimento.
+ * Esta função é automaticamente desativada em builds de produção.
+ *
+ * @param {DeveloperGuidance} guidance O objeto de orientação gerado por `analyzeDeveloperConfiguration`.
+ * @param {boolean} [disableGuidanceProp] Se `true`, desativa explicitamente a exibição das orientações, mesmo em desenvolvimento.
  */
 export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
 ): void {
-  if (disableGuidanceProp) {
-    return
-  }
+  // NÃO usar "window" diretamente: SSR-safe
+  const nodeEnv =
+    typeof (globalThis as any).process !== 'undefined'
+      ? (globalThis as any).process.env?.NODE_ENV
+      : undefined
 
-  const isProduction =
-    // 1. NODE_ENV de bundlers (Vite, webpack, etc.)
-    (typeof (globalThis as any).process !== 'undefined' &&
-      (globalThis as any).process.env?.NODE_ENV === 'production') ||
-    // 2. Flag customizada para desabilitar logs
-    (typeof globalThis !== 'undefined' &&
-      (globalThis as any).__LGPD_PRODUCTION__ === true) ||
-    // 3. Flag de desenvolvimento desabilitada via window global (legado)
-    (typeof window !== 'undefined' &&
-      (window as any).__LGPD_DISABLE_GUIDANCE__ === true)
+  const isProd =
+    nodeEnv === 'production' ||
+    ((globalThis as any).__LGPD_PRODUCTION__ === true && typeof globalThis !== 'undefined')
 
-  if (isProduction) return
+  const isDisabled =
+    !!disableGuidanceProp ||
+    ((globalThis as any).__LGPD_DISABLE_GUIDANCE__ === true && typeof globalThis !== 'undefined')
 
-  // Prefix consistente para fácil filtro
+  if (isProd || isDisabled) return
+
   const PREFIX = '[🍪 LGPD-CONSENT]'
 
   if (guidance.warnings.length > 0) {
     console.group(`${PREFIX} ⚠️  Avisos de Configuração`)
-    guidance.warnings.forEach((warning) => console.warn(`${PREFIX} ${warning}`))
+    guidance.warnings.forEach((msg) => console.warn(`${PREFIX} ${msg}`))
     console.groupEnd()
   }
 
   if (guidance.suggestions.length > 0) {
     console.group(`${PREFIX} 💡 Sugestões`)
-    guidance.suggestions.forEach((suggestion) =>
-      console.info(`${PREFIX} ${suggestion}`),
-    )
+    guidance.suggestions.forEach((msg) => console.info(`${PREFIX} ${msg}`))
     console.groupEnd()
   }
 
   if (guidance.usingDefaults) {
     console.warn(
-      // Changed from console.info to console.warn
       `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
     )
   }
 
-  // Log das categorias ativas para orientar UI customizada
-  console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
-  console.table(
-    guidance.activeCategoriesInfo.map((cat) => ({
-      ID: cat.id,
-      Nome: cat.name,
-      'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
-      'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
-    })),
-  )
-  console.info(
-    `${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`,
-  )
-  console.groupEnd()
+  const rows = guidance.activeCategoriesInfo.map((cat) => ({
+    ID: cat.id,
+    Nome: cat.name,
+    'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
+    'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
+  }))
+
+  if (typeof console.table === 'function') {
+    console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
+    console.table(rows)
+    console.info(`${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`)
+    console.groupEnd()
+  } else {
+    console.log(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`, rows)
+    console.info(`${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`)
+  }
 }
 
 /**
- * Hook para developers obterem orientações sobre configuração atual.
- * Útil para componentes customizados verificarem se estão adequados.
+ * @hook
+ * Hook para desenvolvedores obterem orientações sobre a configuração atual da biblioteca.
+ * Útil para componentes customizados verificarem se estão adequados à configuração do `ConsentProvider`.
+ *
+ * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não for fornecida, a configuração padrão será utilizada.
+ * @param {boolean} [disableGuidanceProp] Se `true`, desativa explicitamente a exibição das orientações no console, mesmo em desenvolvimento.
+ * @returns {DeveloperGuidance} Um objeto `DeveloperGuidance` com a análise da configuração.
  */
 export function useDeveloperGuidance(
   config?: ProjectCategoriesConfig,
   disableGuidanceProp?: boolean,
-) {
-  const guidance = analyzeDeveloperConfiguration(config)
+): DeveloperGuidance {
+  const guidance = React.useMemo(() => {
+    return analyzeDeveloperConfiguration(config)
+  }, [config])
 
-  // Stringify config for stable dependency comparison
-  const stringifiedConfig = React.useMemo(
-    () => JSON.stringify(config),
-    [config],
-  )
-
-  // Log apenas uma vez quando configuração muda (se não desabilitado)
   React.useEffect(() => {
-    // Se guidance está explicitamente desabilitado, não chamar a função
-    if (disableGuidanceProp === true) {
-      return
+    if (!disableGuidanceProp) {
+      logDeveloperGuidance(guidance, disableGuidanceProp)
     }
-    logDeveloperGuidance(guidance, disableGuidanceProp)
-  }, [guidance, stringifiedConfig, disableGuidanceProp])
+  }, [guidance, disableGuidanceProp])
 
   return guidance
 }

@@ -17,11 +17,13 @@ const DEFAULT_CATEGORIES: Category[] = [
 ]
 
 /**
- * Cria preferências iniciais baseadas na configuração de categorias do projeto.
- * Inclui apenas as categorias especificadas na configuração.
+ * @function
+ * Cria um objeto de preferências de consentimento inicial baseado na configuração de categorias do projeto.
+ * Inclui apenas as categorias especificadas na configuração, com `necessary` sempre como `true`.
  *
- * @param config Configuração de categorias do projeto
- * @param defaultValue Valor padrão para categorias não essenciais (padrão: false para conformidade LGPD)
+ * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @param {boolean} [defaultValue=false] O valor padrão para categorias não essenciais. Por padrão, `false` para conformidade LGPD.
+ * @returns {ConsentPreferences} Um objeto `ConsentPreferences` com as categorias e seus valores iniciais.
  */
 export function createProjectPreferences(
   config?: ProjectCategoriesConfig,
@@ -31,11 +33,9 @@ export function createProjectPreferences(
     necessary: true, // Sempre presente e true (essencial)
   }
 
-  // Adicionar categorias padrão habilitadas
   const enabledCategories = config?.enabledCategories || []
   enabledCategories.forEach((category) => {
     if (category !== 'necessary') {
-      // necessary já está incluída
       preferences[category] = defaultValue
     }
   })
@@ -44,12 +44,13 @@ export function createProjectPreferences(
 }
 
 /**
- * Valida se uma preferência contém apenas categorias permitidas pela configuração.
- * Remove categorias não autorizadas silenciosamente.
+ * @function
+ * Valida um objeto de preferências de consentimento, removendo categorias que não estão permitidas pela configuração do projeto.
+ * Categorias não autorizadas são removidas silenciosamente para garantir a integridade dos dados.
  *
- * @param preferences Preferências a serem validadas
- * @param config Configuração de categorias do projeto
- * @returns Preferências filtradas apenas com categorias válidas
+ * @param {ConsentPreferences} preferences O objeto de preferências a ser validado.
+ * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @returns {ConsentPreferences} Um novo objeto `ConsentPreferences` contendo apenas categorias válidas.
  */
 export function validateProjectPreferences(
   preferences: ConsentPreferences,
@@ -59,7 +60,6 @@ export function validateProjectPreferences(
     necessary: true, // Sempre válida
   }
 
-  // Categorias padrão permitidas
   const enabledCategories = config?.enabledCategories || []
   enabledCategories.forEach((category) => {
     if (category !== 'necessary' && preferences[category] !== undefined) {
@@ -71,10 +71,12 @@ export function validateProjectPreferences(
 }
 
 /**
- * Retorna todas as categorias ativas no projeto (padrão + customizadas).
+ * @function
+ * Retorna um array com as definições detalhadas de todas as categorias de cookies ativas no projeto.
+ * Inclui categorias padrão e customizadas, se houver.
  *
- * @param config Configuração de categorias do projeto
- * @returns Array com todas as definições de categorias
+ * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não fornecida, um padrão será usado.
+ * @returns {CategoryDefinition[]} Um array de objetos `CategoryDefinition`.
  */
 export function getAllProjectCategories(
   config?: ProjectCategoriesConfig,
@@ -88,7 +90,6 @@ export function getAllProjectCategories(
     },
   ]
 
-  // Adicionar categorias padrão habilitadas
   const enabledCategories = config?.enabledCategories || []
   enabledCategories.forEach((category) => {
     if (category !== 'necessary') {
@@ -148,10 +149,11 @@ function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
 }
 
 /**
- * Verifica se uma configuração de categorias é válida.
+ * @function
+ * Verifica se uma configuração de categorias é válida, identificando categorias padrão inválidas.
  *
- * @param config Configuração a ser validada
- * @returns Lista de erros de validação (vazia se válida)
+ * @param {ProjectCategoriesConfig} [config] A configuração de categorias a ser validada.
+ * @returns {string[]} Uma lista de strings, onde cada string é uma mensagem de erro. A lista estará vazia se a configuração for válida.
  */
 export function validateCategoriesConfig(
   config?: ProjectCategoriesConfig,
@@ -160,7 +162,6 @@ export function validateCategoriesConfig(
 
   if (!config) return errors
 
-  // Validar categorias habilitadas
   if (config.enabledCategories) {
     config.enabledCategories.forEach((category) => {
       if (!DEFAULT_CATEGORIES.includes(category) && category !== 'necessary') {

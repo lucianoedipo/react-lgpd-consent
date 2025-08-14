@@ -1,53 +1,59 @@
 /**
- * Integrações nativas com scripts de terceiros.
- * Facilita o carregamento automático baseado em consentimento.
+ * @interface ScriptIntegration
+ * Define a estrutura de um objeto de integração de script, usado para carregar scripts de terceiros condicionalmente.
  */
-
 export interface ScriptIntegration {
-  /** ID único da integração */
+  /** Um ID único para esta integração de script. */
   id: string
-  /** Categoria de consentimento necessária */
+  /** A categoria de consentimento necessária para que este script seja carregado (ex: 'analytics', 'marketing'). */
   category: string
-  /** URL do script */
+  /** A URL do script a ser carregado. */
   src: string
-  /** Função de inicialização após carregamento */
+  /** Uma função opcional a ser executada após o script ser carregado e inicializado no DOM. */
   init?: () => void
-  /** Atributos adicionais do script */
+  /** Um objeto de atributos HTML a serem adicionados à tag `<script>` (ex: `{ async: 'true' }`). */
   attrs?: Record<string, string>
 }
 
 /**
- * Configuração para Google Analytics 4.
+ * @interface GoogleAnalyticsConfig
+ * Configuração específica para a integração com o Google Analytics 4 (GA4).
  */
 export interface GoogleAnalyticsConfig {
+  /** O ID de medição do GA4 (ex: 'G-XXXXXXXXXX'). */
   measurementId: string
+  /** Um objeto opcional de configuração adicional a ser passado para o comando `gtag('config')`. */
   config?: any
 }
 
 /**
- * Configuração para Google Tag Manager.
+ * @interface GoogleTagManagerConfig
+ * Configuração específica para a integração com o Google Tag Manager (GTM).
  */
 export interface GoogleTagManagerConfig {
+  /** O ID do contêiner do GTM (ex: 'GTM-XXXXXXX'). */
   containerId: string
+  /** O nome da camada de dados (dataLayer) a ser usada. Padrão: 'dataLayer'. */
   dataLayerName?: string
 }
 
 /**
- * Configuração para UserWay (acessibilidade).
+ * @interface UserWayConfig
+ * Configuração específica para a integração com o widget de acessibilidade UserWay.
  */
 export interface UserWayConfig {
+  /** O ID da conta UserWay. */
   accountId: string
 }
 
 /**
- * Cria integração para Google Analytics 4.
+ * @function
+ * Cria um objeto de integração para o Google Analytics 4 (GA4).
  *
- * @param config Configuração do Google Analytics, contendo o `measurementId`.
- * @returns Um objeto de integração de script para ser usado com `ConsentScriptLoader`.
+ * @param {GoogleAnalyticsConfig} config A configuração do GA4, incluindo o `measurementId`.
+ * @returns {ScriptIntegration} Um objeto `ScriptIntegration` configurado para o GA4.
  */
-export function createGoogleAnalyticsIntegration(
-  config: GoogleAnalyticsConfig,
-): ScriptIntegration {
+export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig): ScriptIntegration {
   return {
     id: 'google-analytics',
     category: 'analytics',
@@ -74,10 +80,11 @@ export function createGoogleAnalyticsIntegration(
 }
 
 /**
- * Cria integração para Google Tag Manager.
+ * @function
+ * Cria um objeto de integração para o Google Tag Manager (GTM).
  *
- * @param config Configuração do GTM, contendo o `containerId`.
- * @returns Um objeto de integração de script.
+ * @param {GoogleTagManagerConfig} config A configuração do GTM, incluindo o `containerId`.
+ * @returns {ScriptIntegration} Um objeto `ScriptIntegration` configurado para o GTM.
  */
 export function createGoogleTagManagerIntegration(
   config: GoogleTagManagerConfig,
@@ -102,19 +109,17 @@ export function createGoogleTagManagerIntegration(
 }
 
 /**
- * Cria integração para UserWay (widget de acessibilidade).
- * A categoria padrão foi alterada para 'functional', por ser mais apropriada.
+ * @function
+ * Cria um objeto de integração para o widget de acessibilidade UserWay.
  *
- * @param config Configuração do UserWay, contendo o `accountId`.
- * @returns Um objeto de integração de script.
+ * @param {UserWayConfig} config A configuração do UserWay, incluindo o `accountId`.
+ * @returns {ScriptIntegration} Um objeto `ScriptIntegration` configurado para o UserWay.
  */
-export function createUserWayIntegration(
-  config: UserWayConfig,
-): ScriptIntegration {
+export function createUserWayIntegration(config: UserWayConfig): ScriptIntegration {
   return {
     id: 'userway',
-    category: 'functional', // Categoria mais apropriada para acessibilidade
-    src: `https://cdn.userway.org/widget.js`,
+    category: 'functional',
+    src: 'https://cdn.userway.org/widget.js',
     init: () => {
       if (typeof window !== 'undefined') {
         // @ts-ignore
@@ -128,7 +133,14 @@ export function createUserWayIntegration(
 }
 
 /**
- * Integrações pré-configuradas mais comuns.
+ * @constant
+ * Objeto contendo as factory functions para as integrações pré-configuradas mais comuns.
+ *
+ * @example
+ * ```tsx
+ * import { COMMON_INTEGRATIONS } from 'react-lgpd-consent';
+ * const gaIntegration = COMMON_INTEGRATIONS.googleAnalytics({ measurementId: 'G-XYZ' });
+ * ```
  */
 export const COMMON_INTEGRATIONS = {
   googleAnalytics: createGoogleAnalyticsIntegration,

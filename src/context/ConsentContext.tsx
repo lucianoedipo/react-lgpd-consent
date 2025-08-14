@@ -16,17 +16,11 @@ import {
   writeConsentCookie,
   DEFAULT_COOKIE_OPTS,
 } from '../utils/cookieUtils'
-import {
-  createProjectPreferences,
-  validateProjectPreferences,
-} from '../utils/categoryUtils'
+import { createProjectPreferences, validateProjectPreferences } from '../utils/categoryUtils'
 import { defaultConsentTheme } from '../utils/theme'
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
-import {
-  useDeveloperGuidance,
-  DEFAULT_PROJECT_CATEGORIES,
-} from '../utils/developerGuidance'
+import { useDeveloperGuidance, DEFAULT_PROJECT_CATEGORIES } from '../utils/developerGuidance'
 import {
   _registerGlobalOpenPreferences,
   _unregisterGlobalOpenPreferences,
@@ -85,8 +79,7 @@ const DEFAULT_TEXTS: ConsentTexts = {
   // Textos adicionais para UI customizada
   preferencesButton: 'Configurar Cookies',
   preferencesTitle: 'Gerenciar Preferências de Cookies',
-  preferencesDescription:
-    'Escolha quais tipos de cookies você permite que sejam utilizados.',
+  preferencesDescription: 'Escolha quais tipos de cookies você permite que sejam utilizados.',
   close: 'Fechar',
   accept: 'Aceitar',
   reject: 'Rejeitar',
@@ -124,14 +117,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
   switch (action.type) {
     case 'ACCEPT_ALL': {
       const prefs = createProjectPreferences(action.config, true)
-      const newState = createFullConsentState(
-        true,
-        prefs,
-        'banner',
-        action.config,
-        false,
-        state,
-      )
+      const newState = createFullConsentState(true, prefs, 'banner', action.config, false, state)
       logger.info('User accepted all cookies', {
         preferences: newState.preferences,
       })
@@ -139,14 +125,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
     }
     case 'REJECT_ALL': {
       const prefs = createProjectPreferences(action.config, false)
-      const newState = createFullConsentState(
-        true,
-        prefs,
-        'banner',
-        action.config,
-        false,
-        state,
-      )
+      const newState = createFullConsentState(true, prefs, 'banner', action.config, false, state)
       logger.info('User rejected all cookies', {
         preferences: newState.preferences,
       })
@@ -167,25 +146,11 @@ function reducer(state: ConsentState, action: Action): ConsentState {
       }
     case 'SET_PREFERENCES':
       logger.info('Preferences saved', { preferences: action.preferences })
-      return createFullConsentState(
-        true,
-        action.preferences,
-        'modal',
-        action.config,
-        false,
-        state,
-      )
+      return createFullConsentState(true, action.preferences, 'modal', action.config, false, state)
     case 'OPEN_MODAL':
       return { ...state, isModalOpen: true }
     case 'CLOSE_MODAL':
-      return createFullConsentState(
-        true,
-        state.preferences,
-        'modal',
-        action.config,
-        false,
-        state,
-      )
+      return createFullConsentState(true, state.preferences, 'modal', action.config, false, state)
     case 'RESET': {
       return createFullConsentState(
         false,
@@ -263,12 +228,11 @@ const HydrationCtx = React.createContext<boolean>(false)
  */
 export function ConsentProvider({
   initialState,
-  categories, // Nova prop para configuração de categorias
+  categories,
   texts: textsProp,
   theme,
 
   designTokens,
-  scriptIntegrations, // eslint-disable-line no-unused-vars
   PreferencesModalComponent,
   preferencesModalProps = {},
   CookieBannerComponent,
@@ -283,18 +247,12 @@ export function ConsentProvider({
   disableDeveloperGuidance,
   children,
 }: Readonly<ConsentProviderProps>) {
-  const texts = React.useMemo(
-    () => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }),
-    [textsProp],
-  )
+  const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(
     () => ({ ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }),
     [cookieOpts],
   )
-  const appliedTheme = React.useMemo(
-    () => theme || defaultConsentTheme,
-    [theme],
-  )
+  const appliedTheme = React.useMemo(() => theme || defaultConsentTheme, [theme])
 
   // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
@@ -341,8 +299,7 @@ export function ConsentProvider({
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
-    if (state.consented)
-      writeConsentCookie(state, finalCategoriesConfig, cookie)
+    if (state.consented) writeConsentCookie(state, finalCategoriesConfig, cookie)
   }, [state, cookie, finalCategoriesConfig])
 
   // Callbacks externos (com pequeno delay para animações)
@@ -356,10 +313,8 @@ export function ConsentProvider({
   }, [state, onConsentGiven])
 
   const api = React.useMemo<ConsentContextValue>(() => {
-    const acceptAll = () =>
-      dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
-    const rejectAll = () =>
-      dispatch({ type: 'REJECT_ALL', config: finalCategoriesConfig })
+    const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
+    const rejectAll = () => dispatch({ type: 'REJECT_ALL', config: finalCategoriesConfig })
     const setPreference = (category: Category, value: boolean) =>
       dispatch({ type: 'SET_CATEGORY', category, value })
     const setPreferences = (preferences: ConsentPreferences) => {
@@ -373,8 +328,7 @@ export function ConsentProvider({
       }
     }
     const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })
-    const closePreferences = () =>
-      dispatch({ type: 'CLOSE_MODAL', config: finalCategoriesConfig })
+    const closePreferences = () => dispatch({ type: 'CLOSE_MODAL', config: finalCategoriesConfig })
     const resetConsent = () => {
       removeConsentCookie(cookie)
       dispatch({ type: 'RESET', config: finalCategoriesConfig })
@@ -468,14 +422,12 @@ export function ConsentProvider({
 // Hooks internos (o público é `useConsent` em hooks/useConsent.ts)
 export function useConsentStateInternal() {
   const ctx = React.useContext(StateCtx)
-  if (!ctx)
-    throw new Error('useConsentState must be used within ConsentProvider')
+  if (!ctx) throw new Error('useConsentState must be used within ConsentProvider')
   return ctx
 }
 export function useConsentActionsInternal() {
   const ctx = React.useContext(ActionsCtx)
-  if (!ctx)
-    throw new Error('useConsentActions must be used within ConsentProvider')
+  if (!ctx) throw new Error('useConsentActions must be used within ConsentProvider')
   return ctx
 }
 export function useConsentTextsInternal() {

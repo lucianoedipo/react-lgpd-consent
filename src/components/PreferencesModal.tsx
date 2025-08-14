@@ -14,24 +14,27 @@ import { ConsentPreferences } from '../types/types'
 import { Branding } from './Branding'
 
 /**
- * Props para o componente PreferencesModal.
- *
- * @property DialogProps Props opcionais para customizar o Dialog do Material-UI.
- * @property hideBranding Se true, oculta o branding "fornecido por LÉdipO.eti.br".
+ * @interface PreferencesModalProps
+ * Propriedades para customizar o componente `PreferencesModal`.
  */
 export interface PreferencesModalProps {
+  /** Propriedades opcionais para customizar o componente `Dialog` do Material-UI. */
   DialogProps?: Partial<DialogProps>
-  hideBranding?: boolean // Se true, esconde "fornecido por LÉdipO.eti.br"
+  /** Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" no modal. Padrão: `false`. */
+  hideBranding?: boolean
 }
 
 /**
- * Modal de preferências de cookies.
+ * @component
+ * O `PreferencesModal` é o componente de UI que permite ao usuário ajustar suas preferências de consentimento.
  *
- * Permite ao usuário ajustar suas preferências de consentimento para cookies analíticos e de marketing.
- * Utiliza Material-UI Dialog, switches para cada categoria e textos customizáveis via contexto.
- * Acessível, responsivo e compatível com SSR.
+ * @remarks
+ * Este modal é renderizado automaticamente pelo `ConsentProvider` quando o usuário clica para gerenciar as preferências.
+ * Você pode substituí-lo passando seu próprio componente para a prop `PreferencesModalComponent`
+ * no `ConsentProvider` para ter controle total sobre a aparência e o comportamento do modal.
  *
- * @param props Props do modal, incluindo customização do Dialog e opção de ocultar branding.
+ * @param {Readonly<PreferencesModalProps>} props As propriedades para customizar o modal.
+ * @returns {JSX.Element} O componente do modal de preferências.
  */
 export function PreferencesModal({
   DialogProps,
