@@ -9,7 +9,7 @@ import {
   type CustomCookieBannerProps,
   type CustomPreferencesModalProps,
   type CustomFloatingPreferencesButtonProps,
-} from 'react-lgpd-consent'
+} from '../src' // alterado: usar entrypoint local durante desenvolvimento
 import { ThemeProvider, createTheme } from '@mui/material/styles'
 import {
   Button,
@@ -90,12 +90,7 @@ function CustomPreferencesModal({
   }
 
   return (
-    <Dialog
-      open={isModalOpen || false}
-      onClose={closePreferences}
-      maxWidth="sm"
-      fullWidth
-    >
+    <Dialog open={isModalOpen || false} onClose={closePreferences} maxWidth="sm" fullWidth>
       <DialogTitle>{texts.preferencesTitle || texts.modalTitle}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
@@ -168,12 +163,7 @@ function AccessibilityDock() {
       </Typography>
 
       <Stack spacing={1}>
-        <Button
-          onClick={openModal}
-          variant="outlined"
-          size="small"
-          startIcon={<SettingsIcon />}
-        >
+        <Button onClick={openModal} variant="outlined" size="small" startIcon={<SettingsIcon />}>
           Configurar Cookies
         </Button>
 
@@ -233,8 +223,7 @@ function App() {
           preferences: 'Configurar', // Usa campo padrão
           preferencesButton: 'Configurar', // Campo adicional para compatibilidade
           preferencesTitle: 'Configurações de Cookies',
-          preferencesDescription:
-            'Escolha quais tipos de cookies você permite:',
+          preferencesDescription: 'Escolha quais tipos de cookies você permite:',
           close: 'Fechar',
           modalTitle: 'Configurações de Cookies', // Fallback
           modalIntro: 'Escolha quais tipos de cookies você permite:', // Fallback
@@ -257,28 +246,25 @@ function App() {
 
           <Stack spacing={2}>
             <Alert severity="success">
-              ✅ <strong>Theme Provider Compatibility:</strong> Funcionando com
-              fallbacks seguros
+              ✅ <strong>Theme Provider Compatibility:</strong> Funcionando com fallbacks seguros
             </Alert>
 
             <Alert severity="success">
-              ✅ <strong>FloatingPreferencesButton:</strong> Desabilitado via
-              prop, usando AccessibilityDock customizado
+              ✅ <strong>FloatingPreferencesButton:</strong> Desabilitado via prop, usando
+              AccessibilityDock customizado
             </Alert>
 
             <Alert severity="success">
-              ✅ <strong>Controle Programático:</strong> Hook
-              useOpenPreferencesModal() + função global openPreferencesModal()
+              ✅ <strong>Controle Programático:</strong> Hook useOpenPreferencesModal() + função
+              global openPreferencesModal()
             </Alert>
 
             <Alert severity="success">
-              ✅ <strong>TypeScript Types:</strong> Todos os Custom*Props
-              exportados
+              ✅ <strong>TypeScript Types:</strong> Todos os Custom*Props exportados
             </Alert>
 
             <Alert severity="info">
-              🐛 <strong>Debug Logging:</strong> Ativado - verifique o console
-              do navegador
+              🐛 <strong>Debug Logging:</strong> Ativado - verifique o console do navegador
             </Alert>
           </Stack>
         </div>

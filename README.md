@@ -32,14 +32,14 @@ Esta biblioteca oferece uma solução robusta e flexível para gerenciar o conse
 
 ### Principais Funcionalidades
 
-| Funcionalidade                   | Descrição                                                                                             |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------- |
-| 🇧🇷 **Foco na LGPD**              | Implementação baseada nas diretrizes da ANPD, com textos e categorias alinhados à lei brasileira.     |
-| 🎨 **UI Automática e Customizável** | Componentes de UI (Banner e Modal) prontos para uso, baseados em Material-UI, e totalmente substituíveis. |
-| ⚙️ **Configuração Consciente**     | A prop `categories` força a declaração explícita dos cookies utilizados, seguindo o princípio da minimização. |
-| 🧠 **Guia para Desenvolvedores**   | Sistema que exibe avisos e sugestões no console (em ambiente de dev) para garantir a correta implementação. |
-| 🚀 **Integrações Nativas**         | Carregamento automático de scripts como Google Analytics e GTM, condicionado ao consentimento do usuário. |
-| 🔒 **Auditoria e Transparência**   | O cookie de consentimento armazena metadados como data, origem e versão para fins de auditoria.     |
+| Funcionalidade                      | Descrição                                                                                                     |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| 🇧🇷 **Foco na LGPD**                 | Implementação baseada nas diretrizes da ANPD, com textos e categorias alinhados à lei brasileira.             |
+| 🎨 **UI Automática e Customizável** | Componentes de UI (Banner e Modal) prontos para uso, baseados em Material-UI, e totalmente substituíveis.     |
+| ⚙️ **Configuração Consciente**      | A prop `categories` força a declaração explícita dos cookies utilizados, seguindo o princípio da minimização. |
+| 🧠 **Guia para Desenvolvedores**    | Sistema que exibe avisos e sugestões no console (em ambiente de dev) para garantir a correta implementação.   |
+| 🚀 **Integrações Nativas**          | Carregamento automático de scripts como Google Analytics e GTM, condicionado ao consentimento do usuário.     |
+| 🔒 **Auditoria e Transparência**    | O cookie de consentimento armazena metadados como data, origem e versão para fins de auditoria.               |
 
 ---
 
@@ -61,7 +61,7 @@ Envolva sua aplicação com o `ConsentProvider` e configure as categorias de coo
 
 ```tsx
 // Em seu arquivo principal (ex: App.tsx)
-import { ConsentProvider } from 'react-lgpd-consent';
+import { ConsentProvider } from 'react-lgpd-consent'
 
 function App() {
   return (
@@ -75,7 +75,7 @@ function App() {
       {/* O banner e o botão de preferências aparecerão automaticamente */}
       <SuaAplicacao />
     </ConsentProvider>
-  );
+  )
 }
 ```
 
@@ -86,14 +86,14 @@ import {
   ConsentProvider,
   ConsentScriptLoader,
   createGoogleAnalyticsIntegration,
-} from 'react-lgpd-consent';
+} from 'react-lgpd-consent'
 
 // 1. Crie as integrações que você precisa
 const integrations = [
   createGoogleAnalyticsIntegration({
     measurementId: 'G-XXXXXXXXXX', // Substitua pelo seu ID
   }),
-];
+]
 
 function App() {
   return (
@@ -108,7 +108,7 @@ function App() {
         contactInfo: 'Contato do DPO: dpo@suaempresa.com',
       }}
       onConsentGiven={(state) => {
-        console.log('O usuário deu o primeiro consentimento!', state.preferences);
+        console.log('O usuário deu o primeiro consentimento!', state.preferences)
       }}
     >
       {/* 2. Adicione o loader de scripts para carregá-los após o consentimento */}
@@ -116,7 +116,7 @@ function App() {
 
       <SuaAplicacao />
     </ConsentProvider>
-  );
+  )
 }
 ```
 
@@ -138,6 +138,8 @@ Contribuições são muito bem-vindas! Este é um projeto open-source para a com
 
 1.  **Reporte Bugs ou Sugira Melhorias**: Abra uma [Issue no GitHub](https://github.com/lucianoedipo/react-lgpd-consent/issues).
 2.  **Envie um Pull Request**: Siga as instruções no nosso [Guia de Desenvolvimento (`DEVELOPMENT.md`)](./DEVELOPMENT.md).
+
+> Observação: este repositório usa templates de issues e PR para padronizar contribuições. Use os templates ao abrir um bug/feature/PR para acelerar a triagem.
 
 ---
 
