@@ -1,0 +1,50 @@
+name: 'Feature request'
+description: 'Suggest a new feature, improvement or integration.'
+title: '[FEATURE]'
+labels: [enhancement, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: 'Descreva claramente a solicitação, impacto e possíveis APIs.'
+
+  - type: input
+    id: summary
+    attributes:
+      label: 'Resumo da solicitação'
+      placeholder: 'Curta descrição: o que você quer e por quê'
+      required: true
+
+  - type: textarea
+    id: useCase
+    attributes:
+      label: 'Caso de uso / problema que resolve'
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: 'Solução proposta (esboço)'
+      description: 'API pública sugerida, props, hooks, design tokens afetados'
+
+  - type: radio
+    id: breaking
+    attributes:
+      label: 'Breaking change?'
+      options:
+        - label: 'No'
+        - label: 'Yes'
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 'Critérios de aceitação'
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: 'Alternativas consideradas'
+
+  - type: input
+    id: references
+    attributes:
+      label: 'Links / referências'
+      placeholder: 'API.md, INTEGRACOES.md, CONFORMIDADE.md'

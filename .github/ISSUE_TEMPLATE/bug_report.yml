@@ -1,0 +1,70 @@
+name: 'Bug report'
+description: 'Report a reproducible bug in the library. Preencha os campos para ajudar a triagem.'
+title: '[BUG]'
+labels: [bug, needs-triage]
+body:
+  - type: markdown
+    attributes:
+      value: 'Por favor preencha os campos abaixo com o máximo de detalhes possíveis.'
+
+  - type: input
+    id: summary
+    attributes:
+      label: 'Resumo (uma frase)'
+      description: "Ex.: 'O banner não aparece no Next.js com SSR'"
+      placeholder: 'Resumo do problema'
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 'Severidade'
+      options:
+        - Critical
+        - Major
+        - Minor
+      required: true
+
+  - type: input
+    id: libraryVersion
+    attributes:
+      label: 'Versão da biblioteca (package.json)'
+      placeholder: 'ex.: 0.3.3'
+
+  - type: input
+    id: environment
+    attributes:
+      label: 'Ambiente / Framework'
+      description: 'Ex.: Next.js, CRA, Vite'
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 'Passos para reproduzir'
+      description: 'Cole um snippet mínimo ou link para repo/CodeSandbox e passos para reproduzir'
+      placeholder: "1. ...\n2. ..."
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 'Comportamento esperado'
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 'Comportamento atual / erro'
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 'Logs / Stack trace'
+
+  - type: checkbox
+    id: tried
+    attributes:
+      label: 'O que já foi tentado'
+      options:
+        - 'npm run type-check'
+        - 'npm run test'
+        - 'npm run lint'
