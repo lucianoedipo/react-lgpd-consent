@@ -13,17 +13,18 @@ body:
       label: 'Resumo (uma frase)'
       description: "Ex.: 'O banner não aparece no Next.js com SSR'"
       placeholder: 'Resumo do problema'
-      required: true
 
   - type: dropdown
     id: severity
     attributes:
       label: 'Severidade'
       options:
-        - Critical
-        - Major
-        - Minor
-      required: true
+        - label: 'Critical'
+          value: 'critical'
+        - label: 'Major'
+          value: 'major'
+        - label: 'Minor'
+          value: 'minor'
 
   - type: input
     id: libraryVersion
@@ -43,7 +44,6 @@ body:
       label: 'Passos para reproduzir'
       description: 'Cole um snippet mínimo ou link para repo/CodeSandbox e passos para reproduzir'
       placeholder: "1. ...\n2. ..."
-      required: true
 
   - type: textarea
     id: expected
@@ -60,11 +60,14 @@ body:
     attributes:
       label: 'Logs / Stack trace'
 
-  - type: checkbox
+  - type: checkboxes
     id: tried
     attributes:
       label: 'O que já foi tentado'
       options:
-        - 'npm run type-check'
-        - 'npm run test'
-        - 'npm run lint'
+        - label: 'npm run type-check'
+          value: 'type-check'
+        - label: 'npm run test'
+          value: 'test'
+        - label: 'npm run lint'
+          value: 'lint'

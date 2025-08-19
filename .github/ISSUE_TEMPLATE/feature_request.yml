@@ -12,7 +12,6 @@ body:
     attributes:
       label: 'Resumo da solicitação'
       placeholder: 'Curta descrição: o que você quer e por quê'
-      required: true
 
   - type: textarea
     id: useCase
@@ -25,13 +24,15 @@ body:
       label: 'Solução proposta (esboço)'
       description: 'API pública sugerida, props, hooks, design tokens afetados'
 
-  - type: radio
+  - type: dropdown
     id: breaking
     attributes:
       label: 'Breaking change?'
       options:
         - label: 'No'
+          value: 'no'
         - label: 'Yes'
+          value: 'yes'
 
   - type: textarea
     id: acceptance
