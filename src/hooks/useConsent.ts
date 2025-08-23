@@ -37,7 +37,7 @@ import type { ConsentContextValue, ConsentTexts } from '../types/types'
  * - **`setPreferences(preferences)`**: Define múltiplas categorias de uma vez
  * - **`openPreferences()`**: Abre o modal de preferências
  * - **`closePreferences()`**: Fecha o modal de preferências
- * - **`resetConsent()`**: Limpa todo consentimento (volta ao estado inicial)
+ * - **`resetConsent()`**: Limpa all  consentimento (volta ao estado inicial)
  *
  * ### Performance e SSR
  * - O hook é otimizado com `useMemo` interno para evitar re-renders desnecessários
