@@ -270,6 +270,8 @@ export function ConsentProvider({
   FloatingPreferencesButtonComponent,
   floatingPreferencesButtonProps = {},
   disableFloatingPreferencesButton = false,
+  blocking = false,
+  blockingStrategy = 'auto',
   hideBranding = false,
   onConsentGiven,
   onPreferencesSaved,
@@ -411,6 +413,31 @@ export function ConsentProvider({
                     )}
                   </React.Suspense>
 
+                  {/* Overlay de bloqueio no Provider (opt-in via blockingStrategy) */}
+                  {blocking &&
+                    isHydrated &&
+                    !state.consented &&
+                    blockingStrategy === 'provider' && (
+                      <div
+                        style={{
+                          position: 'fixed',
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundColor:
+                            (designTokens as any)?.layout?.backdrop === false
+                              ? 'transparent'
+                              : typeof (designTokens as any)?.layout?.backdrop === 'string'
+                                ? (designTokens as any).layout.backdrop
+                                : 'rgba(0, 0, 0, 0.4)',
+                          zIndex: 1299,
+                        }}
+                        data-testid="lgpd-provider-overlay"
+                        aria-hidden
+                      />
+                    )}
+
                   {/* Cookie Banner - renderizado se não houver consentimento e estiver hidratado */}
                   {!state.consented &&
                     isHydrated &&
@@ -421,10 +448,15 @@ export function ConsentProvider({
                         rejectAll={api.rejectAll}
                         openPreferences={api.openPreferences}
                         texts={texts}
+                        blocking={blocking}
                         {...cookieBannerProps}
                       />
                     ) : (
-                      <CookieBanner />
+                      <CookieBanner
+                        blocking={blocking}
+                        hideBranding={hideBranding}
+                        {...cookieBannerProps}
+                      />
                     ))}
 
                   {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
