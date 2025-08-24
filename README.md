@@ -130,6 +130,37 @@ Para mais detalhes sobre customização, hooks e funcionalidades, consulte os se
 - **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
 - **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.
 
+### Bloqueio (opt-in) e integração com dark-filter
+
+Você pode optar por garantir o bloqueio de interação pelo Provider quando `blocking` estiver ativo. Use a prop `blockingStrategy`:
+
+- `auto` (padrão):
+  - Com o banner padrão, o bloqueio é tratado pelo próprio componente de banner.
+  - Com um banner customizado, o Provider não cria overlay; o bloqueio fica a cargo do seu componente.
+- `provider`: o Provider cria um overlay de bloqueio por cima da aplicação (e abaixo do banner), independentemente de o banner ser padrão ou custom.
+- `component`: nenhum overlay do Provider; o bloqueio é responsabilidade do banner.
+
+Integração com dark-filter existente:
+- Se você já possui um filtro visual (escurecimento) próprio, use `blockingStrategy="provider"` e defina `designTokens={{ layout: { backdrop: false } }}` para bloquear cliques sem escurecer novamente. Mantenha seu dark-filter com `pointer-events: none`.
+- Para usar o escurecimento da própria lib, defina `designTokens={{ layout: { backdrop: 'rgba(0,0,0,0.4)' } }}`.
+
+Exemplos:
+
+```tsx
+// Bloqueio garantido pelo Provider (sem escurecer, usando seu dark-filter)
+<ConsentProvider blocking blockingStrategy="provider" designTokens={{ layout: { backdrop: false } }}>
+  <App />
+  {/* Seu dark-filter apenas visual aqui */}
+  <div className="dark-filter" />
+  {/* Banner customizado opcional */}
+</ConsentProvider>
+
+// Apenas a lib (com escurecimento padrão RGBA)
+<ConsentProvider blocking blockingStrategy="provider" designTokens={{ layout: { backdrop: 'rgba(0,0,0,0.4)' } }}>
+  <App />
+</ConsentProvider>
+```
+
 ---
 
 ## 🤝 Como Contribuir

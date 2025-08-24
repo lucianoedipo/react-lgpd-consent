@@ -564,7 +564,7 @@ export interface DesignTokens {
       mobile?: string
       desktop?: string
     }
-    backdrop?: boolean
+    backdrop?: boolean | string
   }
 }
 
@@ -724,6 +724,23 @@ export interface ConsentProviderProps {
    */
   blocking?: boolean
 
+  /**
+   * Estratégia de bloqueio quando `blocking` estiver habilitado.
+   * - 'auto' (padrão):
+   *   - Se usar o banner padrão da lib, o bloqueio visual/funcional fica a cargo do próprio banner.
+   *   - Se usar `CookieBannerComponent` custom, o Provider NÃO cria overlay; o bloqueio fica a cargo do componente custom (compatibilidade atual).
+   * - 'provider': o Provider cria um overlay de bloqueio por cima da aplicação (e abaixo do banner),
+   *   garantindo que cliques sejam bloqueados, independentemente do banner custom implementar ou não esse comportamento.
+   * - 'component': nenhum overlay do Provider; espera-se que o banner (padrão ou custom) trate o bloqueio.
+   *
+   * Observações:
+   * - Visual do overlay do Provider controlado por `designTokens.layout.backdrop`:
+   *   - `false`: overlay transparente (bloqueia cliques sem escurecer — útil quando o app já possui um dark-filter visual próprio).
+   *   - `string` (ex.: 'rgba(0,0,0,0.4)'): overlay com escurecimento gerenciado pela lib.
+   * - A11y: recomenda-se que o banner use semântica de diálogo (role="dialog", aria-modal="true") e trap de foco.
+   */
+  blockingStrategy?: 'auto' | 'provider' | 'component'
+
   /** Oculta o branding "fornecido por LÉdipO.eti.br" dos componentes. */
   hideBranding?: boolean
 
@@ -793,6 +810,12 @@ export interface CustomCookieBannerProps {
   rejectAll: () => void
   openPreferences: () => void
   texts: ConsentTexts
+  /**
+   * Indica se o modo bloqueante está ativo no contexto.
+   * Esta prop é apenas informativa para banners customizados ajustarem sua UI.
+   * O bloqueio funcional pode ser garantido pelo Provider quando `blockingStrategy='provider'`.
+   */
+  blocking?: boolean
 }
 
 /**
