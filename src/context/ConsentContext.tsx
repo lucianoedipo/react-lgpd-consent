@@ -385,6 +385,14 @@ export function ConsentProvider({
     return () => _unregisterGlobalOpenPreferences()
   }, [api.openPreferences])
 
+  // Extrai a lógica de cálculo do backdrop para uma variável memoizada
+  const providerBackdropColor = React.useMemo(() => {
+    const backdrop = (designTokens as any)?.layout?.backdrop
+    if (backdrop === false) return 'transparent'
+    if (typeof backdrop === 'string') return backdrop
+    return 'rgba(0, 0, 0, 0.4)'
+  }, [designTokens])
+
   return (
     <SafeThemeProvider theme={appliedTheme}>
       <StateCtx.Provider value={state}>
@@ -425,12 +433,7 @@ export function ConsentProvider({
                           left: 0,
                           right: 0,
                           bottom: 0,
-                          backgroundColor:
-                            (designTokens as any)?.layout?.backdrop === false
-                              ? 'transparent'
-                              : typeof (designTokens as any)?.layout?.backdrop === 'string'
-                                ? (designTokens as any).layout.backdrop
-                                : 'rgba(0, 0, 0, 0.4)',
+                          backgroundColor: providerBackdropColor,
                           zIndex: 1299,
                         }}
                         data-testid="lgpd-provider-overlay"

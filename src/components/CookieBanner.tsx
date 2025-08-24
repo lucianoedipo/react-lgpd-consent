@@ -413,26 +413,14 @@ export function CookieBanner({
    * - Se `designTokens.layout.backdrop === false` => `'transparent'` (sem backdrop).
    * - Se `designTokens.layout.backdrop` for uma string => usa essa string como cor (ex.: `'#00000088'`).
    * - Caso contrário => padrão seguro `'rgba(0, 0, 0, 0.4)'`.
-   *
-   * Esse valor é aplicado ao elemento que cobre a viewport para bloquear a interação
-   * quando o banner está em modo bloqueante (modal).
-   *
-   * @constant
-   * @type {string}
-   * @example
-   * // Sem backdrop
-   * designTokens.layout.backdrop = false // => 'transparent'
-   *
-   * @example
-   * // Cor customizada
-   * designTokens.layout.backdrop = '#12345680' // => '#12345680'
    */
-  const backdropColor =
-    designTokens?.layout?.backdrop === false
-      ? 'transparent'
-      : typeof designTokens?.layout?.backdrop === 'string'
-        ? designTokens.layout.backdrop
-        : 'rgba(0, 0, 0, 0.4)'
+  let backdropColor = 'rgba(0, 0, 0, 0.4)'
+  const backdropToken = designTokens?.layout?.backdrop
+  if (backdropToken === false) {
+    backdropColor = 'transparent'
+  } else if (typeof backdropToken === 'string') {
+    backdropColor = backdropToken
+  }
 
   if (blocking) {
     return (
