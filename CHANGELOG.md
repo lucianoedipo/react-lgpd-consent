@@ -4,6 +4,17 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [Unreleased]
+
+### 🐛 Corrigido
+
+- **FloatingPreferencesButton: props não encaminhadas quando montado pelo `ConsentProvider`**
+  - Sintoma: `tooltip` customizado e `hideWhenConsented` definidos nas stories ou via props do provider não eram aplicados ao botão padrão renderizado automaticamente pelo `ConsentProvider`.
+  - Causa: o `ConsentProvider` instanciava o componente padrão sem repassar `floatingPreferencesButtonProps`, fazendo com que overrides e Controls do Storybook não surtissem efeito.
+  - Solução: o `ConsentProvider` agora encaminha `floatingPreferencesButtonProps` para o `FloatingPreferencesButton` padrão. As stories também foram atualizadas para encaminhar `args` via `floatingPreferencesButtonProps` quando apropriado.
+  - Arquivos alterados: `src/context/ConsentContext.tsx`, `src/components/FloatingPreferencesButton.stories.tsx`.
+
+
 ## [0.3.1] - 2025-08-13 - CORREÇÕES DE PRODUÇÃO E MELHORIAS DE COMPATIBILIDADE
 
 ### 🛡️ **Corrigido - Critical Production Fixes**
@@ -458,7 +469,7 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 
 ---
 
-## [Unreleased]
+
 
 ### 🔮 Futuro (v0.4.0+)
 

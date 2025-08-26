@@ -141,3 +141,29 @@ npm run build
 
 -   **Bugs**: [GitHub Issues](https://github.com/lucianoedipo/react-lgpd-consent/issues)
 -   **Dúvidas e Sugestões**: [GitHub Discussions](https://github.com/lucianoedipo/react-lgpd-consent/discussions)
+
+## 🐛 Nota de Troubleshooting: FloatingPreferencesButton não recebia props do Provider
+
+Situação encontrada (2025-08-25):
+
+- Em alguns cenários de Storybook e integração, props como `tooltip` e `hideWhenConsented` definidas via `floatingPreferencesButtonProps` no `ConsentProvider` ou via Controls do Storybook não eram aplicadas ao botão flutuante padrão.
+
+Causa:
+
+- O `ConsentProvider` instanciava `<FloatingPreferencesButton />` sem repassar `floatingPreferencesButtonProps`, portanto overrides de texto e comportamento não chegavam ao componente renderizado.
+
+Correção aplicada:
+
+- O provider agora encaminha `floatingPreferencesButtonProps` ao componente padrão (`<FloatingPreferencesButton {...floatingPreferencesButtonProps} />`).
+- As stories do Storybook foram atualizadas para encaminhar `args` como `floatingPreferencesButtonProps` quando o botão é gerenciado pelo provider, garantindo que os Controls alterem o comportamento esperado.
+
+Como testar localmente:
+
+1. Rode `npm run storybook`.
+2. Abra a story `Components / FloatingPreferencesButton`.
+3. No painel Controls, altere `tooltip` e verifique o hover do botão.
+4. Ative `hideWhenConsented` e simule consentimento (ou remova o cookie e aceite) para verificar que o botão desaparece quando `consented === true`.
+
+Notas:
+
+- Essa correção é uma alteração de implementação interna no provider (sem breaking change na API pública). Se você expõe um `FloatingPreferencesButtonComponent` customizado, as props customizadas continuam sendo respeitadas.
