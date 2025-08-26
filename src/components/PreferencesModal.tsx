@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { useCategories } from '../context/CategoriesContext'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
+import { useDesignTokens } from '../context/DesignContext'
 import { ConsentPreferences } from '../types/types'
 import { Branding } from './Branding'
 
@@ -46,6 +47,7 @@ export function PreferencesModal({
 }: Readonly<PreferencesModalProps>) {
   const { preferences, setPreferences, closePreferences, isModalOpen } = useConsent()
   const texts = useConsentTexts()
+  const designTokens = useDesignTokens()
   const { toggleableCategories } = useCategories() // Categorias que precisam de toggle
 
   // Estado local para mudanças temporárias - INICIALIZADO com valores padrão
@@ -92,9 +94,17 @@ export function PreferencesModal({
 
   return (
     <Dialog aria-labelledby="cookie-pref-title" open={open} onClose={handleCancel} {...DialogProps}>
-      <DialogTitle id="cookie-pref-title">{texts.modalTitle}</DialogTitle>
-      <DialogContent dividers>
-        <Typography variant="body2" sx={{ mb: 2 }}>
+      <DialogTitle
+        id="cookie-pref-title"
+        sx={{ fontSize: designTokens?.typography?.fontSize?.modal ?? undefined }}
+      >
+        {texts.modalTitle}
+      </DialogTitle>
+      <DialogContent dividers sx={{ p: designTokens?.spacing?.padding?.modal ?? undefined }}>
+        <Typography
+          variant="body2"
+          sx={{ mb: 2, fontSize: designTokens?.typography?.fontSize?.modal ?? undefined }}
+        >
           {texts.modalIntro}
         </Typography>
         <FormGroup>
