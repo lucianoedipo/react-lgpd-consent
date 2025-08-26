@@ -4,15 +4,7 @@ import { ConsentProvider } from '../context/ConsentContext'
 import { ConsentGate } from './ConsentGate'
 
 describe('ConsentGate', () => {
-  // suppress developer guidance logs
-  beforeAll(() => {
-    jest.spyOn(console, 'group').mockImplementation(() => undefined)
-    jest.spyOn(console, 'log').mockImplementation(() => undefined)
-    jest.spyOn(console, 'info').mockImplementation(() => undefined)
-    jest.spyOn(console, 'warn').mockImplementation(() => undefined)
-    jest.spyOn(console, 'error').mockImplementation(() => undefined)
-  })
-  afterAll(() => jest.restoreAllMocks())
+  // console.* é suprimido globalmente em jest.setup.ts
   test('renders children when category preference is true', () => {
     const initialState = {
       consented: true,

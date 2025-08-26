@@ -8,24 +8,7 @@ import { Branding } from './Branding'
 // Mock js-cookie to avoid actual cookie operations in tests
 jest.mock('js-cookie')
 
-// Suprimir logs do developerGuidance durante estes testes
-let __logSpy: jest.SpyInstance, __infoSpy: jest.SpyInstance, __groupSpy: jest.SpyInstance, __warnSpy: jest.SpyInstance, __errorSpy: jest.SpyInstance
-
-beforeAll(() => {
-  __logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
-  __infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
-  __groupSpy = jest.spyOn(console, 'group').mockImplementation(() => {})
-  __warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
-  __errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
-})
-
-afterAll(() => {
-  __logSpy.mockRestore()
-  __infoSpy.mockRestore()
-  __groupSpy.mockRestore()
-  __warnSpy.mockRestore()
-  __errorSpy.mockRestore()
-})
+// console.* é suprimido globalmente em jest.setup.ts
 
 function makeInitialState() {
   const now = new Date().toISOString()

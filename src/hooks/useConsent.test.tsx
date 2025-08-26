@@ -24,14 +24,7 @@ function TestConsumer() {
 }
 
 describe('useConsent hook', () => {
-  beforeAll(() => {
-    jest.spyOn(console, 'group').mockImplementation(() => undefined)
-    jest.spyOn(console, 'log').mockImplementation(() => undefined)
-    jest.spyOn(console, 'info').mockImplementation(() => undefined)
-    jest.spyOn(console, 'warn').mockImplementation(() => undefined)
-    jest.spyOn(console, 'error').mockImplementation(() => undefined)
-  })
-  afterAll(() => jest.restoreAllMocks())
+  // console.* é suprimido globalmente em jest.setup.ts
   test('acceptAll and rejectAll update preferences', async () => {
     const initialState = {
       consented: false,

@@ -4,11 +4,7 @@ import { ConsentProvider, useConsent } from './index'
 
 describe('index exports', () => {
   beforeAll(() => {
-    jest.spyOn(console, 'group').mockImplementation(() => undefined)
-    jest.spyOn(console, 'log').mockImplementation(() => undefined)
-    jest.spyOn(console, 'info').mockImplementation(() => undefined)
-    jest.spyOn(console, 'warn').mockImplementation(() => undefined)
-    jest.spyOn(console, 'error').mockImplementation(() => undefined)
+    // console.* é suprimido globalmente em jest.setup.ts
   })
   afterAll(() => jest.restoreAllMocks())
 
