@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { ConsentProvider } from '../context/ConsentContext'
 import { Box, Typography, Button } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
 import { useConsent } from '../hooks/useConsent'
 
 const meta: Meta<typeof ConsentProvider> = {
@@ -198,6 +199,19 @@ export const Corporate: Story = {
         <Typography variant="body1" sx={{ mb: 2 }}>
           Exemplo de integração corporativa com controle rigoroso e bloqueio obrigatório.
         </Typography>
+        <ConsentDemo />
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
+export const DarkTheme: Story = {
+  args: {
+    categories: { enabledCategories: ['analytics', 'marketing'] },
+  },
+  render: (args) => (
+    <ConsentProvider {...args} theme={createTheme({ palette: { mode: 'dark' } })}>
+      <Box sx={{ p: 3, bgcolor: '#121212', color: 'white', minHeight: '50vh' }}>
         <ConsentDemo />
       </Box>
     </ConsentProvider>

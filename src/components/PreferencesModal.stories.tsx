@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { PreferencesModal } from './PreferencesModal'
 import { Box, Typography, Button, DialogProps } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
 import { ConsentProvider } from '../context/ConsentContext'
 import { useConsent } from '../hooks/useConsent'
 type StoryArgs = {
@@ -204,6 +205,30 @@ export const InteractiveDemo: Story = {
             real.
           </Typography>
 
+          <ModalDemo />
+        </Box>
+        <PreferencesModal {...args} DialogProps={dialogProps} />
+      </ConsentProvider>
+    )
+  },
+}
+
+export const DarkTheme: Story = {
+  args: {
+    hideBranding: false,
+    openModal: true,
+  },
+  render: (args: StoryArgs) => {
+    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
+    return (
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'marketing'] }}
+        theme={createTheme({ palette: { mode: 'dark' } })}
+      >
+        <Box sx={{ p: 3, bgcolor: '#121212', minHeight: '50vh', color: 'white' }}>
+          <Typography variant="h4" gutterBottom color="white">
+            Tema Escuro - Modal
+          </Typography>
           <ModalDemo />
         </Box>
         <PreferencesModal {...args} DialogProps={dialogProps} />

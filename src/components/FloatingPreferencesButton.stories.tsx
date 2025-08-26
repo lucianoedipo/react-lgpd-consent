@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 import { Box, Typography } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
 import { ConsentProvider } from '../context/ConsentContext'
 
 const meta: Meta<typeof FloatingPreferencesButton> = {
@@ -17,7 +18,10 @@ const meta: Meta<typeof FloatingPreferencesButton> = {
     },
   },
   argTypes: {
-    position: { control: { type: 'select' }, options: ['bottom-left', 'bottom-right', 'top-left', 'top-right'] },
+    position: {
+      control: { type: 'select' },
+      options: ['bottom-left', 'bottom-right', 'top-left', 'top-right'],
+    },
     offset: { control: { type: 'number' } },
     tooltip: { control: 'text' },
     hideWhenConsented: { control: 'boolean' },
@@ -69,7 +73,7 @@ export const Default: Story = {
           deserunt mollit anim id est laborum.
         </Typography>
 
-  <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
@@ -104,7 +108,7 @@ export const CustomPosition: Story = {
           </Typography>
         </Box>
 
-  <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
@@ -150,7 +154,7 @@ export const WithLongContent: Story = {
           O botão flutuante deve estar sempre visível, mesmo aqui no final da página.
         </Typography>
 
-  <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
@@ -176,7 +180,7 @@ export const Disabled: Story = {
           configurações de cookies, como um link no footer ou menu.
         </Typography>
 
-    {/* não renderizamos manualmente o FloatingPreferencesButton aqui: o ConsentProvider gerencia sua exibição
+        {/* não renderizamos manualmente o FloatingPreferencesButton aqui: o ConsentProvider gerencia sua exibição
       quando `disableFloatingPreferencesButton` está false. Como queremos demonstrar o caso desabilitado,
       deixamos o provider controlar a renderização e não incluímos o componente explicitamente. */}
       </Box>
@@ -210,7 +214,29 @@ export const MultipleSizes: Story = {
           </Typography>
         </Box>
 
-  <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {...args} />
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
+export const DarkTheme: Story = {
+  args: {
+    position: 'bottom-right',
+    offset: 24,
+  },
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      theme={createTheme({ palette: { mode: 'dark' } })}
+    >
+      <Box
+        sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#121212', color: 'white' }}
+      >
+        <Typography variant="h4" gutterBottom color="white">
+          Tema Escuro - Floating Button
+        </Typography>
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),

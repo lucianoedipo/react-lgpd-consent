@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import React from 'react'
 import { CookieBanner } from './CookieBanner'
 import { Box, Typography } from '@mui/material'
+import { createTheme } from '@mui/material/styles'
 import { ConsentProvider } from '../context/ConsentContext'
 
 const meta: Meta<typeof CookieBanner> = {
@@ -44,7 +45,10 @@ export const Default: Story = {
     debug: true,
   },
   render: (args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      CookieBannerComponent={() => null}
+    >
       <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#f5f5f5' }}>
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -67,7 +71,10 @@ export const WithBlocking: Story = {
     blocking: true,
   },
   render: (args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      CookieBannerComponent={() => null}
+    >
       <Box sx={{ position: 'relative', minHeight: '100vh' }}>
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -89,7 +96,10 @@ export const WithPolicyLink: Story = {
     policyLinkUrl: '/privacy-policy',
   },
   render: (args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      CookieBannerComponent={() => null}
+    >
       <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#e3f2fd' }}>
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -113,11 +123,11 @@ export const CustomTexts: Story = {
   render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
+      CookieBannerComponent={() => null}
       texts={{
         bannerMessage: '🍪 Ei! Usamos cookies deliciosos para tornar sua experiência ainda melhor!',
         acceptAll: '✨ Aceitar Tudo',
         declineAll: '🚫 Só o Essencial',
-        preferences: '⚙️ Personalizar',
       }}
     >
       <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#fff3e0' }}>
@@ -140,7 +150,11 @@ export const DarkTheme: Story = {
     debug: true,
   },
   render: (args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      CookieBannerComponent={() => null}
+      theme={createTheme({ palette: { mode: 'dark' } })}
+    >
       <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#121212', color: 'white' }}>
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom color="white">
