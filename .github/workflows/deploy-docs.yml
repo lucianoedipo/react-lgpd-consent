@@ -169,6 +169,76 @@ jobs:
         with:
           path: integrated-docs
 
+      - name: Post-process generated HTML (meta tags, JSON-LD, sitemap, robots)
+        run: |
+          cat > ./postprocess-integrated-docs.js << 'NODE'
+          const fs = require('fs')
+          const path = require('path')
+          const pkg = require('../package.json')
+
+          const base = (pkg.homepage || '').replace(/\/$/, '')
+          const dir = path.resolve(process.cwd(), 'integrated-docs')
+
+          function walk(d) {
+            let out = []
+            for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+              const full = path.join(d, e.name)
+              if (e.isDirectory()) out = out.concat(walk(full))
+              else if (e.isFile() && e.name.endsWith('.html')) out.push(full)
+            }
+            return out
+          }
+
+          function esc(s = '') {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+          }
+
+          const files = fs.existsSync(dir) ? walk(dir) : []
+
+          files.forEach(file => {
+            let html = fs.readFileSync(file, 'utf8')
+            // avoid double-inject
+            if (html.includes('<meta name="description"') || html.includes('application/ld+json')) return
+
+            const rel = path.relative(dir, file).replace(/\\/g, '/')
+            const url = base ? `${base}/${rel}` : rel
+
+            const ld = {
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: pkg.name || '',
+              description: pkg.description || '',
+              url: base || '',
+              applicationCategory: 'DeveloperTool',
+              softwareVersion: pkg.version || '',
+              author: {
+                '@type': 'Person',
+                name: (pkg.author && pkg.author.name) || 'unknown'
+              }
+            }
+
+            const inject = `\n    <meta name="description" content="${esc(pkg.description||'')}">\n    <meta name="keywords" content="${esc((pkg.keywords||[]).join(', '))}">\n    <link rel="canonical" href="${esc(url)}">\n    <meta property="og:title" content="${esc(pkg.name||'')}">\n    <meta property="og:description" content="${esc(pkg.description||'')}">\n    <meta property="og:url" content="${esc(url)}">\n    <meta name="twitter:card" content="summary">\n    <script type=\"application/ld+json\">${JSON.stringify(ld, null, 2)}</script>\n`;
+
+            const out = html.replace(/<\/head>/i, inject + '\n  </head>')
+            fs.writeFileSync(file, out, 'utf8')
+            console.log('Processed', file)
+          })
+
+          // generate sitemap.xml
+          const urls = files.map(f => (base ? `${base}/${path.relative(dir, f).replace(/\\/g, '/')}` : path.relative(dir, f).replace(/\\/g, '/')))
+          const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map(u => '  <url>\n    <loc>' + esc(u) + '</loc>\n  </url>').join('\n')}\n</urlset>`
+          fs.writeFileSync(path.join(dir, 'sitemap.xml'), sitemap, 'utf8')
+
+          // generate robots.txt
+          const robots = `User-agent: *\nAllow: /\nSitemap: ${base ? base + '/sitemap.xml' : '/sitemap.xml'}\n`
+          fs.writeFileSync(path.join(dir, 'robots.txt'), robots, 'utf8')
+
+          console.log('sitemap.xml and robots.txt generated')
+          NODE
+
+          node ./postprocess-integrated-docs.js
+          rm ./postprocess-integrated-docs.js || true
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
