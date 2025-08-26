@@ -472,7 +472,8 @@ export function ConsentProvider({
                         {...floatingPreferencesButtonProps}
                       />
                     ) : (
-                      <FloatingPreferencesButton />
+                      // Encaminha `floatingPreferencesButtonProps` para o componente padrão
+                      <FloatingPreferencesButton {...(floatingPreferencesButtonProps as any)} />
                     ))}
                 </CategoriesProvider>
               </DesignProvider>

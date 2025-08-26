@@ -40,8 +40,11 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  render: (_args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      floatingPreferencesButtonProps={args}
+    >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
           Página com Botão Flutuante
@@ -73,15 +76,18 @@ export const Default: Story = {
           deserunt mollit anim id est laborum.
         </Typography>
 
-        <FloatingPreferencesButton {..._args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const CustomPosition: Story = {
-  render: (_args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      floatingPreferencesButtonProps={args}
+    >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
           Botão com Posicionamento Customizado
@@ -108,15 +114,18 @@ export const CustomPosition: Story = {
           </Typography>
         </Box>
 
-        <FloatingPreferencesButton {..._args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const WithLongContent: Story = {
-  render: (_args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}>
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
+      floatingPreferencesButtonProps={args}
+    >
       <Box sx={{ minHeight: '200vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
           Página Longa com Scroll
@@ -154,17 +163,18 @@ export const WithLongContent: Story = {
           O botão flutuante deve estar sempre visível, mesmo aqui no final da página.
         </Typography>
 
-        <FloatingPreferencesButton {..._args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const Disabled: Story = {
-  render: (_args) => (
+  render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
       disableFloatingPreferencesButton={true}
+      floatingPreferencesButtonProps={args}
     >
       <Box sx={{ minHeight: '100vh', p: 3 }}>
         <Typography variant="h4" gutterBottom>
@@ -189,8 +199,11 @@ export const Disabled: Story = {
 }
 
 export const MultipleSizes: Story = {
-  render: (_args) => (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      floatingPreferencesButtonProps={args}
+    >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
           Tamanhos Diferentes
@@ -214,7 +227,7 @@ export const MultipleSizes: Story = {
           </Typography>
         </Box>
 
-        <FloatingPreferencesButton {..._args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
@@ -225,10 +238,11 @@ export const DarkTheme: Story = {
     position: 'bottom-right',
     offset: 24,
   },
-  render: (_args) => (
+  render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics', 'marketing'] }}
       theme={createTheme({ palette: { mode: 'dark' } })}
+      floatingPreferencesButtonProps={args}
     >
       <Box
         sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#121212', color: 'white' }}
@@ -236,7 +250,7 @@ export const DarkTheme: Story = {
         <Typography variant="h4" gutterBottom color="white">
           Tema Escuro - Floating Button
         </Typography>
-        <FloatingPreferencesButton {..._args} />
+        <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
