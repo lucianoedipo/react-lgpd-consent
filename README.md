@@ -65,10 +65,16 @@ export default function App() {
 
 Para mais detalhes sobre customização, hooks e funcionalidades, consulte os seguintes guias:
 
+### 📋 Documentação Principal
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
 - **[Guia da API (`API.md`)](./API.md)**: Referência completa de todos os componentes, hooks e tipos.
 - **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
 - **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.
+
+### 🎨 Documentação Interativa (GitHub Pages)
+- **[📖 Storybook - Playground Interativo](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Explore e teste todos os componentes em tempo real com controles interativos.
+- **[⚙️ TypeDoc - Referência de API](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: Documentação completa da API gerada automaticamente.
+- **[🏠 Portal de Documentação](https://lucianoedipo.github.io/react-lgpd-consent/)**: Página inicial com navegação entre todas as documentações.
 ---
 
 ## 🤝 Como Contribuir

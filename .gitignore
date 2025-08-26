@@ -11,3 +11,5 @@ GEMINI.md
 
 # Ensure lockfile is tracked (required by CI)
 !package-lock.json
+*storybook.log
+storybook-static
