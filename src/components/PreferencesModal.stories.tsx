@@ -17,6 +17,14 @@ const meta: Meta<typeof PreferencesModal> = {
       },
     },
   },
+  argTypes: {
+    hideBranding: { control: 'boolean' },
+    DialogProps: { control: 'object' },
+  },
+  args: {
+    hideBranding: false,
+    DialogProps: { open: false },
+  },
 }
 
 export default meta
@@ -49,16 +57,16 @@ const ModalDemo = () => {
 }
 
 export const Default: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       <ModalDemo />
-      <PreferencesModal />
+      <PreferencesModal {...args} />
     </ConsentProvider>
   ),
 }
 
 export const WithAllCategories: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider
       categories={{
         enabledCategories: ['analytics', 'marketing', 'functional', 'social'],
@@ -73,13 +81,13 @@ export const WithAllCategories: Story = {
         </Typography>
         <ModalDemo />
       </Box>
-      <PreferencesModal />
+      <PreferencesModal {...args} />
     </ConsentProvider>
   ),
 }
 
 export const CustomTexts: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics', 'functional'] }}
       texts={{
@@ -98,13 +106,13 @@ export const CustomTexts: Story = {
         </Typography>
         <ModalDemo />
       </Box>
-      <PreferencesModal />
+      <PreferencesModal {...args} />
     </ConsentProvider>
   ),
 }
 
 export const ECommerceExample: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics', 'marketing'] }}
       texts={{
@@ -122,13 +130,13 @@ export const ECommerceExample: Story = {
         </Typography>
         <ModalDemo />
       </Box>
-      <PreferencesModal />
+      <PreferencesModal {...args} />
     </ConsentProvider>
   ),
 }
 
 export const CorporateExample: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics', 'functional'] }}
       texts={{
@@ -147,13 +155,13 @@ export const CorporateExample: Story = {
         </Typography>
         <ModalDemo />
       </Box>
-      <PreferencesModal />
+      <PreferencesModal {...args} />
     </ConsentProvider>
   ),
 }
 
 export const InteractiveDemo: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       <Box sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
@@ -166,7 +174,7 @@ export const InteractiveDemo: Story = {
 
         <ModalDemo />
       </Box>
-      <PreferencesModal />
+      <PreferencesModal {...args} />
     </ConsentProvider>
   ),
 }

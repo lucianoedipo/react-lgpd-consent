@@ -16,13 +16,27 @@ const meta: Meta<typeof FloatingPreferencesButton> = {
       },
     },
   },
+  argTypes: {
+    position: { control: { type: 'select' }, options: ['bottom-left', 'bottom-right', 'top-left', 'top-right'] },
+    offset: { control: { type: 'number' } },
+    tooltip: { control: 'text' },
+    hideWhenConsented: { control: 'boolean' },
+    FabProps: { control: 'object' },
+    icon: { table: { disable: true } },
+  },
+  args: {
+    position: 'bottom-right',
+    offset: 24,
+    tooltip: undefined,
+    hideWhenConsented: false,
+  },
 }
 
 export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -55,14 +69,14 @@ export const Default: Story = {
           deserunt mollit anim id est laborum.
         </Typography>
 
-        <FloatingPreferencesButton />
+  <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const CustomPosition: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -90,14 +104,14 @@ export const CustomPosition: Story = {
           </Typography>
         </Box>
 
-        <FloatingPreferencesButton />
+  <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const WithLongContent: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}>
       <Box sx={{ minHeight: '200vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -136,14 +150,14 @@ export const WithLongContent: Story = {
           O botão flutuante deve estar sempre visível, mesmo aqui no final da página.
         </Typography>
 
-        <FloatingPreferencesButton />
+  <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const Disabled: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
       disableFloatingPreferencesButton={true}
@@ -171,7 +185,7 @@ export const Disabled: Story = {
 }
 
 export const MultipleSizes: Story = {
-  render: () => (
+  render: (args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -196,7 +210,7 @@ export const MultipleSizes: Story = {
           </Typography>
         </Box>
 
-        <FloatingPreferencesButton />
+  <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>
   ),
