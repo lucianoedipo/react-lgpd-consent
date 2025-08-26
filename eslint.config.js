@@ -53,6 +53,20 @@ export default [
     files: ['**/*.test.{ts,tsx,js,jsx}'],
     languageOptions: { globals: globals.jest },
   },
-  { ignores: ['dist/', 'node_modules/', 'example/', 'docs/'] },
+  {
+    ignores: [
+      'dist/',
+      'node_modules/',
+      'example/',
+      'docs/',
+      'storybook-static/',
+      '.vite/',
+      'build/',
+      'out/',
+      '.cache/',
+      '.turbo/',
+      'storybook/',
+    ],
+  },
   ...storybook.configs['flat/recommended'],
 ]

@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 import { Box, Typography } from '@mui/material'
@@ -40,7 +40,7 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
-  render: (args) => (
+  render: (_args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -73,14 +73,14 @@ export const Default: Story = {
           deserunt mollit anim id est laborum.
         </Typography>
 
-        <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {..._args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const CustomPosition: Story = {
-  render: (args) => (
+  render: (_args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -108,14 +108,14 @@ export const CustomPosition: Story = {
           </Typography>
         </Box>
 
-        <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {..._args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const WithLongContent: Story = {
-  render: (args) => (
+  render: (_args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}>
       <Box sx={{ minHeight: '200vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -154,14 +154,14 @@ export const WithLongContent: Story = {
           O botão flutuante deve estar sempre visível, mesmo aqui no final da página.
         </Typography>
 
-        <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {..._args} />
       </Box>
     </ConsentProvider>
   ),
 }
 
 export const Disabled: Story = {
-  render: (args) => (
+  render: (_args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
       disableFloatingPreferencesButton={true}
@@ -189,7 +189,7 @@ export const Disabled: Story = {
 }
 
 export const MultipleSizes: Story = {
-  render: (args) => (
+  render: (_args) => (
     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -214,7 +214,7 @@ export const MultipleSizes: Story = {
           </Typography>
         </Box>
 
-        <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {..._args} />
       </Box>
     </ConsentProvider>
   ),
@@ -225,7 +225,7 @@ export const DarkTheme: Story = {
     position: 'bottom-right',
     offset: 24,
   },
-  render: (args) => (
+  render: (_args) => (
     <ConsentProvider
       categories={{ enabledCategories: ['analytics', 'marketing'] }}
       theme={createTheme({ palette: { mode: 'dark' } })}
@@ -236,7 +236,7 @@ export const DarkTheme: Story = {
         <Typography variant="h4" gutterBottom color="white">
           Tema Escuro - Floating Button
         </Typography>
-        <FloatingPreferencesButton {...args} />
+        <FloatingPreferencesButton {..._args} />
       </Box>
     </ConsentProvider>
   ),
