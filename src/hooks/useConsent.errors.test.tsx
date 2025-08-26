@@ -6,7 +6,6 @@ import { useConsent, useOpenPreferencesModal } from './useConsent'
 describe('useConsent error paths (outside provider)', () => {
   test('useConsent throws when used outside ConsentProvider', () => {
     function Consumer() {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       useConsent()
       return null
     }
@@ -17,7 +16,6 @@ describe('useConsent error paths (outside provider)', () => {
 
   test('useOpenPreferencesModal (hook) throws when used outside ConsentProvider', () => {
     function Consumer() {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
       useOpenPreferencesModal()
       return null
     }
