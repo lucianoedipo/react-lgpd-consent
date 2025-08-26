@@ -1,0 +1,30 @@
+<style>
+  /* Oculta banner de "Unsaved changes" e seu modal de criação/guardar alterações no Storybook manager */
+  /* Seletores baseados em atributos presentes no bundle do storybook-static gerado */
+  [aria-label*='Unsaved changes'],
+  [data-short-label='Unsaved changes'],
+  [title*='Unsaved changes'],
+  button[aria-label*='Reset changes'] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  /* fallback: esconder popovers modais com alto z-index que possam ser o diálogo */
+  .sb-notification,
+  .sb-modal,
+  .modal-root {
+    display: none !important;
+  }
+
+  /* esconder o painel flutuante que aparece acima dos Controls */
+  #save-from-controls,
+  #save-from-controls * {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  button[aria-label='Save changes to story'],
+  button[aria-label='Create new story with these settings'],
+  button[aria-label='Reset changes'] {
+    display: none !important;
+  }
+</style>
