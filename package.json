@@ -55,7 +55,7 @@
   },
   "packageManager": "npm@10.9.3",
   "scripts": {
-    "clean": "rimraf node_modules package-lock.json dist docs",
+    "clean": "rimraf node_modules package-lock.json dist docs storybook-static .cache .stryker-tmp",
     "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
     "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
     "lint": "eslint . --ext .ts,.tsx",

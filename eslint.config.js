@@ -7,6 +7,11 @@ import tseslint from 'typescript-eslint'
 import pluginReactHooks from 'eslint-plugin-react-hooks'
 import pluginJest from 'eslint-plugin-jest'
 import prettierConfig from 'eslint-config-prettier'
+import { fileURLToPath } from 'url'
+import { dirname } from 'path'
+
+// ESM: derive __dirname so we can set tsconfigRootDir for the parser.
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default [
   {
@@ -14,6 +19,9 @@ export default [
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
+        // Ensure the TypeScript parser knows the project root. This avoids
+        // ambiguity when temporary sandboxes (e.g. .stryker-tmp) exist.
+        tsconfigRootDir: __dirname,
         ecmaFeatures: { jsx: true },
         ecmaVersion: 'latest',
         sourceType: 'module',
@@ -66,6 +74,7 @@ export default [
       '.cache/',
       '.turbo/',
       'storybook/',
+      '.stryker-tmp/',
     ],
   },
   ...storybook.configs['flat/recommended'],
