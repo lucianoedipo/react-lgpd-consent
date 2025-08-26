@@ -82,7 +82,11 @@ describe('ConsentProvider blockingStrategy overlay', () => {
 
   it('does not render overlay when blocking=false even with provider strategy', async () => {
     const { queryByTestId } = render(
-      <ConsentProvider blocking={false} blockingStrategy="provider" disableFloatingPreferencesButton>
+      <ConsentProvider
+        blocking={false}
+        blockingStrategy="provider"
+        disableFloatingPreferencesButton
+      >
         <div>App</div>
       </ConsentProvider>,
     )
@@ -128,7 +132,11 @@ describe('ConsentProvider blockingStrategy overlay', () => {
     }
 
     const { rerender } = render(
-      <ConsentProvider blocking CookieBannerComponent={CustomBanner} disableFloatingPreferencesButton>
+      <ConsentProvider
+        blocking
+        CookieBannerComponent={CustomBanner}
+        disableFloatingPreferencesButton
+      >
         <div>App</div>
       </ConsentProvider>,
     )
