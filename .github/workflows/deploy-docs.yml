@@ -164,18 +164,13 @@ jobs:
         with:
           enablement: true
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: integrated-docs
-
       - name: Post-process generated HTML (meta tags, JSON-LD, sitemap, robots)
         run: |
           # create CommonJS script (.cjs) so Node runs it as CJS even when package.json sets type: module
           cat > ./postprocess-integrated-docs.cjs << 'NODE'
           const fs = require('fs')
           const path = require('path')
-          const pkg = require('../package.json')
+          const pkg = require('./package.json')
 
           const base = (pkg.homepage || '').replace(/\/$/, '')
           const dir = path.resolve(process.cwd(), 'integrated-docs')
@@ -239,6 +234,11 @@ jobs:
 
           node ./postprocess-integrated-docs.cjs
           rm ./postprocess-integrated-docs.cjs || true
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: integrated-docs
 
   deploy:
     needs: build
