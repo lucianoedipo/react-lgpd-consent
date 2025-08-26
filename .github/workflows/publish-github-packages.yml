@@ -1,4 +1,4 @@
-name: Publish to GitHub Packages
+name: Publish package to npmjs
 
 on:
   push:
@@ -9,35 +9,10 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   publish:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node for GitHub Packages
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://npm.pkg.github.com
-
-      - name: Install and build
-        run: |
-          npm ci
-          npm run build
-
-      - name: Publish to GitHub Packages (unscoped name)
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          # Publish to GitHub Packages registry explicitly
-          npm publish --registry https://npm.pkg.github.com
-
-  publish-npm:
-    runs-on: ubuntu-latest
-    needs: publish
     steps:
       - uses: actions/checkout@v4
 
