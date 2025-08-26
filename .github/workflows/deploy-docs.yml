@@ -44,45 +44,116 @@ jobs:
           mkdir -p integrated-docs/storybook
           cp -r storybook-static/* integrated-docs/storybook/
           
-          # Criar página de navegação principal
+          # Criar página de navegação principal com metadados dinâmicos para SEO
+          VERSION=$(node -p "require('./package.json').version")
+          NAME=$(node -p "require('./package.json').name")
+          DESC=$(node -p "require('./package.json').description")
+          HOMEPAGE=$(node -p "require('./package.json').homepage")
+          KEYWORDS=$(node -p "(require('./package.json').keywords||[]).join(', ')")
+
           cat > integrated-docs/index.html << 'EOF'
           <!DOCTYPE html>
           <html lang="pt-BR">
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>react-lgpd-consent - Documentação</title>
+            <title>${NAME} - Documentação e Playground</title>
+            <meta name="description" content="${DESC}">
+            <meta name="keywords" content="${KEYWORDS}">
+            <meta name="author" content="Luciano Édipo">
+            <meta name="robots" content="index, follow">
+            <link rel="canonical" href="${HOMEPAGE}">
+
+            <!-- Open Graph -->
+            <meta property="og:title" content="${NAME} - Documentação">
+            <meta property="og:description" content="${DESC}">
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="${HOMEPAGE}">
+
+            <!-- Twitter Card -->
+            <meta name="twitter:card" content="summary">
+            <meta name="twitter:title" content="${NAME} - Documentação">
+            <meta name="twitter:description" content="${DESC}">
+
+            <!-- JSON-LD (SoftwareApplication / SoftwareSourceCode) -->
+            <script type="application/ld+json">
+            {
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "${NAME}",
+              "description": "${DESC}",
+              "url": "${HOMEPAGE}",
+              "applicationCategory": "DeveloperTool",
+              "softwareVersion": "${VERSION}",
+              "author": {
+                "@type": "Person",
+                "name": "Luciano Édipo",
+                "url": "https://github.com/lucianoedipo"
+              }
+            }
+            </script>
+
             <style>
               body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 2rem; background: #f8f9fa; }
-              .container { max-width: 800px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+              .container { max-width: 920px; margin: 0 auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
               h1 { color: #1976d2; margin-bottom: 0.5rem; }
-              .subtitle { color: #666; margin-bottom: 2rem; }
-              .nav-card { display: block; text-decoration: none; color: inherit; background: #fff; border: 2px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; transition: all 0.3s; }
+              .subtitle { color: #666; margin-bottom: 1rem; display:flex; align-items:center; gap:1rem }
+              .nav-card { display: block; text-decoration: none; color: inherit; background: #fff; border: 2px solid #e0e0e0; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; transition: all 0.3s; }
               .nav-card:hover { border-color: #1976d2; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-              .nav-title { font-size: 1.25rem; font-weight: 600; color: #1976d2; margin-bottom: 0.5rem; }
-              .nav-desc { color: #666; line-height: 1.5; }
+              .nav-title { font-size: 1.15rem; font-weight: 600; color: #1976d2; margin-bottom: 0.25rem; }
+              .nav-desc { color: #666; line-height: 1.4; }
               .version { background: #e3f2fd; color: #1976d2; padding: 0.25rem 0.75rem; border-radius: 4px; font-size: 0.875rem; display: inline-block; }
+              .actions { display:flex; gap:1rem; align-items:center; margin-top:0.5rem }
+              .badge { height:20px }
             </style>
           </head>
           <body>
             <div class="container">
-              <h1>react-lgpd-consent</h1>
-              <p class="subtitle">Biblioteca React para gerenciamento de consentimento LGPD <span class="version">v0.3.3</span></p>
-              
+              <h1>${NAME}</h1>
+              <div class="subtitle">
+                <div>Biblioteca React para gerenciamento de consentimento LGPD</div>
+                <div class="version">v${VERSION}</div>
+              </div>
+
+              <div class="actions">
+                <!-- NPM badge + link -->
+                <a href="https://www.npmjs.com/package/${NAME}" aria-label="View on npm">
+                  <img class="badge" src="https://img.shields.io/npm/v/${NAME}.svg" alt="npm version">
+                </a>
+
+                <!-- GitHub badge -->
+                <a href="https://github.com/lucianoedipo/react-lgpd-consent" aria-label="View on GitHub">
+                  <img class="badge" src="https://img.shields.io/github/v/release/lucianoedipo/react-lgpd-consent.svg" alt="github release">
+                </a>
+              </div>
+
               <a href="./storybook/index.html" class="nav-card">
                 <div class="nav-title">📚 Storybook - Playground Interativo</div>
                 <div class="nav-desc">Explore componentes, experimente diferentes configurações e veja exemplos práticos em tempo real.</div>
               </a>
-              
+
               <a href="./modules.html" class="nav-card">
                 <div class="nav-title">📖 API Reference - TypeDoc</div>
                 <div class="nav-desc">Documentação completa da API, interfaces TypeScript, tipos e referência técnica detalhada.</div>
               </a>
-              
+
               <a href="https://github.com/lucianoedipo/react-lgpd-consent" class="nav-card">
                 <div class="nav-title">🔗 Repositório GitHub</div>
                 <div class="nav-desc">Código fonte, issues, releases e documentação adicional no GitHub.</div>
               </a>
+
+              <div class="nav-card">
+                <div class="nav-title">📦 Publicar / Atualizar versão no NPM</div>
+                <div class="nav-desc">Versão atual: <strong>v${VERSION}</strong>. Para publicar uma nova versão no NPM:
+                  <ol>
+                    <li>Atualize a versão em <code>package.json</code> (ex.: <code>npm version patch</code>).</li>
+                    <li>Crie um release no GitHub ou faça push da tag.</li>
+                    <li>Execute o fluxo de publicação (CI) que faz <code>npm publish</code> ou publique manualmente.</li>
+                  </ol>
+                  <p>Link do pacote: <a href="https://www.npmjs.com/package/${NAME}">https://www.npmjs.com/package/${NAME}</a></p>
+                </div>
+              </div>
+
             </div>
           </body>
           </html>

@@ -30,6 +30,7 @@
   "useHostedBaseUrlForAbsoluteLinks": true,
 
   "navigationLinks": {
+    "Storybook": "https://lucianoedipo.github.io/react-lgpd-consent/storybook/",
     "GitHub": "https://github.com/lucianoedipo/react-lgpd-consent",
     "NPM": "https://www.npmjs.com/package/react-lgpd-consent"
   },
@@ -76,6 +77,9 @@
   "hideGenerator": true,
   "projectDocuments": [
     "README.md",
+    "README.en.md",
+    "QUICKSTART.md",
+    "QUICKSTART.en.md",
     "CHANGELOG.md",
     "DEVELOPMENT.md",
     "CONFORMIDADE.md",
