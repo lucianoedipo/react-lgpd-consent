@@ -1,0 +1,38 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+
+  "mutate": [
+    "src/index.ts",
+    "src/components/**/*.ts",
+    "src/components/**/*.tsx",
+    "src/context/**/*.ts",
+    "src/context/**/*.tsx",
+    "src/hooks/**/*.ts",
+    "src/hooks/**/*.tsx",
+    "src/utils/**/*.ts",
+    "src/utils/**/*.tsx",
+    "src/types/**/*.ts"
+  ],
+
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.cjs"
+  },
+
+  "buildCommand": "tsc --noEmit",
+  "tsconfigFile": "tsconfig.json",
+  "reporters": ["progress", "clear-text", "html"],
+  "coverageAnalysis": "perTest",
+  "concurrency": 16,
+
+  "ignorePatterns": [
+    "example/**",
+    "storybook-static/**",
+    "dist/**",
+    "docs/**",
+    "src/**/*.stories.*",
+    "src/**/__snapshots__/**",
+    "node_modules/**"
+  ]
+}

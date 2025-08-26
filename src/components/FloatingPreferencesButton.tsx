@@ -3,6 +3,7 @@ import type { FabProps } from '@mui/material/Fab'
 import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { useTheme } from '@mui/material/styles'
+import { useDesignTokens } from '../context/DesignContext'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { logger } from '../utils/logger'
 
@@ -81,6 +82,7 @@ export function FloatingPreferencesButton({
   const { openPreferences, consented } = useConsent()
   const texts = useConsentTexts()
   const safeTheme = useThemeWithFallbacks()
+  const designTokens = useDesignTokens()
 
   logger.componentRender('FloatingPreferencesButton', {
     position,
@@ -126,9 +128,11 @@ export function FloatingPreferencesButton({
         onClick={openPreferences}
         sx={{
           ...getPosition(),
-          backgroundColor: safeTheme.palette.primary.main,
+          backgroundColor: designTokens?.colors?.primary ?? safeTheme.palette.primary.main,
           '&:hover': {
-            backgroundColor: safeTheme.palette.primary.dark,
+            backgroundColor: designTokens?.colors?.primary
+              ? designTokens?.colors?.primary
+              : safeTheme.palette.primary.dark,
           },
           transition: `all ${safeTheme.transitions.duration.short}ms`,
         }}

@@ -6,6 +6,7 @@
     <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
     <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
     <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
+  <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>
   </div>
 
   <div>
@@ -65,10 +66,16 @@ export default function App() {
 
 Para mais detalhes sobre customização, hooks e funcionalidades, consulte os seguintes guias:
 
+### 📋 Documentação Principal
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
 - **[Guia da API (`API.md`)](./API.md)**: Referência completa de todos os componentes, hooks e tipos.
 - **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
 - **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.
+
+### 🎨 Documentação Interativa (GitHub Pages)
+- **[📖 Storybook - Playground Interativo](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Explore e teste todos os componentes em tempo real com controles interativos.
+- **[⚙️ TypeDoc - Referência de API](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: Documentação completa da API gerada automaticamente.
+- **[🏠 Portal de Documentação](https://lucianoedipo.github.io/react-lgpd-consent/)**: Página inicial com navegação entre todas as documentações.
 ---
 
 ## 🤝 Como Contribuir

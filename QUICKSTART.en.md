@@ -39,6 +39,26 @@ function App() {
 export default App
 ```
 
+## 🧭 Storybook — quick note
+
+This repository ships an interactive Storybook playground used for manual testing and visual exploration of components. Quick commands:
+
+- Run locally (development):
+
+```bash
+npm run storybook
+```
+
+- Build static Storybook (for publishing to GitHub Pages):
+
+```bash
+npm run build-storybook
+```
+
+Notes:
+- The Storybook preview (`.storybook/preview.tsx`) applies a clean environment between stories (it removes the consent cookie and performs defensive DOM cleanup). Check that file when creating stories that rely on a clean initial state.
+
+
 ## 📋 ConsentProvider props (summary)
 
 This is a condensed reference of the most commonly-used props. For a full typed table, see the TypeScript API docs.

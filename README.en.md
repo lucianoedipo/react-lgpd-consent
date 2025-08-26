@@ -6,6 +6,7 @@
     <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
     <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
     <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
+  <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>
   </div>
 
   <div>
@@ -65,6 +66,11 @@ export default function App() {
 - **[Docs / API](./API.md)**
 - **[LGPD Compliance](./CONFORMIDADE.md)**
 - **[Integrations](./INTEGRACOES.md)**
+
+### 🎨 Interactive Documentation (GitHub Pages)
+- **[📖 Storybook - Interactive Playground](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Explore and test all components live with interactive controls.
+- **[⚙️ TypeDoc - API Reference](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: Automatically generated complete API documentation.
+- **[🏠 Documentation Portal](https://lucianoedipo.github.io/react-lgpd-consent/)**: Home page that navigates between all docs sites.
 
 ---
 

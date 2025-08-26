@@ -6,6 +6,10 @@ import type { CustomCookieBannerProps } from '../types/types'
 import { useConsent } from '../hooks/useConsent'
 
 describe('ConsentProvider blockingStrategy overlay', () => {
+  // Suprimir logs do developerGuidance durante estes testes
+  // console.* é suprimido globalmente em jest.setup.ts
+  afterAll(() => jest.restoreAllMocks())
+
   beforeEach(() => {
     // Limpa possível cookie persistente entre testes
     document.cookie = 'cookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
@@ -82,7 +86,11 @@ describe('ConsentProvider blockingStrategy overlay', () => {
 
   it('does not render overlay when blocking=false even with provider strategy', async () => {
     const { queryByTestId } = render(
-      <ConsentProvider blocking={false} blockingStrategy="provider" disableFloatingPreferencesButton>
+      <ConsentProvider
+        blocking={false}
+        blockingStrategy="provider"
+        disableFloatingPreferencesButton
+      >
         <div>App</div>
       </ConsentProvider>,
     )
@@ -128,7 +136,11 @@ describe('ConsentProvider blockingStrategy overlay', () => {
     }
 
     const { rerender } = render(
-      <ConsentProvider blocking CookieBannerComponent={CustomBanner} disableFloatingPreferencesButton>
+      <ConsentProvider
+        blocking
+        CookieBannerComponent={CustomBanner}
+        disableFloatingPreferencesButton
+      >
         <div>App</div>
       </ConsentProvider>,
     )

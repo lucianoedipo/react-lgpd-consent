@@ -141,3 +141,36 @@ npm run build
 
 -   **Bugs**: [GitHub Issues](https://github.com/lucianoedipo/react-lgpd-consent/issues)
 -   **Dúvidas e Sugestões**: [GitHub Discussions](https://github.com/lucianoedipo/react-lgpd-consent/discussions)
+
+## 🐛 Nota de Troubleshooting: FloatingPreferencesButton não recebia props do Provider
+
+Situação encontrada (2025-08-25):
+
+
+Causa:
+
+
+Correção aplicada:
+
+
+Como testar localmente:
+
+1. Rode `npm run storybook`.
+2. Abra a story `Components / FloatingPreferencesButton`.
+3. No painel Controls, altere `tooltip` e verifique o hover do botão.
+4. Ative `hideWhenConsented` e simule consentimento (ou remova o cookie e aceite) para verificar que o botão desaparece quando `consented === true`.
+
+Notas:
+
+
+## Storybook — notas para desenvolvedores
+
+- Arquivos importantes:
+  - `.storybook/main.ts` — configuração do Storybook (addons, framework)
+  - `.storybook/preview.tsx` — decorator global que aplica `ThemeProvider`, `CssBaseline` e faz limpeza defensiva entre stories (remove cookie de consentimento, limpa nós portaled e força remount por story id)
+  - `src/components/*.stories.tsx` — stories de componentes; prefira passar `floatingPreferencesButtonProps` para o `ConsentProvider` quando o provider monta o componente automaticamente
+
+- Dicas:
+  - Ao criar stories que testem comportamentos ligados ao cookie, use o preview para garantir estado inicial limpo (o preview já remove o cookie por padrão).
+  - Evite montar manualmente múltiplas instâncias do `ConsentProvider` nas mesmas stories; prefira usar a instância gerenciada pelo preview para evitar UI duplicada.
+  - Se um story precisar de um tema escuro, passe `theme={createTheme({ palette: { mode: 'dark' } })}` para o `ConsentProvider` na story.

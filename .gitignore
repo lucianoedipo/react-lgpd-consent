@@ -1,13 +1,30 @@
-node_modules
-dist
-docs
-.DS_Store
-.env
+# ---- Node / package artifacts ----
+node_modules/
 react-lgpd-consent-*.tgz
-test-app/
 
+# ---- Build output / distributables ----
+dist/
+storybook-static/
+
+# ---- Documentation / generated docs ----
+docs/
+
+# ---- Test outputs, mutation reports and temporary sandboxes ----
+reports/
+.stryker-tmp/
+test-app/
+coverage/
+
+# ---- Tooling / CI files ----
 GEMINI.md
 
+# ---- Environment / secrets (do not commit) ----
+.env
+
+# ---- OS & editor artifacts ----
+.DS_Store
+.vscode/
+*.log
 
 # Ensure lockfile is tracked (required by CI)
 !package-lock.json
