@@ -1,4 +1,5 @@
 import { useConsentTexts } from '../hooks/useConsent'
+import { useDesignTokens } from '../context/DesignContext'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 
@@ -37,6 +38,7 @@ const linkStyles = {
 
 export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
   const texts = useConsentTexts()
+  const designTokens = useDesignTokens()
   if (hidden) return null
 
   return (
@@ -44,7 +46,7 @@ export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
       variant="caption"
       sx={(theme) => ({
         ...brandingStyles[variant],
-        color: theme.palette.text.secondary,
+        color: designTokens?.colors?.text ?? theme.palette.text.secondary,
       })}
     >
       {texts.brandingPoweredBy || 'fornecido por'}{' '}
@@ -54,7 +56,7 @@ export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
         rel="noopener noreferrer"
         sx={(theme) => ({
           ...linkStyles,
-          color: theme.palette.primary.main,
+          color: designTokens?.colors?.primary ?? theme.palette.primary.main,
         })}
       >
         LÉdipO.eti.br
