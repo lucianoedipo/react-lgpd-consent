@@ -5,6 +5,25 @@ import {
   validateCategoriesConfig,
 } from './categoryUtils'
 
+// Suprimir logs do developerGuidance durante estes testes
+let __logSpy: jest.SpyInstance, __infoSpy: jest.SpyInstance, __groupSpy: jest.SpyInstance, __warnSpy: jest.SpyInstance, __errorSpy: jest.SpyInstance
+
+beforeAll(() => {
+  __logSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
+  __infoSpy = jest.spyOn(console, 'info').mockImplementation(() => {})
+  __groupSpy = jest.spyOn(console, 'group').mockImplementation(() => {})
+  __warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+  __errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {})
+})
+
+afterAll(() => {
+  __logSpy.mockRestore()
+  __infoSpy.mockRestore()
+  __groupSpy.mockRestore()
+  __warnSpy.mockRestore()
+  __errorSpy.mockRestore()
+})
+
 describe('categoryUtils', () => {
   test('createProjectPreferences returns necessary by default', () => {
     const prefs = createProjectPreferences()
