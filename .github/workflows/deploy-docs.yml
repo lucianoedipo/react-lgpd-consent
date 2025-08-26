@@ -142,17 +142,10 @@ jobs:
                 <div class="nav-desc">Código fonte, issues, releases e documentação adicional no GitHub.</div>
               </a>
 
-              <div class="nav-card">
-                <div class="nav-title">📦 Publicar / Atualizar versão no NPM</div>
-                <div class="nav-desc">Versão atual: <strong>v${VERSION}</strong>. Para publicar uma nova versão no NPM:
-                  <ol>
-                    <li>Atualize a versão em <code>package.json</code> (ex.: <code>npm version patch</code>).</li>
-                    <li>Crie um release no GitHub ou faça push da tag.</li>
-                    <li>Execute o fluxo de publicação (CI) que faz <code>npm publish</code> ou publique manualmente.</li>
-                  </ol>
-                  <p>Link do pacote: <a href="https://www.npmjs.com/package/${NAME}">https://www.npmjs.com/package/${NAME}</a></p>
-                </div>
-              </div>
+              <a href="https://www.npmjs.com/package/${NAME}" class="nav-card" aria-label="View on npm">
+                <div class="nav-title">📦 Pacote no NPM</div>
+                <div class="nav-desc">Veja o pacote publicado no NPM. Versão atual: <strong>v${VERSION}</strong>.</div>
+              </a>
 
             </div>
           </body>
