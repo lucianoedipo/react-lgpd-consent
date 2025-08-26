@@ -8,8 +8,6 @@ jest.mock('./scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
 }))
 
-
-
 describe('useConsentScriptLoader', () => {
   function TestComponent({ integration }: any) {
     const load = useConsentScriptLoader()

@@ -1,7 +1,11 @@
 import { loadScript } from './scriptLoader'
 
 // Suprimir logs do developerGuidance durante estes testes
-let __logSpy: jest.SpyInstance, __infoSpy: jest.SpyInstance, __groupSpy: jest.SpyInstance, __warnSpy: jest.SpyInstance, __errorSpy: jest.SpyInstance
+let __logSpy: jest.SpyInstance,
+  __infoSpy: jest.SpyInstance,
+  __groupSpy: jest.SpyInstance,
+  __warnSpy: jest.SpyInstance,
+  __errorSpy: jest.SpyInstance
 
 beforeAll(() => {
   // console.* é suprimido globalmente em jest.setup.ts

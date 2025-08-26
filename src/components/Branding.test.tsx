@@ -28,7 +28,11 @@ describe('Branding component', () => {
     const tokens = { colors: { primary: '#112233' } }
 
     render(
-      <ConsentProvider categories={{ enabledCategories: [] }} initialState={makeInitialState()} designTokens={tokens as any}>
+      <ConsentProvider
+        categories={{ enabledCategories: [] }}
+        initialState={makeInitialState()}
+        designTokens={tokens as any}
+      >
         <Branding variant="banner" />
       </ConsentProvider>,
     )
@@ -36,7 +40,7 @@ describe('Branding component', () => {
     const link = await screen.findByRole('link', { name: /LÉdipO.eti.br/i })
     // color is applied by sx prop into style attribute; check computed style
     const computed = window.getComputedStyle(link)
-  expect(computed.color).toBe('rgb(17, 34, 51)') // #112233
+    expect(computed.color).toBe('rgb(17, 34, 51)') // #112233
   })
 
   it('falls back to theme primary when no designTokens provided', async () => {
@@ -49,7 +53,7 @@ describe('Branding component', () => {
     const link = await screen.findByRole('link', { name: /LÉdipO.eti.br/i })
     const computed = window.getComputedStyle(link)
     // default safe theme primary.main in tests is MUI default (#1976d2) -> rgb(25,118,210)
-  expect(computed.color).toBe('rgb(25, 118, 210)')
+    expect(computed.color).toBe('rgb(25, 118, 210)')
   })
 
   it('does not render when hidden=true', () => {

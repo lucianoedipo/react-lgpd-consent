@@ -6,13 +6,59 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ## [Unreleased]
 
-### 🐛 Corrigido
+### ✨ Novas funcionalidades e melhorias
 
-- **FloatingPreferencesButton: props não encaminhadas quando montado pelo `ConsentProvider`**
-  - Sintoma: `tooltip` customizado e `hideWhenConsented` definidos nas stories ou via props do provider não eram aplicados ao botão padrão renderizado automaticamente pelo `ConsentProvider`.
-  - Causa: o `ConsentProvider` instanciava o componente padrão sem repassar `floatingPreferencesButtonProps`, fazendo com que overrides e Controls do Storybook não surtissem efeito.
-  - Solução: o `ConsentProvider` agora encaminha `floatingPreferencesButtonProps` para o `FloatingPreferencesButton` padrão. As stories também foram atualizadas para encaminhar `args` via `floatingPreferencesButtonProps` quando apropriado.
-  - Arquivos alterados: `src/context/ConsentContext.tsx`, `src/components/FloatingPreferencesButton.stories.tsx`.
+- Storybook
+  - Adicionado e aprimorado suporte ao Storybook com controles (`args`/`argTypes`) para componentes-chave (`FloatingPreferencesButton`, `PreferencesModal`) e suporte a tema escuro nas histórias.
+  - Isolamento entre stories via reset de estado (remoção/limpeza de cookie entre stories) e ajustes em `.storybook/preview.tsx` para compatibilidade com Vite/ESM.
+
+- ConsentProvider
+  - `blockingStrategy` (opt-in) adicionado para permitir overlays de bloqueio controlados pelo provider.
+  - Melhor encaminhamento de props: `floatingPreferencesButtonProps` agora são repassadas corretamente quando o `FloatingPreferencesButton` é instanciado automaticamente.
+
+- Testes e qualidade
+  - Suíte de testes ampliada: novos testes para `DesignContext`, `useConsent`, `CategoriesContext`, `ConsentScriptLoader`, `cookieUtils`, `scriptLoader`, `scriptIntegrations`, `SafeThemeProvider`, `logger`, `ConsentGate`, `PreferencesModal` e `FloatingPreferencesButton`.
+  - Configuração inicial de mutation testing com Stryker.
+  - Setup de testes atualizado para suprimir logs do `developerGuidance` durante execução normal e permitir testes dedicados que verifiquem esses logs.
+
+- Integração e DX
+  - Quickstart PT/EN e melhorias no `README` para facilitar adoção e contribuições.
+  - Notas de troubleshooting e documentação adicional sobre Storybook e integração de componentes.
+
+### 🐛 Correções importantes
+
+- `FloatingPreferencesButton` — props forward
+  - Sintoma: props (`tooltip`, `hideWhenConsented`, etc.) não eram aplicadas quando o botão era renderizado automaticamente pelo `ConsentProvider`.
+  - Solução: `ConsentProvider` agora encaminha `floatingPreferencesButtonProps` corretamente para o componente padrão. Stories atualizadas.
+
+- Storybook fixes
+  - Removidos arquivos `preview.ts` que continham JSX; migrado para `preview.tsx` e ajustadas exports para evitar erros com o bundler (esbuild/vite).
+
+### 🧪 Testes e estabilidade
+
+- Cobertura e robustez
+  - Adicionados testes que validam uso de hooks fora do `ConsentProvider` (erros esperados), hidratação a partir de cookie, callbacks (`onConsentGiven`, `onPreferencesSaved`) e fluxos de UI (abrir/fechar modal, accept/reject).
+  - Ajustes no `jest.setup` e um `jest.console-setup.ts` para garantir suprimir logs antes da coleta de módulos, mantendo testes determinísticos.
+
+### 📚 Documentação
+
+- Quickstart & README
+  - Novo Quickstart em PT/EN e simplificações no `README` com foco em `QUICKSTART`.
+  - Documentação de uso do Storybook e troubleshooting adicionada em `docs`.
+
+### ♻️ Dependências e manutenção
+
+- Dev-deps e chores
+  - Atualizações de dependências de desenvolvimento (ex.: `jest`, `@types/jest`, `typedoc`, `jest-environment-jsdom`) e ajustes na `package.json` (engine `npm` atualizado, scripts e chores relacionados ao Storybook).
+  - Limpeza de arquivos redundantes e ajustes de ESLint/preview para Storybook.
+
+### Commits representativos
+
+- Testes e supressão de logs: `fce823a`, `333ce0a`, `a1eea7e`
+- Storybook / docs: `8f8c388`, `6e09058`, `329682c`, `9b1d977`, `adf0d49`
+- Provider features: `967d278` (blockingStrategy)
+- Quickstart / README: `db03ae3`
+- Dependências / chores: `27339e7`, `3b7fdba`, `11c3602`
 
 
 ## [0.3.1] - 2025-08-13 - CORREÇÕES DE PRODUÇÃO E MELHORIAS DE COMPATIBILIDADE

@@ -11,7 +11,9 @@ describe('useConsent error paths (outside provider)', () => {
     }
 
     // Rendering the component should throw a clear error from the internal hook
-    expect(() => render(<Consumer />)).toThrow(/useConsentState must be used within ConsentProvider/)
+    expect(() => render(<Consumer />)).toThrow(
+      /useConsentState must be used within ConsentProvider/,
+    )
   })
 
   test('useOpenPreferencesModal (hook) throws when used outside ConsentProvider', () => {
@@ -20,8 +22,8 @@ describe('useConsent error paths (outside provider)', () => {
       return null
     }
 
-  // The internal hooks can throw slightly different messages depending on which
-  // context is accessed first; just assert it complains about being outside the provider.
-  expect(() => render(<Consumer />)).toThrow(/must be used within ConsentProvider/)
+    // The internal hooks can throw slightly different messages depending on which
+    // context is accessed first; just assert it complains about being outside the provider.
+    expect(() => render(<Consumer />)).toThrow(/must be used within ConsentProvider/)
   })
 })

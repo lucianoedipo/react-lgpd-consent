@@ -9,7 +9,6 @@ import type { ConsentState } from '../types/types'
 
 jest.mock('js-cookie')
 
-
 // console.* é suprimido globalmente em jest.setup.ts
 
 describe('cookieUtils', () => {
