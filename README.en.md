@@ -25,7 +25,7 @@
   </p>
 
   <p align="center">
-    <a href="./QUICKSTART.en.md"><img src="https://img.shields.io/badge/Quickstart-Get%20Started-blue?style=for-the-badge&logo=book" alt="Quickstart"></a>
+  <a href="./QUICKSTART.en.md"><img src="https://img.shields.io/badge/Quickstart-Get%20Started-blue?style=for-the-badge&logo=book" alt="Quickstart"></a>
   </p>
 
   <p align="center"><strong>Start here:</strong> follow the <a href="./QUICKSTART.en.md">Quickstart guide (QUICKSTART.en.md)</a> for step-by-step setup, TypeScript examples, props summary and MUI integration — recommended for new users.</p>
@@ -59,12 +59,12 @@ export default function App() {
 }
 ```
 
-For full guides, TypeScript examples, props table and integrations see:
-
-- **[QUICKSTART.md](./QUICKSTART.md)** (recommended)
-- **[Docs / API](./docs/API-v0.3.0.md)**
-- **[LGPD Compliance](./docs/CONFORMIDADE-LGPD.md)**
-- **[Integrations](./docs/integracoes-nativas.md)**
+- For full guides, TypeScript examples, props table and integrations see:
+-
+- **[QUICKSTART.en.md](./QUICKSTART.en.md)** (recommended)
+- **[Docs / API](./API.md)**
+- **[LGPD Compliance](./CONFORMIDADE.md)**
+- **[Integrations](./INTEGRACOES.md)**
 
 ---
 

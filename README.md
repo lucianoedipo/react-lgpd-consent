@@ -66,9 +66,9 @@ export default function App() {
 Para mais detalhes sobre customização, hooks e funcionalidades, consulte os seguintes guias:
 
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
-- **[Guia da API (`API.md`)](./docs/API-v0.3.0.md)**: Referência completa de todos os componentes, hooks e tipos.
-- **[Guia de Conformidade (`CONFORMIDADE.md`)](./docs/CONFORMIDADE-LGPD.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
-- **[Guia de Integrações (`INTEGRACOES.md`)](./docs/integracoes-nativas.md)**: Como usar as integrações nativas e criar as suas.
+- **[Guia da API (`API.md`)](./API.md)**: Referência completa de todos os componentes, hooks e tipos.
+- **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
+- **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.
 ---
 
 ## 🤝 Como Contribuir

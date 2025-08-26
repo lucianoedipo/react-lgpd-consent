@@ -214,9 +214,9 @@ Wrap your app with MUI `ThemeProvider` and optionally pass a `theme` prop to `Co
 
 ## 📚 Next steps
 
-- API docs: `docs/API-v0.3.0.md`
-- LGPD compliance guide: `docs/CONFORMIDADE-LGPD.md`
-- Integrations: `docs/integracoes-nativas.md`
+- API docs: `API.md`
+- LGPD compliance guide: `CONFORMIDADE.md`
+- Integrations: `INTEGRACOES.md`
 - Example app: `example/`
 
 

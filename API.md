@@ -1,6 +1,6 @@
 # Guia da API - react-lgpd-consent
 
-Este documento é a referência técnica oficial para a API da biblioteca `react-lgpd-consent` (v0.3.1+).
+Este documento é a referência técnica oficial para a API da biblioteca `react-lgpd-consent` (v0.3.3+).
 
 ## Exports Principais
 
@@ -55,7 +55,7 @@ function App() {
 | `onConsentGiven`                 | `(state: ConsentState) => void`             | Callback executado na primeira vez que o usuário dá o consentimento.                                                                      |
 | `onPreferencesSaved`             | `(prefs: ConsentPreferences) => void`       | Callback executado sempre que o usuário salva novas preferências no modal.                                                                |
 | `blocking`                       | `boolean`                                   | Se `true`, exibe um overlay que impede a interação com o site até que o usuário tome uma decisão. Padrão: `false`.                       |
-| `blockingStrategy`               | `'auto' | 'provider' | 'component'`       | Estratégia de bloqueio quando `blocking` estiver ativo. `'auto'` (padrão) mantém o comportamento atual (banner padrão bloqueia; custom decide). `'provider'` cria overlay de bloqueio no Provider. `'component'` delega bloqueio ao banner. |
+| `blockingStrategy`               | `'auto' | 'provider' | 'component'`       | Estratégia de bloqueio quando `blocking` estiver ativo. `'auto'` (padrão) mantém o comportamento atual (banner padrão bloqueia; custom decide). `'provider'` cria overlay de bloqueio no Provider (opt‑in). `'component'` delega bloqueio ao banner. Veja a seção "Bloqueio (opt-in) e integração com dark-filter" no `README.md` para exemplos e recomendações de A11y. |
 | `disableDeveloperGuidance`       | `boolean`                                   | Se `true`, desativa as mensagens de orientação no console, mesmo em ambiente de desenvolvimento.                                          |
 | `disableFloatingPreferencesButton` | `boolean`                                   | Se `true`, desabilita o botão flutuante que permite ao usuário reabrir o modal de preferências. Padrão: `false`.                     |
 | `hideBranding`                   | `boolean`                                   | Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" dos componentes.                                                                  |
@@ -64,6 +64,16 @@ function App() {
 | `PreferencesModalComponent`      | `React.ComponentType<CustomPreferencesModalProps>` | Permite substituir o modal de preferências padrão por um componente React customizado.                                                    |
 | `theme`                          | `any` (Tema MUI)                            | Permite passar um tema customizado do Material-UI para os componentes da biblioteca.                                                      |
 | `initialState`                   | `ConsentState`                              | Estado inicial para hidratação em cenários de Server-Side Rendering (SSR) para evitar o "flash" do banner.                               |
+
+### `designTokens.layout.backdrop`
+
+O token `designTokens.layout.backdrop` agora aceita `boolean | string`:
+
+- `false`: indica que não haverá escurecimento visível; o overlay pode ainda bloquear cliques (útil quando a aplicação já fornece um dark-filter visual próprio).
+- `string`: qualquer valor CSS válido de cor (ex.: `'rgba(0,0,0,0.4)'`) será usado como cor do backdrop.
+- quando ausente, a biblioteca utiliza um fallback seguro `'rgba(0, 0, 0, 0.4)'`.
+
+Consulte `types/DesignTokens` para a tipagem completa.
 
 ---
 

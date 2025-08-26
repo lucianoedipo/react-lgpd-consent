@@ -294,7 +294,7 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 
 ### 📋 **Documentação**
 
-- **📋 CONFORMIDADE-LGPD.md**: Guia completo de implementação conforme ANPD
+- **📋 CONFORMIDADE.md**: Guia completo de implementação conforme ANPD
 - **🔄 Migração**: Instruções detalhadas v0.2.0 → v0.2.1
 - **🏛️ Exemplos**: Casos de uso governamentais e corporativos
 

@@ -567,8 +567,8 @@ document.cookie = 'cookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/
 ## 📚 Próximos Passos
 
 - 📖 [Documentação Completa da API](./API.md)
-- 🏗️ [Guia de Conformidade LGPD](./docs/CONFORMIDADE-LGPD.md)
-- 🔌 [Integrações Nativas](./docs/integracoes-nativas.md)
+- 🏗️ [Guia de Conformidade LGPD](./CONFORMIDADE.md)
+- 🔌 [Integrações Nativas](./INTEGRACOES.md)
 - 🧪 [Executar o Exemplo](./example/)
 
 ---
