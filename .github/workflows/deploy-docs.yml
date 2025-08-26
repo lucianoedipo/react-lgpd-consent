@@ -51,7 +51,7 @@ jobs:
           HOMEPAGE=$(node -p "require('./package.json').homepage")
           KEYWORDS=$(node -p "(require('./package.json').keywords||[]).join(', ')")
 
-          cat > integrated-docs/index.html << 'EOF'
+          cat > integrated-docs/index.html <<EOF
           <!DOCTYPE html>
           <html lang="pt-BR">
           <head>
