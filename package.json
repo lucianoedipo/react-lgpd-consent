@@ -47,6 +47,9 @@
   "files": [
     "dist",
     "README.md",
+    "README.en.md",
+    "QUICKSTART.md",
+    "QUICKSTART.en.md",
     "LICENSE",
     "CHANGELOG.md"
   ],
