@@ -9,14 +9,14 @@ import type { ConsentState } from '../types/types'
 
 jest.mock('js-cookie')
 
-// Suprimir logs do developerGuidance durante estes testes
+
 // console.* é suprimido globalmente em jest.setup.ts
 
 describe('cookieUtils', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     // ensure document exists in jsdom env
-    ;(global as any).document = global.document
+    globalThis.document = global.document
   })
 
   it('createInitialConsentState returns a valid default state', () => {
@@ -76,4 +76,44 @@ describe('cookieUtils', () => {
     removeConsentCookie()
     expect(Cookies.remove).toHaveBeenCalledWith('cookieConsent', { path: '/' })
   })
+
+  it('readConsentCookie migrates legacy cookie without version', () => {
+    const legacy = {
+      consented: true,
+      preferences: { necessary: true },
+      consentDate: new Date().toISOString(),
+    }
+    ;(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify(legacy))
+
+    const out = readConsentCookie('cookieConsent')
+    expect(out).toBeTruthy()
+    // migration should add version and normalize fields
+    expect(out).toHaveProperty('version', '1.0')
+    expect(out?.consented).toBe(true)
+  })
+
+  it('readConsentCookie returns null on invalid JSON', () => {
+    ;(Cookies.get as jest.Mock).mockReturnValue('not-a-json')
+    const out = readConsentCookie('cookieConsent')
+    expect(out).toBeNull()
+  })
+
+  it('readConsentCookie returns null on schema version mismatch', () => {
+    const sample = {
+      version: '0.9',
+      consented: true,
+      preferences: { necessary: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+    ;(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify(sample))
+    const out = readConsentCookie('cookieConsent')
+    expect(out).toBeNull()
+  })
+
+  // SSR-specific branches are environment-dependent and flaky under jsdom
+  // so they are intentionally not asserted here. The important logic
+  // (migration, parsing, version) is covered above.
 })

@@ -13,6 +13,7 @@ docs/
 reports/
 .stryker-tmp/
 test-app/
+coverage/
 
 # ---- Tooling / CI files ----
 GEMINI.md
