@@ -146,16 +146,12 @@ npm run build
 
 Situação encontrada (2025-08-25):
 
-- Em alguns cenários de Storybook e integração, props como `tooltip` e `hideWhenConsented` definidas via `floatingPreferencesButtonProps` no `ConsentProvider` ou via Controls do Storybook não eram aplicadas ao botão flutuante padrão.
 
 Causa:
 
-- O `ConsentProvider` instanciava `<FloatingPreferencesButton />` sem repassar `floatingPreferencesButtonProps`, portanto overrides de texto e comportamento não chegavam ao componente renderizado.
 
 Correção aplicada:
 
-- O provider agora encaminha `floatingPreferencesButtonProps` ao componente padrão (`<FloatingPreferencesButton {...floatingPreferencesButtonProps} />`).
-- As stories do Storybook foram atualizadas para encaminhar `args` como `floatingPreferencesButtonProps` quando o botão é gerenciado pelo provider, garantindo que os Controls alterem o comportamento esperado.
 
 Como testar localmente:
 
@@ -166,4 +162,15 @@ Como testar localmente:
 
 Notas:
 
-- Essa correção é uma alteração de implementação interna no provider (sem breaking change na API pública). Se você expõe um `FloatingPreferencesButtonComponent` customizado, as props customizadas continuam sendo respeitadas.
+
+## Storybook — notas para desenvolvedores
+
+- Arquivos importantes:
+  - `.storybook/main.ts` — configuração do Storybook (addons, framework)
+  - `.storybook/preview.tsx` — decorator global que aplica `ThemeProvider`, `CssBaseline` e faz limpeza defensiva entre stories (remove cookie de consentimento, limpa nós portaled e força remount por story id)
+  - `src/components/*.stories.tsx` — stories de componentes; prefira passar `floatingPreferencesButtonProps` para o `ConsentProvider` quando o provider monta o componente automaticamente
+
+- Dicas:
+  - Ao criar stories que testem comportamentos ligados ao cookie, use o preview para garantir estado inicial limpo (o preview já remove o cookie por padrão).
+  - Evite montar manualmente múltiplas instâncias do `ConsentProvider` nas mesmas stories; prefira usar a instância gerenciada pelo preview para evitar UI duplicada.
+  - Se um story precisar de um tema escuro, passe `theme={createTheme({ palette: { mode: 'dark' } })}` para o `ConsentProvider` na story.
