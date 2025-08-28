@@ -18,7 +18,7 @@ npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
 
 ## 🎯 Uso Básico (30 segundos)
 
-```tsx
+````tsx
 import React from 'react'
 import { ConsentProvider } from 'react-lgpd-consent'
 
@@ -44,7 +44,7 @@ This repository ships an interactive Storybook playground used for manual testin
 
 ```bash
 npm run storybook
-```
+````
 
 - Build static Storybook (for publishing to GitHub Pages):
 
@@ -53,12 +53,14 @@ npm run build-storybook
 ```
 
 Notes:
+
 - The Storybook preview (`.storybook/preview.tsx`) applies a clean environment between stories (removes consent cookie and performs defensive DOM cleanup). Check that file when creating stories that rely on a clean initial state.
 
 }
 
 export default App
-```
+
+````
 
 ## 📋 Tabela Completa de Props do ConsentProvider
 
@@ -136,9 +138,28 @@ function App() {
     </ConsentProvider>
   )
 }
-```
+````
 
 ### Modal de Preferências Personalizado
+
+---
+
+## Nota sobre ThemeProvider
+
+A biblioteca `react-lgpd-consent` não injeta um `ThemeProvider` global por conta própria. Ela foi projetada para herdar o tema do app quando um `ThemeProvider` do MUI está presente. Se você precisa garantir um tema de fallback apenas para os componentes da biblioteca, use a fábrica exportada `createDefaultConsentTheme()` e passe pelo prop `theme` do `ConsentProvider`:
+
+```tsx
+import { ConsentProvider, createDefaultConsentTheme } from 'react-lgpd-consent'
+
+;<ConsentProvider
+  theme={createDefaultConsentTheme()}
+  categories={{ enabledCategories: ['analytics'] }}
+>
+  <App />
+</ConsentProvider>
+```
+
+Isso evita alterações indesejadas no contexto do MUI do seu app e problemas de SSR.
 
 ```tsx
 import React from 'react'

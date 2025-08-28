@@ -62,27 +62,50 @@ export default function App() {
 }
 ```
 
+## Nota sobre ThemeProvider e tema padrão
+
+A biblioteca não cria um `ThemeProvider` global automaticamente. Ela tenta herdar o tema do seu app quando você já possui um `ThemeProvider` do MUI. Se você quiser aplicar explicitamente um tema de fallback para os componentes de consentimento, use a fábrica exportada `createDefaultConsentTheme()` e passe via prop `theme`:
+
+```tsx
+import { ConsentProvider, createDefaultConsentTheme } from 'react-lgpd-consent'
+
+// Aplica um tema de fallback somente para os componentes da lib
+;<ConsentProvider
+  theme={createDefaultConsentTheme()}
+  categories={{ enabledCategories: ['analytics'] }}
+>
+  <App />
+</ConsentProvider>
+```
+
+Evite depender de criação de tema no import (isso evita side-effects e problemas em SSR). Se você precisar de compatibilidade retroativa com quem importava `defaultConsentTheme`, entre em contato para adicionarmos um export compatível com deprecação documentada.
+
 ## 📚 Documentação Completa
 
 Para mais detalhes sobre customização, hooks e funcionalidades, consulte os seguintes guias:
 
 ### 📋 Documentação Principal
+
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
 - **[Guia da API (`API.md`)](./API.md)**: Referência completa de todos os componentes, hooks e tipos.
 - **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
 - **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.
 
 ### 🎨 Documentação Interativa (GitHub Pages)
+
 - **[📖 Storybook - Playground Interativo](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Explore e teste todos os componentes em tempo real com controles interativos.
 - **[⚙️ TypeDoc - Referência de API](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: Documentação completa da API gerada automaticamente.
 - **[🏠 Portal de Documentação](https://lucianoedipo.github.io/react-lgpd-consent/)**: Página inicial com navegação entre todas as documentações.
+
 ---
 
 ## 🤝 Como Contribuir
+
 1. Abra uma [Issue](https://github.com/lucianoedipo/react-lgpd-consent/issues) para bugs ou melhorias.
 2. Siga o Guia de Desenvolvimento em `DEVELOPMENT.md` para enviar um PR.
 
 ---
+
 ## 📄 Licença
 
 MIT — veja o arquivo `LICENSE`.

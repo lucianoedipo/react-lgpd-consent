@@ -81,6 +81,15 @@ export function createDefaultConsentTheme(): Theme {
 }
 
 /**
+ * Compatibilidade: getter para o tema padrão.
+ *
+ * @deprecated Use `createDefaultConsentTheme()` em vez de importar um tema criado no escopo do módulo.
+ * Importar um tema já instanciado pode causar side-effects em SSR e conflitos de contexto.
+ * Esta função retorna uma nova instância do tema quando chamada.
+ */
+export const defaultConsentTheme = (): Theme => createDefaultConsentTheme()
+
+/**
  * @type
  * @category Types
  * @since 0.1.0

@@ -89,7 +89,7 @@ export { loadScript } from './utils/scriptLoader'
  * Fábrica do tema padrão para componentes de consentimento.
  * Use somente quando realmente necessário; preferir herdar o tema do app.
  */
-export { createDefaultConsentTheme } from './utils/theme'
+export { createDefaultConsentTheme, defaultConsentTheme } from './utils/theme'
 
 /**
  * Loader de scripts condicionado ao consentimento do usuário.

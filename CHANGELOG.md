@@ -46,6 +46,15 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Novo Quickstart em PT/EN e simplificações no `README` com foco em `QUICKSTART`.
   - Documentação de uso do Storybook e troubleshooting adicionada em `docs`.
 
+### 🛠️ Correção crítica: Herança de ThemeProvider (v0.3.5)
+
+- **Corrigido:** A biblioteca não deve criar ou impor um `ThemeProvider` global por si só. Agora o `ConsentProvider` herda o theme do app consumidor quando um `ThemeProvider` do MUI estiver presente. O Provider só envolverá com `ThemeProvider` se a prop `theme` for explicitamente fornecida.
+- **Motivação:** Evitar conflitos de contexto MUI/Emotion, regressões visuais e problemas em SSR causados por criação de tema no escopo de módulo.
+- **Export:** `createDefaultConsentTheme()` foi adicionada como fábrica para quem precisar de um fallback explícito. Há também um getter compat (deprecated) `defaultConsentTheme()` que retorna uma nova instância quando chamada.
+- **Compatibilidade:** Uso padrão continua igual — se seu app fornece um `ThemeProvider` e você passa o mesmo theme para `ConsentProvider` (ou não passa `theme`), tudo continuará funcionando normalmente.
+
+Referência: issues/PR relacionadas e notas de release serão adicionadas no branch de release.
+
 ### ♻️ Dependências e manutenção
 
 - Dev-deps e chores
@@ -59,7 +68,6 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Provider features: `967d278` (blockingStrategy)
 - Quickstart / README: `db03ae3`
 - Dependências / chores: `27339e7`, `3b7fdba`, `11c3602`
-
 
 ## [0.3.1] - 2025-08-13 - CORREÇÕES DE PRODUÇÃO E MELHORIAS DE COMPATIBILIDADE
 
@@ -514,8 +522,6 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 - Zero dependências extras (apenas `js-cookie`)
 
 ---
-
-
 
 ### 🔮 Futuro (v0.4.0+)
 
