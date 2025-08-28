@@ -1,6 +1,6 @@
 {
   "name": "react-lgpd-consent",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Biblioteca de consentimento LGPD, integrações nativas e sistema extensível para React.",
   "keywords": [
     "lgpd",
