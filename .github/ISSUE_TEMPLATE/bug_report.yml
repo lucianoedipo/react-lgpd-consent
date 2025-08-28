@@ -20,9 +20,9 @@ body:
     attributes:
       label: 'Severidade'
       options:
-        - 'Critical'
-        - 'Major'
-        - 'Minor'
+        - label: "Critical"
+        - label: "Major"
+        - label: "Minor"
 
   - type: input
     id: libraryVersion
@@ -63,6 +63,6 @@ body:
     attributes:
       label: 'O que já foi tentado'
       options:
-        - 'npm run type-check'
-        - 'npm run test'
-        - 'npm run lint'
+        - label: "npm run type-check"
+        - label: "npm run test"
+        - label: "npm run lint"
