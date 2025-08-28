@@ -12,7 +12,7 @@
 
 // src/context/ConsentContext.tsx
 import * as React from 'react'
-import { SafeThemeProvider } from '../utils/SafeThemeProvider'
+import { ThemeProvider } from '@mui/material/styles'
 import {
   type Category,
   type ConsentContextValue,
@@ -29,7 +29,8 @@ import {
   DEFAULT_COOKIE_OPTS,
 } from '../utils/cookieUtils'
 import { createProjectPreferences, validateProjectPreferences } from '../utils/categoryUtils'
-import { defaultConsentTheme } from '../utils/theme'
+// Intentionally do not create a default theme at module scope. If consumers
+// need a default theme, they can call createDefaultConsentTheme() from the utils.
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
 import { useDeveloperGuidance, DEFAULT_PROJECT_CATEGORIES } from '../utils/developerGuidance'
@@ -284,7 +285,10 @@ export function ConsentProvider({
     () => ({ ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }),
     [cookieOpts],
   )
-  const appliedTheme = React.useMemo(() => theme || defaultConsentTheme, [theme])
+  // If a theme prop is provided, we explicitly apply it.
+  // Otherwise we intentionally do NOT create or inject a theme provider and let the host app provide one.
+  // This avoids altering the app's theme context and prevents SSR/context regressions.
+  const mergedTheme = theme
 
   // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
@@ -393,96 +397,97 @@ export function ConsentProvider({
     return 'rgba(0, 0, 0, 0.4)'
   }, [designTokens])
 
-  return (
-    <SafeThemeProvider theme={appliedTheme}>
-      <StateCtx.Provider value={state}>
-        <ActionsCtx.Provider value={api}>
-          <TextsCtx.Provider value={texts}>
-            <HydrationCtx.Provider value={isHydrated}>
-              <DesignProvider tokens={designTokens}>
-                <CategoriesProvider
-                  config={finalCategoriesConfig}
-                  disableDeveloperGuidance={disableDeveloperGuidance}
-                >
-                  {children}
-                  {/* Modal de preferências - customizável ou padrão */}
-                  <React.Suspense fallback={null}>
-                    {PreferencesModalComponent ? (
-                      <PreferencesModalComponent
-                        preferences={api.preferences}
-                        setPreferences={api.setPreferences}
-                        closePreferences={api.closePreferences}
-                        isModalOpen={api.isModalOpen}
-                        texts={texts}
-                        {...preferencesModalProps}
-                      />
-                    ) : (
-                      <PreferencesModal hideBranding={hideBranding} />
-                    )}
-                  </React.Suspense>
+  const content = (
+    <StateCtx.Provider value={state}>
+      <ActionsCtx.Provider value={api}>
+        <TextsCtx.Provider value={texts}>
+          <HydrationCtx.Provider value={isHydrated}>
+            <DesignProvider tokens={designTokens}>
+              <CategoriesProvider
+                config={finalCategoriesConfig}
+                disableDeveloperGuidance={disableDeveloperGuidance}
+              >
+                {children}
+                {/* Modal de preferências - customizável ou padrão */}
+                <React.Suspense fallback={null}>
+                  {PreferencesModalComponent ? (
+                    <PreferencesModalComponent
+                      preferences={api.preferences}
+                      setPreferences={api.setPreferences}
+                      closePreferences={api.closePreferences}
+                      isModalOpen={api.isModalOpen}
+                      texts={texts}
+                      {...preferencesModalProps}
+                    />
+                  ) : (
+                    <PreferencesModal hideBranding={hideBranding} />
+                  )}
+                </React.Suspense>
 
-                  {/* Overlay de bloqueio no Provider (opt-in via blockingStrategy) */}
-                  {blocking &&
-                    isHydrated &&
-                    !state.consented &&
-                    blockingStrategy === 'provider' && (
-                      <div
-                        style={{
-                          position: 'fixed',
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          backgroundColor: providerBackdropColor,
-                          zIndex: 1299,
-                        }}
-                        data-testid="lgpd-provider-overlay"
-                        aria-hidden
-                      />
-                    )}
+                {/* Overlay de bloqueio no Provider (opt-in via blockingStrategy) */}
+                {blocking && isHydrated && !state.consented && blockingStrategy === 'provider' && (
+                  <div
+                    style={{
+                      position: 'fixed',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: providerBackdropColor,
+                      zIndex: 1299,
+                    }}
+                    data-testid="lgpd-provider-overlay"
+                    aria-hidden
+                  />
+                )}
 
-                  {/* Cookie Banner - renderizado se não houver consentimento e estiver hidratado */}
-                  {!state.consented &&
-                    isHydrated &&
-                    (CookieBannerComponent ? (
-                      <CookieBannerComponent
-                        consented={api.consented}
-                        acceptAll={api.acceptAll}
-                        rejectAll={api.rejectAll}
-                        openPreferences={api.openPreferences}
-                        texts={texts}
-                        blocking={blocking}
-                        {...cookieBannerProps}
-                      />
-                    ) : (
-                      <CookieBanner
-                        blocking={blocking}
-                        hideBranding={hideBranding}
-                        {...cookieBannerProps}
-                      />
-                    ))}
+                {/* Cookie Banner - renderizado se não houver consentimento e estiver hidratado */}
+                {!state.consented &&
+                  isHydrated &&
+                  (CookieBannerComponent ? (
+                    <CookieBannerComponent
+                      consented={api.consented}
+                      acceptAll={api.acceptAll}
+                      rejectAll={api.rejectAll}
+                      openPreferences={api.openPreferences}
+                      texts={texts}
+                      blocking={blocking}
+                      {...cookieBannerProps}
+                    />
+                  ) : (
+                    <CookieBanner
+                      blocking={blocking}
+                      hideBranding={hideBranding}
+                      {...cookieBannerProps}
+                    />
+                  ))}
 
-                  {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
-                  {state.consented &&
-                    !disableFloatingPreferencesButton &&
-                    (FloatingPreferencesButtonComponent ? (
-                      <FloatingPreferencesButtonComponent
-                        openPreferences={api.openPreferences}
-                        consented={api.consented}
-                        {...floatingPreferencesButtonProps}
-                      />
-                    ) : (
-                      // Encaminha `floatingPreferencesButtonProps` para o componente padrão
-                      <FloatingPreferencesButton {...(floatingPreferencesButtonProps as any)} />
-                    ))}
-                </CategoriesProvider>
-              </DesignProvider>
-            </HydrationCtx.Provider>
-          </TextsCtx.Provider>
-        </ActionsCtx.Provider>
-      </StateCtx.Provider>
-    </SafeThemeProvider>
+                {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
+                {state.consented &&
+                  !disableFloatingPreferencesButton &&
+                  (FloatingPreferencesButtonComponent ? (
+                    <FloatingPreferencesButtonComponent
+                      openPreferences={api.openPreferences}
+                      consented={api.consented}
+                      {...floatingPreferencesButtonProps}
+                    />
+                  ) : (
+                    // Encaminha `floatingPreferencesButtonProps` para o componente padrão
+                    <FloatingPreferencesButton {...(floatingPreferencesButtonProps as any)} />
+                  ))}
+              </CategoriesProvider>
+            </DesignProvider>
+          </HydrationCtx.Provider>
+        </TextsCtx.Provider>
+      </ActionsCtx.Provider>
+    </StateCtx.Provider>
   )
+
+  if (theme) {
+    return <ThemeProvider theme={mergedTheme}>{content}</ThemeProvider>
+  }
+
+  return content
 }
 
 // Hooks internos (o público é `useConsent` em hooks/useConsent.ts)

@@ -1,12 +1,14 @@
-import { defaultConsentTheme } from './theme'
+import { createDefaultConsentTheme } from './theme'
 
-describe('defaultConsentTheme', () => {
+describe('createDefaultConsentTheme', () => {
   test('has expected primary main color and typography', () => {
+    const defaultConsentTheme = createDefaultConsentTheme()
     expect(defaultConsentTheme.palette.primary.main).toBe('#1976d2')
     expect(defaultConsentTheme.typography.button?.textTransform).toBe('none')
   })
 
   test('button style overrides include borderRadius and padding', () => {
+    const defaultConsentTheme = createDefaultConsentTheme()
     const buttonOverrides = defaultConsentTheme.components?.MuiButton?.styleOverrides
     expect(buttonOverrides).toBeDefined()
     // check root overrides exist
