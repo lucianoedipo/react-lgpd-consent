@@ -4,7 +4,7 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [Unreleased]
+## [0.3.6] - 2025-08-28 - Correção crítica: Herança de ThemeProvider
 
 ### ✨ Novas funcionalidades e melhorias
 
@@ -46,11 +46,16 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
   - Novo Quickstart em PT/EN e simplificações no `README` com foco em `QUICKSTART`.
   - Documentação de uso do Storybook e troubleshooting adicionada em `docs`.
 
-### ♻️ Dependências e manutenção
+### 🛠️ Correção crítica
 
-- Dev-deps e chores
-  - Atualizações de dependências de desenvolvimento (ex.: `jest`, `@types/jest`, `typedoc`, `jest-environment-jsdom`) e ajustes na `package.json` (engine `npm` atualizado, scripts e chores relacionados ao Storybook).
-  - Limpeza de arquivos redundantes e ajustes de ESLint/preview para Storybook.
+- **Corrigido:** A biblioteca não deve criar ou impor um `ThemeProvider` global por si só. O `ConsentProvider` agora herda o theme do app consumidor quando um `ThemeProvider` do MUI estiver presente. O Provider só envolverá com `ThemeProvider` se a prop `theme` for explicitamente fornecida.
+- **Motivação:** Evitar conflitos de contexto MUI/Emotion, regressões visuais e problemas em SSR causados por criação de tema no escopo de módulo.
+- **Export:** `createDefaultConsentTheme()` foi adicionada como fábrica para quem precisar de um fallback explícito. Mantemos também um getter de compatibilidade (deprecated) `defaultConsentTheme()` que retorna uma nova instância quando chamada, evitando side-effects no import.
+- **Compatibilidade:** Uso padrão continua igual — se seu app já fornece um `ThemeProvider` o `ConsentProvider` usará o theme existente. Para quem precisa de um fallback explícito, passe `theme={createDefaultConsentTheme()}` ao `ConsentProvider`.
+
+> Nota: originalmente essa correção foi marcada como v0.3.5; devido a conflito de publicação a versão foi bumpada localmente para v0.3.6 e a entrada foi gravada nesta release.
+
+- Limpeza de arquivos redundantes e ajustes de ESLint/preview para Storybook.
 
 ### Commits representativos
 
@@ -59,7 +64,6 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Provider features: `967d278` (blockingStrategy)
 - Quickstart / README: `db03ae3`
 - Dependências / chores: `27339e7`, `3b7fdba`, `11c3602`
-
 
 ## [0.3.1] - 2025-08-13 - CORREÇÕES DE PRODUÇÃO E MELHORIAS DE COMPATIBILIDADE
 
@@ -514,8 +518,6 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 - Zero dependências extras (apenas `js-cookie`)
 
 ---
-
-
 
 ### 🔮 Futuro (v0.4.0+)
 
