@@ -1,73 +1,74 @@
-name: 'Bug report'
-description: 'Report a reproducible bug in the library. Preencha os campos para ajudar a triagem.'
-title: '[BUG]'
+name: "Bug report"
+description: "Report a reproducible bug in the library. Preencha os campos para ajudar a triagem."
+title: "[BUG]"
 labels: [bug, needs-triage]
 body:
   - type: markdown
     attributes:
-      value: 'Por favor preencha os campos abaixo com o máximo de detalhes possíveis.'
+      value: |
+        Por favor preencha os campos abaixo com o máximo de detalhes possíveis.
 
   - type: input
     id: summary
     attributes:
-      label: 'Resumo (uma frase)'
+      label: "Resumo (uma frase)"
       description: "Ex.: 'O banner não aparece no Next.js com SSR'"
-      placeholder: 'Resumo do problema'
+      placeholder: "Resumo do problema"
 
   - type: dropdown
     id: severity
     attributes:
-      label: 'Severidade'
+      label: "Severidade"
       options:
-        - label: 'Critical'
-          value: 'critical'
-        - label: 'Major'
-          value: 'major'
-        - label: 'Minor'
-          value: 'minor'
+        - label: "Critical"
+          value: "critical"
+        - label: "Major"
+          value: "major"
+        - label: "Minor"
+          value: "minor"
 
   - type: input
     id: libraryVersion
     attributes:
-      label: 'Versão da biblioteca (package.json)'
-      placeholder: 'ex.: 0.3.3'
+      label: "Versão da biblioteca (package.json)"
+      placeholder: "ex.: 0.3.3"
 
   - type: input
     id: environment
     attributes:
-      label: 'Ambiente / Framework'
-      description: 'Ex.: Next.js, CRA, Vite'
+      label: "Ambiente / Framework"
+      description: "Ex.: Next.js, CRA, Vite"
 
   - type: textarea
     id: reproduction
     attributes:
-      label: 'Passos para reproduzir'
-      description: 'Cole um snippet mínimo ou link para repo/CodeSandbox e passos para reproduzir'
+      label: "Passos para reproduzir"
+      description: "Cole um snippet mínimo ou link para repo/CodeSandbox e passos para reproduzir"
       placeholder: "1. ...\n2. ..."
 
   - type: textarea
     id: expected
     attributes:
-      label: 'Comportamento esperado'
+      label: "Comportamento esperado"
 
   - type: textarea
     id: actual
     attributes:
-      label: 'Comportamento atual / erro'
+      label: "Comportamento atual / erro"
 
   - type: textarea
     id: logs
     attributes:
-      label: 'Logs / Stack trace'
+      label: "Logs / Stack trace"
 
   - type: checkboxes
     id: tried
     attributes:
-      label: 'O que já foi tentado'
+      label: "O que já foi tentado"
       options:
-        - label: 'npm run type-check'
-          value: 'type-check'
-        - label: 'npm run test'
-          value: 'test'
-        - label: 'npm run lint'
-          value: 'lint'
+        - label: "npm run type-check"
+          value: "type-check"
+        - label: "npm run test"
+          value: "test"
+        - label: "npm run lint"
+          value: "lint"
