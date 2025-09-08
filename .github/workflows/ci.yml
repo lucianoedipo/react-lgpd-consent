@@ -9,18 +9,19 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 18
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: Install dependencies (incl. dev)
-        env:
-          NPM_CONFIG_PRODUCTION: "false"
-        run: npm install --no-audit --no-fund --legacy-peer-deps
-      - name: Lint (npx fallback)
-        run: npx -y eslint . --ext .ts,.tsx
-      - run: npm run type-check
-      - run: npm test
-      - run: npm run build
+      - name: Clean install (npm ci)
+        run: npm ci
+      - name: Run lint
+        run: npm run lint
+      - name: Type check
+        run: npm run type-check
+      - name: Run tests
+        run: npm run test
+      - name: Build
+        run: npm run build

@@ -7,17 +7,17 @@ jobs:
   pack:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 18
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: Install dependencies (incl. dev)
-        env:
-          NPM_CONFIG_PRODUCTION: "false"
-        run: npm install --no-audit --no-fund --legacy-peer-deps
-      - run: npm run build
-      - run: npm pack --json > pack.json
+      - name: Clean install (npm ci)
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Pack package
+        run: npm pack --json > pack.json
       - name: Exibir arquivos do tarball
         run: node -e "console.log(JSON.parse(require('fs').readFileSync('pack.json','utf8'))[0].files.map(f=>f.path).join('\n'))"

@@ -14,17 +14,19 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node for npmjs
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
       - name: Install and build
+        env:
+          NPM_CONFIG_PRODUCTION: 'false'
         run: |
-          NPM_CONFIG_PRODUCTION=false npm install --no-audit --no-fund --legacy-peer-deps
+          npm install --no-audit --no-fund --legacy-peer-deps
           npm run build
 
       - name: Configure npm auth for publish

@@ -19,25 +19,26 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 18
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: Install dependencies (incl. dev)
-        env:
-          NPM_CONFIG_PRODUCTION: "false"
-        run: npm install --no-audit --no-fund --legacy-peer-deps
-      - run: npm run build
-      
+      - name: Clean install (npm ci)
+        run: npm ci
+      - name: Build
+        run: npm run build
+
       # Gerar documentação TypeDoc
-      - run: npm run docs:generate # Gera ./docs a partir do TypeDoc
-      
+      - name: Generate TypeDoc documentation
+        run: npm run docs:generate # Gera ./docs a partir do TypeDoc
+
       # Gerar Storybook estático
-      - run: npm run build-storybook # Gera ./storybook-static
-      
+      - name: Build Storybook
+        run: npm run build-storybook # Gera ./storybook-static
+
       # Criar estrutura de navegação integrada
       - name: Create integrated docs structure
         run: |
@@ -45,7 +46,7 @@ jobs:
           cp -r docs/* integrated-docs/
           mkdir -p integrated-docs/storybook
           cp -r storybook-static/* integrated-docs/storybook/
-          
+
           # Criar página de navegação principal com metadados dinâmicos para SEO
           VERSION=$(node -p "require('./package.json').version")
           NAME=$(node -p "require('./package.json').name")
