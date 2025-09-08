@@ -19,7 +19,8 @@ jobs:
         env:
           NPM_CONFIG_PRODUCTION: "false"
         run: npm install --no-audit --no-fund --legacy-peer-deps
-      - run: npm run lint
+      - name: Lint (npx fallback)
+        run: npx -y eslint . --ext .ts,.tsx
       - run: npm run type-check
       - run: npm test
       - run: npm run build
