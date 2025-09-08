@@ -24,7 +24,8 @@ jobs:
 
       - name: Install and build
         run: |
-          npm ci
+          npm i -g npm@11.6.0
+          NPM_CONFIG_PRODUCTION=false npm ci
           npm run build
 
       - name: Configure npm auth for publish
