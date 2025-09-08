@@ -4,6 +4,24 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.3.7] - 2025-09-08 - Testes de UI e carregamento de scripts
+
+### 🧪 Novos testes e cobertura
+
+- CookieBanner
+  - Testes para renderização condicional em modos bloqueante (overlay) e não-bloqueante (Snackbar)
+  - Verificação de abertura do modal ao clicar em “Preferências” e persistência ao clicar em “Recusar”
+- ConsentScriptLoader / Hook
+  - Gating por consentimento e categoria; não carrega scripts quando não consentido ou categoria desabilitada
+  - Tratamento de erros (log `logger.error` quando `loadScript` rejeita)
+  - `reloadOnChange` reexecuta o carregamento ao reabilitar a categoria; default não recarrega
+- Integrações de script
+  - Verificação de `attrs` em integrações (GA define `async: 'true'`)
+
+### 🔧 Interno
+
+- Aumento da estabilidade para refatorações futuras na camada de UI e utilitários de carregamento.
+
 ## [0.3.6] - 2025-08-28 - Correção crítica: Herança de ThemeProvider
 
 ### ✨ Novas funcionalidades e melhorias
