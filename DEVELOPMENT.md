@@ -1,5 +1,27 @@
 # Guia de Desenvolvimento - react-lgpd-consent
 
+## ⚙️ Requisitos de Desenvolvimento
+
+### Node.js
+- **Versão mínima**: Node.js 20.0.0 ou superior
+- **Recomendado**: Use a versão especificada no arquivo `.nvmrc`
+
+Para verificar sua versão:
+```bash
+node --version
+```
+
+Para usar a versão correta com nvm:
+```bash
+nvm use
+# ou
+nvm use 20
+```
+
+### Outras Dependências
+- npm (vem com Node.js)
+- TypeScript (instalado como dev dependency)
+
 ## 🏗️ Arquitetura da Biblioteca
 
 ### Visão Geral
