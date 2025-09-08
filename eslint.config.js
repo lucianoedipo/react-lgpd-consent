@@ -1,5 +1,14 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
-import storybook from 'eslint-plugin-storybook'
+// In CI some environments may not have this plugin installed (e.g. npm install quirks).
+// Use a safe dynamic import so linting of non-Storybook files can still proceed.
+let storybook = null
+try {
+  const mod = await import('eslint-plugin-storybook')
+  storybook = mod.default ?? mod
+} catch {
+  // Fallback: plugin unavailable; skip Storybook-specific configs
+  storybook = null
+}
 
 import * as globals from 'globals'
 import pluginJs from '@eslint/js'
@@ -77,5 +86,5 @@ export default [
       '.stryker-tmp/',
     ],
   },
-  ...storybook.configs['flat/recommended'],
+  ...(storybook?.configs?.['flat/recommended'] ?? []),
 ]
