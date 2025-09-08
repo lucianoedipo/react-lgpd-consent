@@ -24,8 +24,7 @@ jobs:
 
       - name: Install and build
         run: |
-          npm i -g npm@11.6.0
-          NPM_CONFIG_PRODUCTION=false npm ci
+          NPM_CONFIG_PRODUCTION=false npm install --no-audit --no-fund --legacy-peer-deps
           npm run build
 
       - name: Configure npm auth for publish
