@@ -61,7 +61,7 @@
     "clean": "rimraf node_modules package-lock.json dist docs storybook-static .cache .stryker-tmp",
     "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
     "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint \"**/*.{ts,tsx}\" --cache --max-warnings=0",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\" \"eslint.config.js\"",
     "type-check": "tsc --noEmit",
     "test": "jest --config jest.config.ts",
