@@ -7,4 +7,3 @@ describe('scriptIntegrations attrs', () => {
     expect(ga.attrs).toHaveProperty('async', 'true')
   })
 })
-

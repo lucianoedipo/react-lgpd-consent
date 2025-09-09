@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { ThemeProvider, createTheme } from '@mui/material/styles'
-import type { Theme } from '@mui/material/styles'
+import type { Theme, ThemeOptions } from '@mui/material/styles'
 
 /**
  * Theme Provider seguro que garante que todas as propriedades necessárias
@@ -10,7 +10,7 @@ import type { Theme } from '@mui/material/styles'
  * diferentes configurações de ThemeProvider do usuário.
  */
 
-const createSafeTheme = (userTheme?: any): Theme => {
+const createSafeTheme = (userTheme?: ThemeOptions): Theme => {
   const baseTheme = createTheme({
     palette: {
       primary: {
@@ -86,8 +86,16 @@ const createSafeTheme = (userTheme?: any): Theme => {
   })
 }
 
+/**
+ * Propriedades de SafeThemeProvider.
+ *
+ * @property theme Opções do tema Material-UI a serem mescladas com fallbacks seguros.
+ * @property children Nó(s) filho(s) a serem renderizados dentro do ThemeProvider.
+ */
 export interface SafeThemeProviderProps {
-  theme?: any
+  /** Opções de tema MUI a combinar com fallbacks internos. */
+  theme?: ThemeOptions
+  /** Conteúdo filho. */
   children: React.ReactNode
 }
 
@@ -96,6 +104,7 @@ export interface SafeThemeProviderProps {
  * @category Utils
  * @since 0.3.1
  * Componente ThemeProvider interno que garante compatibilidade e fallbacks seguros.
+ * Aceita `ThemeOptions` e cria um `Theme` com `createTheme` aplicado a fallbacks padrão.
  * Deve ser usado nos componentes internos da biblioteca para evitar erros de tema.
  */
 export function SafeThemeProvider({ theme, children }: Readonly<SafeThemeProviderProps>) {

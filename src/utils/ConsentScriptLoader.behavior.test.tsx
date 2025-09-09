@@ -3,6 +3,7 @@ import { render, act } from '@testing-library/react'
 import { ConsentScriptLoader } from './ConsentScriptLoader'
 import { ConsentProvider } from '../context/ConsentContext'
 import { createGoogleAnalyticsIntegration } from './scriptIntegrations'
+import type { ScriptIntegration } from './scriptIntegrations'
 import { useConsent } from '../hooks/useConsent'
 import { logger } from './logger'
 
@@ -29,7 +30,11 @@ describe('ConsentScriptLoader behavior', () => {
   })
 
   test('does not call loadScript when category is not allowed', async () => {
-    const integration = { id: 'mkt', category: 'marketing', src: 'https://example.com/m.js' }
+    const integration: ScriptIntegration = {
+      id: 'mkt',
+      category: 'marketing',
+      src: 'https://example.com/m.js',
+    }
     const initialState = {
       consented: true,
       isModalOpen: false,
@@ -150,4 +155,3 @@ describe('ConsentScriptLoader behavior', () => {
     expect(loadScript).toHaveBeenCalledTimes(2)
   })
 })
-

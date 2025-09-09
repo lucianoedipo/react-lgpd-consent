@@ -87,17 +87,21 @@ export function readConsentCookie(name: string = DEFAULT_COOKIE_OPTS.name): Cons
  * @function
  * Migra cookies de versões legadas (anteriores à v1.0 do esquema) para o formato atual.
  *
- * @param {any} legacyData Os dados do cookie no formato legado.
+ * @param {Record<string, unknown>} legacyData Os dados do cookie no formato legado.
  * @returns {ConsentState | null} O estado de consentimento migrado para o formato atual, ou `null` se a migração falhar.
  */
-function migrateLegacyCookie(legacyData: any): ConsentState | null {
+function migrateLegacyCookie(legacyData: Record<string, unknown>): ConsentState | null {
   try {
     const now = new Date().toISOString()
 
     return {
       version: COOKIE_SCHEMA_VERSION,
-      consented: legacyData.consented || false,
-      preferences: legacyData.preferences || { necessary: true },
+      consented: Boolean((legacyData as Record<string, unknown>).consented) || false,
+      preferences:
+        (legacyData as Record<string, unknown>).preferences &&
+        typeof (legacyData as Record<string, unknown>).preferences === 'object'
+          ? ((legacyData as Record<string, unknown>).preferences as ConsentState['preferences'])
+          : { necessary: true },
       consentDate: now,
       lastUpdate: now,
       source: 'banner',

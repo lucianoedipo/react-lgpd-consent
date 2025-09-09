@@ -101,7 +101,7 @@ export function FloatingPreferencesButton({
   const tooltipText = tooltip ?? texts.preferencesButton ?? 'Gerenciar Preferências de Cookies'
 
   const getPosition = () => {
-    const styles: Record<string, any> = {
+    const styles: React.CSSProperties = {
       position: 'fixed',
       zIndex: 1200,
     }

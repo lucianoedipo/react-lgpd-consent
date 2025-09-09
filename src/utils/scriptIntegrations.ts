@@ -1,12 +1,19 @@
 /**
  * @interface ScriptIntegration
- * Define a estrutura de um objeto de integração de script, usado para carregar scripts de terceiros condicionalmente.
+ * Estrutura de uma integração de script de terceiros a ser carregada condicionalmente conforme o consentimento.
+ *
+ * @remarks
+ * - `category` é um `Category` tipado (ex.: 'analytics', 'marketing').
+ * - `init` roda após o script ser inserido no DOM e carregado.
+ * - `attrs` é repassado como atributos HTML da tag `<script>`.
  */
+import type { Category } from '../types/types'
+
 export interface ScriptIntegration {
   /** Um ID único para esta integração de script. */
   id: string
-  /** A categoria de consentimento necessária para que este script seja carregado (ex: 'analytics', 'marketing'). */
-  category: string
+  /** Categoria de consentimento necessária para carregar o script. */
+  category: Category
   /** A URL do script a ser carregado. */
   src: string
   /** Uma função opcional a ser executada após o script ser carregado e inicializado no DOM. */
@@ -22,8 +29,8 @@ export interface ScriptIntegration {
 export interface GoogleAnalyticsConfig {
   /** O ID de medição do GA4 (ex: 'G-XXXXXXXXXX'). */
   measurementId: string
-  /** Um objeto opcional de configuração adicional a ser passado para o comando `gtag('config')`. */
-  config?: any
+  /** Objeto opcional repassado para `gtag('config')`. */
+  config?: Record<string, unknown>
 }
 
 /**
@@ -50,10 +57,10 @@ export interface UserWayConfig {
  * @function
  * @category Utils
  * @since 0.2.0
- * Cria um objeto de integração para o Google Analytics 4 (GA4).
+ * Cria uma integração para Google Analytics 4 (GA4).
  *
- * @param {GoogleAnalyticsConfig} config A configuração do GA4, incluindo o `measurementId`.
- * @returns {ScriptIntegration} Um objeto `ScriptIntegration` configurado para o GA4.
+ * @param {GoogleAnalyticsConfig} config Configuração com `measurementId` e `config` opcional.
+ * @returns {ScriptIntegration} Integração tipada com `category: 'analytics'`.
  */
 export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig): ScriptIntegration {
   return {
@@ -62,19 +69,15 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
     src: `https://www.googletagmanager.com/gtag/js?id=${config.measurementId}`,
     init: () => {
       if (typeof window !== 'undefined') {
-        // @ts-ignore
-        window.dataLayer = window.dataLayer || []
-        // @ts-ignore
-        function gtag(...args: any[]) {
-          // @ts-ignore
-          window.dataLayer.push(...args)
+        type Gtag = (...args: unknown[]) => void
+        const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
+        w.dataLayer = w.dataLayer ?? []
+        const gtag: Gtag = (...args: unknown[]) => {
+          w.dataLayer!.push(...args)
         }
-        // @ts-ignore
-        window.gtag = gtag
-        // @ts-ignore
+        w.gtag = gtag
         gtag('js', new Date())
-        // @ts-ignore
-        gtag('config', config.measurementId, config.config || {})
+        gtag('config', config.measurementId, config.config ?? {})
       }
     },
     attrs: { async: 'true' },
@@ -85,10 +88,10 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
  * @function
  * @category Utils
  * @since 0.2.0
- * Cria um objeto de integração para o Google Tag Manager (GTM).
+ * Cria uma integração para Google Tag Manager (GTM).
  *
- * @param {GoogleTagManagerConfig} config A configuração do GTM, incluindo o `containerId`.
- * @returns {ScriptIntegration} Um objeto `ScriptIntegration` configurado para o GTM.
+ * @param {GoogleTagManagerConfig} config Configuração com `containerId` e `dataLayerName` opcional.
+ * @returns {ScriptIntegration} Integração tipada com `category: 'analytics'`.
  */
 export function createGoogleTagManagerIntegration(
   config: GoogleTagManagerConfig,
@@ -100,10 +103,10 @@ export function createGoogleTagManagerIntegration(
     init: () => {
       if (typeof window !== 'undefined') {
         const dataLayerName = config.dataLayerName || 'dataLayer'
-        // @ts-ignore
-        window[dataLayerName] = window[dataLayerName] || []
-        // @ts-ignore
-        window[dataLayerName].push({
+        const w = window as unknown as Record<string, unknown>
+        const layer = (w[dataLayerName] as unknown[]) ?? []
+        w[dataLayerName] = layer
+        layer.push({
           'gtm.start': new Date().getTime(),
           event: 'gtm.js',
         })
@@ -116,10 +119,10 @@ export function createGoogleTagManagerIntegration(
  * @function
  * @category Utils
  * @since 0.2.0
- * Cria um objeto de integração para o widget de acessibilidade UserWay.
+ * Cria uma integração para o widget de acessibilidade UserWay.
  *
- * @param {UserWayConfig} config A configuração do UserWay, incluindo o `accountId`.
- * @returns {ScriptIntegration} Um objeto `ScriptIntegration` configurado para o UserWay.
+ * @param {UserWayConfig} config Configuração com `accountId`.
+ * @returns {ScriptIntegration} Integração tipada com `category: 'functional'`.
  */
 export function createUserWayIntegration(config: UserWayConfig): ScriptIntegration {
   return {
@@ -128,10 +131,9 @@ export function createUserWayIntegration(config: UserWayConfig): ScriptIntegrati
     src: 'https://cdn.userway.org/widget.js',
     init: () => {
       if (typeof window !== 'undefined') {
-        // @ts-ignore
-        window.UserWayWidgetApp = window.UserWayWidgetApp || {}
-        // @ts-ignore
-        window.UserWayWidgetApp.accountId = config.accountId
+        const w = window as Window & { UserWayWidgetApp?: { accountId?: string } }
+        w.UserWayWidgetApp = w.UserWayWidgetApp || {}
+        w.UserWayWidgetApp.accountId = config.accountId
       }
     },
     attrs: { 'data-account': config.accountId },

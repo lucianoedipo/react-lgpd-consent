@@ -141,18 +141,17 @@ export function logDeveloperGuidance(
   disableGuidanceProp?: boolean,
 ): void {
   // NÃO usar "window" diretamente: SSR-safe
-  const nodeEnv =
-    typeof (globalThis as any).process !== 'undefined'
-      ? (globalThis as any).process.env?.NODE_ENV
-      : undefined
+  const gt = globalThis as unknown as {
+    process?: { env?: { NODE_ENV?: string } }
+    __LGPD_PRODUCTION__?: boolean
+    __LGPD_DISABLE_GUIDANCE__?: boolean
+  }
 
-  const isProd =
-    nodeEnv === 'production' ||
-    ((globalThis as any).__LGPD_PRODUCTION__ === true && typeof globalThis !== 'undefined')
+  const nodeEnv = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
 
-  const isDisabled =
-    !!disableGuidanceProp ||
-    ((globalThis as any).__LGPD_DISABLE_GUIDANCE__ === true && typeof globalThis !== 'undefined')
+  const isProd = nodeEnv === 'production' || gt.__LGPD_PRODUCTION__ === true
+
+  const isDisabled = !!disableGuidanceProp || gt.__LGPD_DISABLE_GUIDANCE__ === true
 
   if (isProd || isDisabled) return
 

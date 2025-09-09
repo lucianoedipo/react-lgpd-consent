@@ -1,4 +1,5 @@
 import * as React from 'react'
+import type { ScriptIntegration } from './scriptIntegrations'
 import { render, act } from '@testing-library/react'
 import { useConsentScriptLoader } from './ConsentScriptLoader'
 import { ConsentProvider } from '../context/ConsentContext'
@@ -21,7 +22,7 @@ describe('useConsentScriptLoader', () => {
   afterAll(() => jest.restoreAllMocks())
 
   test('does not load when not consented', async () => {
-    const integration = { id: 'x', category: 'analytics', src: 'ok' }
+    const integration: ScriptIntegration = { id: 'x', category: 'analytics', src: 'ok' }
 
     await act(async () => {
       render(
@@ -37,7 +38,7 @@ describe('useConsentScriptLoader', () => {
   })
 
   test('loads when consented and category allowed', async () => {
-    const integration = { id: 'x', category: 'analytics', src: 'ok' }
+    const integration: ScriptIntegration = { id: 'x', category: 'analytics', src: 'ok' }
 
     // Provide initialState with consented true and preferences
     const initialState = {
@@ -67,7 +68,7 @@ describe('useConsentScriptLoader', () => {
   })
 
   test('does not load when category not allowed', async () => {
-    const integration = { id: 'y', category: 'marketing', src: 'ok' }
+    const integration: ScriptIntegration = { id: 'y', category: 'marketing', src: 'ok' }
 
     const initialState = {
       consented: true,
@@ -100,7 +101,7 @@ describe('useConsentScriptLoader', () => {
     const { loadScript } = require('./scriptLoader')
     ;(loadScript as jest.Mock).mockRejectedValueOnce(new Error('fail'))
 
-    const integration = { id: 'z', category: 'analytics', src: 'bad' }
+    const integration: ScriptIntegration = { id: 'z', category: 'analytics', src: 'bad' }
 
     const initialState = {
       consented: true,

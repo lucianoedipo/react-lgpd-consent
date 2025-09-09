@@ -1,3 +1,5 @@
+import type { Theme } from '@mui/material/styles'
+
 /**
  * @fileoverview
  * Definições de tipos TypeScript para o sistema de consentimento LGPD/ANPD.
@@ -654,18 +656,23 @@ export interface ConsentProviderProps {
   texts?: Partial<ConsentTexts>
 
   /**
-   * Tema customizado Material-UI aplicado aos componentes.
-   * Aceita qualquer objeto que será passado para ThemeProvider.
+   * Tema Material-UI a ser aplicado aos componentes via ThemeProvider.
+   *
+   * Observação importante: a biblioteca NÃO cria/mescla tema automaticamente.
+   * Se você fornecer um `theme` aqui, ele será repassado diretamente ao `ThemeProvider`.
+   * Se não fornecer, a lib não envolverá com `ThemeProvider` e herdará o tema do app.
    *
    * @example
    * ```tsx
-   * theme={{
-   *   palette: { primary: { main: '#1976d2' } },
-   *   components: { MuiButton: { styleOverrides: { root: { borderRadius: 8 } } } }
-   * }}
+   * import { createTheme } from '@mui/material/styles'
+   * const appTheme = createTheme({ palette: { primary: { main: '#1976d2' } } })
+   *
+   * <ConsentProvider theme={appTheme}>
+   *   <App />
+   * </ConsentProvider>
    * ```
    */
-  theme?: any
+  theme?: Theme
 
   /**
    * Tokens de design para customização visual avançada.
@@ -688,8 +695,8 @@ export interface ConsentProviderProps {
    */
   PreferencesModalComponent?: React.ComponentType<CustomPreferencesModalProps>
 
-  /** Props adicionais passadas para o modal customizado. */
-  preferencesModalProps?: Record<string, any>
+  /** Props adicionais passadas para o modal customizado (repassadas sem transformação). */
+  preferencesModalProps?: Record<string, unknown>
 
   /**
    * Componente customizado para substituir o banner padrão de cookies.
@@ -698,8 +705,8 @@ export interface ConsentProviderProps {
    */
   CookieBannerComponent?: React.ComponentType<CustomCookieBannerProps>
 
-  /** Props adicionais passadas para o banner customizado. */
-  cookieBannerProps?: Record<string, any>
+  /** Props adicionais passadas para o banner customizado (repassadas sem transformação). */
+  cookieBannerProps?: Record<string, unknown>
 
   /**
    * Componente customizado para substituir o botão flutuante de preferências.
@@ -708,8 +715,8 @@ export interface ConsentProviderProps {
    */
   FloatingPreferencesButtonComponent?: React.ComponentType<CustomFloatingPreferencesButtonProps>
 
-  /** Props adicionais passadas para o botão flutuante customizado. */
-  floatingPreferencesButtonProps?: Record<string, any>
+  /** Props adicionais passadas para o botão flutuante customizado (repassadas sem transformação). */
+  floatingPreferencesButtonProps?: Record<string, unknown>
 
   /**
    * Desabilita o botão flutuante de preferências.

@@ -53,12 +53,7 @@ export function ConsentScriptLoader({
 
       if (shouldLoad && (!alreadyLoaded || reloadOnChange)) {
         try {
-          await loadScript(
-            integration.id,
-            integration.src,
-            integration.category as any, // Categoria dinâmica
-            integration.attrs,
-          )
+          await loadScript(integration.id, integration.src, integration.category, integration.attrs)
 
           // Executa função de inicialização se disponível
           if (integration.init) {
@@ -123,12 +118,7 @@ export function useConsentScriptLoader() {
       }
 
       try {
-        await loadScript(
-          integration.id,
-          integration.src,
-          integration.category as any, // Categoria dinâmica
-          integration.attrs,
-        )
+        await loadScript(integration.id, integration.src, integration.category, integration.attrs)
 
         if (integration.init) {
           integration.init()

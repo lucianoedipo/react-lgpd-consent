@@ -18,7 +18,8 @@ export enum LogLevel {
 class ConsentLogger {
   private static readonly IS_DEVELOPMENT =
     typeof globalThis !== 'undefined' &&
-    (globalThis as any).process?.env?.NODE_ENV === 'development'
+    (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env
+      ?.NODE_ENV === 'development'
 
   private static readonly LOG_PREFIX = '[react-lgpd-consent]'
 
@@ -44,9 +45,9 @@ class ConsentLogger {
 
   /**
    * Registra uma mensagem de erro.
-   * @param {...any[]} args Os argumentos a serem logados.
+   * @param {...unknown[]} args Argumentos a serem logados.
    */
-  error(...args: any[]) {
+  error(...args: unknown[]) {
     if (this.enabled && this.level >= LogLevel.ERROR) {
       console.error(ConsentLogger.LOG_PREFIX, '[ERROR]', ...args)
     }
@@ -54,9 +55,9 @@ class ConsentLogger {
 
   /**
    * Registra uma mensagem de aviso.
-   * @param {...any[]} args Os argumentos a serem logados.
+   * @param {...unknown[]} args Argumentos a serem logados.
    */
-  warn(...args: any[]) {
+  warn(...args: unknown[]) {
     if (this.enabled && this.level >= LogLevel.WARN) {
       console.warn(ConsentLogger.LOG_PREFIX, '[WARN]', ...args)
     }
@@ -64,9 +65,9 @@ class ConsentLogger {
 
   /**
    * Registra uma mensagem informativa.
-   * @param {...any[]} args Os argumentos a serem logados.
+   * @param {...unknown[]} args Argumentos a serem logados.
    */
-  info(...args: any[]) {
+  info(...args: unknown[]) {
     if (this.enabled && this.level >= LogLevel.INFO) {
       console.info(ConsentLogger.LOG_PREFIX, '[INFO]', ...args)
     }
@@ -74,9 +75,9 @@ class ConsentLogger {
 
   /**
    * Registra uma mensagem de depuração.
-   * @param {...any[]} args Os argumentos a serem logados.
+   * @param {...unknown[]} args Argumentos a serem logados.
    */
-  debug(...args: any[]) {
+  debug(...args: unknown[]) {
     if (this.enabled && this.level >= LogLevel.DEBUG) {
       console.debug(ConsentLogger.LOG_PREFIX, '[DEBUG]', ...args)
     }
@@ -84,9 +85,9 @@ class ConsentLogger {
 
   /**
    * Inicia um grupo de logs no console.
-   * @param {...any[]} args Os argumentos para o título do grupo.
+   * @param {...unknown[]} args Argumentos para o título do grupo.
    */
-  group(...args: any[]) {
+  group(...args: unknown[]) {
     if (this.enabled && this.level >= LogLevel.DEBUG) {
       console.group(ConsentLogger.LOG_PREFIX, ...args)
     }
@@ -103,10 +104,10 @@ class ConsentLogger {
 
   /**
    * Exibe dados tabulares no console.
-   * @param {any} tabularData Os dados a serem exibidos na tabela.
-   * @param {string[]} [properties] Um array opcional de propriedades para exibir.
+   * @param {unknown} tabularData Dados a serem exibidos na tabela.
+   * @param {string[]} [properties] Propriedades opcionais para exibir.
    */
-  table(tabularData: any, properties?: string[]) {
+  table(tabularData: unknown, properties?: string[]) {
     if (this.enabled && this.level >= LogLevel.DEBUG) {
       console.table(tabularData, properties)
     }
@@ -114,24 +115,41 @@ class ConsentLogger {
 
   /**
    * Registra informações sobre a compatibilidade do tema Material-UI.
-   * @param {any} themeInfo Objeto com informações do tema.
+   * @param {unknown} themeInfo Objeto potencialmente parcial do tema (inspeção segura).
    */
-  themeCompatibility(themeInfo: any) {
+  themeCompatibility(themeInfo: unknown) {
+    const isRecord = (v: unknown): v is Record<string, unknown> =>
+      typeof v === 'object' && v !== null
+    const theme = isRecord(themeInfo) ? themeInfo : undefined
+    const palette =
+      theme && isRecord(theme['palette'])
+        ? (theme['palette'] as Record<string, unknown>)
+        : undefined
+    const primary = palette && isRecord(palette['primary'])
+    const transitions =
+      theme && isRecord(theme['transitions'])
+        ? (theme['transitions'] as Record<string, unknown>)
+        : undefined
+    const duration = transitions && isRecord(transitions['duration'])
+
     this.debug('Theme compatibility check:', {
-      hasTheme: !!themeInfo,
-      hasPalette: !!themeInfo?.palette,
-      hasPrimary: !!themeInfo?.palette?.primary,
-      hasTransitions: !!themeInfo?.transitions,
-      hasDuration: !!themeInfo?.transitions?.duration,
+      hasTheme: !!theme,
+      hasPalette: !!palette,
+      hasPrimary: !!primary,
+      hasTransitions: !!transitions,
+      hasDuration: !!duration,
     })
   }
 
   /**
    * Registra mudanças no estado de consentimento.
-   * @param {string} action A ação que causou a mudança de estado.
-   * @param {any} state O estado atual do consentimento.
+   * @param {string} action Ação que causou a mudança de estado.
+   * @param {{ consented?: boolean; isModalOpen?: boolean; preferences?: Record<string, unknown> }} state Estado atual.
    */
-  consentState(action: string, state: any) {
+  consentState(
+    action: string,
+    state: { consented?: boolean; isModalOpen?: boolean; preferences?: Record<string, unknown> },
+  ) {
     this.debug(`Consent state change [${action}]:`, {
       consented: state.consented,
       isModalOpen: state.isModalOpen,
@@ -141,11 +159,11 @@ class ConsentLogger {
 
   /**
    * Registra operações de cookie (leitura, escrita, remoção).
-   * @param {'read' | 'write' | 'delete'} operation O tipo de operação de cookie.
-   * @param {string} cookieName O nome do cookie.
-   * @param {any} [data] Os dados do cookie, se aplicável.
+   * @param {'read' | 'write' | 'delete'} operation Tipo de operação.
+   * @param {string} cookieName Nome do cookie.
+   * @param {unknown} [data] Dados associados, se aplicável.
    */
-  cookieOperation(operation: 'read' | 'write' | 'delete', cookieName: string, data?: any) {
+  cookieOperation(operation: 'read' | 'write' | 'delete', cookieName: string, data?: unknown) {
     this.debug(`Cookie ${operation}:`, {
       name: cookieName,
       hasData: !!data,
@@ -155,10 +173,10 @@ class ConsentLogger {
 
   /**
    * Registra a renderização de um componente.
-   * @param {string} componentName O nome do componente.
-   * @param {any} [props] As propriedades do componente.
+   * @param {string} componentName Nome do componente.
+   * @param {Record<string, unknown>} [props] Propriedades do componente.
    */
-  componentRender(componentName: string, props?: any) {
+  componentRender(componentName: string, props?: Record<string, unknown>) {
     this.debug(`Component render [${componentName}]:`, {
       hasProps: !!props,
       propsKeys: props ? Object.keys(props) : [],
@@ -177,10 +195,10 @@ class ConsentLogger {
 
   /**
    * Registra chamadas à API interna da biblioteca.
-   * @param {string} method O nome do método da API chamado.
-   * @param {any} [params] Os parâmetros passados para o método.
+   * @param {string} method Nome do método da API chamado.
+   * @param {unknown} [params] Parâmetros passados para o método.
    */
-  apiUsage(method: string, params?: any) {
+  apiUsage(method: string, params?: unknown) {
     this.debug(`API call [${method}]:`, params)
   }
 }

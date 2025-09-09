@@ -1,36 +1,42 @@
 // Arquivo de setup executado antes da coleta/import de módulos de teste.
 // Deve ser seguro executar cedo (não usa APIs do Jest) e suprimir logs ruidosos.
-// Testes que precisam dos logs podem definir (global as any).__SHOW_DEV_GUIDANCE = true
+// Testes que precisam dos logs podem definir (globalThis as { __SHOW_DEV_GUIDANCE?: boolean }).__SHOW_DEV_GUIDANCE = true
 // antes de executar o jest runner.
-const SHOULD_SHOW = (global as any).__SHOW_DEV_GUIDANCE === true
+
+// Observação: evite polyfills globais aqui para não impactar o agendador do React.
+const SHOULD_SHOW =
+  (globalThis as { __SHOW_DEV_GUIDANCE?: boolean }).__SHOW_DEV_GUIDANCE === true
 
 if (!SHOULD_SHOW) {
-  const noop = () => {}
+  const noop: (..._args: unknown[]) => void = () => {}
   // Substitui métodos do console sem depender de jest.spyOn (setupFiles roda cedo).
   try {
     // Alguns ambientes podem travar ao reatribuir funções nativas; usamos atribuição direta.
 
-    // @ts-ignore
-    console.log = noop
-    // @ts-ignore
-    console.info = noop
-    if (typeof (console as any).group === 'function') {
-      // @ts-ignore
-      console.group = noop
+    const c = console as unknown as Partial<Console> & {
+      log?: (...args: unknown[]) => void
+      info?: (...args: unknown[]) => void
+      warn?: (...args: unknown[]) => void
+      error?: (...args: unknown[]) => void
+      group?: (...args: unknown[]) => void
+      groupEnd?: () => void
+      table?: (tabularData?: unknown, properties?: readonly string[]) => void
     }
-    if (typeof (console as any).groupEnd === 'function') {
-      // @ts-ignore
-      console.groupEnd = noop
+
+    c.log = noop
+    c.info = noop
+    if (typeof c.group === 'function') {
+      c.group = noop
     }
-    // @ts-ignore
-    console.warn = noop
-    // @ts-ignore
-    console.error = noop
-    if (typeof (console as any).table === 'function') {
-      // @ts-ignore
-      console.table = noop
+    if (typeof c.groupEnd === 'function') {
+      c.groupEnd = () => {}
     }
-  } catch (e) {
+    c.warn = noop
+    c.error = noop
+    if (typeof c.table === 'function') {
+      c.table = () => {}
+    }
+  } catch {
     // Não falhar se não for possível sobrescrever -- apenas siga em frente.
   }
 }

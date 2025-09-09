@@ -14,6 +14,7 @@ reports/
 .stryker-tmp/
 test-app/
 coverage/
+.eslintcache
 
 # ---- Tooling / CI files ----
 GEMINI.md

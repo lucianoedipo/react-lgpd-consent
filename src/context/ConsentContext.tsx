@@ -288,6 +288,8 @@ export function ConsentProvider({
   // If a theme prop is provided, we explicitly apply it.
   // Otherwise we intentionally do NOT create or inject a theme provider and let the host app provide one.
   // This avoids altering the app's theme context and prevents SSR/context regressions.
+  // Importante: não criar/mesclar tema aqui para não sobrescrever o tema do app hospedeiro.
+  // Apenas passamos adiante o tema fornecido pelo consumidor (se houver).
   const mergedTheme = theme
 
   // Configuração de categorias (nova API)
@@ -391,7 +393,7 @@ export function ConsentProvider({
 
   // Extrai a lógica de cálculo do backdrop para uma variável memoizada
   const providerBackdropColor = React.useMemo(() => {
-    const backdrop = (designTokens as any)?.layout?.backdrop
+    const backdrop = designTokens?.layout?.backdrop
     if (backdrop === false) return 'transparent'
     if (typeof backdrop === 'string') return backdrop
     return 'rgba(0, 0, 0, 0.4)'
@@ -473,7 +475,11 @@ export function ConsentProvider({
                     />
                   ) : (
                     // Encaminha `floatingPreferencesButtonProps` para o componente padrão
-                    <FloatingPreferencesButton {...(floatingPreferencesButtonProps as any)} />
+                    <FloatingPreferencesButton
+                      {...((floatingPreferencesButtonProps ?? {}) as Partial<
+                        React.ComponentProps<typeof FloatingPreferencesButton>
+                      >)}
+                    />
                   ))}
               </CategoriesProvider>
             </DesignProvider>
@@ -483,7 +489,7 @@ export function ConsentProvider({
     </StateCtx.Provider>
   )
 
-  if (theme) {
+  if (mergedTheme) {
     return <ThemeProvider theme={mergedTheme}>{content}</ThemeProvider>
   }
 

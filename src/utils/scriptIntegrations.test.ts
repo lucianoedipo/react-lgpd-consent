@@ -11,7 +11,6 @@ afterAll(() => jest.restoreAllMocks())
 describe('scriptIntegrations factories', () => {
   beforeEach(() => {
     // reset global window properties used by integrations
-    // @ts-ignore
     delete (global as any).window
     ;(global as any).window = {}
   })
@@ -23,9 +22,7 @@ describe('scriptIntegrations factories', () => {
 
     // call init and assert side effects
     ga.init && ga.init()
-    // @ts-ignore
     expect((global as any).window.dataLayer).toBeDefined()
-    // @ts-ignore
     expect(typeof (global as any).window.gtag).toBe('function')
   })
 
@@ -35,9 +32,7 @@ describe('scriptIntegrations factories', () => {
     expect(gtm.category).toBe('analytics')
 
     gtm.init && gtm.init()
-    // @ts-ignore
     expect((global as any).window.dataLayer).toBeDefined()
-    // @ts-ignore
     expect((global as any).window.dataLayer.length).toBeGreaterThanOrEqual(1)
   })
 
@@ -47,9 +42,7 @@ describe('scriptIntegrations factories', () => {
     expect(userway.category).toBe('functional')
 
     userway.init && userway.init()
-    // @ts-ignore
     expect((global as any).window.UserWayWidgetApp).toBeDefined()
-    // @ts-ignore
     expect((global as any).window.UserWayWidgetApp.accountId).toBe('acct-123')
     expect(userway.attrs).toMatchObject({ 'data-account': 'acct-123' })
   })
