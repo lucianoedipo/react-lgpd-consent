@@ -26,6 +26,7 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `suggestCategoryForScript`          | Função     | (v0.4.1) Sugere categoria(s) LGPD para um script conhecido.                      |
 | `discoverRuntimeCookies`            | Função     | (v0.4.1) Descobre cookies em tempo real no navegador.                            |
 | `categorizeDiscoveredCookies`       | Função     | (v0.4.1) Categoriza cookies descobertos usando padrões LGPD.                     |
+| `getCookiesInfoForCategory`         | Função     | Retorna informações detalhadas dos cookies de uma categoria específica.          |
 | `resolveTexts`                      | Função     | (v0.4.1) Resolve textos baseados em templates e contexto.                        |
 | `TEXT_TEMPLATES`                    | Constante  | (v0.4.1) Templates pré-configurados (ecommerce, saas, governo).                  |
 | `AdvancedConsentTexts`              | Tipo       | (v0.4.1) Interface expandida com i18n e contextos.                               |
@@ -366,6 +367,121 @@ const customTokens: DesignTokens = {
   designTokens={customTokens}
   // ... outras props
 />
+```
+
+---
+
+## `getCookiesInfoForCategory(categoryId, integrations)`
+
+Função utilitária que retorna informações detalhadas sobre os cookies de uma categoria específica.
+
+### Parâmetros
+
+- **`categoryId`** (`Category`): ID da categoria ('necessary', 'analytics', 'marketing', etc.)
+- **`integrations`** (`string[]`): Array com IDs das integrações usadas no projeto
+
+### Retorno
+
+- **`CookieDescriptor[]`**: Array com informações detalhadas de cada cookie
+
+### Interface `CookieDescriptor`
+
+```typescript
+interface CookieDescriptor {
+  name: string        // Nome ou padrão do cookie (ex: '_ga', '_ga_*')
+  purpose?: string    // Finalidade do cookie
+  duration?: string   // Tempo de retenção (ex: '2 anos', '24 horas')
+  domain?: string     // Domínio associado (ex: '.example.com')
+  provider?: string   // Provedor ou serviço (ex: 'Google Analytics')
+}
+```
+
+### Exemplo de Uso
+
+```tsx
+import { getCookiesInfoForCategory, useCategories } from 'react-lgpd-consent'
+
+function DetalhesCookies() {
+  const { allCategories } = useCategories()
+  const integracoesUsadas = ['google-analytics', 'mixpanel', 'hotjar']
+
+  return (
+    <div>
+      {allCategories.map((categoria) => {
+        const cookiesDetalhados = getCookiesInfoForCategory(
+          categoria.id as any,
+          integracoesUsadas
+        )
+
+        return (
+          <div key={categoria.id}>
+            <h3>{categoria.name}</h3>
+            <p>{categoria.description}</p>
+            
+            {cookiesDetalhados.map((cookie) => (
+              <div key={cookie.name}>
+                <strong>{cookie.name}</strong>
+                {cookie.purpose && <p>Finalidade: {cookie.purpose}</p>}
+                {cookie.duration && <p>Duração: {cookie.duration}</p>}
+                {cookie.provider && <p>Provedor: {cookie.provider}</p>}
+              </div>
+            ))}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+```
+
+### Integração com Modal Personalizado
+
+Esta função é especialmente útil em modais personalizados de preferências:
+
+```tsx
+const ModalPersonalizado: React.FC<CustomPreferencesModalProps> = ({
+  preferences,
+  setPreferences,
+  // ... outras props
+}) => {
+  const { allCategories } = useCategories()
+  const integracoes = ['google-analytics', 'facebook-pixel'] // suas integrações
+
+  return (
+    <div>
+      {allCategories.map((categoria) => {
+        const cookies = getCookiesInfoForCategory(categoria.id as any, integracoes)
+        
+        return (
+          <div key={categoria.id}>
+            <label>
+              <input
+                type="checkbox"
+                checked={preferences[categoria.id] || false}
+                onChange={(e) => setPreferences({
+                  ...preferences,
+                  [categoria.id]: e.target.checked
+                })}
+                disabled={categoria.essential}
+              />
+              {categoria.name}
+            </label>
+            
+            {/* Detalhes expandíveis dos cookies */}
+            <details>
+              <summary>Ver cookies ({cookies.length})</summary>
+              {cookies.map(cookie => (
+                <div key={cookie.name}>
+                  <code>{cookie.name}</code>: {cookie.purpose}
+                </div>
+              ))}
+            </details>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 ```
 
 ---

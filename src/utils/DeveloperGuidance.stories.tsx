@@ -118,40 +118,38 @@ const CacheDemo: React.FC = () => {
   const [renderCount, setRenderCount] = React.useState(1)
 
   return (
-    <ConsentProvider>
-      <Box sx={{ p: 3, bgcolor: 'grey.50', minHeight: '100vh' }}>
-        <Typography variant="h4" gutterBottom color="info.main" fontWeight="bold">
-          🔄 Sistema de Cache - Logs Únicos
-        </Typography>
+    <Box sx={{ p: 3, bgcolor: 'grey.50', minHeight: '100vh' }}>
+      <Typography variant="h4" gutterBottom color="info.main" fontWeight="bold">
+        🔄 Sistema de Cache - Logs Únicos
+      </Typography>
 
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-          Demonstra que cada configuração é logada apenas uma vez por sessão, mesmo com re-renders.
-        </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+        Demonstra que cada configuração é logada apenas uma vez por sessão, mesmo com re-renders.
+      </Typography>
 
-        <Stack spacing={2} sx={{ mb: 3 }}>
-          <Button variant="contained" onClick={() => setRenderCount((c) => c + 1)} color="primary">
-            🔄 Forçar Re-render #{renderCount}
-          </Button>
+      <Stack spacing={2} sx={{ mb: 3 }}>
+        <Button variant="contained" onClick={() => setRenderCount((c) => c + 1)} color="primary">
+          🔄 Forçar Re-render #{renderCount}
+        </Button>
 
-          <Alert severity="info">
-            <Typography variant="body2">
-              <strong>Teste:</strong> Clique no botão acima várias vezes. Note que os logs aparecem
-              apenas na primeira vez (sistema de cache).
-            </Typography>
-          </Alert>
-        </Stack>
+        <Alert severity="info">
+          <Typography variant="body2">
+            <strong>Teste:</strong> Clique no botão acima várias vezes. Note que os logs aparecem
+            apenas na primeira vez (sistema de cache).
+          </Typography>
+        </Alert>
+      </Stack>
 
-        <GuidanceConsoleDemo
-          title="Demonstração de Cache"
-          description={`Re-render #${renderCount} - Logs aparecem só na primeira execução`}
-          expectedLogs={[
-            `Render #1: 🍪 LGPD-CONSENT v0.4.1 - Sistema de Consentimento Ativo`,
-            `Render #1: 🍪 Avisos de Configuração (primeira vez)`,
-            `Render #${renderCount}: (sem logs - cache ativo)`,
-          ]}
-        />
-      </Box>
-    </ConsentProvider>
+      <GuidanceConsoleDemo
+        title="Demonstração de Cache"
+        description={`Re-render #${renderCount} - Logs aparecem só na primeira execução`}
+        expectedLogs={[
+          `Render #1: 🍪 LGPD-CONSENT - Sistema de Consentimento Ativo`,
+          `Render #1: 🍪 Avisos de Configuração (primeira vez)`,
+          `Render #${renderCount}: (sem logs - cache ativo)`,
+        ]}
+      />
+    </Box>
   )
 }
 
@@ -172,7 +170,7 @@ export const DefaultConfiguration: Story = {
           title="Sem Configuração de Categorias"
           description="ConsentProvider sem prop 'categories' - usa configuração padrão"
           expectedLogs={[
-            '🍪 LGPD-CONSENT v0.4.1 - Sistema de Consentimento Ativo',
+            '🍪 LGPD-CONSENT - Sistema de Consentimento Ativo',
             '🍪 Avisos de Configuração',
             '  ⚠️ LGPD-CONSENT: Nenhuma configuração de categorias especificada...',
             '🍪 Configuração Ativa',
@@ -205,7 +203,7 @@ export const OnlyNecessaryCookies: Story = {
           title="Configuração Minimalista"
           description="Apenas categoria 'necessary' configurada"
           expectedLogs={[
-            '🍪 LGPD-CONSENT v0.4.1 - Sistema de Consentimento Ativo',
+            '🍪 LGPD-CONSENT - Sistema de Consentimento Ativo',
             '🍪 Sugestões',
             '  💡 Apenas cookies necessários estão configurados...',
             '🍪 Configuração Ativa',
@@ -240,7 +238,7 @@ export const MismatchedIntegrations: Story = {
           title="Facebook Pixel sem Categoria Marketing"
           description="Tentativa de carregar Facebook Pixel sem categoria 'marketing' configurada"
           expectedLogs={[
-            '🍪 LGPD-CONSENT v0.4.1 - Sistema de Consentimento Ativo',
+            '🍪 LGPD-CONSENT - Sistema de Consentimento Ativo',
             '🍪 Avisos de Configuração',
             '  ⚠️ Integrações detectadas requerem categoria marketing...',
             '🍪 Sugestões',
@@ -295,7 +293,7 @@ export const OptimalConfiguration: Story = {
           title="Configuração LGPD Completa"
           description="Todas as categorias necessárias configuradas adequadamente"
           expectedLogs={[
-            '🍪 LGPD-CONSENT v0.4.1 - Sistema de Consentimento Ativo',
+            '🍪 LGPD-CONSENT - Sistema de Consentimento Ativo',
             '(Sem avisos ou sugestões - configuração ótima)',
             '(Logs de boas práticas não exibidos - não há problemas)',
           ]}
@@ -326,5 +324,9 @@ export const OptimalConfiguration: Story = {
 
 // Story 5: Cache do sistema (demonstra logs únicos)
 export const CachingSystem: Story = {
-  render: () => <CacheDemo />,
+  render: () => (
+    <ConsentProvider>
+      <CacheDemo />
+    </ConsentProvider>
+  ),
 }
