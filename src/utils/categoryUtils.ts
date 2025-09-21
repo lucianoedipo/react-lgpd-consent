@@ -119,8 +119,8 @@ export function validateProjectPreferences(
   })
 
   // Mantém somente categorias customizadas presentes na configuração
-  const custom = config?.customCategories || []
-  custom.forEach((cat) => {
+  const customCategories = config?.customCategories || []
+  customCategories.forEach((cat) => {
     const id = cat.id
     if (id && id !== 'necessary' && preferences[id] !== undefined) {
       validPreferences[id] = preferences[id]
