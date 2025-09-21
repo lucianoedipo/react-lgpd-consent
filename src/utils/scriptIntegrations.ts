@@ -276,13 +276,39 @@ export function createUserWayIntegration(config: UserWayConfig): ScriptIntegrati
   }
 }
 
+/**
+ * Funções fábricas para integrações comuns.
+ * Fornece acesso direto às funções de criação de integrações pré-configuradas.
+ *
+ * @category Utils
+ * @since 0.2.0
+ *
+ * @example
+ * ```typescript
+ * const ga = COMMON_INTEGRATIONS.googleAnalytics({ measurementId: 'G-XXXXXXXXXX' })
+ * ```
+ */
 export const COMMON_INTEGRATIONS = {
   googleAnalytics: createGoogleAnalyticsIntegration,
   googleTagManager: createGoogleTagManagerIntegration,
   userway: createUserWayIntegration,
 }
 
-/** Configuração Facebook Pixel. */
+/**
+ * Configuração para integração do Facebook Pixel.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: FacebookPixelConfig = {
+ *   pixelId: '1234567890123456',
+ *   autoTrack: true,
+ *   advancedMatching: { email: 'user@example.com' }
+ * }
+ * ```
+ */
 export interface FacebookPixelConfig {
   /** ID do pixel do Facebook */
   pixelId: string
@@ -294,7 +320,21 @@ export interface FacebookPixelConfig {
   scriptUrl?: string
 }
 
-/** Configuração Hotjar. */
+/**
+ * Configuração para integração do Hotjar.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: HotjarConfig = {
+ *   siteId: '1234567',
+ *   version: 6,
+ *   debug: false
+ * }
+ * ```
+ */
 export interface HotjarConfig {
   /** ID do site no Hotjar */
   siteId: string
@@ -306,7 +346,21 @@ export interface HotjarConfig {
   scriptUrl?: string
 }
 
-/** Configuração Mixpanel. */
+/**
+ * Configuração para integração do Mixpanel.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: MixpanelConfig = {
+ *   token: 'your-project-token',
+ *   config: { debug: true },
+ *   api_host: 'https://api.mixpanel.com'
+ * }
+ * ```
+ */
 export interface MixpanelConfig {
   /** Token do projeto Mixpanel */
   token: string
@@ -318,7 +372,20 @@ export interface MixpanelConfig {
   scriptUrl?: string
 }
 
-/** Configuração Microsoft Clarity. */
+/**
+ * Configuração para integração do Microsoft Clarity.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: ClarityConfig = {
+ *   projectId: 'abcdefghij',
+ *   upload: true
+ * }
+ * ```
+ */
 export interface ClarityConfig {
   /** ID do projeto no Microsoft Clarity */
   projectId: string
@@ -328,7 +395,19 @@ export interface ClarityConfig {
   scriptUrl?: string
 }
 
-/** Configuração Intercom. */
+/**
+ * Configuração para integração do Intercom.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: IntercomConfig = {
+ *   app_id: 'your-app-id'
+ * }
+ * ```
+ */
 export interface IntercomConfig {
   /** ID da aplicação Intercom */
   app_id: string
@@ -336,7 +415,19 @@ export interface IntercomConfig {
   scriptUrl?: string
 }
 
-/** Configuração Zendesk Chat. */
+/**
+ * Configuração para integração do Zendesk Chat.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: ZendeskConfig = {
+ *   key: 'your-zendesk-key'
+ * }
+ * ```
+ */
 export interface ZendeskConfig {
   /** Chave de identificação do Zendesk */
   key: string
@@ -683,6 +774,21 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
   }
 }
 
+/**
+ * Configuração para conjunto de integrações de e-commerce.
+ * Define configurações opcionais para múltiplas integrações otimizadas para e-commerce.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: ECommerceConfig = {
+ *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
+ *   facebookPixel: { pixelId: '1234567890123456' }
+ * }
+ * ```
+ */
 export interface ECommerceConfig {
   /** Configuração do Google Analytics */
   googleAnalytics?: GoogleAnalyticsConfig
@@ -694,6 +800,22 @@ export interface ECommerceConfig {
   userway?: UserWayConfig
 }
 
+/**
+ * Configuração para conjunto de integrações de SaaS.
+ * Define configurações opcionais para múltiplas integrações otimizadas para SaaS.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: SaaSConfig = {
+ *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
+ *   mixpanel: { token: 'your-token' },
+ *   intercom: { app_id: 'your-app-id' }
+ * }
+ * ```
+ */
 export interface SaaSConfig {
   /** Configuração do Google Analytics */
   googleAnalytics?: GoogleAnalyticsConfig
@@ -705,6 +827,22 @@ export interface SaaSConfig {
   hotjar?: HotjarConfig
 }
 
+/**
+ * Configuração para conjunto de integrações corporativas.
+ * Define configurações opcionais para múltiplas integrações otimizadas para ambientes corporativos.
+ *
+ * @category Utils
+ * @since 0.4.1
+ *
+ * @example
+ * ```typescript
+ * const config: CorporateConfig = {
+ *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
+ *   clarity: { projectId: 'abcdefghij' },
+ *   userway: { accountId: 'XXXXXXXXXX' }
+ * }
+ * ```
+ */
 export interface CorporateConfig {
   /** Configuração do Google Analytics */
   googleAnalytics?: GoogleAnalyticsConfig
