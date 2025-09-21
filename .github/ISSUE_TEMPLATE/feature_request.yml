@@ -29,10 +29,8 @@ body:
     attributes:
       label: 'Breaking change?'
       options:
-        - label: 'No'
-          value: 'no'
-        - label: 'Yes'
-          value: 'yes'
+        - 'No'
+        - 'Yes'
 
   - type: textarea
     id: acceptance
