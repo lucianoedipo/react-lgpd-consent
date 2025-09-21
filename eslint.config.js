@@ -9,14 +9,14 @@ try {
   storybook = null
 }
 
-import globals from 'globals'
 import pluginJs from '@eslint/js'
-import tseslint from 'typescript-eslint'
-import reactHooks from 'eslint-plugin-react-hooks'
-import jestPlugin from 'eslint-plugin-jest'
 import prettier from 'eslint-config-prettier'
-import { fileURLToPath } from 'url'
+import jestPlugin from 'eslint-plugin-jest'
+import reactHooks from 'eslint-plugin-react-hooks'
+import globals from 'globals'
 import { dirname } from 'path'
+import tseslint from 'typescript-eslint'
+import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const jestFlat = jestPlugin.configs?.['flat/recommended'] ?? {}
@@ -139,6 +139,22 @@ export default [
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/ban-ts-comment': 'off',
+    },
+  },
+
+  // Scripts de build/CI (Node.js puro)
+  {
+    files: ['scripts/**/*.{js,cjs,mjs}', 'scripts/**/*.ts'],
+    languageOptions: {
+      globals: { ...globals.node },
+      ecmaVersion: 2022,
+      sourceType: 'script', // Para .cjs files
+    },
+    rules: {
+      '@typescript-eslint/no-require-imports': 'off',
+      '@typescript-eslint/no-var-requires': 'off',
+      'no-console': 'off', // Scripts podem usar console
+      '@typescript-eslint/no-unused-vars': 'off', // Para exports condicionais
     },
   },
 
