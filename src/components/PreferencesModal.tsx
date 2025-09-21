@@ -143,12 +143,29 @@ export function PreferencesModal({
             // Integrations used (global), SSR-safe
             const used: string[] = globalThis.__LGPD_USED_INTEGRATIONS__ || []
             const descriptors = getCookiesInfoForCategory(category.id as unknown as Category, used)
+            
+            // Buscar cookiesInfo das integrações ativas
+            const enrichedDescriptors = descriptors.map(desc => {
+              // Se já tem informações completas, retorna como está
+              if (desc.purpose && desc.duration && desc.provider) {
+                return desc
+              }
+              
+              // Caso contrário, retorna apenas o que tem
+              return {
+                name: desc.name,
+                purpose: desc.purpose || '-',
+                duration: desc.duration || '-',
+                provider: desc.provider || '-'
+              }
+            })
+            
             // Merge names not in descriptors
             const merged = [
-              ...descriptors,
+              ...enrichedDescriptors,
               ...namesFromGuidance
-                .filter((n) => !descriptors.find((d) => d.name === n))
-                .map((n) => ({ name: n })),
+                .filter((n) => !enrichedDescriptors.find((d) => d.name === n))
+                .map((n) => ({ name: n, purpose: '-', duration: '-', provider: '-' })),
             ]
             return (
               <Box key={category.id} sx={{ mb: 1 }}>
@@ -182,9 +199,9 @@ export function PreferencesModal({
                         {merged.map((d, idx) => (
                           <tr key={d.name + idx}>
                             <td>{d.name}</td>
-                            <td>{(d as unknown as { purpose?: string }).purpose ?? '-'}</td>
-                            <td>{(d as unknown as { duration?: string }).duration ?? '-'}</td>
-                            <td>{(d as unknown as { provider?: string }).provider ?? '-'}</td>
+                            <td>{d.purpose}</td>
+                            <td>{d.duration}</td>
+                            <td>{d.provider}</td>
                           </tr>
                         ))}
                       </tbody>

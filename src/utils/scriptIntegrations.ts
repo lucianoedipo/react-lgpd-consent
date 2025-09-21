@@ -52,6 +52,13 @@ export interface ScriptIntegration {
   attrs?: Record<string, string>
   /** Lista de cookies que o script pode definir */
   cookies?: string[]
+  /** Informações detalhadas dos cookies (nome, finalidade, duração, fornecedor) */
+  cookiesInfo?: Array<{
+    name: string
+    purpose: string
+    duration: string
+    provider: string
+  }>
 }
 
 /**
@@ -150,6 +157,26 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
     category: 'analytics',
     src,
     cookies: ['_ga', '_ga_*', '_gid'],
+    cookiesInfo: [
+      {
+        name: '_ga',
+        purpose: 'Identificação única de visitantes para análise de tráfego',
+        duration: '2 anos',
+        provider: 'Google Analytics',
+      },
+      {
+        name: '_ga_*',
+        purpose: 'Rastreamento de sessões e eventos específicos do stream GA4',
+        duration: '2 anos',
+        provider: 'Google Analytics',
+      },
+      {
+        name: '_gid',
+        purpose: 'Distinção de visitantes únicos em período de 24h',
+        duration: '24 horas',
+        provider: 'Google Analytics',
+      },
+    ],
     init: () => {
       if (typeof window !== 'undefined') {
         type Gtag = (...args: unknown[]) => void
@@ -409,6 +436,38 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
       '_hjIncludedInSessionSample',
       '_hjAbsoluteSessionInProgress',
     ],
+    cookiesInfo: [
+      {
+        name: '_hjSession_*',
+        purpose: 'Identificação única da sessão de gravação e heatmaps',
+        duration: '30 minutos',
+        provider: 'Hotjar',
+      },
+      {
+        name: '_hjSessionUser_*',
+        purpose: 'Identificação persistente do usuário entre sessões',
+        duration: '365 dias',
+        provider: 'Hotjar',
+      },
+      {
+        name: '_hjFirstSeen',
+        purpose: 'Detecção de primeira visita do usuário ao site',
+        duration: 'Sessão',
+        provider: 'Hotjar',
+      },
+      {
+        name: '_hjIncludedInSessionSample',
+        purpose: 'Indica se a sessão está incluída na amostra de gravação',
+        duration: '30 minutos',
+        provider: 'Hotjar',
+      },
+      {
+        name: '_hjAbsoluteSessionInProgress',
+        purpose: 'Detecta se uma sessão absoluta está em progresso',
+        duration: '30 minutos',
+        provider: 'Hotjar',
+      },
+    ],
     init: () => {
       if (typeof window !== 'undefined') {
         type HjFn = ((...args: unknown[]) => void) & { q?: unknown[] }
@@ -459,6 +518,14 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
     category: 'analytics',
     src,
     cookies: ['mp_*'],
+    cookiesInfo: [
+      {
+        name: 'mp_*',
+        purpose: 'Rastreamento de eventos e propriedades do usuário para analytics',
+        duration: '1 ano',
+        provider: 'Mixpanel',
+      },
+    ],
     init: () => {
       if (typeof window !== 'undefined') {
         const w = window as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
