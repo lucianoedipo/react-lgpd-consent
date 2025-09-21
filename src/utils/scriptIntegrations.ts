@@ -1,30 +1,93 @@
-/**
- * @interface ScriptIntegration
- * Estrutura de uma integração de script de terceiros a ser carregada condicionalmente conforme o consentimento.
- *
- * @remarks
- * - `category` é um `Category` tipado (ex.: 'analytics', 'marketing').
- * - `init` roda após o script ser inserido no DOM e carregado.
- * - `attrs` é repassado como atributos HTML da tag `<script>`.
- */
 import type { Category } from '../types/types'
 
 export interface ScriptIntegration {
-  /** Um ID único para esta integração de script. */
   id: string
-  /** Categoria de consentimento necessária para carregar o script. */
   category: Category
-  /** A URL do script a ser carregado. */
   src: string
-  /** Uma função opcional a ser executada após o script ser carregado e inicializado no DOM. */
   init?: () => void
-  /** Um objeto de atributos HTML a serem adicionados à tag `<script>` (ex: `{ async: 'true' }`). */
   attrs?: Record<string, string>
+  cookies?: string[]
 }
 
-// ----------------------
-// New integrations (v0.4.1)
-// ----------------------
+export interface GoogleAnalyticsConfig {
+  measurementId: string
+  config?: Record<string, unknown>
+}
+
+export interface GoogleTagManagerConfig {
+  containerId: string
+  dataLayerName?: string
+}
+
+export interface UserWayConfig {
+  accountId: string
+}
+
+export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig): ScriptIntegration {
+  return {
+    id: 'google-analytics',
+    category: 'analytics',
+    src: `https://www.googletagmanager.com/gtag/js?id=${config.measurementId}`,
+    cookies: ['_ga', '_ga_*', '_gid'],
+    init: () => {
+      if (typeof window !== 'undefined') {
+        type Gtag = (...args: unknown[]) => void
+        const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
+        w.dataLayer = w.dataLayer ?? []
+        const gtag: Gtag = (...args: unknown[]) => {
+          w.dataLayer!.push(...args)
+        }
+        w.gtag = gtag
+        gtag('js', new Date())
+        gtag('config', config.measurementId, config.config ?? {})
+      }
+    },
+    attrs: { async: 'true' },
+  }
+}
+
+export function createGoogleTagManagerIntegration(
+  config: GoogleTagManagerConfig,
+): ScriptIntegration {
+  return {
+    id: 'google-tag-manager',
+    category: 'analytics',
+    src: `https://www.googletagmanager.com/gtm.js?id=${config.containerId}`,
+    cookies: ['_gcl_au'],
+    init: () => {
+      if (typeof window !== 'undefined') {
+        const dataLayerName = config.dataLayerName || 'dataLayer'
+        const w = window as unknown as Record<string, unknown>
+        const layer = (w[dataLayerName] as unknown[]) ?? []
+        w[dataLayerName] = layer
+        layer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+      }
+    },
+  }
+}
+
+export function createUserWayIntegration(config: UserWayConfig): ScriptIntegration {
+  return {
+    id: 'userway',
+    category: 'functional',
+    src: 'https://cdn.userway.org/widget.js',
+    cookies: ['_userway_*'],
+    init: () => {
+      if (typeof window !== 'undefined') {
+        const w = window as Window & { UserWayWidgetApp?: { accountId?: string } }
+        w.UserWayWidgetApp = w.UserWayWidgetApp || {}
+        w.UserWayWidgetApp.accountId = config.accountId
+      }
+    },
+    attrs: { 'data-account': config.accountId },
+  }
+}
+
+export const COMMON_INTEGRATIONS = {
+  googleAnalytics: createGoogleAnalyticsIntegration,
+  googleTagManager: createGoogleTagManagerIntegration,
+  userway: createUserWayIntegration,
+}
 
 export interface FacebookPixelConfig {
   pixelId: string
@@ -57,151 +120,12 @@ export interface ZendeskConfig {
   key: string
 }
 
-/**
- * @interface GoogleAnalyticsConfig
- * Configuração específica para a integração com o Google Analytics 4 (GA4).
- */
-export interface GoogleAnalyticsConfig {
-  /** O ID de medição do GA4 (ex: 'G-XXXXXXXXXX'). */
-  measurementId: string
-  /** Objeto opcional repassado para `gtag('config')`. */
-  config?: Record<string, unknown>
-}
-
-/**
- * @interface GoogleTagManagerConfig
- * Configuração específica para a integração com o Google Tag Manager (GTM).
- */
-export interface GoogleTagManagerConfig {
-  /** O ID do contêiner do GTM (ex: 'GTM-XXXXXXX'). */
-  containerId: string
-  /** O nome da camada de dados (dataLayer) a ser usada. Padrão: 'dataLayer'. */
-  dataLayerName?: string
-}
-
-/**
- * @interface UserWayConfig
- * Configuração específica para a integração com o widget de acessibilidade UserWay.
- */
-export interface UserWayConfig {
-  /** O ID da conta UserWay. */
-  accountId: string
-}
-
-/**
- * @function
- * @category Utils
- * @since 0.2.0
- * Cria uma integração para Google Analytics 4 (GA4).
- *
- * @param {GoogleAnalyticsConfig} config Configuração com `measurementId` e `config` opcional.
- * @returns {ScriptIntegration} Integração tipada com `category: 'analytics'`.
- */
-export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig): ScriptIntegration {
-  return {
-    id: 'google-analytics',
-    category: 'analytics',
-    src: `https://www.googletagmanager.com/gtag/js?id=${config.measurementId}`,
-    init: () => {
-      if (typeof window !== 'undefined') {
-        type Gtag = (...args: unknown[]) => void
-        const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
-        w.dataLayer = w.dataLayer ?? []
-        const gtag: Gtag = (...args: unknown[]) => {
-          w.dataLayer!.push(...args)
-        }
-        w.gtag = gtag
-        gtag('js', new Date())
-        gtag('config', config.measurementId, config.config ?? {})
-      }
-    },
-    attrs: { async: 'true' },
-  }
-}
-
-/**
- * @function
- * @category Utils
- * @since 0.2.0
- * Cria uma integração para Google Tag Manager (GTM).
- *
- * @param {GoogleTagManagerConfig} config Configuração com `containerId` e `dataLayerName` opcional.
- * @returns {ScriptIntegration} Integração tipada com `category: 'analytics'`.
- */
-export function createGoogleTagManagerIntegration(
-  config: GoogleTagManagerConfig,
-): ScriptIntegration {
-  return {
-    id: 'google-tag-manager',
-    category: 'analytics',
-    src: `https://www.googletagmanager.com/gtm.js?id=${config.containerId}`,
-    init: () => {
-      if (typeof window !== 'undefined') {
-        const dataLayerName = config.dataLayerName || 'dataLayer'
-        const w = window as unknown as Record<string, unknown>
-        const layer = (w[dataLayerName] as unknown[]) ?? []
-        w[dataLayerName] = layer
-        layer.push({
-          'gtm.start': new Date().getTime(),
-          event: 'gtm.js',
-        })
-      }
-    },
-  }
-}
-
-/**
- * @function
- * @category Utils
- * @since 0.2.0
- * Cria uma integração para o widget de acessibilidade UserWay.
- *
- * @param {UserWayConfig} config Configuração com `accountId`.
- * @returns {ScriptIntegration} Integração tipada com `category: 'functional'`.
- */
-export function createUserWayIntegration(config: UserWayConfig): ScriptIntegration {
-  return {
-    id: 'userway',
-    category: 'functional',
-    src: 'https://cdn.userway.org/widget.js',
-    init: () => {
-      if (typeof window !== 'undefined') {
-        const w = window as Window & { UserWayWidgetApp?: { accountId?: string } }
-        w.UserWayWidgetApp = w.UserWayWidgetApp || {}
-        w.UserWayWidgetApp.accountId = config.accountId
-      }
-    },
-    attrs: { 'data-account': config.accountId },
-  }
-}
-
-/**
- * @constant
- * @category Utils
- * @since 0.2.0
- * Objeto contendo as factory functions para as integrações pré-configuradas mais comuns.
- *
- * @example
- * ```tsx
- * import { COMMON_INTEGRATIONS } from 'react-lgpd-consent';
- * const gaIntegration = COMMON_INTEGRATIONS.googleAnalytics({ measurementId: 'G-XYZ' });
- * ```
- */
-export const COMMON_INTEGRATIONS = {
-  googleAnalytics: createGoogleAnalyticsIntegration,
-  googleTagManager: createGoogleTagManagerIntegration,
-  userway: createUserWayIntegration,
-}
-
-/**
- * Cria integração para Facebook Pixel.
- * @since 0.4.1
- */
 export function createFacebookPixelIntegration(config: FacebookPixelConfig): ScriptIntegration {
   return {
     id: 'facebook-pixel',
     category: 'marketing',
     src: 'https://connect.facebook.net/en_US/fbevents.js',
+    cookies: ['_fbp', 'fr'],
     init: () => {
       if (typeof window !== 'undefined') {
         type FbqFn = ((...args: unknown[]) => void) & {
@@ -218,29 +142,24 @@ export function createFacebookPixelIntegration(config: FacebookPixelConfig): Scr
               fbq.queue = fbq.queue || []
               fbq.queue.push(args)
             }
-          }) as FbqFn
+          })
           fbq.loaded = true
           w.fbq = fbq
         }
         w.fbq('init', config.pixelId, config.advancedMatching ?? {})
-        if (config.autoTrack !== false) {
-          w.fbq('track', 'PageView')
-        }
+        if (config.autoTrack !== false) w.fbq('track', 'PageView')
       }
     },
   }
 }
 
-/**
- * Cria integração para Hotjar.
- * @since 0.4.1
- */
 export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration {
   const v = config.version ?? 6
   return {
     id: 'hotjar',
     category: 'analytics',
     src: `https://static.hotjar.com/c/hotjar-${config.siteId}.js?sv=${v}`,
+    cookies: ['_hjSession_*', '_hjSessionUser_*', '_hjFirstSeen', '_hjIncludedInSessionSample', '_hjAbsoluteSessionInProgress'],
     init: () => {
       if (typeof window !== 'undefined') {
         type HjFn = ((...args: unknown[]) => void) & { q?: unknown[] }
@@ -250,7 +169,7 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
           const hj: HjFn = ((...args: unknown[]) => {
             hj.q = hj.q || []
             hj.q.push(args)
-          }) as HjFn
+          })
           w.hj = hj
         }
         if (config.debug && typeof console !== 'undefined' && typeof console.info === 'function') {
@@ -261,15 +180,12 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
   }
 }
 
-/**
- * Cria integração para Mixpanel.
- * @since 0.4.1
- */
 export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegration {
   return {
     id: 'mixpanel',
     category: 'analytics',
     src: 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js',
+    cookies: ['mp_*'],
     init: () => {
       if (typeof window !== 'undefined') {
         const w = window as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
@@ -288,20 +204,16 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
   }
 }
 
-/**
- * Cria integração para Microsoft Clarity.
- * @since 0.4.1
- */
 export function createClarityIntegration(config: ClarityConfig): ScriptIntegration {
   return {
     id: 'clarity',
     category: 'analytics',
     src: `https://www.clarity.ms/tag/${config.projectId}`,
+    cookies: ['_clck', '_clsk', 'CLID', 'ANONCHK', 'MR', 'MUID', 'SM'],
     init: () => {
-      if (typeof window !== 'undefined' && config.upload !== undefined) {
-        // Clarity script carrega automaticamente, init apenas para configurações adicionais
+      if (typeof window !== 'undefined' && typeof config.upload !== 'undefined') {
         const w = window as unknown as { clarity?: (...args: unknown[]) => void }
-        if (w.clarity && typeof w.clarity === 'function') {
+        if (typeof w.clarity === 'function') {
           try {
             w.clarity('set', 'upload', config.upload)
           } catch (error) {
@@ -315,19 +227,16 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
   }
 }
 
-/**
- * Cria integração para Intercom (chat/support).
- * @since 0.4.1
- */
 export function createIntercomIntegration(config: IntercomConfig): ScriptIntegration {
   return {
     id: 'intercom',
     category: 'functional',
     src: `https://widget.intercom.io/widget/${config.app_id}`,
+    cookies: ['intercom-id-*', 'intercom-session-*'],
     init: () => {
       if (typeof window !== 'undefined') {
         const w = window as unknown as { Intercom?: (...args: unknown[]) => void }
-        if (w.Intercom && typeof w.Intercom === 'function') {
+        if (typeof w.Intercom === 'function') {
           try {
             w.Intercom('boot', { app_id: config.app_id })
           } catch (error) {
@@ -341,19 +250,16 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
   }
 }
 
-/**
- * Cria integração para Zendesk Chat.
- * @since 0.4.1
- */
 export function createZendeskChatIntegration(config: ZendeskConfig): ScriptIntegration {
   return {
     id: 'zendesk-chat',
     category: 'functional',
     src: `https://static.zdassets.com/ekr/snippet.js?key=${config.key}`,
+    cookies: ['__zlcmid', '_zendesk_shared_session'],
     init: () => {
       if (typeof window !== 'undefined') {
         const w = window as unknown as { zE?: (...args: unknown[]) => void }
-        if (w.zE && typeof w.zE === 'function') {
+        if (typeof w.zE === 'function') {
           try {
             w.zE('webWidget', 'identify', { key: config.key })
           } catch (error) {
@@ -366,22 +272,6 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
     },
   }
 }
-
-/**
- * Sugere categorias LGPD para um script conhecido (uso auxiliar).
- * @since 0.4.1
- */
-export function suggestCategoryForScript(name: string): Category[] {
-  const n = name.toLowerCase()
-  if (n.includes('facebook') || n.includes('pixel') || n.includes('ads')) return ['marketing']
-  if (n.includes('hotjar') || n.includes('mixpanel') || n.includes('clarity')) return ['analytics']
-  if (n.includes('intercom') || n.includes('zendesk') || n.includes('chat')) return ['functional']
-  return ['analytics']
-}
-
-// ----------------------
-// Templates (v0.4.1)
-// ----------------------
 
 export interface ECommerceConfig {
   googleAnalytics?: GoogleAnalyticsConfig
@@ -404,24 +294,6 @@ export interface CorporateConfig {
   userway?: UserWayConfig
 }
 
-/**
- * @function
- * @category Utils
- * @since 0.4.1
- * Cria um conjunto de integrações pré-configuradas para e-commerce.
- * 
- * @param {ECommerceConfig} cfg Configuração das integrações disponíveis
- * @returns {ScriptIntegration[]} Array de integrações para e-commerce
- * 
- * @example
- * ```tsx
- * const integrations = createECommerceIntegrations({
- *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
- *   facebookPixel: { pixelId: '123456789' },
- *   hotjar: { siteId: '1234567' }
- * })
- * ```
- */
 export function createECommerceIntegrations(cfg: ECommerceConfig): ScriptIntegration[] {
   const list: ScriptIntegration[] = []
   if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
@@ -431,24 +303,6 @@ export function createECommerceIntegrations(cfg: ECommerceConfig): ScriptIntegra
   return list
 }
 
-/**
- * @function
- * @category Utils
- * @since 0.4.1
- * Cria um conjunto de integrações pré-configuradas para SaaS/produto.
- * 
- * @param {SaaSConfig} cfg Configuração das integrações disponíveis
- * @returns {ScriptIntegration[]} Array de integrações para SaaS
- * 
- * @example
- * ```tsx
- * const integrations = createSaaSIntegrations({
- *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
- *   mixpanel: { token: 'abc123' },
- *   intercom: { app_id: 'xyz789' }
- * })
- * ```
- */
 export function createSaaSIntegrations(cfg: SaaSConfig): ScriptIntegration[] {
   const list: ScriptIntegration[] = []
   if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
@@ -458,24 +312,6 @@ export function createSaaSIntegrations(cfg: SaaSConfig): ScriptIntegration[] {
   return list
 }
 
-/**
- * @function
- * @category Utils  
- * @since 0.4.1
- * Cria um conjunto de integrações pré-configuradas para empresas corporativas.
- * 
- * @param {CorporateConfig} cfg Configuração das integrações disponíveis
- * @returns {ScriptIntegration[]} Array de integrações para corporações
- * 
- * @example
- * ```tsx
- * const integrations = createCorporateIntegrations({
- *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
- *   clarity: { projectId: 'abc123' },
- *   zendesk: { key: 'xyz789' }
- * })
- * ```
- */
 export function createCorporateIntegrations(cfg: CorporateConfig): ScriptIntegration[] {
   const list: ScriptIntegration[] = []
   if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
@@ -485,23 +321,6 @@ export function createCorporateIntegrations(cfg: CorporateConfig): ScriptIntegra
   return list
 }
 
-/**
- * @constant
- * @category Utils
- * @since 0.4.1
- * Templates pré-configurados com integrações recomendadas por tipo de negócio.
- * 
- * @example
- * ```tsx
- * // Verificar integrações essenciais para e-commerce
- * console.log(INTEGRATION_TEMPLATES.ecommerce.essential)
- * // ['google-analytics', 'facebook-pixel']
- * 
- * // Categorias necessárias para SaaS
- * console.log(INTEGRATION_TEMPLATES.saas.categories)
- * // ['analytics', 'functional']
- * ```
- */
 export const INTEGRATION_TEMPLATES = {
   ecommerce: {
     essential: ['google-analytics', 'facebook-pixel'],
@@ -518,4 +337,12 @@ export const INTEGRATION_TEMPLATES = {
     optional: ['userway', 'zendesk-chat', 'clarity'],
     categories: ['analytics', 'functional'] as Category[],
   },
+}
+
+export function suggestCategoryForScript(name: string): Category[] {
+  const n = name.toLowerCase()
+  if (n.includes('facebook') || n.includes('pixel') || n.includes('ads')) return ['marketing']
+  if (n.includes('hotjar') || n.includes('mixpanel') || n.includes('clarity')) return ['analytics']
+  if (n.includes('intercom') || n.includes('zendesk') || n.includes('chat')) return ['functional']
+  return ['analytics']
 }

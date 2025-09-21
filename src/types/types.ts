@@ -105,6 +105,29 @@ export interface CategoryDefinition {
    * @example ['_ga', '_ga_*', '_gid']
    */
   cookies?: string[]
+
+  /**
+   * Metadados detalhados sobre cookies típicos desta categoria.
+   * Não exaustivo; serve para orientar UI e documentação.
+   */
+  cookiesInfo?: CookieDescriptor[]
+}
+
+/**
+ * Descritor de cookie com metadados úteis para UI/documentação.
+ * Mantém compatibilidade com abordagens comuns no mercado.
+ *
+ * - name: identificador/padrão do cookie
+ * - purpose: finalidade (ex.: analytics, session)
+ * - duration: tempo de retenção (ex.: '2 years', 'session')
+ * - domain/provider: opcionais, para indicar escopo/provedor
+ */
+export interface CookieDescriptor {
+  name: string
+  purpose?: string
+  duration?: string
+  domain?: string
+  provider?: string
 }
 
 /**

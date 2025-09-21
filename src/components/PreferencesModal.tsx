@@ -1,4 +1,5 @@
 import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 import Dialog, { DialogProps } from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
@@ -49,7 +50,7 @@ export function PreferencesModal({
   const { preferences, setPreferences, closePreferences, isModalOpen } = useConsent()
   const texts = useConsentTexts()
   const designTokens = useDesignTokens()
-  const { toggleableCategories } = useCategories() // Categorias que precisam de toggle
+  const { toggleableCategories, allCategories } = useCategories() // Categorias que precisam de toggle + metadados
 
   // Estado local para mudanças temporárias - INICIALIZADO com valores padrão
   const [tempPreferences, setTempPreferences] = useState<ConsentPreferences>(() => {
@@ -122,23 +123,34 @@ export function PreferencesModal({
         </Typography>
         <FormGroup>
           {/* Renderiza dinamicamente apenas categorias que precisam de toggle */}
-          {toggleableCategories.map((category) => (
-            <FormControlLabel
-              key={category.id}
-              control={
-                <Switch
-                  checked={tempPreferences[category.id] ?? false}
-                  onChange={(e) =>
-                    setTempPreferences((prev) => ({
-                      ...prev,
-                      [category.id]: e.target.checked,
-                    }))
+          {toggleableCategories.map((category) => {
+            type CatInfo = { id: string; cookies?: string[]; name: string; description: string; essential: boolean; uiRequired: boolean }
+            const full = allCategories.find((c) => c.id === category.id) as CatInfo | undefined
+            const cookieList = full?.cookies ?? []
+            return (
+              <Box key={category.id} sx={{ mb: 1 }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={tempPreferences[category.id] ?? false}
+                      onChange={(e) =>
+                        setTempPreferences((prev) => ({
+                          ...prev,
+                          [category.id]: e.target.checked,
+                        }))
+                      }
+                    />
                   }
+                  label={`${category.name} - ${category.description}`}
                 />
-              }
-              label={`${category.name} - ${category.description}`}
-            />
-          ))}
+                {cookieList.length > 0 && (
+                  <Typography variant="caption" sx={{ display: 'block', ml: 6, color: 'text.secondary' }}>
+                    Cookies típicos: {cookieList.join(', ')}
+                  </Typography>
+                )}
+              </Box>
+            )
+          })}
 
           {/* Categoria necessária sempre exibida por último (disabled) */}
           <FormControlLabel control={<Switch checked disabled />} label={texts.necessaryAlwaysOn} />

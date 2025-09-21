@@ -152,6 +152,7 @@ export {
 export type {
   Category,
   CategoryDefinition,
+  CookieDescriptor,
   ConsentContextValue,
   ConsentCookieData,
   ConsentCookieOptions,
@@ -226,4 +227,3 @@ export {
   getAllProjectCategories,
   validateProjectPreferences,
 } from './utils/categoryUtils'
-
