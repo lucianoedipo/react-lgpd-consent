@@ -71,8 +71,8 @@ export function createProjectPreferences(
   })
 
   // Incluir categorias customizadas (ids definidos pelo projeto)
-  const custom = config?.customCategories || []
-  custom.forEach((cat) => {
+  const customCategories = config?.customCategories || []
+  customCategories.forEach((cat) => {
     if (cat.id && cat.id !== 'necessary') {
       preferences[cat.id] = defaultValue
     }
