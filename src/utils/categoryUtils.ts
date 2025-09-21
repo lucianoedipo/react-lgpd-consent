@@ -171,8 +171,8 @@ export function getAllProjectCategories(config?: ProjectCategoriesConfig): Categ
   })
 
   // Acrescenta definições customizadas fornecidas pelo projeto
-  const custom = config?.customCategories || []
-  custom.forEach((cat) => {
+  const customCategories = config?.customCategories || []
+  customCategories.forEach((cat) => {
     if (cat.id && cat.id !== 'necessary') {
       allCategories.push({ ...cat, essential: !!cat.essential })
     }
