@@ -26,8 +26,10 @@ const DEFAULT_CATEGORIES: Category[] = [
  * @returns Um objeto `ConsentPreferences` com as categorias e seus valores iniciais.
  * @remarks
  * Esta função é crucial para inicializar o estado de consentimento. Ela garante que apenas as categorias
- * definidas no `ConsentProvider` sejam incluídas no objeto de preferências, alinhando-se ao princípio
- * de minimização de dados da LGPD.
+ * definidas no `ConsentProvider` sejam incluídas no objeto de preferências (tanto categorias padrão
+ * em `enabledCategories` quanto `customCategories`), alinhando-se ao princípio de minimização de dados da LGPD.
+ *
+ * Since v0.4.0: inclui categorias de `config.customCategories` na inicialização.
  * @example
  * ```ts
  * // Gera preferências com 'analytics' e 'marketing' desabilitados por padrão
@@ -35,6 +37,15 @@ const DEFAULT_CATEGORIES: Category[] = [
  *   enabledCategories: ['analytics', 'marketing']
  * })
  * // Result: { necessary: true, analytics: false, marketing: false }
+ *
+ * // Inclui categorias customizadas
+ * const initialWithCustom = createProjectPreferences({
+ *   enabledCategories: ['analytics'],
+ *   customCategories: [
+ *     { id: 'abTesting', name: 'AB Testing', description: 'Experimentos de interface' },
+ *   ],
+ * })
+ * // Result: { necessary: true, analytics: false, abTesting: false }
  *
  * // Gera preferências com todas as categorias habilitadas
  * const allAcceptedPrefs = createProjectPreferences(
@@ -59,6 +70,14 @@ export function createProjectPreferences(
     }
   })
 
+  // Incluir categorias customizadas (ids definidos pelo projeto)
+  const customCategories = config?.customCategories || []
+  customCategories.forEach((cat) => {
+    if (cat.id && cat.id !== 'necessary') {
+      preferences[cat.id] = defaultValue
+    }
+  })
+
   return preferences
 }
 
@@ -73,6 +92,8 @@ export function createProjectPreferences(
  * Garante a integridade dos dados ao carregar o estado de um cookie. Se a configuração do projeto mudou
  * (ex: uma categoria foi removida), esta função limpa as preferências obsoletas do estado,
  * evitando inconsistências.
+ *
+ * Since v0.4.0: reconhece `config.customCategories` como válidas ao validar.
  * @example
  * ```ts
  * const savedPrefs = { necessary: true, analytics: true, oldCategory: false }
@@ -97,6 +118,15 @@ export function validateProjectPreferences(
     }
   })
 
+  // Mantém somente categorias customizadas presentes na configuração
+  const customCategories = config?.customCategories || []
+  customCategories.forEach((cat) => {
+    const id = cat.id
+    if (id && id !== 'necessary' && preferences[id] !== undefined) {
+      validPreferences[id] = preferences[id]
+    }
+  })
+
   return validPreferences
 }
 
@@ -108,7 +138,10 @@ export function validateProjectPreferences(
  * @returns Um array de objetos `CategoryDefinition`.
  * @remarks
  * Útil para construir UIs de preferência customizadas, pois fornece os nomes e descrições
- * de todas as categorias que devem ser exibidas ao usuário.
+ * de todas as categorias que devem ser exibidas ao usuário, incluindo quaisquer `customCategories`
+ * definidas no `ConsentProvider`.
+ *
+ * Since v0.4.0: inclui categorias definidas em `config.customCategories`.
  * @example
  * ```ts
  * const config = { enabledCategories: ['analytics'] }
@@ -134,6 +167,14 @@ export function getAllProjectCategories(config?: ProjectCategoriesConfig): Categ
   enabledCategories.forEach((category) => {
     if (category !== 'necessary') {
       allCategories.push(getDefaultCategoryDefinition(category))
+    }
+  })
+
+  // Acrescenta definições customizadas fornecidas pelo projeto
+  const customCategories = config?.customCategories || []
+  customCategories.forEach((cat) => {
+    if (cat.id && cat.id !== 'necessary') {
+      allCategories.push({ ...cat, essential: !!cat.essential })
     }
   })
 

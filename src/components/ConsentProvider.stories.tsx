@@ -217,3 +217,20 @@ export const DarkTheme: Story = {
     </ConsentProvider>
   ),
 }
+
+export const WithCustomCategories: Story = {
+  args: {
+    categories: {
+      enabledCategories: ['analytics'],
+      customCategories: [
+        { id: 'chat', name: 'Chat de Suporte', description: 'Widget de chat' },
+        { id: 'video', name: 'Vídeo', description: 'Players incorporados' },
+      ],
+    },
+  },
+  render: (args) => (
+    <ConsentProvider {...args}>
+      <ConsentDemo />
+    </ConsentProvider>
+  ),
+}

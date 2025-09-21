@@ -62,6 +62,49 @@ export default App
 
 ````
 
+## 🧩 Categorias customizadas (customCategories)
+Disponível a partir da v0.4.0.
+
+Adicione categorias específicas do seu projeto (ex.: chat de suporte, players de vídeo, AB testing):
+
+```tsx
+<ConsentProvider
+  categories={{
+    enabledCategories: ['analytics'],
+    customCategories: [
+      { id: 'chat', name: 'Chat de Suporte', description: 'Widget de chat' },
+      { id: 'video', name: 'Vídeo', description: 'Players incorporados' },
+      { id: 'abTesting', name: 'A/B Testing', description: 'Experimentos de interface' },
+    ],
+  }}
+>
+  <App />
+</ConsentProvider>
+```
+
+### Usando categorias customizadas no seu código
+
+```tsx
+import { useConsent } from 'react-lgpd-consent'
+
+function MyComponent() {
+  const { consent } = useConsent()
+
+  // Verificar se o usuário consentiu com categorias específicas
+  const canShowChat = consent?.preferences?.chat === true
+  const canLoadVideos = consent?.preferences?.video === true
+  const canRunABTests = consent?.preferences?.abTesting === true
+
+  return (
+    <div>
+      {canShowChat && <ChatWidget />}
+      {canLoadVideos && <VideoPlayer src="..." />}
+      {canRunABTests && <ABTestVariant />}
+    </div>
+  )
+}
+```
+
 ## 📋 Tabela Completa de Props do ConsentProvider
 
 | Prop                                 | Tipo                                                        | Obrigatória | Padrão              | Descrição                                      |

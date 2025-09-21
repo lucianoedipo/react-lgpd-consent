@@ -39,6 +39,49 @@ function App() {
 export default App
 ```
 
+## 🧩 Custom categories (customCategories)
+Available since v0.4.0.
+
+Add project-specific categories (e.g., support chat, video players, A/B testing):
+
+```tsx
+<ConsentProvider
+  categories={{
+    enabledCategories: ['analytics'],
+    customCategories: [
+      { id: 'chat', name: 'Support Chat', description: 'Chat widget' },
+      { id: 'video', name: 'Video', description: 'Embedded players' },
+      { id: 'abTesting', name: 'A/B Testing', description: 'Interface experiments' },
+    ],
+  }}
+>
+  <App />
+</ConsentProvider>
+```
+
+### Using custom categories in your code
+
+```tsx
+import { useConsent } from 'react-lgpd-consent'
+
+function MyComponent() {
+  const { consent } = useConsent()
+
+  // Check if user consented to specific categories
+  const canShowChat = consent?.preferences?.chat === true
+  const canLoadVideos = consent?.preferences?.video === true
+  const canRunABTests = consent?.preferences?.abTesting === true
+
+  return (
+    <div>
+      {canShowChat && <ChatWidget />}
+      {canLoadVideos && <VideoPlayer src="..." />}
+      {canRunABTests && <ABTestVariant />}
+    </div>
+  )
+}
+```
+
 ## 🧭 Storybook — quick note
 
 This repository ships an interactive Storybook playground used for manual testing and visual exploration of components. Quick commands:

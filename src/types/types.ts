@@ -55,12 +55,21 @@ export type Category =
  *
  * @example
  * ```typescript
+ * // Categoria padrão da biblioteca
  * const analyticsCategory: CategoryDefinition = {
  *   id: 'analytics',
  *   name: 'Cookies Analíticos',
  *   description: 'Utilizados para análise de uso do site',
  *   essential: false,
  *   cookies: ['_ga', '_ga_*', '_gid']
+ * };
+ *
+ * // Categoria customizada específica do projeto
+ * const chatCategory: CategoryDefinition = {
+ *   id: 'chat',
+ *   name: 'Chat de Suporte',
+ *   description: 'Widget de chat para suporte ao cliente',
+ *   essential: false
  * };
  * ```
  *
@@ -123,11 +132,18 @@ export interface CategoryDefinition {
  * // Configuração com categorias customizadas
  * const config: ProjectCategoriesConfig = {
  *   enabledCategories: ['analytics'],
- *   customCategories: [{
- *     id: 'support',
- *     name: 'Suporte',
- *     description: 'Cookies para sistema de suporte ao cliente'
- *   }]
+ *   customCategories: [
+ *     {
+ *       id: 'chat',
+ *       name: 'Chat de Suporte',
+ *       description: 'Widget de chat para suporte ao cliente'
+ *     },
+ *     {
+ *       id: 'abTesting',
+ *       name: 'A/B Testing',
+ *       description: 'Experimentos de interface e funcionalidades'
+ *     }
+ *   ]
  * };
  * ```
  *
@@ -144,6 +160,7 @@ export interface ProjectCategoriesConfig {
   /**
    * Categorias customizadas específicas do projeto.
    * Permite extensão além das categorias padrão da biblioteca.
+   * @example [{ id: 'chat', name: 'Chat de Suporte', description: 'Widget de chat' }]
    */
   customCategories?: CategoryDefinition[]
 }

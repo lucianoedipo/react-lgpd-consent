@@ -4,6 +4,19 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.4.0] - 2025-09-09 — Custom categories
+
+### Added
+- Support for `customCategories` in `ConsentProvider.categories`.
+  - Included in preferences initialization and validation.
+  - Shown in the Preferences modal (with name/description).
+  - Exposed via developer guidance/context for custom UIs.
+- Quickstart PT/EN sections with `customCategories` examples.
+- Storybook story: WithCustomCategories.
+
+### Notes
+- Non-breaking change; existing configurations continue to work.
+
 ## [0.3.7] - 2025-09-08 - Testes de UI e carregamento de scripts
 
 ### 🧪 Novos testes e cobertura
