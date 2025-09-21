@@ -1,6 +1,8 @@
 // src/context/CategoriesContext.tsx
 import * as React from 'react'
 import type { ProjectCategoriesConfig } from '../types/types'
+import { discoverRuntimeCookies, detectConsentCookieName } from '../utils/cookieDiscovery'
+import { DEFAULT_COOKIE_OPTS } from '../utils/cookieUtils'
 import {
   analyzeDeveloperConfiguration,
   DEFAULT_PROJECT_CATEGORIES,
@@ -53,10 +55,12 @@ export function CategoriesProvider({
   children,
   config,
   disableDeveloperGuidance,
+  disableDiscoveryLog,
 }: Readonly<{
   children: React.ReactNode
   config?: ProjectCategoriesConfig
   disableDeveloperGuidance?: boolean
+  disableDiscoveryLog?: boolean
 }>) {
   const [impliedVersion, setImpliedVersion] = React.useState(0)
 
@@ -90,6 +94,40 @@ export function CategoriesProvider({
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
   }, [contextValue.guidance, disableDeveloperGuidance])
+
+  // Descoberta de cookies em modo DEV e log pelo menos uma vez, mesmo com guidance desabilitado
+  React.useEffect(() => {
+    try {
+      const gt = globalThis as unknown as { __LGPD_DISCOVERY_LOGGED__?: boolean; process?: { env?: { NODE_ENV?: string } } }
+      const env = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
+      const isDev = env === 'development'
+      if (!isDev || gt.__LGPD_DISCOVERY_LOGGED__ === true || disableDiscoveryLog) return
+
+      const discovered = discoverRuntimeCookies()
+      const consentName = detectConsentCookieName() || DEFAULT_COOKIE_OPTS.name
+
+      const PREFIX = '[🍪 LGPD-CONSENT]'
+      if (typeof console !== 'undefined') {
+        try {
+          console.group(`${PREFIX} 🔎 Descoberta de cookies (experimental)`) //  
+          const names = Array.from(new Set([consentName, ...discovered.map((d) => d.name)].filter(Boolean)))
+          const rows = names.map((n) => ({ Cookie: n }))
+          if (typeof console.table === 'function') console.table(rows)
+          else console.log(rows)
+          console.info(
+            `${PREFIX} ℹ️  Estes nomes são detectados em tempo de execução. Ajuste ou categorize via APIs de override se necessário.`,
+          )
+          console.groupEnd()
+        } catch {
+          // ignore console errors
+        }
+      }
+
+      gt.__LGPD_DISCOVERY_LOGGED__ = true
+    } catch {
+      // ignore
+    }
+  }, [disableDiscoveryLog])
 
   return <CategoriesContext.Provider value={contextValue}>{children}</CategoriesContext.Provider>
 }

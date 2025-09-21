@@ -586,6 +586,7 @@ export interface ConsentTexts {
  * Opções para configuração do cookie de consentimento.
  * @category Types
  * @since 0.1.0
+ * @public
  */
 export interface ConsentCookieOptions {
   /** Nome do cookie. Padrão: 'cookieConsent' */
@@ -601,46 +602,424 @@ export interface ConsentCookieOptions {
 }
 
 /**
- * Tokens de design para customização visual avançada dos componentes.
+ * Tipo alias para valores de espaçamento que suportam eixos x/y.
  * @category Types
  * @since 0.1.3
- * Permite um controle mais direto sobre a aparência sem a necessidade de `sx` props complexas.
+ * @remarks
+ * Permite especificar espaçamento como string, número ou objeto com eixos x e y separados.
+ * Útil para configurações de padding e margin em design tokens.
+ * @example
+ * ```typescript
+ * const spacing: SpacingValue = { x: 10, y: 20 };
+ * ```
+ */
+type SpacingValue = string | number | { x?: string | number; y?: string | number }
+
+/**
+ * Tipo alias para cores com variações.
+ * @category Types
+ * @since 0.1.3
+ * @remarks
+ * Suporta cor simples ou objeto com variações light, main, dark e contrastText.
+ * Compatível com sistemas de design que precisam de paletas completas.
+ * @example
+ * ```typescript
+ * const color: ColorVariant = { main: '#1976d2', dark: '#1565c0' };
+ * ```
+ */
+type ColorVariant = string | { light?: string; main?: string; dark?: string , contrastText?: string }
+
+/**
+ * Tipo alias para altura com auto.
+ * @category Types
+ * @since 0.1.3
+ * @remarks
+ * Permite 'auto' ou qualquer string válida para altura CSS, com type safety.
+ * Evita valores inválidos através de interseção com Record<never, never>.
+ * @example
+ * ```typescript
+ * const height: HeightValue = 'auto';
+ * const customHeight: HeightValue = '100px';
+ * ```
+ */
+type HeightValue = 'auto' | (string & Record<never, never>)
+
+/**
+ * Tipo alias para configuração de backdrop.
+ * @category Types
+ * @since 0.1.3
+ * @remarks
+ * Define configuração do backdrop como booleano simples, string de cor ou objeto detalhado
+ * com propriedades como enabled, color, blur e opacity para controle granular.
+ * @example
+ * ```typescript
+ * const backdrop: BackdropConfig = { enabled: true, color: 'rgba(0,0,0,0.5)', blur: '4px' };
+ * ```
+ */
+type BackdropConfig = boolean | string | {
+  enabled?: boolean
+  color?: string
+  blur?: string
+  opacity?: number
+}
+
+/**
+ * Tokens de design para customização visual avançada dos componentes.
+ * 
+ * Sistema robusto de design tokens que permite controle granular sobre todos os aspectos
+ * visuais da biblioteca. Suporta responsive design, estados interativos, acessibilidade
+ * e temas dark/light.
+ * 
+ * @category Types
+ * @since 0.1.3
+ * @version 0.4.1 - Expandido substancialmente com novos tokens
+ * @public
+ * 
+ * @example Configuração básica
+ * ```tsx
+ * const tokens: DesignTokens = {
+ *   colors: {
+ *     primary: '#1976d2',
+ *     background: '#ffffff',
+ *     text: '#333333'
+ *   }
+ * }
+ * ```
+ * 
+ * @example Configuração avançada com responsive e estados
+ * ```tsx
+ * const advancedTokens: DesignTokens = {
+ *   colors: {
+ *     primary: { light: '#42a5f5', main: '#1976d2', dark: '#1565c0' },
+ *     semantic: {
+ *       error: '#f44336',
+ *       warning: '#ff9800',
+ *       success: '#4caf50',
+ *       info: '#2196f3'
+ *     }
+ *   },
+ *   spacing: {
+ *     responsive: {
+ *       mobile: { padding: '12px', margin: '8px' },
+ *       tablet: { padding: '16px', margin: '12px' },
+ *       desktop: { padding: '24px', margin: '16px' }
+ *     }
+ *   }
+ * }
+ * ```
  */
 export interface DesignTokens {
+  /**
+   * Sistema de cores expandido com suporte a variações e semântica
+   */
   colors?: {
-    background?: string
-    text?: string
-    primary?: string
-    secondary?: string
-  }
-  typography?: {
-    fontFamily?: string
-    fontSize?: {
-      banner?: string
-      modal?: string
+    /** Cor primária da aplicação */
+    primary?: ColorVariant
+    /** Cor secundária */
+    secondary?: ColorVariant
+    /** Cor de fundo principal */
+    background?: string | { main?: string; paper?: string; overlay?: string; default?: string }
+    /** Cor do texto */
+    text?: string | { primary?: string; secondary?: string; disabled?: string }
+
+    /** Cor da borda */
+    border?: ColorVariant
+    /** Cores semânticas para estados */
+    semantic?: {
+      error?: string
+      warning?: string
+      success?: string
+      info?: string
     }
+    /** Cores específicas para componentes */
+    components?: {
+      banner?: {
+        background?: string
+        text?: string
+        border?: string
+        shadow?: string
+      }
+      modal?: {
+        background?: string
+        text?: string
+        overlay?: string
+        border?: string
+      }
+      button?: {
+        primary?: { background?: string; text?: string; hover?: string }
+        secondary?: { background?: string; text?: string; hover?: string }
+        outlined?: { border?: string; text?: string; hover?: string }
+      }
+    }
+  }
+
+  /**
+   * Sistema tipográfico completo com hierarquia e responsive
+   */
+  typography?: {
+    /** Família de fontes principal */
+    fontFamily?: string | { primary?: string; secondary?: string; monospace?: string }
+    /** Tamanhos de fonte com hierarchy */
+    fontSize?: {
+      /** Tamanhos para banner */
+      banner?: {
+        title?: string
+        message?: string
+        button?: string
+      }
+      /** Tamanhos para modal */
+      modal?: {
+        title?: string
+        body?: string
+        button?: string
+        caption?: string
+      }
+      /** Scale tipográfica */
+      scale?: {
+        xs?: string
+        sm?: string
+        base?: string
+        lg?: string
+        xl?: string
+        '2xl'?: string
+        '3xl'?: string
+      }
+      /** Tamanhos específicos de cabeçalhos */
+      h1?: string
+      h2?: string
+      h3?: string
+      h4?: string
+      h5?: string
+      h6?: string
+    }
+    /** Pesos de fonte */
     fontWeight?: {
+      light?: number
       normal?: number
+      medium?: number
+      semibold?: number
       bold?: number
     }
-  }
-  spacing?: {
-    padding?: {
-      banner?: string | number
-      modal?: string | number
+    /** Altura de linha */
+    lineHeight?: {
+      tight?: number
+      normal?: number
+      relaxed?: number
+      loose?: number
     }
+    /** Espaçamento de letras */
+    letterSpacing?: {
+      tight?: string
+      normal?: string
+      wide?: string
+    }
+  }
+
+  /**
+   * Sistema de espaçamento e dimensões flexível
+   */
+  spacing?: {
+    /** Valores diretos de espaçamento */
+    xs?: string | number
+    sm?: string | number
+    md?: string | number
+    lg?: string | number
+    xl?: string | number
+    /** Escala de espaçamento base */
+    scale?: {
+      xs?: string | number
+      sm?: string | number
+      md?: string | number
+      lg?: string | number
+      xl?: string | number
+      '2xl'?: string | number
+      '3xl'?: string | number
+    }
+    /** Padding específico por componente */
+    padding?: {
+      banner?: SpacingValue
+      modal?: SpacingValue
+      button?: SpacingValue
+    }
+    /** Margem específica por componente */
+    margin?: {
+      banner?: SpacingValue
+      modal?: SpacingValue
+      button?: SpacingValue
+    }
+    /** Bordas arredondadas */
     borderRadius?: {
       banner?: string | number
       modal?: string | number
+      button?: string | number
+      /** Scale de border radius */
+      scale?: {
+        none?: string | number
+        sm?: string | number
+        md?: string | number
+        lg?: string | number
+        xl?: string | number
+        full?: string | number
+      }
+    }
+    /** Configurações responsive */
+    responsive?: {
+      mobile?: {
+        padding?: string | number
+        margin?: string | number
+        borderRadius?: string | number
+      }
+      tablet?: {
+        padding?: string | number
+        margin?: string | number
+        borderRadius?: string | number
+      }
+      desktop?: {
+        padding?: string | number
+        margin?: string | number
+        borderRadius?: string | number
+      }
     }
   }
+
+  /**
+   * Configurações de layout e posicionamento
+   */
   layout?: {
-    position?: 'bottom' | 'top' | 'floating'
+    /** Posição do banner */
+    position?: 'bottom' | 'top' | 'floating' | 'center'
+    /** Larguras por breakpoint */
     width?: {
       mobile?: string
+      tablet?: string
       desktop?: string
+      max?: string
     }
-    backdrop?: boolean | string
+    /** Alturas específicas */
+    height?: {
+      banner?: HeightValue
+      modal?: HeightValue
+      button?: HeightValue
+    }
+    /** Configuração do backdrop */
+    backdrop?: BackdropConfig
+    /** Z-index para layering */
+    zIndex?: {
+      banner?: number
+      modal?: number
+      backdrop?: number
+      floatingButton?: number
+    }
+    /** Breakpoints customizados */
+    breakpoints?: {
+      mobile?: string
+      tablet?: string
+      desktop?: string
+      wide?: string
+    }
+    /** Border radius para componentes */
+    borderRadius?:
+      | string
+      | number
+      | {
+          banner?: string | number
+          modal?: string | number
+          button?: string | number
+          scale?: {
+            none?: string | number
+            sm?: string | number
+            md?: string | number
+            lg?: string | number
+            xl?: string | number
+            full?: string | number
+          }
+        }
+  }
+
+  /**
+   * Efeitos visuais e interações
+   */
+  effects?: {
+    /** Sombras */
+    shadow?: {
+      banner?: string
+      modal?: string
+      button?: string
+      /** Scale de sombras */
+      scale?: {
+        none?: string
+        sm?: string
+        md?: string
+        lg?: string
+        xl?: string
+      }
+    }
+    /** Transições e animações */
+    transitions?: {
+      duration?: {
+        fast?: string
+        normal?: string
+        slow?: string
+      }
+      easing?: {
+        linear?: string
+        easeIn?: string
+        easeOut?: string
+        easeInOut?: string
+      }
+      /** Transições específicas */
+      banner?: {
+        enter?: string
+        exit?: string
+      }
+      modal?: {
+        enter?: string
+        exit?: string
+      }
+    }
+    /** Blur e filtros */
+    filters?: {
+      backdrop?: string
+      disabled?: string
+    }
+  }
+
+  /**
+   * Configurações de acessibilidade
+   */
+  accessibility?: {
+    /** Contraste mínimo */
+    contrast?: {
+      normal?: number
+      enhanced?: number
+    }
+    /** Configurações para motion */
+    motion?: {
+      respectPreferences?: boolean
+      reducedMotion?: {
+        duration?: string
+        easing?: string
+      }
+    }
+    /** Focus indicators */
+    focus?: {
+      color?: string
+      width?: string
+      style?: 'solid' | 'dashed' | 'dotted'
+      offset?: string
+    }
+  }
+
+  /**
+   * Temas e variações
+   */
+  themes?: {
+    /** Configurações específicas para tema claro */
+    light?: Partial<Omit<DesignTokens, 'themes'>>
+    /** Configurações específicas para tema escuro */
+    dark?: Partial<Omit<DesignTokens, 'themes'>>
+    /** Auto-detecção baseada no sistema */
+    auto?: boolean
   }
 }
 
@@ -648,6 +1027,7 @@ export interface DesignTokens {
  * Propriedades do componente ConsentProvider - configuração principal da biblioteca.
  * @category Types
  * @since 0.1.0
+ * @public
  *
  * @example Uso básico (configuração mínima):
  * ```tsx
@@ -875,6 +1255,14 @@ export interface ConsentProviderProps {
    */
   disableDeveloperGuidance?: boolean
 
+  /**
+   * Desabilita o log automático de descoberta de cookies em modo desenvolvimento.
+   * Mesmo com `disableDeveloperGuidance` ativado, por padrão a descoberta é logada uma vez para ajudar o mapeamento.
+   * Use esta prop para suprimir também esse log experimental.
+   * @since 0.4.1
+   */
+  disableDiscoveryLog?: boolean
+
   /** Elementos filhos - toda a aplicação que precisa de contexto de consentimento. */
   children: React.ReactNode
 }
@@ -883,6 +1271,7 @@ export interface ConsentProviderProps {
  * Props esperadas por um componente customizado de CookieBanner.
  * @category Types
  * @since 0.3.1
+ * @public
  * Fornece acesso ao estado de consentimento e ações necessárias para o banner.
  */
 export interface CustomCookieBannerProps {
@@ -903,6 +1292,7 @@ export interface CustomCookieBannerProps {
  * Props esperadas por um componente customizado de PreferencesModal.
  * @category Types
  * @since 0.3.1
+ * @public
  *
  * Fornece acesso às preferências atuais do usuário, funções para atualizar e salvar preferências,
  * fechar o modal e textos customizados da interface.
@@ -925,6 +1315,7 @@ export interface CustomPreferencesModalProps {
  * Props esperadas por um componente customizado de FloatingPreferencesButton.
  * @category Types
  * @since 0.3.1
+ * @public
  * Fornece acesso às ações de abertura do modal e ao estado de consentimento.
  */
 export interface CustomFloatingPreferencesButtonProps {
@@ -936,6 +1327,7 @@ export interface CustomFloatingPreferencesButtonProps {
  * Valor do contexto de consentimento, incluindo estado e métodos de manipulação.
  * @category Types
  * @since 0.1.0
+ * @public
  */
 export interface ConsentContextValue {
   /** Indica se o usuário consentiu. */

@@ -278,6 +278,7 @@ export function ConsentProvider({
   cookie: cookieOpts,
   disableDeveloperGuidance,
   children,
+  disableDiscoveryLog,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(
@@ -416,6 +417,7 @@ export function ConsentProvider({
               <CategoriesProvider
                 config={finalCategoriesConfig}
                 disableDeveloperGuidance={disableDeveloperGuidance}
+                disableDiscoveryLog={disableDiscoveryLog}
               >
                 {children}
                 {/* Modal de preferências - customizável ou padrão */}

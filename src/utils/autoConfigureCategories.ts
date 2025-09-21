@@ -312,9 +312,10 @@ export function validateNecessaryClassification(
     return warnings // Sem categoria 'necessary', nada para validar
   }
 
-  // Identifica integrações potencialmente problemáticas
-  const problematicIntegrations = integrations.filter((integration) =>
-    FORBIDDEN_NECESSARY_SCRIPTS.has(integration.id),
+  // Identifica integrações potencialmente problemáticas (marcadas como necessary quando não deveriam)
+  const problematicIntegrations = integrations.filter(
+    (integration) =>
+      integration.category === 'necessary' && FORBIDDEN_NECESSARY_SCRIPTS.has(integration.id),
   )
 
   if (problematicIntegrations.length > 0) {

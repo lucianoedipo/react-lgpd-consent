@@ -1,6 +1,6 @@
 # Guia da API - react-lgpd-consent
 
-Este documento é a referência técnica oficial para a API da biblioteca `react-lgpd-consent` (v0.3.3+).
+Este documento é a referência técnica oficial para a API da biblioteca `react-lgpd-consent` (v0.4.1+).
 
 ## Exports Principais
 
@@ -24,6 +24,12 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `createIntercomIntegration`         | Função     | (v0.4.1) Integração nativa com Intercom (chat).                                  |
 | `createZendeskChatIntegration`      | Função     | (v0.4.1) Integração nativa com Zendesk Chat.                                     |
 | `suggestCategoryForScript`          | Função     | (v0.4.1) Sugere categoria(s) LGPD para um script conhecido.                      |
+| `discoverRuntimeCookies`            | Função     | (v0.4.1) Descobre cookies em tempo real no navegador.                            |
+| `categorizeDiscoveredCookies`       | Função     | (v0.4.1) Categoriza cookies descobertos usando padrões LGPD.                     |
+| `resolveTexts`                      | Função     | (v0.4.1) Resolve textos baseados em templates e contexto.                        |
+| `TEXT_TEMPLATES`                    | Constante  | (v0.4.1) Templates pré-configurados (ecommerce, saas, governo).                  |
+| `AdvancedConsentTexts`              | Tipo       | (v0.4.1) Interface expandida com i18n e contextos.                               |
+| `DesignTokens`                      | Tipo       | (v0.4.1) Sistema completo com 200+ pontos de customização.                       |
 | `createECommerceIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para e-commerce.                                |
 | `createSaaSIntegrations`            | Função     | (v0.4.1) Cria integrações comuns para SaaS.                                      |
 | `createCorporateIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para ambientes corporativos.                    |
@@ -290,14 +296,91 @@ function App() {
 
 ---
 
+## 🆕 Novidades v0.4.1
+
+### Descoberta Automática de Cookies
+
+```tsx
+import { discoverRuntimeCookies, categorizeDiscoveredCookies } from 'react-lgpd-consent'
+
+// Descobrir cookies no navegador
+const cookies = discoverRuntimeCookies()
+console.log('Cookies encontrados:', cookies)
+
+// Categorizar automaticamente
+const categorized = categorizeDiscoveredCookies(cookies, true) // true = registra automaticamente
+```
+
+### Sistema Avançado de Textos
+
+```tsx
+import { resolveTexts, TEXT_TEMPLATES } from 'react-lgpd-consent'
+
+// Usar template pré-configurado
+const customTexts = resolveTexts(TEXT_TEMPLATES.ecommerce, {
+  variant: 'casual',    // 'formal' | 'casual' | 'technical'
+  language: 'pt'        // 'pt' | 'en' | 'es'
+})
+
+<ConsentProvider
+  texts={customTexts}
+  // ... outras props
+/>
+```
+
+### Design Tokens Expandidos
+
+```tsx
+import type { DesignTokens } from 'react-lgpd-consent'
+
+const customTokens: DesignTokens = {
+  colors: {
+    primary: {
+      main: '#2E7D32',
+      light: '#4CAF50',
+      dark: '#1B5E20'
+    },
+    background: {
+      paper: '#FFFFFF',
+      backdrop: 'rgba(46, 125, 50, 0.4)'
+    }
+  },
+  typography: {
+    h1: { fontSize: '2.5rem', fontWeight: 700 },
+    body1: { fontSize: '1rem', lineHeight: 1.6 }
+  },
+  spacing: {
+    xs: '4px',
+    sm: '8px',
+    md: '16px',
+    lg: '24px',
+    xl: '32px'
+  },
+  layout: {
+    borderRadius: '12px',
+    maxWidth: '1200px'
+  }
+}
+
+<ConsentProvider
+  designTokens={customTokens}
+  // ... outras props
+/>
+```
+
+---
+
 ## Tipos Principais
 
 Para customizações avançadas e tipagem, você pode importar os seguintes tipos:
 
-- `ConsentProviderProps`
-- `CustomCookieBannerProps`
-- `CustomPreferencesModalProps`
-- `ConsentState`
-- `ConsentPreferences`
-- `ConsentTexts`
-- `Category`
+- `ConsentProviderProps`: Interface com todas as props aceitas pelo componente `ConsentProvider`.
+- `DesignTokens`: Objeto para customização profunda da aparência, com mais de 200 tokens para cores, fontes, etc.
+- `AdvancedConsentTexts`: Objeto para internacionalização e textos contextuais, com suporte a múltiplos idiomas e variações.
+- `CookieDescriptor`: Interface que descreve a estrutura de um cookie descoberto.
+- `CustomCookieBannerProps`: Props passadas para um componente de banner customizado.
+- `CustomPreferencesModalProps`: Props passadas para um modal de preferências customizado.
+- `ConsentState`: Objeto que representa o estado completo do consentimento do usuário.
+- `ConsentPreferences`: Objeto com as preferências de consentimento para cada categoria.
+- `ConsentTexts`: Objeto com todos os textos customizáveis da UI.
+- `Category`: Objeto que representa a definição de uma categoria de cookie.

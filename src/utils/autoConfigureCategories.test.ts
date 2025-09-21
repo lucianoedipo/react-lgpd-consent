@@ -17,6 +17,7 @@ import {
   createGoogleAnalyticsIntegration,
   createGoogleTagManagerIntegration,
   createHotjarIntegration,
+  type ScriptIntegration,
 } from './scriptIntegrations'
 
 // Mock console para capturar warnings/info
@@ -274,10 +275,19 @@ describe('ConsentScriptLoader Integration', () => {
 
 describe('validateNecessaryClassification', () => {
   it('deve retornar warnings para scripts conhecidos classificados incorretamente', () => {
+    // Criando integrações com categoria INCORRETA 'necessary'
     const integrations = [
-      createGoogleAnalyticsIntegration({ measurementId: 'GA_ID' }),
-      createFacebookPixelIntegration({ pixelId: 'FB_ID' }),
-    ]
+      {
+        id: 'google-analytics',
+        category: 'necessary', // ERRO: deveria ser 'analytics'
+        src: 'test-src',
+      },
+      {
+        id: 'facebook-pixel',
+        category: 'necessary', // ERRO: deveria ser 'marketing'
+        src: 'test-src',
+      },
+    ] as ScriptIntegration[]
 
     // Simula categorias incluindo 'necessary' (perigoso!)
     const enabledCategories = ['necessary', 'analytics', 'marketing'] as Category[]
@@ -323,11 +333,24 @@ describe('validateNecessaryClassification', () => {
   })
 
   it('deve identificar múltiplos scripts problemáticos', () => {
+    // Criando integrações com categoria INCORRETA 'necessary'
     const integrations = [
-      createGoogleAnalyticsIntegration({ measurementId: 'GA_ID' }),
-      createHotjarIntegration({ siteId: 'HJ_ID' }),
-      createFacebookPixelIntegration({ pixelId: 'FB_ID' }),
-    ]
+      {
+        id: 'google-analytics',
+        category: 'necessary', // ERRO: deveria ser 'analytics'
+        src: 'test-src',
+      },
+      {
+        id: 'hotjar',
+        category: 'necessary', // ERRO: deveria ser 'analytics'
+        src: 'test-src',
+      },
+      {
+        id: 'facebook-pixel',
+        category: 'necessary', // ERRO: deveria ser 'marketing'
+        src: 'test-src',
+      },
+    ] as ScriptIntegration[]
 
     const enabledCategories = ['necessary', 'analytics', 'marketing'] as Category[]
 
@@ -342,5 +365,26 @@ describe('validateNecessaryClassification', () => {
   it('deve funcionar com array vazio de integrações', () => {
     const warnings = validateNecessaryClassification([], ['necessary'] as Category[])
     expect(warnings).toEqual([])
+  })
+
+  it('NÃO deve emitir warnings quando scripts proibidos não estão marcados como necessary', () => {
+    const integrations = [
+      {
+        id: 'google-analytics',
+        category: 'analytics', // Categoria correta
+        src: 'test-src',
+      },
+      {
+        id: 'facebook-pixel',
+        category: 'marketing', // Categoria correta
+        src: 'test-src',
+      },
+    ] as ScriptIntegration[]
+
+    const enabledCategories = ['necessary', 'analytics', 'marketing'] as Category[]
+
+    const warnings = validateNecessaryClassification(integrations, enabledCategories)
+
+    expect(warnings).toEqual([]) // Não deve haver warnings
   })
 })

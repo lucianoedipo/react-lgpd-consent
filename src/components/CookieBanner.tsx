@@ -15,7 +15,7 @@
  * - Acessibilidade completa com ARIA labels
  *
  * @author Luciano Édipo
- * @version 0.3.3
+ * @version 0.4.1
  * @since 0.1.0
  */
 

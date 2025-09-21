@@ -167,6 +167,26 @@ export function PreferencesModal({
                 .filter((n) => !enrichedDescriptors.find((d) => d.name === n))
                 .map((n) => ({ name: n, purpose: '-', duration: '-', provider: '-' })),
             ]
+
+            // Se ainda estiver vazio, tentar listar scripts ativos mapeados para esta categoria (experimental)
+            let mergedFinal = merged
+            try {
+              if (merged.length === 0) {
+                const gmap = (globalThis as unknown as { __LGPD_INTEGRATIONS_MAP__?: Record<string, string> })
+                  .__LGPD_INTEGRATIONS_MAP__ || {}
+                const scriptRows = Object.entries(gmap)
+                  .filter(([, cat]) => cat === category.id)
+                  .map(([id]) => ({
+                    name: `(script) ${id}`,
+                    purpose: 'Script de integração ativo',
+                    duration: '-',
+                    provider: '-',
+                  }))
+                if (scriptRows.length > 0) mergedFinal = scriptRows
+              }
+            } catch {
+              // ignore
+            }
             return (
               <Box key={category.id} sx={{ mb: 1 }}>
                 <FormControlLabel
@@ -196,7 +216,7 @@ export function PreferencesModal({
                         </tr>
                       </thead>
                       <tbody>
-                        {merged.map((d, idx) => (
+                        {mergedFinal.map((d, idx) => (
                           <tr key={d.name + idx}>
                             <td>{d.name}</td>
                             <td>{d.purpose}</td>
@@ -214,6 +234,37 @@ export function PreferencesModal({
 
           {/* Categoria necessária sempre exibida por último (disabled) */}
           <FormControlLabel control={<Switch checked disabled />} label={texts.necessaryAlwaysOn} />
+
+          {/* Detalhes da categoria Necessária, incluindo cookie de consentimento */}
+          <details style={{ marginLeft: 48 }}>
+            <summary>Ver detalhes</summary>
+            <Box sx={{ mt: 1 }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <thead>
+                  <tr>
+                    <th style={{ textAlign: 'left' }}>Cookie</th>
+                    <th style={{ textAlign: 'left' }}>Finalidade</th>
+                    <th style={{ textAlign: 'left' }}>Duração</th>
+                    <th style={{ textAlign: 'left' }}>Fornecedor</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(() => {
+                    const used: string[] = globalThis.__LGPD_USED_INTEGRATIONS__ || []
+                    const necessaryCookies = getCookiesInfoForCategory('necessary' as unknown as Category, used)
+                    return necessaryCookies.map((d, idx) => (
+                      <tr key={d.name + idx}>
+                        <td>{d.name}</td>
+                        <td>{d.purpose || '-'}</td>
+                        <td>{d.duration || '-'}</td>
+                        <td>{d.provider || '-'}</td>
+                      </tr>
+                    ))
+                  })()}
+                </tbody>
+              </table>
+            </Box>
+          </details>
         </FormGroup>
       </DialogContent>
 

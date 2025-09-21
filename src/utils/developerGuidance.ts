@@ -1,7 +1,7 @@
 /* eslint-env browser, node */
 
 import React from 'react'
-import type { ProjectCategoriesConfig, Category } from '../types/types'
+import type { Category, ProjectCategoriesConfig } from '../types/types'
 import { COOKIE_PATTERNS_BY_CATEGORY, getCookiesInfoForCategory } from './cookieRegistry'
 
 export interface DeveloperGuidance {
@@ -147,6 +147,79 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   return guidance
 }
 
+// Sistema de cache para evitar logs repetitivos
+const GUIDANCE_CACHE = new Set<string>()
+const SESSION_LOGGED = {
+  intro: false,
+  bestPractices: false,
+}
+
+function getGuidanceHash(guidance: DeveloperGuidance): string {
+  const sortedWarnings = [...guidance.warnings].sort((a: string, b: string) => a.localeCompare(b))
+  const sortedSuggestions = [...guidance.suggestions].sort((a: string, b: string) =>
+    a.localeCompare(b),
+  )
+  const sortedCategories = guidance.activeCategoriesInfo
+    .map((c) => c.id)
+    .sort((a: string, b: string) => a.localeCompare(b))
+
+  return JSON.stringify({
+    warnings: sortedWarnings,
+    suggestions: sortedSuggestions,
+    categories: sortedCategories,
+    usingDefaults: guidance.usingDefaults,
+  })
+}
+
+function logIntroOnce(): void {
+  if (SESSION_LOGGED.intro) return
+  SESSION_LOGGED.intro = true
+
+  console.log(
+    `%c🍪 LGPD-CONSENT v0.4.1 %c- Sistema de Consentimento Ativo`,
+    'background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+    'color: #2e7d32; font-weight: 500;',
+  )
+}
+
+function logServerSideIfAvailable(guidance: DeveloperGuidance): void {
+  // Tenta logar no servidor se estiver em ambiente Node.js (SSR/dev server)
+  try {
+    const gt = globalThis as unknown as {
+      process?: {
+        stdout?: {
+          write: (data: string) => boolean
+        }
+      }
+    }
+
+    if (gt.process?.stdout?.write) {
+      const prefix = '\x1b[36m[LGPD-CONSENT]\x1b[0m'
+      const warnings = guidance.warnings.length
+      const suggestions = guidance.suggestions.length
+      const stdout = gt.process.stdout
+
+      if (warnings > 0 || suggestions > 0) {
+        stdout.write(`${prefix} 🔧 Config: ${warnings} avisos, ${suggestions} sugestões\n`)
+
+        if (warnings > 0) {
+          guidance.warnings.forEach((w: string) => {
+            stdout.write(`${prefix} \x1b[33m⚠️  ${w}\x1b[0m\n`)
+          })
+        }
+
+        if (suggestions > 0) {
+          guidance.suggestions.forEach((s: string) => {
+            stdout.write(`${prefix} \x1b[36m💡 ${s}\x1b[0m\n`)
+          })
+        }
+      }
+    }
+  } catch {
+    // Silently ignore if not in Node.js environment
+  }
+}
+
 export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
@@ -157,53 +230,83 @@ export function logDeveloperGuidance(
   }
   const nodeEnv = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
   const isProd = nodeEnv === 'production' || gt.__LGPD_PRODUCTION__ === true
+  
   if (isProd || disableGuidanceProp) return
 
-  const PREFIX = '[🍪 LGPD-CONSENT]'
+  // Verificar se já foi logado nesta sessão
+  const guidanceHash = getGuidanceHash(guidance)
+  if (GUIDANCE_CACHE.has(guidanceHash)) return
+
+  GUIDANCE_CACHE.add(guidanceHash)
+
+  // Log no servidor se disponível
+  logServerSideIfAvailable(guidance)
+
+  // Log do browser apenas para situações importantes
+  logIntroOnce()
+
+  const PREFIX = '🍪'
+  let hasImportantInfo = false
+
+  // Apenas avisos críticos no browser
   if (guidance.warnings.length > 0) {
-    console.group(`${PREFIX} ⚠️  Avisos de Configuração`)
-    guidance.warnings.forEach((msg) => console.warn(`${PREFIX} ${msg}`))
-    console.groupEnd()
-  }
-  if (guidance.suggestions.length > 0) {
-    console.group(`${PREFIX} 💡 Sugestões`)
-    guidance.suggestions.forEach((msg) => console.info(`${PREFIX} ${msg}`))
-    console.groupEnd()
-  }
-  if (guidance.usingDefaults) {
-    console.warn(
-      `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
+    hasImportantInfo = true
+    console.group(`%c${PREFIX} Avisos de Configuração`, 'color: #f57c00; font-weight: bold;')
+    guidance.warnings.forEach((msg) =>
+      console.warn(`%c${PREFIX}%c ${msg}`, 'color: #f57c00;', 'color: #bf360c;'),
     )
-  }
-
-  const rows = guidance.activeCategoriesInfo.map((cat) => ({
-    ID: cat.id,
-    Nome: cat.name,
-    'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
-    'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
-    Cookies: (cat.cookies || []).join(', '),
-  }))
-  if (typeof console.table === 'function') {
-    console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
-    console.table(rows)
-    console.info(`${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`)
     console.groupEnd()
-  } else {
-    console.log(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`, rows)
   }
 
-  console.group(`${PREFIX} 📖 Boas práticas LGPD (Brasil)`)
-  console.info(
-    `${PREFIX} 🔒 Necessary: sempre ativos. Outras categorias devem iniciar como rejeitadas (opt-out).`,
-  )
-  console.info(`${PREFIX} 📜 Política clara por categoria e link visível para o usuário.`)
-  console.info(
-    `${PREFIX} 🧾 Registre consentimento (data/hora, origem) e permita revisão posterior.`,
-  )
-  console.info(
-    `${PREFIX} ⏳ Defina prazos de retenção compatíveis e evite coleta antes do consentimento.`,
-  )
-  console.groupEnd()
+  // Sugestões importantes (apenas se houver avisos ou uso de defaults)
+  if (guidance.suggestions.length > 0 && (guidance.warnings.length > 0 || guidance.usingDefaults)) {
+    hasImportantInfo = true
+    console.group(`%c${PREFIX} Sugestões`, 'color: #2196f3; font-weight: bold;')
+    guidance.suggestions.forEach((msg) =>
+      console.info(`%c${PREFIX}%c ${msg}`, 'color: #2196f3;', 'color: #1565c0;'),
+    )
+    console.groupEnd()
+  }
+
+  // Tabela de categorias apenas se solicitado ou há problemas
+  if (hasImportantInfo || guidance.usingDefaults) {
+    const rows = guidance.activeCategoriesInfo.map((cat) => ({
+      '📊 Categoria': cat.id,
+      '🏷️  Nome': cat.name,
+      '🎛️  UI': cat.uiRequired ? '✅' : '🔒',
+      '🍪 Cookies':
+        (cat.cookies || []).slice(0, 3).join(', ') +
+        (cat.cookies && cat.cookies.length > 3 ? ` (+${cat.cookies.length - 3})` : ''),
+    }))
+
+    if (typeof console.table === 'function') {
+      console.group(`%c${PREFIX} Configuração Ativa`, 'color: #4caf50; font-weight: bold;')
+      console.table(rows)
+      console.groupEnd()
+    }
+  }
+
+  // Boas práticas apenas uma vez por sessão
+  if (!SESSION_LOGGED.bestPractices && hasImportantInfo) {
+    SESSION_LOGGED.bestPractices = true
+    console.group(`%c${PREFIX} LGPD - Boas Práticas`, 'color: #9c27b0; font-weight: bold;')
+    console.info(
+      `%c${PREFIX}%c Necessary: sempre ativo • Demais: opt-out por padrão`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
+    console.info(
+      `%c${PREFIX}%c Documente políticas claras por categoria`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
+    console.info(
+      `%c${PREFIX}%c Registre consentimento com data/hora/origem`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
+    console.groupEnd()
+  }
 }
 
 export function useDeveloperGuidance(

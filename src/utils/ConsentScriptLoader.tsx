@@ -62,6 +62,18 @@ export function ConsentScriptLoader({
         : []
       const merged = Array.from(new Set([...(current as string[]), ...ids]))
       gt.__LGPD_USED_INTEGRATIONS__ = merged
+
+      // Mapear id -> categoria para uso na UI (experimental)
+      try {
+        const gmap = globalThis as unknown as { __LGPD_INTEGRATIONS_MAP__?: Record<string, string> }
+        const map = gmap.__LGPD_INTEGRATIONS_MAP__ || {}
+        ;(integrations || []).forEach((i) => {
+          map[i.id] = i.category
+        })
+        gmap.__LGPD_INTEGRATIONS_MAP__ = map
+      } catch {
+        // ignore
+      }
     } catch {
       // ignore
     }

@@ -1,18 +1,17 @@
+import { Alert, Box, Button, Card, CardContent, Chip, Stack, Typography } from '@mui/material'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import React from 'react'
 import { ConsentProvider } from '../context/ConsentContext'
+import { useConsent } from '../hooks/useConsent'
 import { ConsentScriptLoader } from './ConsentScriptLoader'
 import {
-  createGoogleAnalyticsIntegration,
+  createCorporateIntegrations,
+  createECommerceIntegrations,
   createFacebookPixelIntegration,
+  createGoogleAnalyticsIntegration,
   createHotjarIntegration,
   createMixpanelIntegration,
-  createECommerceIntegrations,
   createSaaSIntegrations,
-  createCorporateIntegrations,
 } from './scriptIntegrations'
-import { Box, Button, Typography } from '@mui/material'
-import { useConsent } from '../hooks/useConsent'
 
 // Helper to make integrations safe for Storybook (avoid real network requests)
 function withMockSrc<T extends { src: string }>(i: T): T {
@@ -56,20 +55,49 @@ type Story = StoryObj<
 >
 
 const DemoControls = () => {
-  const { preferences, openPreferences, acceptAll, rejectAll } = useConsent()
+  const { preferences, openPreferences, acceptAll, rejectAll, consented } = useConsent()
+
   return (
-    <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-      <Typography variant="body2">Prefs: {JSON.stringify(preferences)}</Typography>
-      <Button size="small" onClick={openPreferences}>
-        Preferências
-      </Button>
-      <Button size="small" variant="contained" onClick={acceptAll}>
-        Aceitar todos
-      </Button>
-      <Button size="small" variant="outlined" onClick={rejectAll}>
-        Recusar todos
-      </Button>
-    </Box>
+    <Card sx={{ mb: 3 }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          🎛️ Controles de Demonstração
+        </Typography>
+
+        <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
+          <Button size="small" onClick={openPreferences} variant="outlined">
+            Preferências
+          </Button>
+          <Button size="small" variant="contained" onClick={acceptAll} color="success">
+            Aceitar Todos
+          </Button>
+          <Button size="small" variant="outlined" onClick={rejectAll} color="error">
+            Recusar Todos
+          </Button>
+        </Stack>
+
+        <Alert severity={consented ? 'success' : 'warning'} sx={{ mb: 2 }}>
+          <Typography variant="body2">
+            Status: {consented ? '✅ Consentimento dado' : '⚠️ Aguardando consentimento'}
+          </Typography>
+        </Alert>
+
+        <Typography variant="subtitle2" gutterBottom>
+          🍪 Estado das Categorias:
+        </Typography>
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+          {Object.entries(preferences).map(([category, enabled]) => (
+            <Chip
+              key={category}
+              label={`${category}: ${enabled ? 'ON' : 'OFF'}`}
+              color={enabled ? 'success' : 'default'}
+              variant={enabled ? 'filled' : 'outlined'}
+              size="small"
+            />
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -98,17 +126,51 @@ export const Playground: Story = {
         disableFloatingPreferencesButton
       >
         <Box sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            ConsentScriptLoader (mocked)
+          <Typography variant="h4" gutterBottom align="center">
+            🚀 ConsentScriptLoader Demo
           </Typography>
+          <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
+            Demonstração do carregamento condicional de scripts baseado no consentimento
+          </Typography>
+
           <DemoControls />
-          <ConsentScriptLoader
-            integrations={integrations as any}
-            reloadOnChange={args.reloadOnChange}
-          />
-          <Typography variant="caption" color="text.secondary">
-            Scripts são injetados com src="data:" para evitar requisições reais.
-          </Typography>
+
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                📊 Script Loader Status
+              </Typography>
+              <ConsentScriptLoader
+                integrations={integrations as any}
+                reloadOnChange={args.reloadOnChange}
+              />
+              <Alert severity="info" sx={{ mt: 2 }}>
+                <Typography variant="body2">
+                  💡 <strong>Scripts são simulados</strong> com <code>src="data:"</code> para evitar
+                  requisições reais no Storybook. Em produção, os scripts reais seriam carregados
+                  baseados no consentimento.
+                </Typography>
+              </Alert>
+
+              {integrations.length > 0 && (
+                <Box sx={{ mt: 2 }}>
+                  <Typography variant="subtitle2" gutterBottom>
+                    🔧 Integrações Configuradas:
+                  </Typography>
+                  <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                    {integrations.map((integration, index) => (
+                      <Chip
+                        key={integration.name || `script-${integration.src || index}`}
+                        label={integration.name || `Script ${index + 1}`}
+                        variant="outlined"
+                        size="small"
+                      />
+                    ))}
+                  </Stack>
+                </Box>
+              )}
+            </CardContent>
+          </Card>
         </Box>
       </ConsentProvider>
     )

@@ -46,6 +46,27 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-c
 
 ---
 
+## ✨ Novidades v0.4.1
+
+### 🎨 Design Tokens Expandidos
+- **200+ pontos de customização** (cores, tipografia, espaçamento, layout)
+- **Sistema responsivo** com breakpoints e variações
+- **Acessibilidade nativa** com contrast ratios e focus states
+- **Temas light/dark/auto** com transições suaves
+
+### 📝 Sistema Avançado de Textos
+- **Templates pré-configurados** para ecommerce, SaaS e governo
+- **Internacionalização completa** (pt, en, es)
+- **Variações de tom** (formal, casual, técnico)
+- **Resolução automática** baseada em contexto
+
+### 🔍 Descoberta de Cookies (Experimental)
+- **Detecção automática** de cookies em runtime
+- **Categorização inteligente** usando padrões LGPD
+- **Integração nativa** com sistema de override
+
+---
+
 ## 📖 Uso Básico
 
 Envolva sua aplicação com o `ConsentProvider` (exemplo mínimo):

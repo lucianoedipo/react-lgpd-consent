@@ -1,7 +1,7 @@
 import type { Category, CookieDescriptor } from '../types/types'
 
 export const COOKIE_PATTERNS_BY_CATEGORY: Record<Category, string[]> = {
-  necessary: [],
+  necessary: ['cookieConsent'],
   analytics: ['_ga', '_ga_*', '_gid', '_gcl_au', '_hj*', 'mp_*', '_clck', '_clsk'],
   functional: ['intercom-*', '__zlcmid', '_zendesk_shared_session', '_userway_*'],
   marketing: ['_fbp', 'fr'],
@@ -29,89 +29,79 @@ export const INTEGRATION_COOKIE_PATTERNS: Record<string, string[]> = {
 
 export const COOKIE_INFO_BY_INTEGRATION: Record<string, CookieDescriptor[]> = {
   'google-analytics': [
-    { name: '_ga', purpose: 'Visitor tracking (GA4)', duration: '2 years', provider: 'Google' },
+    {
+      name: '_ga',
+      purpose: 'Identificação única de visitantes para análise de tráfego',
+      duration: '2 anos',
+      provider: 'Google Analytics',
+    },
     {
       name: '_ga_*',
-      purpose: 'Session/stream tracking (GA4)',
-      duration: '2 years',
-      provider: 'Google',
+      purpose: 'Rastreamento de sessões e eventos específicos do stream GA4',
+      duration: '2 anos',
+      provider: 'Google Analytics',
     },
     {
       name: '_gid',
-      purpose: 'Daily visitor tracking (GA4)',
-      duration: '24 hours',
-      provider: 'Google',
+      purpose: 'Distinção de visitantes únicos em período de 24h',
+      duration: '24 horas',
+      provider: 'Google Analytics',
     },
   ],
   'google-tag-manager': [
-    { name: '_gcl_au', purpose: 'Ad conversion tracking', duration: '90 days', provider: 'Google' },
+    {
+      name: '_gcl_au',
+      purpose: 'Rastreamento de conversões de anúncios',
+      duration: '90 dias',
+      provider: 'Google',
+    },
   ],
   hotjar: [
     {
       name: '_hjSession_*',
-      purpose: 'Session tracking',
-      duration: '30 minutes',
+      purpose: 'Rastreamento de sessão',
+      duration: '30 minutos',
       provider: 'Hotjar',
     },
     {
       name: '_hjSessionUser_*',
-      purpose: 'User session persistence',
-      duration: '365 days',
+      purpose: 'Persistência de usuário entre sessões',
+      duration: '365 dias',
       provider: 'Hotjar',
     },
     {
       name: '_hjFirstSeen',
-      purpose: 'First visit detection',
-      duration: 'Session',
+      purpose: 'Detecção da primeira visita do usuário',
+      duration: 'Sessão',
       provider: 'Hotjar',
     },
   ],
   mixpanel: [
-    { name: 'mp_*', purpose: 'Event analytics tracking', duration: '1 year', provider: 'Mixpanel' },
+    {
+      name: 'mp_*',
+      purpose: 'Rastreamento de eventos e propriedades do usuário para analytics',
+      duration: '1 ano',
+      provider: 'Mixpanel',
+    },
   ],
   clarity: [
-    { name: '_clck', purpose: 'User identifier', duration: '365 days', provider: 'Microsoft' },
-    { name: '_clsk', purpose: 'Session tracking', duration: '1 day', provider: 'Microsoft' },
+    { name: '_clck', purpose: 'Identificador de usuário', duration: '365 dias', provider: 'Microsoft' },
+    { name: '_clsk', purpose: 'Rastreamento de sessão', duration: '1 dia', provider: 'Microsoft' },
   ],
   intercom: [
-    {
-      name: 'intercom-id-*',
-      purpose: 'User identifier',
-      duration: '9 months',
-      provider: 'Intercom',
-    },
-    {
-      name: 'intercom-session-*',
-      purpose: 'Session management',
-      duration: '1 week',
-      provider: 'Intercom',
-    },
+    { name: 'intercom-id-*', purpose: 'Identificador do usuário', duration: '9 meses', provider: 'Intercom' },
+    { name: 'intercom-session-*', purpose: 'Gerenciamento de sessão', duration: '1 semana', provider: 'Intercom' },
   ],
   'zendesk-chat': [
-    {
-      name: '__zlcmid',
-      purpose: 'Chat session identifier',
-      duration: '1 year',
-      provider: 'Zendesk',
-    },
-    {
-      name: '_zendesk_shared_session',
-      purpose: 'Session management',
-      duration: 'Session',
-      provider: 'Zendesk',
-    },
+    { name: '__zlcmid', purpose: 'Identificador de sessão de chat', duration: '1 ano', provider: 'Zendesk' },
+    { name: '_zendesk_shared_session', purpose: 'Gerenciamento de sessão', duration: 'Sessão', provider: 'Zendesk' },
   ],
   userway: [
-    {
-      name: '_userway_*',
-      purpose: 'Accessibility preferences',
-      duration: '1 year',
-      provider: 'UserWay',
-    },
+    { name: '_userway_*', purpose: 'Preferências de acessibilidade', duration: '1 ano', provider: 'UserWay' },
   ],
   'facebook-pixel': [
-    { name: '_fbp', purpose: 'Ad tracking', duration: '90 days', provider: 'Meta' },
-    { name: 'fr', purpose: 'Ad targeting', duration: '90 days', provider: 'Meta' },
+    { name: '_fbp', purpose: 'Rastreamento de anúncios', duration: '90 dias', provider: 'Meta' },
+    { name: 'fr', purpose: 'Direcionamento de anúncios', duration: '90 dias', provider: 'Meta' },
   ],
 }
 
@@ -187,6 +177,18 @@ export function getCookiesInfoForCategory(
       if (idx >= 0) result[idx] = d
       else result.push(d)
     })
+  }
+
+  // Garante que a categoria necessária liste o cookie de consentimento
+  if (categoryId === 'necessary') {
+    if (!result.find((d) => d.name === 'cookieConsent')) {
+      result.push({
+        name: 'cookieConsent',
+        purpose: 'Armazena suas preferências de consentimento',
+        duration: '365 dias',
+        provider: 'Este site',
+      })
+    }
   }
 
   return result

@@ -1,12 +1,10 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {
-  ConsentProvider,
-  useConsent,
-  useConsentTexts,
   ConsentGate,
+  ConsentProvider,
   ConsentScriptLoader,
   createGoogleAnalyticsIntegration,
+  useConsent,
 } from 'react-lgpd-consent'
 
 // Integrações de scripts
@@ -14,13 +12,11 @@ const scriptIntegrations = [
   createGoogleAnalyticsIntegration({
     measurementId: 'GA_MEASUREMENT_ID', // Substitua pelo seu ID de GA
   }),
-];
+]
 
 // Exemplo de componente que mostra status
 function ConsentStatus() {
-  const { consented, preferences, acceptAll, rejectAll, openPreferences } =
-    useConsent()
-  const texts = useConsentTexts()
+  const { consented, preferences, acceptAll, rejectAll, openPreferences } = useConsent()
 
   return (
     <div
@@ -36,22 +32,20 @@ function ConsentStatus() {
         <strong>Consentido:</strong> {consented ? '✅ Sim' : '❌ Não'}
       </p>
       <p>
-        <strong>Analytics:</strong>{' '}
-        {preferences.analytics ? '✅ Aceito' : '❌ Recusado'}
+        <strong>Analytics:</strong> {preferences.analytics ? '✅ Aceito' : '❌ Recusado'}
       </p>
       <p>
-        <strong>Marketing:</strong>{' '}
-        {preferences.marketing ? '✅ Aceito' : '❌ Recusado'}
+        <strong>Marketing:</strong> {preferences.marketing ? '✅ Aceito' : '❌ Recusado'}
       </p>
 
       <div style={{ marginTop: '15px' }}>
         <button onClick={acceptAll} style={{ marginRight: '10px' }}>
-          {texts.acceptAll}
+          Aceitar Todos
         </button>
         <button onClick={rejectAll} style={{ marginRight: '10px' }}>
-          {texts.declineAll}
+          Rejeitar Todos
         </button>
-        <button onClick={openPreferences}>{texts.preferences}</button>
+        <button onClick={openPreferences}>Preferências</button>
       </div>
     </div>
   )
@@ -59,8 +53,7 @@ function ConsentStatus() {
 
 // Textos customizados (opcional)
 const textosCustomizados = {
-  bannerMessage:
-    'Este site utiliza cookies para análise e personalização da experiência.',
+  bannerMessage: 'Este site utiliza cookies para análise e personalização da experiência.',
   acceptAll: 'Aceitar Todos os Cookies',
   declineAll: 'Recusar Todos',
   preferences: 'Gerenciar Preferências',
@@ -107,9 +100,9 @@ function App() {
         <header>
           <h1>🍪 Exemplo react-lgpd-consent</h1>
           <p>
-            Esta é uma aplicação React de exemplo mostrando como usar a
-            biblioteca <code>react-lgpd-consent</code> para gerenciar
-            consentimento de cookies em conformidade com a LGPD.
+            Esta é uma aplicação React de exemplo mostrando como usar a biblioteca{' '}
+            <code>react-lgpd-consent</code> para gerenciar consentimento de cookies em conformidade
+            com a LGPD.
           </p>
         </header>
 
@@ -131,8 +124,8 @@ function App() {
                   margin: '10px 0',
                 }}
               >
-                ✅ <strong>Analytics aceito!</strong> Este conteúdo só aparece
-                se analytics estiver habilitado.
+                ✅ <strong>Analytics aceito!</strong> Este conteúdo só aparece se analytics estiver
+                habilitado.
               </div>
             </ConsentGate>
 
@@ -145,8 +138,8 @@ function App() {
                   margin: '10px 0',
                 }}
               >
-                ✅ <strong>Marketing aceito!</strong> Este conteúdo só aparece
-                se marketing estiver habilitado.
+                ✅ <strong>Marketing aceito!</strong> Este conteúdo só aparece se marketing estiver
+                habilitado.
               </div>
             </ConsentGate>
 
@@ -158,10 +151,7 @@ function App() {
                 margin: '10px 0',
               }}
             >
-              ℹ️{' '}
-              <em>
-                ConsentGate aceita apenas uma categoria por vez na API atual
-              </em>
+              ℹ️ <em>ConsentGate aceita apenas uma categoria por vez na API atual</em>
             </div>
           </section>
 
@@ -169,24 +159,21 @@ function App() {
             <h2>📋 Instruções de Teste</h2>
             <ol>
               <li>
-                🔄 <strong>Refresh a página</strong> - Banner não deve aparecer
-                se já há consentimento.
+                🔄 <strong>Refresh a página</strong> - Banner não deve aparecer se já há
+                consentimento.
               </li>
               <li>
-                ✅ <strong>Aceite/Recuse</strong> - Interaja com o banner para
-                ver os blocos condicionais aparecerem/sumirem.
+                ✅ <strong>Aceite/Recuse</strong> - Interaja com o banner para ver os blocos
+                condicionais aparecerem/sumirem.
               </li>
               <li>
-                🎛️ <strong>Use o botão flutuante</strong> - Para reconfigurar
-                após decisão inicial.
+                🎛️ <strong>Use o botão flutuante</strong> - Para reconfigurar após decisão inicial.
               </li>
               <li>
-                🔍 <strong>Abra DevTools</strong> - Veja os logs de cookie e
-                estado.
+                🔍 <strong>Abra DevTools</strong> - Veja os logs de cookie e estado.
               </li>
               <li>
-                🗑️ <strong>Limpe cookies</strong> - Para simular primeira visita
-                novamente.
+                🗑️ <strong>Limpe cookies</strong> - Para simular primeira visita novamente.
               </li>
             </ol>
           </section>
