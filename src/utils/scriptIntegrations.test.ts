@@ -2,6 +2,9 @@ import {
   createGoogleAnalyticsIntegration,
   createGoogleTagManagerIntegration,
   createUserWayIntegration,
+  createFacebookPixelIntegration,
+  createHotjarIntegration,
+  createMixpanelIntegration,
 } from './scriptIntegrations'
 
 // Suprimir logs do developerGuidance durante estes testes
@@ -45,5 +48,30 @@ describe('scriptIntegrations factories', () => {
     expect((global as any).window.UserWayWidgetApp).toBeDefined()
     expect((global as any).window.UserWayWidgetApp.accountId).toBe('acct-123')
     expect(userway.attrs).toMatchObject({ 'data-account': 'acct-123' })
+  })
+
+  test('facebook pixel integration initializes fbq and tracks PageView by default', () => {
+    const fb = createFacebookPixelIntegration({ pixelId: '123' })
+    expect(fb.id).toBe('facebook-pixel')
+    expect(fb.category).toBe('marketing')
+    fb.init && fb.init()
+    expect((global as any).window.fbq).toBeDefined()
+  })
+
+  test('hotjar integration defines hj queue and settings', () => {
+    const hj = createHotjarIntegration({ siteId: '999', version: 6, debug: true })
+    expect(hj.id).toBe('hotjar')
+    expect(hj.category).toBe('analytics')
+    hj.init && hj.init()
+    expect((global as any).window._hjSettings).toBeDefined()
+    expect(typeof (global as any).window.hj).toBe('function')
+  })
+
+  test('mixpanel integration sets mixpanel and calls init', () => {
+    const m = createMixpanelIntegration({ token: 'tok' })
+    expect(m.id).toBe('mixpanel')
+    expect(m.category).toBe('analytics')
+    m.init && m.init()
+    expect((global as any).window.mixpanel).toBeDefined()
   })
 })

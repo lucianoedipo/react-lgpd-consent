@@ -22,6 +22,40 @@ export interface ScriptIntegration {
   attrs?: Record<string, string>
 }
 
+// ----------------------
+// New integrations (v0.4.1)
+// ----------------------
+
+export interface FacebookPixelConfig {
+  pixelId: string
+  autoTrack?: boolean
+  advancedMatching?: Record<string, unknown>
+}
+
+export interface HotjarConfig {
+  siteId: string
+  version?: number
+  debug?: boolean
+}
+
+export interface MixpanelConfig {
+  token: string
+  config?: Record<string, unknown>
+  api_host?: string
+}
+
+export interface ClarityConfig {
+  projectId: string
+}
+
+export interface IntercomConfig {
+  app_id: string
+}
+
+export interface ZendeskConfig {
+  key: string
+}
+
 /**
  * @interface GoogleAnalyticsConfig
  * Configuração específica para a integração com o Google Analytics 4 (GA4).
@@ -156,4 +190,211 @@ export const COMMON_INTEGRATIONS = {
   googleAnalytics: createGoogleAnalyticsIntegration,
   googleTagManager: createGoogleTagManagerIntegration,
   userway: createUserWayIntegration,
+}
+
+/**
+ * Cria integração para Facebook Pixel.
+ * @since 0.4.1
+ */
+export function createFacebookPixelIntegration(config: FacebookPixelConfig): ScriptIntegration {
+  return {
+    id: 'facebook-pixel',
+    category: 'marketing',
+    src: 'https://connect.facebook.net/en_US/fbevents.js',
+    init: () => {
+      if (typeof window !== 'undefined') {
+        type FbqFn = ((...args: unknown[]) => void) & {
+          queue?: unknown[]
+          loaded?: boolean
+          callMethod?: (...args: unknown[]) => void
+        }
+        const w = window as unknown as { fbq?: FbqFn }
+        if (!w.fbq) {
+          const fbq: FbqFn = ((...args: unknown[]) => {
+            if (w.fbq && typeof w.fbq.callMethod === 'function') {
+              w.fbq.callMethod(...args)
+            } else {
+              fbq.queue = fbq.queue || []
+              fbq.queue.push(args)
+            }
+          }) as FbqFn
+          fbq.loaded = true
+          w.fbq = fbq
+        }
+        w.fbq('init', config.pixelId, config.advancedMatching ?? {})
+        if (config.autoTrack !== false) {
+          w.fbq('track', 'PageView')
+        }
+      }
+    },
+  }
+}
+
+/**
+ * Cria integração para Hotjar.
+ * @since 0.4.1
+ */
+export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration {
+  const v = config.version ?? 6
+  return {
+    id: 'hotjar',
+    category: 'analytics',
+    src: `https://static.hotjar.com/c/hotjar-${config.siteId}.js?sv=${v}`,
+    init: () => {
+      if (typeof window !== 'undefined') {
+        type HjFn = ((...args: unknown[]) => void) & { q?: unknown[] }
+        const w = window as unknown as { hj?: HjFn; _hjSettings?: { hjid: string; hjsv: number } }
+        w._hjSettings = { hjid: config.siteId, hjsv: v }
+        if (!w.hj) {
+          const hj: HjFn = ((...args: unknown[]) => {
+            hj.q = hj.q || []
+            hj.q.push(args)
+          }) as HjFn
+          w.hj = hj
+        }
+        if (config.debug && typeof console !== 'undefined' && typeof console.info === 'function') {
+          console.info('[Hotjar] initialized with siteId', config.siteId)
+        }
+      }
+    },
+  }
+}
+
+/**
+ * Cria integração para Mixpanel.
+ * @since 0.4.1
+ */
+export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegration {
+  return {
+    id: 'mixpanel',
+    category: 'analytics',
+    src: 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js',
+    init: () => {
+      if (typeof window !== 'undefined') {
+        const w = window as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
+        w.mixpanel = w.mixpanel || { init: () => undefined }
+        if (w.mixpanel && typeof w.mixpanel.init === 'function') {
+          w.mixpanel.init(config.token, config.config ?? {}, config.api_host)
+        }
+      }
+    },
+  }
+}
+
+/**
+ * Cria integração para Microsoft Clarity.
+ * @since 0.4.1
+ */
+export function createClarityIntegration(config: ClarityConfig): ScriptIntegration {
+  return {
+    id: 'clarity',
+    category: 'analytics',
+    src: `https://www.clarity.ms/tag/${config.projectId}`,
+  }
+}
+
+/**
+ * Cria integração para Intercom (chat/support).
+ * @since 0.4.1
+ */
+export function createIntercomIntegration(config: IntercomConfig): ScriptIntegration {
+  return {
+    id: 'intercom',
+    category: 'functional',
+    src: `https://widget.intercom.io/widget/${config.app_id}`,
+  }
+}
+
+/**
+ * Cria integração para Zendesk Chat.
+ * @since 0.4.1
+ */
+export function createZendeskChatIntegration(config: ZendeskConfig): ScriptIntegration {
+  return {
+    id: 'zendesk-chat',
+    category: 'functional',
+    src: `https://static.zdassets.com/ekr/snippet.js?key=${config.key}`,
+  }
+}
+
+/**
+ * Sugere categorias LGPD para um script conhecido (uso auxiliar).
+ * @since 0.4.1
+ */
+export function suggestCategoryForScript(name: string): Category[] {
+  const n = name.toLowerCase()
+  if (n.includes('facebook') || n.includes('pixel') || n.includes('ads')) return ['marketing']
+  if (n.includes('hotjar') || n.includes('mixpanel') || n.includes('clarity')) return ['analytics']
+  if (n.includes('intercom') || n.includes('zendesk') || n.includes('chat')) return ['functional']
+  return ['analytics']
+}
+
+// ----------------------
+// Templates (v0.4.1)
+// ----------------------
+
+export interface ECommerceConfig {
+  googleAnalytics?: GoogleAnalyticsConfig
+  facebookPixel?: FacebookPixelConfig
+  hotjar?: HotjarConfig
+  userway?: UserWayConfig
+}
+
+export interface SaaSConfig {
+  googleAnalytics?: GoogleAnalyticsConfig
+  mixpanel?: MixpanelConfig
+  intercom?: IntercomConfig
+  hotjar?: HotjarConfig
+}
+
+export interface CorporateConfig {
+  googleAnalytics?: GoogleAnalyticsConfig
+  clarity?: ClarityConfig
+  zendesk?: ZendeskConfig
+  userway?: UserWayConfig
+}
+
+export function createECommerceIntegrations(cfg: ECommerceConfig): ScriptIntegration[] {
+  const list: ScriptIntegration[] = []
+  if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
+  if (cfg.facebookPixel) list.push(createFacebookPixelIntegration(cfg.facebookPixel))
+  if (cfg.hotjar) list.push(createHotjarIntegration(cfg.hotjar))
+  if (cfg.userway) list.push(createUserWayIntegration(cfg.userway))
+  return list
+}
+
+export function createSaaSIntegrations(cfg: SaaSConfig): ScriptIntegration[] {
+  const list: ScriptIntegration[] = []
+  if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
+  if (cfg.mixpanel) list.push(createMixpanelIntegration(cfg.mixpanel))
+  if (cfg.intercom) list.push(createIntercomIntegration(cfg.intercom))
+  if (cfg.hotjar) list.push(createHotjarIntegration(cfg.hotjar))
+  return list
+}
+
+export function createCorporateIntegrations(cfg: CorporateConfig): ScriptIntegration[] {
+  const list: ScriptIntegration[] = []
+  if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
+  if (cfg.clarity) list.push(createClarityIntegration(cfg.clarity))
+  if (cfg.zendesk) list.push(createZendeskChatIntegration(cfg.zendesk))
+  if (cfg.userway) list.push(createUserWayIntegration(cfg.userway))
+  return list
+}
+
+export const INTEGRATION_TEMPLATES = {
+  ecommerce: {
+    essential: ['google-analytics', 'facebook-pixel'],
+    optional: ['hotjar', 'userway'],
+    categories: ['analytics', 'marketing', 'functional'] as Category[],
+  },
+  saas: {
+    essential: ['google-analytics', 'mixpanel'],
+    optional: ['intercom', 'hotjar'],
+    categories: ['analytics', 'functional'] as Category[],
+  },
+  corporate: {
+    essential: ['google-analytics'],
+    optional: ['userway', 'zendesk-chat', 'clarity'],
+    categories: ['analytics', 'functional'] as Category[],
+  },
 }

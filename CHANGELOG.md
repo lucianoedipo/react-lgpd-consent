@@ -556,3 +556,15 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 - [ ] Base legal por categoria
 - [ ] Relatórios de compliance
 - [ ] Templates por setor
+## [0.4.1] - 2025-09-09 — Novas integrações e monitoramento
+
+### Added
+- Integrações nativas: Facebook Pixel, Hotjar, Mixpanel, Microsoft Clarity, Intercom e Zendesk Chat
+- Helpers/templates: suggestCategoryForScript, createECommerceIntegrations, createSaaSIntegrations, createCorporateIntegrations e INTEGRATION_TEMPLATES
+- Documentação atualizada: INTEGRACOES.md e API.md com novas APIs e exemplos
+
+### CI/Qualidade
+- Size-limit e relatório de cobertura integrados ao CI (ajustes validados; nenhum update necessário)
+
+### Notes
+- Mudanças aditivas e retrocompatíveis

@@ -136,3 +136,89 @@ function createFacebookPixelIntegration(pixelId: string): ScriptIntegration {
 | UserWay/AccessiBe  | `functional`          | Funcionalidade de acessibilidade |
 | Live Chat          | `functional`          | Funcionalidade de suporte        |
 | YouTube/Vimeo      | `social`              | Conteúdo de redes sociais        |
+
+---
+
+## ✨ Novas Integrações (v0.4.1)
+
+### 4. Facebook Pixel
+
+- Categoria: `marketing`
+- Função: `createFacebookPixelIntegration(config)`
+
+```tsx
+import { createFacebookPixelIntegration, ConsentScriptLoader } from 'react-lgpd-consent'
+
+const integrations = [
+  createFacebookPixelIntegration({ pixelId: 'YOUR_PIXEL_ID', autoTrack: true })
+]
+
+<ConsentScriptLoader integrations={integrations} />
+```
+
+### 5. Hotjar
+
+- Categoria: `analytics`
+- Função: `createHotjarIntegration(config)`
+
+```tsx
+import { createHotjarIntegration } from 'react-lgpd-consent'
+
+const integrations = [createHotjarIntegration({ siteId: '123456', version: 6 })]
+```
+
+### 6. Mixpanel
+
+- Categoria: `analytics`
+- Função: `createMixpanelIntegration(config)`
+
+```tsx
+import { createMixpanelIntegration } from 'react-lgpd-consent'
+
+const integrations = [createMixpanelIntegration({ token: 'YOUR_TOKEN' })]
+```
+
+### 7. Microsoft Clarity
+
+- Categoria: `analytics`
+- Função: `createClarityIntegration(config)`
+
+```tsx
+import { createClarityIntegration } from 'react-lgpd-consent'
+
+const integrations = [createClarityIntegration({ projectId: 'abcdef' })]
+```
+
+### 8. Intercom / Zendesk Chat
+
+- Categoria: `functional`
+- Funções: `createIntercomIntegration`, `createZendeskChatIntegration`
+
+```tsx
+import { createIntercomIntegration, createZendeskChatIntegration } from 'react-lgpd-consent'
+
+const integrations = [
+  createIntercomIntegration({ app_id: 'your_app_id' }),
+  createZendeskChatIntegration({ key: 'your_zendesk_key' }),
+]
+```
+
+## 🧠 Helpers & Templates (v0.4.1)
+
+- `suggestCategoryForScript(name: string)`: sugere a categoria recomendada
+- Templates de negócio:
+  - `createECommerceIntegrations`
+  - `createSaaSIntegrations`
+  - `createCorporateIntegrations`
+  - `INTEGRATION_TEMPLATES` com IDs e categorias recomendadas
+
+```tsx
+import { createECommerceIntegrations, INTEGRATION_TEMPLATES } from 'react-lgpd-consent'
+
+const integrations = createECommerceIntegrations({
+  googleAnalytics: { measurementId: 'G-XYZ' },
+  facebookPixel: { pixelId: '123' },
+})
+
+// INTEGRATION_TEMPLATES.ecommerce.categories -> ['analytics','marketing','functional']
+```

@@ -14,9 +14,20 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `openPreferencesModal`              | Função     | Versão da função acima para ser usada fora do contexto React.                   |
 | `ConsentGate`                       | Componente | Renderiza componentes filhos apenas se uma categoria de cookie for consentida.  |
 | `ConsentScriptLoader`               | Componente | Carrega scripts de terceiros (como Google Analytics) com base no consentimento. |
-| `createGoogleAnalyticsIntegration`  | Função     | Factory para criar uma integração nativa com o Google Analytics.                |
-| `createGoogleTagManagerIntegration` | Função     | Factory para criar uma integração nativa com o Google Tag Manager.              |
-| `createUserWayIntegration`          | Função     | Factory para criar uma integração nativa com o UserWay.                         |
+| `createGoogleAnalyticsIntegration`  | Função     | Factory para integração nativa com o Google Analytics.                           |
+| `createGoogleTagManagerIntegration` | Função     | Factory para integração nativa com o Google Tag Manager.                         |
+| `createUserWayIntegration`          | Função     | Factory para integração nativa com o UserWay.                                    |
+| `createFacebookPixelIntegration`    | Função     | (v0.4.1) Integração nativa com Facebook Pixel.                                   |
+| `createHotjarIntegration`           | Função     | (v0.4.1) Integração nativa com Hotjar.                                           |
+| `createMixpanelIntegration`         | Função     | (v0.4.1) Integração nativa com Mixpanel.                                         |
+| `createClarityIntegration`          | Função     | (v0.4.1) Integração nativa com Microsoft Clarity.                                |
+| `createIntercomIntegration`         | Função     | (v0.4.1) Integração nativa com Intercom (chat).                                  |
+| `createZendeskChatIntegration`      | Função     | (v0.4.1) Integração nativa com Zendesk Chat.                                     |
+| `suggestCategoryForScript`          | Função     | (v0.4.1) Sugere categoria(s) LGPD para um script conhecido.                      |
+| `createECommerceIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para e-commerce.                                |
+| `createSaaSIntegrations`            | Função     | (v0.4.1) Cria integrações comuns para SaaS.                                      |
+| `createCorporateIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para ambientes corporativos.                    |
+| `INTEGRATION_TEMPLATES`             | Constante  | (v0.4.1) Presets com IDs essenciais/opcionais e categorias por tipo de negócio.  |
 | `setDebugLogging`                   | Função     | Habilita/desabilita o logging de debug da biblioteca.                           |
 
 ---

@@ -64,6 +64,7 @@ export default function App() {
 -
 - **[QUICKSTART.en.md](./QUICKSTART.en.md)** (recommended)
   - New in v0.4.0: `customCategories` support — see the “Custom categories (customCategories)” section in the Quickstart.
+  - New in v0.4.1: native integrations for Facebook Pixel, Hotjar, Mixpanel, Clarity, Intercom, and Zendesk — see [INTEGRACOES.md](./INTEGRACOES.md).
 - **[Docs / API](./API.md)**
 - **[LGPD Compliance](./CONFORMIDADE.md)**
 - **[Integrations](./INTEGRACOES.md)**
