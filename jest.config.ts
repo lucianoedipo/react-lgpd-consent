@@ -12,6 +12,24 @@ const config: Config = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
   testMatch: ['**/?(*.)+(test|spec).+(ts|tsx)'],
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  // Coverage configuration
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.stories.{ts,tsx}',
+    '!src/**/*.test.{ts,tsx}',
+    '!src/**/*.spec.{ts,tsx}',
+    '!src/@types/**',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov', 'json-summary', 'html'],
+  coverageThreshold: {
+    global: {
+      statements: 85,
+      branches: 80,
+      functions: 70,
+      lines: 85,
+    },
+  },
 }
 
 export default config
