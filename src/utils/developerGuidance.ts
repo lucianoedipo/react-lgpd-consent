@@ -45,6 +45,8 @@ export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
  *
  * @param {ProjectCategoriesConfig} [config] A configuração de categorias fornecida pelo desenvolvedor. Se não for fornecida, a configuração padrão será utilizada.
  * @returns {DeveloperGuidance} Um objeto `DeveloperGuidance` com a análise da configuração.
+ *
+ * Since v0.4.0: inclui `customCategories` em `activeCategoriesInfo` (com `uiRequired=false` se `essential=true`).
  */
 export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig): DeveloperGuidance {
   const guidance: DeveloperGuidance = {
@@ -106,6 +108,19 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
         uiRequired: true,
       })
     }
+  })
+
+  // Adiciona categorias customizadas à lista de ativas (como toggleáveis, a menos que marcadas como essenciais)
+  const custom = finalConfig.customCategories || []
+  custom.forEach((cat) => {
+    if (!cat?.id || cat.id === 'necessary') return
+    guidance.activeCategoriesInfo.push({
+      id: cat.id,
+      name: cat.name,
+      description: cat.description,
+      essential: !!cat.essential,
+      uiRequired: !cat.essential,
+    })
   })
 
   const totalToggleable = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length

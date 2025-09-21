@@ -84,6 +84,27 @@ describe('PreferencesModal', () => {
     await waitFor(() => expect(onSaved).toHaveBeenCalledWith({ necessary: true, analytics: true }))
   })
 
+  it('renders customCategories with proper names and descriptions', async () => {
+    render(
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics'],
+          customCategories: [
+            { id: 'chat', name: 'Chat de Suporte', description: 'Widget de chat' },
+            { id: 'video', name: 'Vídeo', description: 'Players de vídeo' },
+          ],
+        }}
+        initialState={makeInitialState()}
+      >
+        <PreferencesModal DialogProps={{ open: true }} />
+      </ConsentProvider>,
+    )
+
+    // Labels combine name and description
+    expect(await screen.findByText(/Chat de Suporte - Widget de chat/i)).toBeInTheDocument()
+    expect(screen.getByText(/Vídeo - Players de vídeo/i)).toBeInTheDocument()
+  })
+
   it('does not render Branding when hideBranding=true', async () => {
     render(
       <ConsentProvider

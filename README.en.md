@@ -63,6 +63,7 @@ export default function App() {
 - For full guides, TypeScript examples, props table and integrations see:
 -
 - **[QUICKSTART.en.md](./QUICKSTART.en.md)** (recommended)
+  - New in v0.4.0: `customCategories` support — see the “Custom categories (customCategories)” section in the Quickstart.
 - **[Docs / API](./API.md)**
 - **[LGPD Compliance](./CONFORMIDADE.md)**
 - **[Integrations](./INTEGRACOES.md)**
