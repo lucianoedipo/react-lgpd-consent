@@ -1,5 +1,7 @@
 # Instruções rápidas para agentes (react-lgpd-consent)
 
+Interações em pt-BR, Date Format em BR: DD/MM/YYYY, Time Format em BR: HH:mm:ss 24h
+
 Objetivo: permitir que um agente de codificação seja imediatamente produtivo neste repositório, entendendo arquitetura, fluxos de trabalho e padrões específicos.
 
 - Arquitetura em alto nível

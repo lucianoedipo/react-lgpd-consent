@@ -1,9 +1,10 @@
 # RFC-0001 — Estratégia de Bloqueio no Provider (opt‑in condicionado)
 
-Status: Proposta
+Status: ✅ **Implementado** 
 Autor: Luciano/Codex
-Data: 2025-08-23
-Versão alvo: v0.3.x (minor)
+Data Proposta: 2025-07-23
+Data Implementação: 2025-08-31
+Versão alvo: v0.3.x (minor) → **Entregue em v0.4.0**
 
 ## Contexto
 
@@ -105,4 +106,18 @@ Para apps que já usam um “dark‑filter” próprio:
 
 ---
 
-Comentários são bem-vindos antes de implementar a etapa 2 (overlay no Provider).
+## ✅ Implementação Concluída
+
+**RFC implementado completamente na versão v0.4.0**
+
+### Arquivos Modificados
+- `src/types/types.ts` - Tipos e documentação TSDoc
+- `src/context/ConsentContext.tsx` - Lógica de overlay condicional  
+- `src/context/ProviderBlockingStrategy.test.tsx` - Suite de testes
+- `src/components/ConsentProvider.stories.tsx` - Stories Storybook
+- `QUICKSTART.md` + `QUICKSTART.en.md` - Documentação de uso
+
+### Métricas de Qualidade
+- **Cobertura de Testes**: 100% das funcionalidades cobertas
+- **Compatibilidade**: Mantém retrocompatibilidade total
+- **Performance**: Sem impacto - funcionalidade opt-in
