@@ -300,3 +300,5 @@ function App() {
 Notas:
 - Garanta que `enabledCategories` contemplem as categorias necessárias para as integrações escolhidas.
 - Integrações só serão carregadas após consentimento explícito e quando a categoria correspondente estiver `true` nas preferências.
+- Em modo bloqueante, o backdrop do banner pode ser configurado via `designTokens.layout.backdrop`:
+  - `false` (transparente), `'auto'` (sensível ao tema) ou string (ex.: `'#00000088'`).

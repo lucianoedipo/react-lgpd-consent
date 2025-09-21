@@ -33,6 +33,7 @@ import { useConsent, useConsentTexts, useConsentHydration } from '../hooks/useCo
 import { useDesignTokens } from '../context/DesignContext'
 import { Branding } from './Branding'
 import { logger } from '../utils/logger'
+import type { Theme, SxProps } from '@mui/material/styles'
 
 /**
  * Propriedades para customizar o comportamento e aparência do componente CookieBanner.
@@ -303,15 +304,15 @@ export function CookieBanner({
    * @property {string | number | undefined} borderRadius - Border radius for the banner from design tokens.
    * @property {string | undefined} fontFamily - Font family for the banner text from design tokens.
    */
-  const bannerStyle = {
+  const bannerStyle: SxProps<Theme> = (theme) => ({
     p: designTokens?.spacing?.padding?.banner ?? 2,
     maxWidth: 720,
-    mx: 'auto',
-    backgroundColor: designTokens?.colors?.background,
-    color: designTokens?.colors?.text,
+    mx: 'auto' as const,
+    backgroundColor: designTokens?.colors?.background ?? theme.palette.background?.paper,
+    color: designTokens?.colors?.text ?? theme.palette.text?.primary,
     borderRadius: designTokens?.spacing?.borderRadius?.banner,
     fontFamily: designTokens?.typography?.fontFamily,
-  }
+  })
 
   /**
    * Conteúdo JSX do banner de cookies: mensagem, botões de ação e branding opcional.
@@ -413,11 +414,19 @@ export function CookieBanner({
    * - Se `designTokens.layout.backdrop === false` => `'transparent'` (sem backdrop).
    * - Se `designTokens.layout.backdrop` for uma string => usa essa string como cor (ex.: `'#00000088'`).
    * - Caso contrário => padrão seguro `'rgba(0, 0, 0, 0.4)'`.
+   *
+   * Since v0.4.1: valor `'auto'` e comportamento padrão passam a ser sensíveis ao tema (dark/light).
    */
   const backdropToken = designTokens?.layout?.backdrop
   const resolveBackdropColor = (theme: { palette?: { mode?: 'dark' | 'light' } }): string => {
     if (backdropToken === false) return 'transparent'
-    if (typeof backdropToken === 'string') return backdropToken
+    if (typeof backdropToken === 'string') {
+      if (backdropToken.toLowerCase() === 'auto') {
+        const isDark = theme?.palette?.mode === 'dark'
+        return isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.4)'
+      }
+      return backdropToken
+    }
     const isDark = theme?.palette?.mode === 'dark'
     return isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.4)'
   }

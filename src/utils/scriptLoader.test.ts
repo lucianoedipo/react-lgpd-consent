@@ -94,4 +94,144 @@ describe('loadScript', () => {
     const found = document.querySelectorAll('script#already')
     expect(found.length).toBe(1)
   })
+
+  test('waits and retries when no consent cookie present', async () => {
+    // No cookie set
+    document.cookie = ''
+
+    // Use fake timers
+    jest.useFakeTimers()
+
+    const promise = loadScript('test-retry', 'https://example.com/script.js', 'analytics')
+
+    // Advance time to trigger first retry
+    jest.advanceTimersByTime(100)
+
+    // Now set a proper consent cookie
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    // Advance time to trigger the next check
+    jest.advanceTimersByTime(100)
+
+    // Script should now be loaded
+    const script = document.getElementById('test-retry') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+    jest.useRealTimers()
+  })
+
+  test('waits and retries when modal is open', async () => {
+    const consent = {
+      consented: true,
+      isModalOpen: true, // Modal is open
+      preferences: { analytics: true },
+    }
+
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    jest.useFakeTimers()
+
+    const promise = loadScript('test-modal-open', 'https://example.com/script.js', 'analytics')
+
+    // Advance time to trigger retry
+    jest.advanceTimersByTime(100)
+
+    // Close modal and advance time again
+    const updatedConsent = { ...consent, isModalOpen: false }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(updatedConsent))}`
+
+    jest.advanceTimersByTime(100)
+
+    const script = document.getElementById('test-modal-open') as HTMLScriptElement | null
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+    jest.useRealTimers()
+  })
+
+  test('handles malformed consent cookie with retry', async () => {
+    // Set malformed JSON cookie
+    document.cookie = 'cookieConsent=invalid-json'
+
+    jest.useFakeTimers()
+
+    const promise = loadScript('test-malformed', 'https://example.com/script.js', 'analytics')
+
+    // Advance time to trigger retry
+    jest.advanceTimersByTime(100)
+
+    // Fix the cookie and advance time again
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    jest.advanceTimersByTime(100)
+
+    const script = document.getElementById('test-malformed') as HTMLScriptElement | null
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+    jest.useRealTimers()
+  })
+
+  test('applies custom attributes to script element', async () => {
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    const customAttrs = {
+      'data-test': 'value',
+      defer: 'true',
+      crossorigin: 'anonymous',
+    }
+
+    const promise = loadScript(
+      'test-attrs',
+      'https://example.com/script.js',
+      'analytics',
+      customAttrs,
+    )
+
+    const script = document.getElementById('test-attrs') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (!script) throw new Error('script not found')
+
+    // Check that custom attributes were applied
+    expect(script.getAttribute('data-test')).toBe('value')
+    expect(script.getAttribute('defer')).toBe('true')
+    expect(script.getAttribute('crossorigin')).toBe('anonymous')
+
+    script.dispatchEvent(new Event('load'))
+    await expect(promise).resolves.toBeUndefined()
+  })
+
+  test('loads when category is null (no category gating)', async () => {
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: false },
+    }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+    const p = loadScript('no-cat', 'https://example.com/ok.js', null)
+    const script = document.getElementById('no-cat') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (script) script.dispatchEvent(new Event('load'))
+    await expect(p).resolves.toBeUndefined()
+  })
+
+
 })

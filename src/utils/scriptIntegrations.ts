@@ -404,6 +404,24 @@ export interface CorporateConfig {
   userway?: UserWayConfig
 }
 
+/**
+ * @function
+ * @category Utils
+ * @since 0.4.1
+ * Cria um conjunto de integrações pré-configuradas para e-commerce.
+ * 
+ * @param {ECommerceConfig} cfg Configuração das integrações disponíveis
+ * @returns {ScriptIntegration[]} Array de integrações para e-commerce
+ * 
+ * @example
+ * ```tsx
+ * const integrations = createECommerceIntegrations({
+ *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
+ *   facebookPixel: { pixelId: '123456789' },
+ *   hotjar: { siteId: '1234567' }
+ * })
+ * ```
+ */
 export function createECommerceIntegrations(cfg: ECommerceConfig): ScriptIntegration[] {
   const list: ScriptIntegration[] = []
   if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
@@ -413,6 +431,24 @@ export function createECommerceIntegrations(cfg: ECommerceConfig): ScriptIntegra
   return list
 }
 
+/**
+ * @function
+ * @category Utils
+ * @since 0.4.1
+ * Cria um conjunto de integrações pré-configuradas para SaaS/produto.
+ * 
+ * @param {SaaSConfig} cfg Configuração das integrações disponíveis
+ * @returns {ScriptIntegration[]} Array de integrações para SaaS
+ * 
+ * @example
+ * ```tsx
+ * const integrations = createSaaSIntegrations({
+ *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
+ *   mixpanel: { token: 'abc123' },
+ *   intercom: { app_id: 'xyz789' }
+ * })
+ * ```
+ */
 export function createSaaSIntegrations(cfg: SaaSConfig): ScriptIntegration[] {
   const list: ScriptIntegration[] = []
   if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
@@ -422,6 +458,24 @@ export function createSaaSIntegrations(cfg: SaaSConfig): ScriptIntegration[] {
   return list
 }
 
+/**
+ * @function
+ * @category Utils  
+ * @since 0.4.1
+ * Cria um conjunto de integrações pré-configuradas para empresas corporativas.
+ * 
+ * @param {CorporateConfig} cfg Configuração das integrações disponíveis
+ * @returns {ScriptIntegration[]} Array de integrações para corporações
+ * 
+ * @example
+ * ```tsx
+ * const integrations = createCorporateIntegrations({
+ *   googleAnalytics: { measurementId: 'G-XXXXXXXXXX' },
+ *   clarity: { projectId: 'abc123' },
+ *   zendesk: { key: 'xyz789' }
+ * })
+ * ```
+ */
 export function createCorporateIntegrations(cfg: CorporateConfig): ScriptIntegration[] {
   const list: ScriptIntegration[] = []
   if (cfg.googleAnalytics) list.push(createGoogleAnalyticsIntegration(cfg.googleAnalytics))
@@ -431,6 +485,23 @@ export function createCorporateIntegrations(cfg: CorporateConfig): ScriptIntegra
   return list
 }
 
+/**
+ * @constant
+ * @category Utils
+ * @since 0.4.1
+ * Templates pré-configurados com integrações recomendadas por tipo de negócio.
+ * 
+ * @example
+ * ```tsx
+ * // Verificar integrações essenciais para e-commerce
+ * console.log(INTEGRATION_TEMPLATES.ecommerce.essential)
+ * // ['google-analytics', 'facebook-pixel']
+ * 
+ * // Categorias necessárias para SaaS
+ * console.log(INTEGRATION_TEMPLATES.saas.categories)
+ * // ['analytics', 'functional']
+ * ```
+ */
 export const INTEGRATION_TEMPLATES = {
   ecommerce: {
     essential: ['google-analytics', 'facebook-pixel'],

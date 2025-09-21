@@ -42,6 +42,31 @@ export default App
 ## 🧩 Custom categories (customCategories)
 Available since v0.4.0.
 
+## 🎨 Style tip: Theme-aware backdrop
+
+In blocking mode, the banner uses a backdrop to focus user attention. You can control it via design tokens:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  designTokens={{
+    layout: {
+      // false: transparent | 'auto': adapts to theme | string: custom color (e.g., '#00000088')
+      backdrop: 'auto',
+    },
+    colors: {
+      // If omitted, MUI theme palette is used (background.paper, text.primary)
+      // background: '#1e1e1e',
+      // text: '#ffffff',
+    },
+  }}
+>
+  <App />
+</ConsentProvider>
+```
+
+If `colors.background` or `colors.text` are omitted, the library falls back to `theme.palette.background.paper` and `theme.palette.text.primary`, ensuring dark mode compatibility.
+
 Add project-specific categories (e.g., support chat, video players, A/B testing):
 
 ```tsx

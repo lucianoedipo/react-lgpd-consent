@@ -558,13 +558,65 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 - [ ] Templates por setor
 ## [0.4.1] - 2025-09-09 — Novas integrações e monitoramento
 
-### Added
-- Integrações nativas: Facebook Pixel, Hotjar, Mixpanel, Microsoft Clarity, Intercom e Zendesk Chat
-- Helpers/templates: suggestCategoryForScript, createECommerceIntegrations, createSaaSIntegrations, createCorporateIntegrations e INTEGRATION_TEMPLATES
-- Documentação atualizada: INTEGRACOES.md e API.md com novas APIs e exemplos
+### ✨ Novas Integrações Nativas
 
-### CI/Qualidade
-- Size-limit e relatório de cobertura integrados ao CI (ajustes validados; nenhum update necessário)
+- **Facebook Pixel**: Integração completa com `pixelId`, `autoTrack` e `advancedMatching`
+- **Hotjar**: Carregamento com `siteId`, configuração de `version` e modo `debug`
+- **Mixpanel**: Implementação com `token`, configurações customizáveis e `api_host`
+- **Microsoft Clarity**: Integração com `projectId` e configurações de `upload`
+- **Intercom**: Chat widget com configuração de `app_id`
+- **Zendesk Chat**: Widget de suporte com configuração de `key`
+
+### 🛠️ Helpers e Templates
+
+- `suggestCategoryForScript()`: Função que sugere categorias LGPD apropriadas por nome de script
+- `createECommerceIntegrations()`: Template pré-configurado para e-commerce (GA4 + Facebook Pixel + Hotjar + UserWay)
+- `createSaaSIntegrations()`: Template para SaaS/produto (GA4 + Mixpanel + Intercom + Hotjar)
+- `createCorporateIntegrations()`: Template corporativo (GA4 + Clarity + Zendesk + UserWay)
+- `INTEGRATION_TEMPLATES`: Constante com presets por tipo de negócio
+
+### 🧪 Qualidade e Testes
+
+- **Cobertura melhorada**: scriptLoader.ts de 78.78% para 96.96% statements
+- **Novos testes**: 5 arquivos de teste adicionais para edge cases e error handling
+- **Error handling robusto**: Try-catch em todas as novas integrações
+- **Total**: 124 testes passando, cobertura geral: 94.16% statements
+
+### 📊 Monitoramento Bundle & CI
+
+- **Size-limit**: Configurado para ESM (<12KB), CJS (<75KB), Types (<100KB)
+- **Coverage thresholds**: 85% statements, 80% branches, 70% functions, 85% lines
+- **CI enforcement**: Falha automática se limites ultrapassados
+- **Bundle atual**: ESM ~8KB, CJS ~61KB (dentro dos limites)
+
+### 📚 Documentação
+
+- **INTEGRACOES.md**: Atualizado com todas as 6 novas integrações e exemplos práticos
+- **API.md**: Seções adicionais para helpers e templates
+- **TSDoc completo**: Todas as novas APIs documentadas com @category, @param, @returns, @example
+- **README.md**: Seção de integrações populares com quick-start
+
+### 🔧 Exports Adicionais
+
+```tsx
+// Novas integrações disponíveis em react-lgpd-consent
+export {
+  createFacebookPixelIntegration,
+  createHotjarIntegration,
+  createMixpanelIntegration,
+  createClarityIntegration,
+  createIntercomIntegration,
+  createZendeskChatIntegration,
+  suggestCategoryForScript,
+  createECommerceIntegrations,
+  createSaaSIntegrations,
+  createCorporateIntegrations,
+  INTEGRATION_TEMPLATES,
+  // + tipos TypeScript correspondentes
+}
+```
 
 ### Notes
-- Mudanças aditivas e retrocompatíveis
+- **Breaking change**: Nenhum - mudanças puramente aditivas
+- **Retrocompatibilidade**: Total com APIs existentes
+- **Performance**: Bundle size mantido dentro dos limites estabelecidos

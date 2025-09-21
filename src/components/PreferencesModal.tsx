@@ -13,6 +13,7 @@ import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { useDesignTokens } from '../context/DesignContext'
 import { ConsentPreferences } from '../types/types'
 import { Branding } from './Branding'
+import type { Theme, SxProps } from '@mui/material/styles'
 
 /**
  * @interface PreferencesModalProps
@@ -92,18 +93,30 @@ export function PreferencesModal({
     closePreferences()
   }
 
+  const modalTitleSx: SxProps<Theme> = (theme) => ({
+    fontSize: designTokens?.typography?.fontSize?.modal ?? undefined,
+    color: designTokens?.colors?.text ?? theme.palette.text.primary,
+  })
+
+  const modalContentSx: SxProps<Theme> = (theme) => ({
+    p: designTokens?.spacing?.padding?.modal ?? undefined,
+    backgroundColor: designTokens?.colors?.background ?? theme.palette.background.paper,
+    color: designTokens?.colors?.text ?? theme.palette.text.primary,
+  })
+
   return (
     <Dialog aria-labelledby="cookie-pref-title" open={open} onClose={handleCancel} {...DialogProps}>
-      <DialogTitle
-        id="cookie-pref-title"
-        sx={{ fontSize: designTokens?.typography?.fontSize?.modal ?? undefined }}
-      >
+      <DialogTitle id="cookie-pref-title" sx={modalTitleSx}>
         {texts.modalTitle}
       </DialogTitle>
-      <DialogContent dividers sx={{ p: designTokens?.spacing?.padding?.modal ?? undefined }}>
+      <DialogContent dividers sx={modalContentSx}>
         <Typography
           variant="body2"
-          sx={{ mb: 2, fontSize: designTokens?.typography?.fontSize?.modal ?? undefined }}
+          sx={(theme) => ({
+            mb: 2,
+            fontSize: designTokens?.typography?.fontSize?.modal ?? undefined,
+            color: designTokens?.colors?.text ?? theme.palette.text.primary,
+          })}
         >
           {texts.modalIntro}
         </Typography>
