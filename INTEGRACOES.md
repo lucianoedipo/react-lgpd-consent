@@ -222,3 +222,81 @@ const integrations = createECommerceIntegrations({
 
 // INTEGRATION_TEMPLATES.ecommerce.categories -> ['analytics','marketing','functional']
 ```
+
+### Exemplos detalhados por template
+
+#### E-commerce
+
+```tsx
+import React from 'react'
+import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'
+import { createECommerceIntegrations } from 'react-lgpd-consent'
+
+function App() {
+  const integrations = createECommerceIntegrations({
+    googleAnalytics: { measurementId: 'G-XXXX' },
+    facebookPixel: { pixelId: '1234567890' },
+    hotjar: { siteId: '999999', version: 6 },
+    // userway opcional
+  })
+
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}>
+      <ConsentScriptLoader integrations={integrations} />
+      {/* Seu app */}
+    </ConsentProvider>
+  )
+}
+```
+
+#### SaaS
+
+```tsx
+import React from 'react'
+import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'
+import { createSaaSIntegrations } from 'react-lgpd-consent'
+
+function App() {
+  const integrations = createSaaSIntegrations({
+    googleAnalytics: { measurementId: 'G-YYYY' },
+    mixpanel: { token: 'mixpanel-token' },
+    intercom: { app_id: 'your-intercom-app-id' },
+    hotjar: { siteId: '888888' },
+  })
+
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics', 'functional'] }}>
+      <ConsentScriptLoader integrations={integrations} />
+      {/* Seu app */}
+    </ConsentProvider>
+  )
+}
+```
+
+#### Corporate
+
+```tsx
+import React from 'react'
+import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'
+import { createCorporateIntegrations } from 'react-lgpd-consent'
+
+function App() {
+  const integrations = createCorporateIntegrations({
+    googleAnalytics: { measurementId: 'G-ZZZZ' },
+    clarity: { projectId: 'clarity-project-id' },
+    zendesk: { key: 'your-zendesk-key' },
+    userway: { accountId: 'userway-account' },
+  })
+
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics', 'functional'] }}>
+      <ConsentScriptLoader integrations={integrations} />
+      {/* Seu app */}
+    </ConsentProvider>
+  )
+}
+```
+
+Notas:
+- Garanta que `enabledCategories` contemplem as categorias necessárias para as integrações escolhidas.
+- Integrações só serão carregadas após consentimento explícito e quando a categoria correspondente estiver `true` nas preferências.
