@@ -1,8 +1,8 @@
 /* eslint-env browser, node */
 
 import React from 'react'
-import type { ProjectCategoriesConfig } from '../types/types'
-import { COOKIE_PATTERNS_BY_CATEGORY } from './cookieRegistry'
+import type { ProjectCategoriesConfig, Category } from '../types/types'
+import { COOKIE_PATTERNS_BY_CATEGORY, getCookiesInfoForCategory } from './cookieRegistry'
 
 export interface DeveloperGuidance {
   warnings: string[]
@@ -22,6 +22,12 @@ export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
   enabledCategories: ['analytics'],
 }
 
+/**
+ * Analisa configuração e integrações implícitas para orientar o dev.
+ *
+ * Since v0.4.0: inclui customCategories.
+ * Since v0.4.1: considera categorias/integrações implícitas e enriquece cookies por categoria.
+ */
 export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig): DeveloperGuidance {
   const guidance: DeveloperGuidance = {
     warnings: [],
@@ -31,7 +37,6 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   }
 
   const finalConfig = config || DEFAULT_PROJECT_CATEGORIES
-
   if (!config) {
     guidance.warnings.push(
       'LGPD-CONSENT: Nenhuma configuração de categorias especificada. Usando padrão: necessary + analytics. Para produção, especifique explicitamente as categorias via prop "categories".',
@@ -50,7 +55,10 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   const enabled = (finalConfig.enabledCategories || []) as string[]
   const NAMES: Record<string, { name: string; description: string }> = {
     analytics: { name: 'Cookies Analíticos', description: 'Medem uso e performance do site' },
-    functional: { name: 'Cookies Funcionais', description: 'Melhoram experiência e funcionalidades' },
+    functional: {
+      name: 'Cookies Funcionais',
+      description: 'Melhoram experiência e funcionalidades',
+    },
     marketing: { name: 'Cookies de Marketing', description: 'Publicidade direcionada e campanhas' },
     social: { name: 'Cookies de Redes Sociais', description: 'Integração com plataformas sociais' },
     personalization: { name: 'Cookies de Personalização', description: 'Adaptação de conteúdo' },
@@ -83,6 +91,7 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
     })
   })
 
+  // Categorias implícitas por integrações
   try {
     const gt = globalThis as { __LGPD_REQUIRED_CATEGORIES__?: string[] }
     const implied = (gt.__LGPD_REQUIRED_CATEGORIES__ || []).filter(Boolean)
@@ -107,7 +116,20 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
       }
     })
   } catch {
-    // ignore SSR / globals issues
+    // ignore
+  }
+
+  // Enriquecer cookies (nomes) por integrações usadas
+  try {
+    const gt2 = globalThis as { __LGPD_USED_INTEGRATIONS__?: string[] }
+    const used = gt2.__LGPD_USED_INTEGRATIONS__ || []
+    guidance.activeCategoriesInfo = guidance.activeCategoriesInfo.map((c) => {
+      const info = getCookiesInfoForCategory(c.id as unknown as Category, used)
+      const names = Array.from(new Set([...(c.cookies || []), ...info.map((d) => d.name)]))
+      return { ...c, cookies: names }
+    })
+  } catch {
+    // ignore
   }
 
   const totalToggleable = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
@@ -125,8 +147,14 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   return guidance
 }
 
-export function logDeveloperGuidance(guidance: DeveloperGuidance, disableGuidanceProp?: boolean): void {
-  const gt = globalThis as unknown as { process?: { env?: { NODE_ENV?: string } }; __LGPD_PRODUCTION__?: boolean }
+export function logDeveloperGuidance(
+  guidance: DeveloperGuidance,
+  disableGuidanceProp?: boolean,
+): void {
+  const gt = globalThis as unknown as {
+    process?: { env?: { NODE_ENV?: string } }
+    __LGPD_PRODUCTION__?: boolean
+  }
   const nodeEnv = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
   const isProd = nodeEnv === 'production' || gt.__LGPD_PRODUCTION__ === true
   if (isProd || disableGuidanceProp) return
@@ -143,7 +171,9 @@ export function logDeveloperGuidance(guidance: DeveloperGuidance, disableGuidanc
     console.groupEnd()
   }
   if (guidance.usingDefaults) {
-    console.warn(`${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`)
+    console.warn(
+      `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
+    )
   }
 
   const rows = guidance.activeCategoriesInfo.map((cat) => ({
@@ -163,10 +193,16 @@ export function logDeveloperGuidance(guidance: DeveloperGuidance, disableGuidanc
   }
 
   console.group(`${PREFIX} 📖 Boas práticas LGPD (Brasil)`)
-  console.info(`${PREFIX} 🔒 Necessary: sempre ativos. Outras categorias devem iniciar como rejeitadas (opt-out).`)
+  console.info(
+    `${PREFIX} 🔒 Necessary: sempre ativos. Outras categorias devem iniciar como rejeitadas (opt-out).`,
+  )
   console.info(`${PREFIX} 📜 Política clara por categoria e link visível para o usuário.`)
-  console.info(`${PREFIX} 🧾 Registre consentimento (data/hora, origem) e permita revisão posterior.`)
-  console.info(`${PREFIX} ⏳ Defina prazos de retenção compatíveis e evite coleta antes do consentimento.`)
+  console.info(
+    `${PREFIX} 🧾 Registre consentimento (data/hora, origem) e permita revisão posterior.`,
+  )
+  console.info(
+    `${PREFIX} ⏳ Defina prazos de retenção compatíveis e evite coleta antes do consentimento.`,
+  )
   console.groupEnd()
 }
 

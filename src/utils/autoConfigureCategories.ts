@@ -65,13 +65,13 @@ export interface CategoryAutoConfigResult {
   /** Configuração ajustada automaticamente pela biblioteca */
   adjustedConfig: ProjectCategoriesConfig
   /** Categorias que foram automaticamente habilitadas */
-  autoEnabledCategories: Category[]
+  autoEnabledCategories: string[]
   /** Categorias requeridas pelas integrações mas não habilitadas */
-  missingCategories: Category[]
+  missingCategories: string[]
   /** Se algum ajuste foi necessário */
   wasAdjusted: boolean
   /** Integrações que requerem cada categoria */
-  categoryIntegrations: Record<Category, string[]>
+  categoryIntegrations: Record<string, string[]>
 }
 
 /**
@@ -85,8 +85,8 @@ export interface CategoryAutoConfigResult {
  */
 export function analyzeIntegrationCategories(
   integrations: ScriptIntegration[],
-): Record<Category, string[]> {
-  const categoryMap: Record<Category, string[]> = {} as Record<Category, string[]>
+): Record<string, string[]> {
+  const categoryMap: Record<string, string[]> = {}
 
   integrations.forEach((integration) => {
     const category = integration.category
@@ -250,7 +250,7 @@ function logAutoEnabledCategories(
  */
 export function validateIntegrationCategories(
   integrations: ScriptIntegration[],
-  enabledCategories: Category[],
+  enabledCategories: string[],
 ): boolean {
   const requiredCategories = integrations.map((i) => i.category)
   const enabledSet = new Set(enabledCategories)
@@ -267,8 +267,8 @@ export function validateIntegrationCategories(
  * @param integrations Array de integrações
  * @returns Array de categorias únicas
  */
-export function extractCategoriesFromIntegrations(integrations: ScriptIntegration[]): Category[] {
-  const categories = new Set<Category>()
+export function extractCategoriesFromIntegrations(integrations: ScriptIntegration[]): string[] {
+  const categories = new Set<string>()
   integrations.forEach((integration) => {
     categories.add(integration.category)
   })

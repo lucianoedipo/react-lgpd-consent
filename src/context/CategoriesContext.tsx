@@ -3,8 +3,8 @@ import * as React from 'react'
 import type { ProjectCategoriesConfig } from '../types/types'
 import {
   analyzeDeveloperConfiguration,
-  logDeveloperGuidance,
   DEFAULT_PROJECT_CATEGORIES,
+  logDeveloperGuidance,
   type DeveloperGuidance,
 } from '../utils/developerGuidance'
 
@@ -23,6 +23,18 @@ export interface CategoriesContextValue {
   allCategories: DeveloperGuidance['activeCategoriesInfo']
 }
 
+/**
+ * Contexto React para fornecer informações sobre categorias de cookies ativas.
+ *
+ * @remarks
+ * Este contexto é usado internamente pelo CategoriesProvider para compartilhar
+ * a configuração de categorias, orientações para desenvolvedores e listas de categorias
+ * com componentes filhos. Ele permite acesso centralizado às informações de categorias
+ * sem necessidade de prop drilling.
+ *
+ * @category Context
+ * @since 0.2.2
+ */
 const CategoriesContext = React.createContext<CategoriesContextValue | null>(null)
 
 /**
@@ -140,19 +152,3 @@ export function useCategoryStatus(categoryId: string) {
     description: category?.description,
   }
 }
-
-/**
- * @hook
- * @category Hooks
- * @since 0.2.2
- * Hook para obter todas as categorias de cookies ativas no projeto (padrão e customizadas).
- *
- * @returns {DeveloperGuidance['activeCategoriesInfo']} Um array com as definições detalhadas de todas as categorias ativas.
- * @example
- * ```tsx
- * const { allCategories } = useCategories()
- * allCategories.forEach(category => {
- *   console.log(`Categoria: ${category.name}, Essencial: ${category.essential}`)
- * })
- * ```
- */

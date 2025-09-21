@@ -11,12 +11,12 @@
 
 import {
   useConsentActionsInternal,
+  useConsentHydrationInternal,
   useConsentStateInternal,
   useConsentTextsInternal,
-  useConsentHydrationInternal,
 } from '../context/ConsentContext'
-import { logger } from '../utils/logger'
 import type { ConsentContextValue, ConsentTexts } from '../types/types'
+import { logger } from '../utils/logger'
 
 /**
  * Hook principal para acessar e manipular o estado de consentimento de cookies LGPD.
@@ -602,127 +602,155 @@ export function useConsentHydration(): boolean {
  * }
  * ```
  */
-export function useOpenPreferencesModal() {
-  const { openPreferences } = useConsent()
-  return openPreferences
-}
 
 /**
- * Função utilitária para abrir o modal de preferências de fora de um componente React.
+ * Variável interna para armazenar o handler global de abertura do modal de preferências.
+ * @internal
  * @category Utils
- * @since 0.3.1+
+ * @since 0.3.1
  * @remarks
- * Esta função permite acesso ao sistema de consentimento a partir de código que não está
- * dentro do contexto React, como scripts vanilla JS, bibliotecas de terceiros, ou
- * integrações com sistemas legados. É automaticamente registrada pelo `ConsentProvider`.
+ * Esta variável é usada internamente para permitir acesso global à função de abertura do modal
+ * fora do contexto React. É gerenciada pelas funções `_registerGlobalOpenPreferences` e
+ * `_unregisterGlobalOpenPreferences` para garantir thread-safety e cleanup adequado.
  *
- * ### Casos de Uso Principais
- * - **Scripts vanilla JS**: Integração com código não-React existente
- * - **Bibliotecas de terceiros**: Chatbots, widgets, plugins
- * - **Event listeners globais**: Atalhos de teclado, eventos personalizados
- * - **APIs externas**: Callbacks de serviços que precisam alterar consentimento
- * - **Código legado**: Sistemas antigos que não podem ser refatorados para React
- *
- * ### Funcionamento Técnico
- * - **Registro automático**: ConsentProvider registra a função na montagem
- * - **Cleanup automático**: Função é limpa quando ConsentProvider desmonta
- * - **Thread-safe**: Verificações internas evitam erros se chamada antes da inicialização
- * - **Logging integrado**: Avisos informativos se ConsentProvider não estiver disponível
- *
- * ### Window Global Access
- * A função também fica disponível globalmente como `window.openPreferencesModal`
- * para máxima compatibilidade com scripts antigos e bibliotecas externas.
- *
- * @example Integração com script vanilla JS
- * ```javascript
- * // Em um arquivo .js separado
- * import { openPreferencesModal } from 'react-lgpd-consent';
- *
- * const botaoExterno = document.getElementById('cookie-settings-button');
- * botaoExterno.addEventListener('click', () => {
- *   openPreferencesModal();
- * });
+ * @example
+ * ```typescript
+ * // Uso interno - não deve ser acessado diretamente
+ * globalOpenPreferences = () => console.log('Modal aberto');
  * ```
- *
- * @example Chatbot ou widget de terceiros
- * ```javascript
- * // Integração com chatbot
- * window.chatbot.addCommand('cookies', () => {
- *   if (window.openPreferencesModal) {
- *     window.openPreferencesModal();
- *   } else {
- *     console.warn('Sistema de cookies não está disponível');
- *   }
- * });
- * ```
- *
- * @example Event listener para atalho de teclado
- * ```javascript
- * // Atalho Ctrl+Shift+C para abrir configurações
- * document.addEventListener('keydown', (event) => {
- *   if (event.ctrlKey && event.shiftKey && event.key === 'C') {
- *     event.preventDefault();
- *     openPreferencesModal();
- *   }
- * });
- * ```
- *
- * @example Callback de API externa
- * ```javascript
- * // Quando API externa solicitar mudança de consentimento
- * window.externalAPI.onConsentChangeRequest(() => {
- *   // Verifica se função está disponível antes de chamar
- *   if (typeof openPreferencesModal === 'function') {
- *     openPreferencesModal();
- *   } else {
- *     // Fallback para quando React não estiver inicializado
- *     console.log('Sistema de consentimento ainda não está pronto');
- *   }
- * });
- * ```
- *
- * @example jQuery/legacy system integration
- * ```javascript
- * // Para sistemas antigos com jQuery
- * $(document).ready(function() {
- *   $('.cookie-settings-link').on('click', function(e) {
- *     e.preventDefault();
- *
- *     // Tenta usar a função importada, senão usa a global
- *     const openModal = window.openPreferencesModal || openPreferencesModal;
- *
- *     if (openModal) {
- *       openModal();
- *     } else {
- *       alert('Sistema de cookies não disponível no momento');
- *     }
- *   });
- * });
- * ```
- *
- * @see {@link useOpenPreferencesModal} - Versão hook para uso dentro de componentes React
- * @see {@link ConsentProvider} - Provider que registra esta função automaticamente
- *
- * @public
  */
 let globalOpenPreferences: (() => void) | null = null
 
-export function openPreferencesModal() {
-  if (globalOpenPreferences) {
-    globalOpenPreferences()
-  } else {
-    logger.warn(
-      'openPreferencesModal: ConsentProvider não foi inicializado ou não está disponível.',
-    )
-  }
-}
-
-// Função interna para registrar o handler global
+/**
+ * Função interna para registrar o handler global de abertura do modal de preferências.
+ * @internal
+ * @category Utils
+ * @since 0.3.1
+ * @remarks
+ * Esta função é chamada internamente pelo `ConsentProvider` durante a montagem para
+ * configurar o acesso global ao modal. Permite que scripts externos ou bibliotecas
+ * de terceiros abram o modal de preferências sem precisar do contexto React.
+ *
+ * ### Funcionamento
+ * - Registra a função `openPreferences` do contexto como handler global
+ * - Sobrescreve qualquer handler anterior (normalmente null)
+ * - Deve ser chamada apenas pelo `ConsentProvider`
+ *
+ * @param openPreferences - Função do contexto que abre o modal de preferências
+ *
+ * @example
+ * ```typescript
+ * // Uso interno pelo ConsentProvider
+ * _registerGlobalOpenPreferences(() => setModalOpen(true));
+ * ```
+ *
+ * @see {@link _unregisterGlobalOpenPreferences} - Para limpar o handler
+ * @see {@link ConsentProvider} - Provider que chama esta função
+ */
 export function _registerGlobalOpenPreferences(openPreferences: () => void) {
   globalOpenPreferences = openPreferences
 }
 
-// Função interna para limpar o handler global
+/**
+ * Função interna para limpar o handler global de abertura do modal de preferências.
+ * @internal
+ * @category Utils
+ * @since 0.3.1
+ * @remarks
+ * Esta função é chamada internamente pelo `ConsentProvider` durante o desmonte para
+ * remover o acesso global ao modal. Previne vazamentos de memória e garante que
+ * handlers obsoletos não sejam chamados após o desmonte do provider.
+ *
+ * ### Funcionamento
+ * - Define `globalOpenPreferences` como `null`
+ * - Chamadas subsequentes à `openPreferencesModal` global serão ignoradas com aviso
+ * - Deve ser chamada apenas pelo `ConsentProvider` no cleanup
+ *
+ * @example
+ * ```typescript
+ * // Uso interno pelo ConsentProvider no useEffect cleanup
+ * _unregisterGlobalOpenPreferences();
+ * ```
+ *
+ * @see {@link _registerGlobalOpenPreferences} - Para registrar o handler
+ * @see {@link ConsentProvider} - Provider que chama esta função
+ */
 export function _unregisterGlobalOpenPreferences() {
   globalOpenPreferences = null
+}
+
+/**
+ * @function
+ * @category Hooks
+ * @since 0.3.1
+ * Hook para abrir o modal de preferências programaticamente.
+ *
+ * @returns Função para abrir o modal de preferências.
+ *
+ * @remarks
+ * Este hook retorna uma função que pode ser usada para abrir o modal de preferências
+ * de qualquer lugar dentro do contexto do ConsentProvider. É útil para criar botões
+ * customizados ou trigger o modal baseado em eventos específicos.
+ *
+ * @throws {Error} Se usado fora do ConsentProvider
+ *
+ * @example
+ * ```tsx
+ * function CustomButton() {
+ *   const openPreferences = useOpenPreferencesModal();
+ *
+ *   return (
+ *     <button onClick={openPreferences}>
+ *       Configurar Cookies
+ *     </button>
+ *   );
+ * }
+ * ```
+ */
+export function useOpenPreferencesModal(): () => void {
+  const actions = useConsentActionsInternal()
+
+  if (!actions) {
+    throw new Error(
+      '[LGPD-CONSENT] useOpenPreferencesModal deve ser usado dentro do ConsentProvider. ' +
+        'Envolva seu componente com <ConsentProvider>.',
+    )
+  }
+
+  return actions.openPreferences
+}
+
+/**
+ * @function
+ * @category Utils
+ * @since 0.3.1
+ * Função global para abrir o modal de preferências de fora do contexto React.
+ *
+ * @remarks
+ * Esta função permite abrir o modal de preferências de código JavaScript puro,
+ * sem precisar estar dentro do contexto React. É útil para integração com
+ * código legado ou bibliotecas de terceiros.
+ *
+ * A função é automaticamente registrada pelo ConsentProvider e limpa quando
+ * o provider é desmontado.
+ *
+ * @example
+ * ```javascript
+ * // Em código JavaScript puro
+ * window.openPreferencesModal?.();
+ *
+ * // Ou importando diretamente
+ * import { openPreferencesModal } from 'react-lgpd-consent';
+ * openPreferencesModal();
+ * ```
+ */
+export function openPreferencesModal(): void {
+  if (globalOpenPreferences) {
+    globalOpenPreferences()
+  } else {
+    logger.warn(
+      'openPreferencesModal called but no ConsentProvider is mounted. ' +
+        'Make sure ConsentProvider is rendered before calling this function.',
+    )
+  }
 }

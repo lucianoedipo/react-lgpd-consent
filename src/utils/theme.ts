@@ -1,13 +1,33 @@
-import { createTheme } from '@mui/material/styles'
-import type { Theme } from '@mui/material/styles'
+/** @module src/utils/theme */
 /**
- * @constant
+ * @category Utils
+ * @since 0.1.0
+ * Utilitários para criação e gerenciamento de temas Material-UI para componentes de consentimento LGPD.
+ *
+ * Fornece um tema padrão consistente e acessível, com opções de personalização.
+ */
+
+import type { Theme } from '@mui/material/styles'
+import { createTheme } from '@mui/material/styles'
+
+/**
+ * @function
  * @category Utils
  * @since 0.1.0
  * Tema padrão utilizado pelos componentes de consentimento da biblioteca.
  *
  * Inclui configurações de cores, tipografia e estilos para componentes Material-UI,
  * garantindo aparência consistente e acessível conforme guidelines LGPD.
+ *
+ * @returns {Theme} Instância do tema Material-UI configurado.
+ *
+ * @example
+ * ```typescript
+ * import { createDefaultConsentTheme } from 'react-lgpd-consent'
+ *
+ * const theme = createDefaultConsentTheme()
+ * // Use com ThemeProvider
+ * ```
  *
  * @remarks
  * Pode ser sobrescrito via ThemeProvider externo se necessário.
@@ -86,6 +106,16 @@ export function createDefaultConsentTheme(): Theme {
  * @deprecated Use `createDefaultConsentTheme()` em vez de importar um tema criado no escopo do módulo.
  * Importar um tema já instanciado pode causar side-effects em SSR e conflitos de contexto.
  * Esta função retorna uma nova instância do tema quando chamada.
+ *
+ * @returns {Theme} Instância do tema Material-UI configurado.
+ *
+ * @example
+ * ```typescript
+ * import { defaultConsentTheme } from 'react-lgpd-consent'
+ *
+ * const theme = defaultConsentTheme()
+ * // Deprecated, use createDefaultConsentTheme instead
+ * ```
  */
 export const defaultConsentTheme = (): Theme => createDefaultConsentTheme()
 
@@ -96,5 +126,12 @@ export const defaultConsentTheme = (): Theme => createDefaultConsentTheme()
  * Tipo do tema de consentimento utilizado na biblioteca.
  *
  * Útil para tipar props customizadas de tema ou para extensão do tema padrão.
+ *
+ * @example
+ * ```typescript
+ * import type { ConsentTheme } from 'react-lgpd-consent'
+ *
+ * const customTheme: ConsentTheme = createDefaultConsentTheme()
+ * ```
  */
 export type ConsentTheme = ReturnType<typeof createDefaultConsentTheme>

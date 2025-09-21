@@ -1,3 +1,13 @@
+/** @module src/utils/scriptLoader */
+/**
+ * @category Utils
+ * @since 0.1.0
+ * Utilitários para carregamento dinâmico e seguro de scripts externos no DOM.
+ *
+ * Fornece funções para carregar scripts de terceiros de forma condicional ao consentimento LGPD,
+ * garantindo compatibilidade SSR e verificações de permissões por categoria.
+ */
+
 /**
  * @function
  * @category Utils
@@ -22,12 +32,10 @@
  *   .catch(error => console.error('Erro ao carregar script:', error))
  * ```
  */
-import type { Category } from '../types/types'
-
 export function loadScript(
   id: string,
   src: string,
-  category: Category | null = null,
+  category: string | null = null,
   attrs: Record<string, string> = {},
 ) {
   if (typeof document === 'undefined') return Promise.resolve()

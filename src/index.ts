@@ -141,7 +141,7 @@ export {
   autoConfigureCategories,
   extractCategoriesFromIntegrations,
   validateIntegrationCategories,
-  validateNecessaryClassification
+  validateNecessaryClassification,
 } from './utils/autoConfigureCategories'
 
 // Tipos
@@ -152,7 +152,6 @@ export {
 export type {
   Category,
   CategoryDefinition,
-  CookieDescriptor,
   ConsentContextValue,
   ConsentCookieData,
   ConsentCookieOptions,
@@ -163,6 +162,7 @@ export type {
   ConsentProviderProps,
   ConsentState,
   ConsentTexts,
+  CookieDescriptor,
   /**
    * Props esperadas por um componente customizado de CookieBanner.
    */
@@ -209,6 +209,13 @@ export {
  * Sistema de logging para debug e troubleshooting.
  */
 export { LogLevel, setDebugLogging } from './utils/logger'
+
+// Cookie registry APIs (overrides + lookup)
+export {
+  getCookiesInfoForCategory,
+  setCookieCatalogOverrides,
+  setCookieCategoryOverrides,
+} from './utils/cookieRegistry'
 
 // Componentes padrão (para wrapping ou uso avançado)
 export { CookieBanner } from './components/CookieBanner'

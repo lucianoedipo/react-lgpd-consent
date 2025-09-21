@@ -18,4 +18,3 @@ describe('suggestCategoryForScript', () => {
     expect(suggestCategoryForScript('live-chat')).toEqual(['functional'])
   })
 })
-

@@ -15,6 +15,19 @@ export enum LogLevel {
   DEBUG = 3,
 }
 
+/**
+ * Classe responsável pelo sistema de logging da biblioteca react-lgpd-consent.
+ * Fornece métodos para registrar mensagens em diferentes níveis de severidade,
+ * com suporte a grupos, tabelas e logs específicos para eventos da biblioteca.
+ *
+ * @category Utils
+ * @since 0.3.1
+ *
+ * @remarks
+ * - Logs são habilitados por padrão em desenvolvimento e desabilitados em produção.
+ * - Usa prefixo '[react-lgpd-consent]' para identificação.
+ * - Métodos específicos como `componentRender` e `apiUsage` são utilizados para análises de uso.
+ */
 class ConsentLogger {
   private static readonly IS_DEVELOPMENT =
     typeof globalThis !== 'undefined' &&

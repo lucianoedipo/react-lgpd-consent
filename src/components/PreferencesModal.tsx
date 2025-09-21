@@ -1,20 +1,26 @@
-import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
 import Dialog, { DialogProps } from '@mui/material/Dialog'
 import DialogActions from '@mui/material/DialogActions'
 import DialogContent from '@mui/material/DialogContent'
 import DialogTitle from '@mui/material/DialogTitle'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import FormGroup from '@mui/material/FormGroup'
+import type { SxProps, Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import { useEffect, useState } from 'react'
 import { useCategories } from '../context/CategoriesContext'
-import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { useDesignTokens } from '../context/DesignContext'
+import { useConsent, useConsentTexts } from '../hooks/useConsent'
+import type { Category } from '../types/types'
 import { ConsentPreferences } from '../types/types'
+import { getCookiesInfoForCategory } from '../utils/cookieRegistry'
 import { Branding } from './Branding'
-import type { Theme, SxProps } from '@mui/material/styles'
+
+declare global {
+  var __LGPD_USED_INTEGRATIONS__: string[] | undefined
+}
 
 /**
  * @interface PreferencesModalProps
@@ -124,9 +130,26 @@ export function PreferencesModal({
         <FormGroup>
           {/* Renderiza dinamicamente apenas categorias que precisam de toggle */}
           {toggleableCategories.map((category) => {
-            type CatInfo = { id: string; cookies?: string[]; name: string; description: string; essential: boolean; uiRequired: boolean }
+            type CatInfo = {
+              id: string
+              cookies?: string[]
+              name: string
+              description: string
+              essential: boolean
+              uiRequired: boolean
+            }
             const full = allCategories.find((c) => c.id === category.id) as CatInfo | undefined
-            const cookieList = full?.cookies ?? []
+            const namesFromGuidance = full?.cookies ?? []
+            // Integrations used (global), SSR-safe
+            const used: string[] = globalThis.__LGPD_USED_INTEGRATIONS__ || []
+            const descriptors = getCookiesInfoForCategory(category.id as unknown as Category, used)
+            // Merge names not in descriptors
+            const merged = [
+              ...descriptors,
+              ...namesFromGuidance
+                .filter((n) => !descriptors.find((d) => d.name === n))
+                .map((n) => ({ name: n })),
+            ]
             return (
               <Box key={category.id} sx={{ mb: 1 }}>
                 <FormControlLabel
@@ -143,11 +166,31 @@ export function PreferencesModal({
                   }
                   label={`${category.name} - ${category.description}`}
                 />
-                {cookieList.length > 0 && (
-                  <Typography variant="caption" sx={{ display: 'block', ml: 6, color: 'text.secondary' }}>
-                    Cookies típicos: {cookieList.join(', ')}
-                  </Typography>
-                )}
+                <details style={{ marginLeft: 48 }}>
+                  <summary>Ver detalhes</summary>
+                  <Box sx={{ mt: 1 }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                      <thead>
+                        <tr>
+                          <th style={{ textAlign: 'left' }}>Cookie</th>
+                          <th style={{ textAlign: 'left' }}>Finalidade</th>
+                          <th style={{ textAlign: 'left' }}>Duração</th>
+                          <th style={{ textAlign: 'left' }}>Fornecedor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {merged.map((d, idx) => (
+                          <tr key={d.name + idx}>
+                            <td>{d.name}</td>
+                            <td>{(d as unknown as { purpose?: string }).purpose ?? '-'}</td>
+                            <td>{(d as unknown as { duration?: string }).duration ?? '-'}</td>
+                            <td>{(d as unknown as { provider?: string }).provider ?? '-'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </Box>
+                </details>
               </Box>
             )
           })}

@@ -102,7 +102,10 @@ export const Playground: Story = {
             ConsentScriptLoader (mocked)
           </Typography>
           <DemoControls />
-          <ConsentScriptLoader integrations={integrations as any} reloadOnChange={args.reloadOnChange} />
+          <ConsentScriptLoader
+            integrations={integrations as any}
+            reloadOnChange={args.reloadOnChange}
+          />
           <Typography variant="caption" color="text.secondary">
             Scripts são injetados com src="data:" para evitar requisições reais.
           </Typography>
@@ -133,7 +136,10 @@ export const EcommerceTemplate: Story = {
             E-commerce Template (mocked)
           </Typography>
           <DemoControls />
-          <ConsentScriptLoader integrations={integrations as any} reloadOnChange={args.reloadOnChange} />
+          <ConsentScriptLoader
+            integrations={integrations as any}
+            reloadOnChange={args.reloadOnChange}
+          />
         </Box>
       </ConsentProvider>
     )
@@ -153,13 +159,19 @@ export const SaaSTemplate: Story = {
     )
 
     return (
-      <ConsentProvider categories={{ enabledCategories: ['analytics', 'functional'] }} disableFloatingPreferencesButton>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'functional'] }}
+        disableFloatingPreferencesButton
+      >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             SaaS Template (mocked)
           </Typography>
           <DemoControls />
-          <ConsentScriptLoader integrations={integrations as any} reloadOnChange={args.reloadOnChange} />
+          <ConsentScriptLoader
+            integrations={integrations as any}
+            reloadOnChange={args.reloadOnChange}
+          />
         </Box>
       </ConsentProvider>
     )
@@ -179,13 +191,19 @@ export const CorporateTemplate: Story = {
     )
 
     return (
-      <ConsentProvider categories={{ enabledCategories: ['analytics', 'functional'] }} disableFloatingPreferencesButton>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'functional'] }}
+        disableFloatingPreferencesButton
+      >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
             Corporate Template (mocked)
           </Typography>
           <DemoControls />
-          <ConsentScriptLoader integrations={integrations as any} reloadOnChange={args.reloadOnChange} />
+          <ConsentScriptLoader
+            integrations={integrations as any}
+            reloadOnChange={args.reloadOnChange}
+          />
         </Box>
       </ConsentProvider>
     )

@@ -9,7 +9,7 @@
  * - URLs possuem valores default atualizados e podem ser sobrescritos via `scriptUrl`
  * - SSR-safe: toda execução que toca `window` é protegida
  */
-import type { Category } from '../types/types'
+// Removed import of Category as it's no longer used - ScriptIntegration now uses string
 
 /**
  * Integração de script de terceiros condicionada a consentimento.
@@ -31,10 +31,21 @@ import type { Category } from '../types/types'
 export interface ScriptIntegration {
   /** Identificador único da integração */
   id: string
-  /** Categoria LGPD à qual o script pertence */
-  category: Category
+  /**
+   * Categoria LGPD à qual o script pertence.
+   * Suporta tanto categorias predefinidas quanto customizadas.
+   */
+  category: string
+  /** Nome legível da integração (opcional) */
+  name?: string
   /** URL do script a ser carregado */
   src: string
+  /** Se o script deve ser carregado de forma assíncrona */
+  async?: boolean
+  /** Se o script deve ser deferido */
+  defer?: boolean
+  /** Configuração específica da integração */
+  config?: Record<string, unknown>
   /** Função de inicialização executada após carregamento do script */
   init?: () => void
   /** Atributos HTML adicionais para a tag script */
@@ -751,17 +762,17 @@ export const INTEGRATION_TEMPLATES = {
   ecommerce: {
     essential: ['google-analytics', 'facebook-pixel'],
     optional: ['hotjar', 'userway'],
-    categories: ['analytics', 'marketing', 'functional'] as Category[],
+    categories: ['analytics', 'marketing', 'functional'],
   },
   saas: {
     essential: ['google-analytics', 'mixpanel'],
     optional: ['intercom', 'hotjar'],
-    categories: ['analytics', 'functional'] as Category[],
+    categories: ['analytics', 'functional'],
   },
   corporate: {
     essential: ['google-analytics'],
     optional: ['userway', 'zendesk-chat', 'clarity'],
-    categories: ['analytics', 'functional'] as Category[],
+    categories: ['analytics', 'functional'],
   },
 }
 
@@ -789,7 +800,7 @@ export const INTEGRATION_TEMPLATES = {
  * - Scripts de chat/suporte → 'functional'
  * - Padrão para desconhecidos → 'analytics'
  */
-export function suggestCategoryForScript(name: string): Category[] {
+export function suggestCategoryForScript(name: string): string[] {
   const n = name.toLowerCase()
   if (n.includes('facebook') || n.includes('pixel') || n.includes('ads')) return ['marketing']
   if (n.includes('hotjar') || n.includes('mixpanel') || n.includes('clarity')) return ['analytics']

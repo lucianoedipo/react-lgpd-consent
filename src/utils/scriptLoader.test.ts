@@ -232,6 +232,4 @@ describe('loadScript', () => {
     if (script) script.dispatchEvent(new Event('load'))
     await expect(p).resolves.toBeUndefined()
   })
-
-
 })

@@ -51,6 +51,21 @@ export function ConsentScriptLoader({
   const { preferences, consented } = useConsent()
   const categories = useCategories()
   const loadedScripts = React.useRef<Set<string>>(new Set())
+
+  // Registrar integrações usadas (para catálogo de cookies e guidance)
+  React.useEffect(() => {
+    try {
+      const ids = (integrations || []).map((i) => i.id)
+      const gt = globalThis as unknown as { __LGPD_USED_INTEGRATIONS__?: string[] }
+      const current = Array.isArray(gt.__LGPD_USED_INTEGRATIONS__)
+        ? gt.__LGPD_USED_INTEGRATIONS__
+        : []
+      const merged = Array.from(new Set([...(current as string[]), ...ids]))
+      gt.__LGPD_USED_INTEGRATIONS__ = merged
+    } catch {
+      // ignore
+    }
+  }, [integrations])
   // Registrar categorias requeridas globalmente e notificar contexto (para guidance/Modal)
   React.useEffect(() => {
     try {

@@ -115,18 +115,52 @@ export interface CategoryDefinition {
 
 /**
  * Descritor de cookie com metadados úteis para UI/documentação.
- * Mantém compatibilidade com abordagens comuns no mercado.
+ * @category Types
+ * @since 0.2.0
  *
- * - name: identificador/padrão do cookie
- * - purpose: finalidade (ex.: analytics, session)
- * - duration: tempo de retenção (ex.: '2 years', 'session')
- * - domain/provider: opcionais, para indicar escopo/provedor
+ * @remarks
+ * Mantém compatibilidade com abordagens comuns no mercado.
+ * Fornece informações detalhadas sobre cookies para exibição em interfaces
+ * e documentação de compliance.
+ *
+ * @example
+ * ```typescript
+ * const cookieInfo: CookieDescriptor = {
+ *   name: '_ga',
+ *   purpose: 'analytics',
+ *   duration: '2 years',
+ *   domain: '.example.com',
+ *   provider: 'Google Analytics'
+ * };
+ * ```
+ *
+ * @public
  */
 export interface CookieDescriptor {
+  /**
+   * Identificador ou padrão do cookie.
+   * @example '_ga'
+   */
   name: string
+  /**
+   * Finalidade do cookie (opcional).
+   * @example 'analytics'
+   */
   purpose?: string
+  /**
+   * Tempo de retenção do cookie (opcional).
+   * @example '2 years'
+   */
   duration?: string
+  /**
+   * Domínio associado ao cookie (opcional).
+   * @example '.example.com'
+   */
   domain?: string
+  /**
+   * Provedor ou serviço associado ao cookie (opcional).
+   * @example 'Google Analytics'
+   */
   provider?: string
 }
 
@@ -689,7 +723,7 @@ export interface ConsentProviderProps {
    * texts={{
    *   controllerInfo: 'Controlado por: Empresa XYZ - CNPJ: 12.345.678/0001-90',
    *   dataTypes: 'Coletamos: endereço IP, preferências de navegação',
-   *   userRights: 'Você pode solicitar acesso, correção ou exclusão dos dados'
+   *   userRights: 'Você pode solicitar acesso, correção ou exclusão dos seus dados'
    * }}
    * ```
    */
@@ -914,8 +948,13 @@ export interface ConsentContextValue {
   acceptAll: () => void
   /** Rejeita todas as categorias de consentimento. */
   rejectAll: () => void
-  /** Define a preferência para uma categoria específica. */
-  setPreference: (cat: Category, value: boolean) => void
+  /**
+   * Define a preferência para uma categoria específica.
+   * Suporta tanto categorias predefinidas quanto customizadas.
+   * @param cat - ID da categoria (predefinida ou customizada)
+   * @param value - Valor do consentimento para a categoria
+   */
+  setPreference: (cat: string, value: boolean) => void
   /** Define múltiplas preferências de uma vez e salva. */
   setPreferences: (preferences: ConsentPreferences) => void
   /** Abre o modal de preferências. */
