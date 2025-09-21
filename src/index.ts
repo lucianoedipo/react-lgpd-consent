@@ -34,27 +34,27 @@ export { ConsentProvider } from './context/ConsentContext'
  * @returns Estado e métodos para consentimento.
  */
 export {
-  useConsent,
   /**
-   * Hook para acessar os textos customizados de consentimento.
-   * @returns Textos definidos via prop `texts`.
+   * Função para abrir o modal de preferências de fora do contexto React.
+   * Útil para integração com código JavaScript puro.
    */
-  useConsentTexts,
+  openPreferencesModal,
+  useConsent,
   /**
    * Hook para verificar se o consentimento já foi hidratado (SSR/CSR).
    * @returns Booleano indicando hidratação.
    */
   useConsentHydration,
   /**
+   * Hook para acessar os textos customizados de consentimento.
+   * @returns Textos definidos via prop `texts`.
+   */
+  useConsentTexts,
+  /**
    * Hook para abrir o modal de preferências programaticamente.
    * @returns Função para abrir o modal.
    */
   useOpenPreferencesModal,
-  /**
-   * Função para abrir o modal de preferências de fora do contexto React.
-   * Útil para integração com código JavaScript puro.
-   */
-  openPreferencesModal,
 } from './hooks/useConsent'
 
 // Hooks de categorias - novo sistema
@@ -102,35 +102,47 @@ export { ConsentScriptLoader, useConsentScriptLoader } from './utils/ConsentScri
  * Tipos auxiliares para configuração dessas integrações.
  */
 export {
+  COMMON_INTEGRATIONS,
+  createClarityIntegration,
+  createCorporateIntegrations,
+  createECommerceIntegrations,
+  createFacebookPixelIntegration,
   createGoogleAnalyticsIntegration,
   createGoogleTagManagerIntegration,
-  createUserWayIntegration,
-  createFacebookPixelIntegration,
   createHotjarIntegration,
-  createMixpanelIntegration,
-  createClarityIntegration,
   createIntercomIntegration,
-  createZendeskChatIntegration,
-  suggestCategoryForScript,
-  createECommerceIntegrations,
+  createMixpanelIntegration,
   createSaaSIntegrations,
-  createCorporateIntegrations,
+  createUserWayIntegration,
+  createZendeskChatIntegration,
   INTEGRATION_TEMPLATES,
-  COMMON_INTEGRATIONS,
-  type ScriptIntegration,
+  suggestCategoryForScript,
+  type ClarityConfig,
+  type CorporateConfig,
+  type ECommerceConfig,
+  type FacebookPixelConfig,
   type GoogleAnalyticsConfig,
   type GoogleTagManagerConfig,
-  type UserWayConfig,
-  type FacebookPixelConfig,
   type HotjarConfig,
-  type MixpanelConfig,
-  type ClarityConfig,
   type IntercomConfig,
-  type ZendeskConfig,
-  type ECommerceConfig,
+  type MixpanelConfig,
   type SaaSConfig,
-  type CorporateConfig,
+  type ScriptIntegration,
+  type UserWayConfig,
+  type ZendeskConfig,
 } from './utils/scriptIntegrations'
+
+/**
+ * Sistema inteligente de auto-configuração de categorias baseado nas integrações.
+ * @since 0.4.1
+ */
+export {
+  analyzeIntegrationCategories,
+  autoConfigureCategories,
+  extractCategoriesFromIntegrations,
+  validateIntegrationCategories,
+  validateNecessaryClassification
+} from './utils/autoConfigureCategories'
 
 // Tipos
 
@@ -140,31 +152,37 @@ export {
 export type {
   Category,
   CategoryDefinition,
-  ConsentPreferences,
-  ConsentState,
-  ConsentTexts,
-  ConsentCookieOptions,
-  ConsentCookieData,
-  ProjectCategoriesConfig,
-  DesignTokens,
   ConsentContextValue,
+  ConsentCookieData,
+  ConsentCookieOptions,
+  ConsentPreferences,
   /**
    * Props do ConsentProvider principal.
    */
   ConsentProviderProps,
+  ConsentState,
+  ConsentTexts,
   /**
    * Props esperadas por um componente customizado de CookieBanner.
    */
   CustomCookieBannerProps,
   /**
-   * Props esperadas por um componente customizado de PreferencesModal.
-   */
-  CustomPreferencesModalProps,
-  /**
    * Props esperadas por um componente customizado de FloatingPreferencesButton.
    */
   CustomFloatingPreferencesButtonProps,
+  /**
+   * Props esperadas por um componente customizado de PreferencesModal.
+   */
+  CustomPreferencesModalProps,
+  DesignTokens,
+  ProjectCategoriesConfig,
 } from './types/types'
+
+/**
+ * Tipos para o sistema de auto-configuração de categorias.
+ * @since 0.4.1
+ */
+export type { CategoryAutoConfigResult } from './utils/autoConfigureCategories'
 
 // Utilitários de orientação para developers
 
@@ -182,14 +200,14 @@ export type { CategoriesContextValue } from './context/CategoriesContext'
  * Categorias padrão do projeto e função para análise da configuração do desenvolvedor.
  */
 export {
-  DEFAULT_PROJECT_CATEGORIES,
   analyzeDeveloperConfiguration,
+  DEFAULT_PROJECT_CATEGORIES,
 } from './utils/developerGuidance'
 
 /**
  * Sistema de logging para debug e troubleshooting.
  */
-export { setDebugLogging, LogLevel } from './utils/logger'
+export { LogLevel, setDebugLogging } from './utils/logger'
 
 // Componentes padrão (para wrapping ou uso avançado)
 export { CookieBanner } from './components/CookieBanner'
@@ -205,6 +223,7 @@ export type { ConsentScriptLoaderProps } from './utils/ConsentScriptLoader'
 export { defaultTexts } from './context/ConsentContext'
 export {
   createProjectPreferences,
-  validateProjectPreferences,
   getAllProjectCategories,
+  validateProjectPreferences,
 } from './utils/categoryUtils'
+

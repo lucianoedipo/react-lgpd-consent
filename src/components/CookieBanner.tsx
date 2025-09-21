@@ -99,6 +99,12 @@ export interface CookieBannerProps {
   policyLinkUrl?: string
 
   /**
+   * URL para os termos de uso do site (opcional). Quando fornecida, será considerada uma rota "segura"
+   * para não aplicar bloqueio total (overlay) mesmo em modo bloqueante.
+   */
+  termsLinkUrl?: string
+
+  /**
    * Força exibição do banner em modo de debug, independente do consentimento.
    *
    * @remarks
@@ -266,6 +272,7 @@ export interface CookieBannerProps {
  */
 export function CookieBanner({
   policyLinkUrl,
+  termsLinkUrl,
   debug,
   blocking = true,
   hideBranding = false,
@@ -431,7 +438,28 @@ export function CookieBanner({
     return isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.4)'
   }
 
-  if (blocking) {
+  // Rota segura: se a URL atual corresponder à política/termos, não aplicar overlay (SSR-safe)
+  const isSafeRoute = (() => {
+    try {
+      if (typeof window === 'undefined') return false
+      const current = new URL(window.location.href)
+      const safeUrls = [policyLinkUrl, termsLinkUrl].filter(Boolean) as string[]
+      return safeUrls.some((u) => {
+        try {
+          const target = new URL(u, current.origin)
+          return target.pathname === current.pathname
+        } catch {
+          return false
+        }
+      })
+    } catch {
+      return false
+    }
+  })()
+
+  const effectiveBlocking = blocking && !isSafeRoute
+
+  if (effectiveBlocking) {
     return (
       <>
         <Box

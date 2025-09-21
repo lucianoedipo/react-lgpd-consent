@@ -46,6 +46,20 @@ export function CategoriesProvider({
   config?: ProjectCategoriesConfig
   disableDeveloperGuidance?: boolean
 }>) {
+  const [impliedVersion, setImpliedVersion] = React.useState(0)
+
+  React.useEffect(() => {
+    const handler = () => setImpliedVersion((v) => v + 1)
+    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+      window.addEventListener('lgpd:requiredCategories', handler)
+      return () => window.removeEventListener('lgpd:requiredCategories', handler)
+    }
+    return () => {}
+  }, [])
+
+  // Nota sobre dependência: `impliedVersion` NÃO é usado dentro do callback,
+  // mas é intencionalmente incluído para reavaliar guidance quando integrações
+  // anunciam categorias requeridas via evento global.
   const contextValue = React.useMemo(() => {
     const finalConfig: ProjectCategoriesConfig = config || DEFAULT_PROJECT_CATEGORIES
 
@@ -59,7 +73,7 @@ export function CategoriesProvider({
       toggleableCategories,
       allCategories: guidance.activeCategoriesInfo,
     }
-  }, [config])
+  }, [config, impliedVersion]) // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)

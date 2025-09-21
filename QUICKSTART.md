@@ -90,6 +90,15 @@ No modo bloqueante, o banner usa um backdrop para focar a atenção do usuário.
 
 Se `colors.background` ou `colors.text` não forem fornecidos, a lib usa automaticamente `theme.palette.background.paper` e `theme.palette.text.primary` do MUI, garantindo compatibilidade com dark mode.
 
+## 🧑‍🏫 Guia do Dev (console)
+
+Durante o desenvolvimento, o console exibe um guia com:
+- Avisos quando a configuração padrão é usada; sugestões para explicitar categorias
+- Lista de categorias ativas e quais exigem toggle
+- Detecção de integrações que requerem categorias, com sugestão para habilitá-las
+- Boas práticas LGPD (Brasil) e alertas de UX (categorias demais)
+- Silenciado automaticamente em produção; SSR-safe
+
 Adicione categorias específicas do seu projeto (ex.: chat de suporte, players de vídeo, AB testing):
 
 ```tsx

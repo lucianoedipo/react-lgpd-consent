@@ -2,7 +2,7 @@
 
 // src/utils/developerGuidance.ts
 import React from 'react'
-import type { ProjectCategoriesConfig } from '../types/types'
+import type { Category, ProjectCategoriesConfig } from '../types/types'
 
 /**
  * @interface DeveloperGuidance
@@ -123,6 +123,33 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
     })
   })
 
+  // Since v0.4.1: considerar categorias implicadas por integrações registradas globalmente
+  try {
+    const gt = globalThis as { __LGPD_REQUIRED_CATEGORIES__?: string[] }
+    const implied = (gt.__LGPD_REQUIRED_CATEGORIES__ || []).filter(Boolean)
+    implied.forEach((categoryId) => {
+      if (!guidance.activeCategoriesInfo.find((c) => c.id === categoryId)) {
+        const info = categoryNames[categoryId]
+        if (info) {
+          guidance.activeCategoriesInfo.push({
+            id: categoryId,
+            name: info.name,
+            description: info.description,
+            essential: false,
+            uiRequired: true,
+          })
+          if (!enabledCategories.includes(categoryId as Category)) {
+            guidance.suggestions.push(
+              `Integrações detectadas requerem a categoria '${categoryId}'. Adicione-a em categories.enabledCategories para evitar inconsistências.`,
+            )
+          }
+        }
+      }
+    })
+  } catch {
+    // ignore
+  }
+
   const totalToggleable = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
 
   if (totalToggleable === 0) {
@@ -189,6 +216,22 @@ export function logDeveloperGuidance(
       `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
     )
   }
+
+  // Bloco educativo LGPD (alto nível)
+  console.group(`${PREFIX} 📖 Boas práticas LGPD (Brasil)`)
+  console.info(
+    `${PREFIX} 🔒 Necessary: sempre ativos. Outras categorias devem iniciar como rejeitadas (opt-out por padrão).`,
+  )
+  console.info(
+    `${PREFIX} 📜 Inclua link claro para política de privacidade e descreva finalidades por categoria.`,
+  )
+  console.info(
+    `${PREFIX} 🧾 Registre consentimento (data/hora, origem) e permita revisão posterior (botão de preferências).`,
+  )
+  console.info(
+    `${PREFIX} ⏳ Defina prazos de retenção compatíveis e evite coletar dados antes do consentimento.`,
+  )
+  console.groupEnd()
 
   const rows = guidance.activeCategoriesInfo.map((cat) => ({
     ID: cat.id,

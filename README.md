@@ -90,6 +90,8 @@ Para mais detalhes sobre customização, hooks e funcionalidades, consulte os se
   - Novo na v0.4.0: suporte a `customCategories` — veja a seção “Categorias customizadas (customCategories)” no Quickstart.
   - Novo na v0.4.1: integrações nativas para Facebook Pixel, Hotjar, Mixpanel, Clarity, Intercom e Zendesk — veja o guia [INTEGRACOES.md](./INTEGRACOES.md).
   - Dica: use `designTokens.layout.backdrop: 'auto'` para backdrop sensível ao tema no banner bloqueante.
+  - Auto-config de categorias: a biblioteca detecta categorias requeridas pelas integrações e exibe os toggles mesmo se você esquecer de habilitar (valor inicial sempre rejeitado). Recomendamos explicitar em `categories.enabledCategories` para clareza.
+  - Páginas de Política/Termos não bloqueadas: se `policyLinkUrl` e/ou `termsLinkUrl` apontarem para a página atual, o overlay bloqueante não é aplicado — garantindo legibilidade destas páginas.
 - **[Guia da API (`API.md`)](./API.md)**: Referência completa de todos os componentes, hooks e tipos.
 - **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
 - **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.

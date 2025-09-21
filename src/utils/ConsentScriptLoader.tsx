@@ -4,10 +4,17 @@
  */
 
 import * as React from 'react'
+import { useCategories } from '../context/CategoriesContext'
 import { useConsent } from '../hooks/useConsent'
-import { loadScript } from './scriptLoader'
+import type { Category } from '../types/types'
+import {
+  autoConfigureCategories,
+  validateIntegrationCategories,
+  validateNecessaryClassification,
+} from './autoConfigureCategories'
 import { logger } from './logger'
 import type { ScriptIntegration } from './scriptIntegrations'
+import { loadScript } from './scriptLoader'
 
 export interface ConsentScriptLoaderProps {
   /** Lista de integrações de scripts para carregar baseado no consentimento */
@@ -42,7 +49,64 @@ export function ConsentScriptLoader({
   reloadOnChange = false,
 }: Readonly<ConsentScriptLoaderProps>) {
   const { preferences, consented } = useConsent()
+  const categories = useCategories()
   const loadedScripts = React.useRef<Set<string>>(new Set())
+  // Registrar categorias requeridas globalmente e notificar contexto (para guidance/Modal)
+  React.useEffect(() => {
+    try {
+      const required = Array.from(new Set((integrations || []).map((i) => i.category))).filter(
+        Boolean,
+      )
+      const gt = globalThis as unknown as { __LGPD_REQUIRED_CATEGORIES__?: string[] }
+      const current = Array.isArray(gt.__LGPD_REQUIRED_CATEGORIES__)
+        ? gt.__LGPD_REQUIRED_CATEGORIES__
+        : []
+      const merged = Array.from(new Set([...(current as string[]), ...(required as string[])]))
+      gt.__LGPD_REQUIRED_CATEGORIES__ = merged
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+        window.dispatchEvent(new CustomEvent('lgpd:requiredCategories'))
+      }
+    } catch {
+      // Ignora erros de globalThis em ambientes sem suporte
+    }
+  }, [integrations])
+
+  // Validação inteligente das categorias em modo DEV
+  React.useEffect(() => {
+    const isDev = process.env.NODE_ENV !== 'production'
+    if (!isDev || integrations.length === 0) return
+
+    const enabledCategories = categories.allCategories.map((cat) => cat.id) as Category[]
+    const isValid = validateIntegrationCategories(integrations, enabledCategories)
+
+    if (!isValid) {
+      // Analisa e loga informações sobre categorias em falta
+      autoConfigureCategories({ enabledCategories }, integrations, {
+        warningOnly: true,
+        silent: false,
+      })
+    }
+
+    // Validação de proteção contra classificação incorreta como "necessary"
+    const necessaryWarnings = validateNecessaryClassification(integrations, enabledCategories)
+    if (necessaryWarnings.length > 0) {
+      console.group('🚨 [LGPD-CONSENT] VALIDAÇÃO DE COMPLIANCE')
+      necessaryWarnings.forEach((warning) => {
+        if (warning.startsWith('⚠️')) {
+          console.error(warning)
+        } else if (
+          warning.startsWith('💡') ||
+          warning.startsWith('📚') ||
+          warning.startsWith('🔧')
+        ) {
+          console.warn(warning)
+        } else {
+          console.log(warning)
+        }
+      })
+      console.groupEnd()
+    }
+  }, [integrations, categories])
 
   React.useEffect(() => {
     if (!consented) return

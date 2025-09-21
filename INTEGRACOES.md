@@ -302,3 +302,8 @@ Notas:
 - Integrações só serão carregadas após consentimento explícito e quando a categoria correspondente estiver `true` nas preferências.
 - Em modo bloqueante, o backdrop do banner pode ser configurado via `designTokens.layout.backdrop`:
   - `false` (transparente), `'auto'` (sensível ao tema) ou string (ex.: `'#00000088'`).
+
+Auto-config de categorias (v0.4.1)
+- A biblioteca detecta categorias requeridas pelas integrações utilizadas e, em desenvolvimento, avisa caso alguma não esteja habilitada.
+- Para experiência resiliente, os toggles dessas categorias serão exibidos mesmo se não estiverem listadas em `enabledCategories` (valor inicial: rejeitado).
+- Recomenda-se explicitar em `ConsentProvider.categories.enabledCategories` para configuração clara e documentação do uso.

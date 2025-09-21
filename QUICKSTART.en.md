@@ -67,6 +67,15 @@ In blocking mode, the banner uses a backdrop to focus user attention. You can co
 
 If `colors.background` or `colors.text` are omitted, the library falls back to `theme.palette.background.paper` and `theme.palette.text.primary`, ensuring dark mode compatibility.
 
+## 🧑‍🏫 Developer Guidance (console)
+
+In development, the console shows a helpful guidance panel:
+- Warns when using defaults; suggests making categories explicit
+- Lists active categories and which require UI toggles
+- Detects integrations that require categories and suggests enabling them
+- Shares Brazilian LGPD best practices and flags UX issues (too many categories)
+- Silenced automatically in production; SSR-safe
+
 Add project-specific categories (e.g., support chat, video players, A/B testing):
 
 ```tsx
