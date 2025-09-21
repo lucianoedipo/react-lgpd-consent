@@ -111,8 +111,8 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   })
 
   // Adiciona categorias customizadas à lista de ativas (como toggleáveis, a menos que marcadas como essenciais)
-  const custom = finalConfig.customCategories || []
-  custom.forEach((cat) => {
+  const customCategories = finalConfig.customCategories || []
+  customCategories.forEach((cat) => {
     if (!cat?.id || cat.id === 'necessary') return
     guidance.activeCategoriesInfo.push({
       id: cat.id,
