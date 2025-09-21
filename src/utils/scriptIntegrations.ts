@@ -46,6 +46,7 @@ export interface MixpanelConfig {
 
 export interface ClarityConfig {
   projectId: string
+  upload?: boolean
 }
 
 export interface IntercomConfig {
@@ -274,7 +275,13 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
         const w = window as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
         w.mixpanel = w.mixpanel || { init: () => undefined }
         if (w.mixpanel && typeof w.mixpanel.init === 'function') {
-          w.mixpanel.init(config.token, config.config ?? {}, config.api_host)
+          try {
+            w.mixpanel.init(config.token, config.config ?? {}, config.api_host)
+          } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('[Mixpanel] Failed to initialize:', error)
+            }
+          }
         }
       }
     },
@@ -290,6 +297,21 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
     id: 'clarity',
     category: 'analytics',
     src: `https://www.clarity.ms/tag/${config.projectId}`,
+    init: () => {
+      if (typeof window !== 'undefined' && config.upload !== undefined) {
+        // Clarity script carrega automaticamente, init apenas para configurações adicionais
+        const w = window as unknown as { clarity?: (...args: unknown[]) => void }
+        if (w.clarity && typeof w.clarity === 'function') {
+          try {
+            w.clarity('set', 'upload', config.upload)
+          } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('[Clarity] Failed to configure upload setting:', error)
+            }
+          }
+        }
+      }
+    },
   }
 }
 
@@ -302,6 +324,20 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
     id: 'intercom',
     category: 'functional',
     src: `https://widget.intercom.io/widget/${config.app_id}`,
+    init: () => {
+      if (typeof window !== 'undefined') {
+        const w = window as unknown as { Intercom?: (...args: unknown[]) => void }
+        if (w.Intercom && typeof w.Intercom === 'function') {
+          try {
+            w.Intercom('boot', { app_id: config.app_id })
+          } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('[Intercom] Failed to boot:', error)
+            }
+          }
+        }
+      }
+    },
   }
 }
 
@@ -314,6 +350,20 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
     id: 'zendesk-chat',
     category: 'functional',
     src: `https://static.zdassets.com/ekr/snippet.js?key=${config.key}`,
+    init: () => {
+      if (typeof window !== 'undefined') {
+        const w = window as unknown as { zE?: (...args: unknown[]) => void }
+        if (w.zE && typeof w.zE === 'function') {
+          try {
+            w.zE('webWidget', 'identify', { key: config.key })
+          } catch (error) {
+            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+              console.warn('[Zendesk] Failed to identify:', error)
+            }
+          }
+        }
+      }
+    },
   }
 }
 

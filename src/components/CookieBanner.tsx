@@ -414,27 +414,27 @@ export function CookieBanner({
    * - Se `designTokens.layout.backdrop` for uma string => usa essa string como cor (ex.: `'#00000088'`).
    * - Caso contrário => padrão seguro `'rgba(0, 0, 0, 0.4)'`.
    */
-  let backdropColor = 'rgba(0, 0, 0, 0.4)'
   const backdropToken = designTokens?.layout?.backdrop
-  if (backdropToken === false) {
-    backdropColor = 'transparent'
-  } else if (typeof backdropToken === 'string') {
-    backdropColor = backdropToken
+  const resolveBackdropColor = (theme: { palette?: { mode?: 'dark' | 'light' } }): string => {
+    if (backdropToken === false) return 'transparent'
+    if (typeof backdropToken === 'string') return backdropToken
+    const isDark = theme?.palette?.mode === 'dark'
+    return isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.4)'
   }
 
   if (blocking) {
     return (
       <>
         <Box
-          sx={{
+          sx={(theme) => ({
             position: 'fixed',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: backdropColor,
+            backgroundColor: resolveBackdropColor(theme),
             zIndex: 1299,
-          }}
+          })}
         />
         <Box sx={positionStyle}>{bannerContent}</Box>
       </>

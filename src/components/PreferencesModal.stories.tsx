@@ -216,10 +216,12 @@ export const InteractiveDemo: Story = {
 export const DarkTheme: Story = {
   args: {
     hideBranding: false,
-    openModal: true,
+    // Não forçar abertura via prop para permitir fechar corretamente
+    openModal: false,
   },
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
+    // Não definir DialogProps.open aqui para que o controle seja do contexto
+    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing'] }}
