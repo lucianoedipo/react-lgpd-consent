@@ -143,23 +143,23 @@ export function PreferencesModal({
             // Integrations used (global), SSR-safe
             const used: string[] = globalThis.__LGPD_USED_INTEGRATIONS__ || []
             const descriptors = getCookiesInfoForCategory(category.id as unknown as Category, used)
-            
+
             // Buscar cookiesInfo das integrações ativas
-            const enrichedDescriptors = descriptors.map(desc => {
+            const enrichedDescriptors = descriptors.map((desc) => {
               // Se já tem informações completas, retorna como está
               if (desc.purpose && desc.duration && desc.provider) {
                 return desc
               }
-              
+
               // Caso contrário, retorna apenas o que tem
               return {
                 name: desc.name,
                 purpose: desc.purpose || '-',
                 duration: desc.duration || '-',
-                provider: desc.provider || '-'
+                provider: desc.provider || '-',
               }
             })
-            
+
             // Merge names not in descriptors
             const merged = [
               ...enrichedDescriptors,
@@ -172,8 +172,9 @@ export function PreferencesModal({
             let mergedFinal = merged
             try {
               if (merged.length === 0) {
-                const gmap = (globalThis as unknown as { __LGPD_INTEGRATIONS_MAP__?: Record<string, string> })
-                  .__LGPD_INTEGRATIONS_MAP__ || {}
+                const gmap =
+                  (globalThis as unknown as { __LGPD_INTEGRATIONS_MAP__?: Record<string, string> })
+                    .__LGPD_INTEGRATIONS_MAP__ || {}
                 const scriptRows = Object.entries(gmap)
                   .filter(([, cat]) => cat === category.id)
                   .map(([id]) => ({
@@ -251,7 +252,10 @@ export function PreferencesModal({
                 <tbody>
                   {(() => {
                     const used: string[] = globalThis.__LGPD_USED_INTEGRATIONS__ || []
-                    const necessaryCookies = getCookiesInfoForCategory('necessary' as unknown as Category, used)
+                    const necessaryCookies = getCookiesInfoForCategory(
+                      'necessary' as unknown as Category,
+                      used,
+                    )
                     return necessaryCookies.map((d, idx) => (
                       <tr key={d.name + idx}>
                         <td>{d.name}</td>

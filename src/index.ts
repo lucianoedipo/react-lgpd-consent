@@ -103,7 +103,11 @@ export { loadScript } from './utils/scriptLoader'
  * @category Utils
  * @since 0.4.1
  */
-export { categorizeDiscoveredCookies, detectConsentCookieName, discoverRuntimeCookies } from './utils/cookieDiscovery'
+export {
+  categorizeDiscoveredCookies,
+  detectConsentCookieName,
+  discoverRuntimeCookies,
+} from './utils/cookieDiscovery'
 
 /**
  * Tema padrão para componentes de consentimento.
@@ -218,18 +222,14 @@ export type {
  * @since 0.4.1
  * @category Types
  */
-export type {
-  AdvancedConsentTexts
-} from './types/advancedTexts'
+export type { AdvancedConsentTexts } from './types/advancedTexts'
 
 /**
  * Utilitários para sistema avançado de textos.
  * @since 0.4.1
  * @category Utils
  */
-export {
-  EXPANDED_DEFAULT_TEXTS, resolveTexts, TEXT_TEMPLATES
-} from './types/advancedTexts'
+export { EXPANDED_DEFAULT_TEXTS, resolveTexts, TEXT_TEMPLATES } from './types/advancedTexts'
 
 /**
  * Tipos para o sistema de auto-configuração de categorias.
@@ -346,4 +346,3 @@ export {
   getAllProjectCategories,
   validateProjectPreferences,
 } from './utils/categoryUtils'
-

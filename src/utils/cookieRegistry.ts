@@ -85,19 +85,49 @@ export const COOKIE_INFO_BY_INTEGRATION: Record<string, CookieDescriptor[]> = {
     },
   ],
   clarity: [
-    { name: '_clck', purpose: 'Identificador de usuário', duration: '365 dias', provider: 'Microsoft' },
+    {
+      name: '_clck',
+      purpose: 'Identificador de usuário',
+      duration: '365 dias',
+      provider: 'Microsoft',
+    },
     { name: '_clsk', purpose: 'Rastreamento de sessão', duration: '1 dia', provider: 'Microsoft' },
   ],
   intercom: [
-    { name: 'intercom-id-*', purpose: 'Identificador do usuário', duration: '9 meses', provider: 'Intercom' },
-    { name: 'intercom-session-*', purpose: 'Gerenciamento de sessão', duration: '1 semana', provider: 'Intercom' },
+    {
+      name: 'intercom-id-*',
+      purpose: 'Identificador do usuário',
+      duration: '9 meses',
+      provider: 'Intercom',
+    },
+    {
+      name: 'intercom-session-*',
+      purpose: 'Gerenciamento de sessão',
+      duration: '1 semana',
+      provider: 'Intercom',
+    },
   ],
   'zendesk-chat': [
-    { name: '__zlcmid', purpose: 'Identificador de sessão de chat', duration: '1 ano', provider: 'Zendesk' },
-    { name: '_zendesk_shared_session', purpose: 'Gerenciamento de sessão', duration: 'Sessão', provider: 'Zendesk' },
+    {
+      name: '__zlcmid',
+      purpose: 'Identificador de sessão de chat',
+      duration: '1 ano',
+      provider: 'Zendesk',
+    },
+    {
+      name: '_zendesk_shared_session',
+      purpose: 'Gerenciamento de sessão',
+      duration: 'Sessão',
+      provider: 'Zendesk',
+    },
   ],
   userway: [
-    { name: '_userway_*', purpose: 'Preferências de acessibilidade', duration: '1 ano', provider: 'UserWay' },
+    {
+      name: '_userway_*',
+      purpose: 'Preferências de acessibilidade',
+      duration: '1 ano',
+      provider: 'UserWay',
+    },
   ],
   'facebook-pixel': [
     { name: '_fbp', purpose: 'Rastreamento de anúncios', duration: '90 dias', provider: 'Meta' },

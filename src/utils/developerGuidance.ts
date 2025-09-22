@@ -230,7 +230,7 @@ export function logDeveloperGuidance(
   }
   const nodeEnv = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
   const isProd = nodeEnv === 'production' || gt.__LGPD_PRODUCTION__ === true
-  
+
   if (isProd || disableGuidanceProp) return
 
   // Verificar se já foi logado nesta sessão

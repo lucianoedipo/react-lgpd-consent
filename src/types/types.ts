@@ -627,7 +627,7 @@ type SpacingValue = string | number | { x?: string | number; y?: string | number
  * const color: ColorVariant = { main: '#1976d2', dark: '#1565c0' };
  * ```
  */
-type ColorVariant = string | { light?: string; main?: string; dark?: string , contrastText?: string }
+type ColorVariant = string | { light?: string; main?: string; dark?: string; contrastText?: string }
 
 /**
  * Tipo alias para altura com auto.
@@ -656,25 +656,28 @@ type HeightValue = 'auto' | (string & Record<never, never>)
  * const backdrop: BackdropConfig = { enabled: true, color: 'rgba(0,0,0,0.5)', blur: '4px' };
  * ```
  */
-type BackdropConfig = boolean | string | {
-  enabled?: boolean
-  color?: string
-  blur?: string
-  opacity?: number
-}
+type BackdropConfig =
+  | boolean
+  | string
+  | {
+      enabled?: boolean
+      color?: string
+      blur?: string
+      opacity?: number
+    }
 
 /**
  * Tokens de design para customização visual avançada dos componentes.
- * 
+ *
  * Sistema robusto de design tokens que permite controle granular sobre todos os aspectos
  * visuais da biblioteca. Suporta responsive design, estados interativos, acessibilidade
  * e temas dark/light.
- * 
+ *
  * @category Types
  * @since 0.1.3
  * @version 0.4.1 - Expandido substancialmente com novos tokens
  * @public
- * 
+ *
  * @example Configuração básica
  * ```tsx
  * const tokens: DesignTokens = {
@@ -685,7 +688,7 @@ type BackdropConfig = boolean | string | {
  *   }
  * }
  * ```
- * 
+ *
  * @example Configuração avançada com responsive e estados
  * ```tsx
  * const advancedTokens: DesignTokens = {

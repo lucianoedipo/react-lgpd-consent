@@ -22,10 +22,10 @@ function makeInitialState(consented = false) {
   }
 }
 
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 describe('CookieBanner component', () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => jest.clearAllMocks())
 
   it('renders when not consented and buttons trigger provider actions', async () => {
     render(
@@ -35,25 +35,25 @@ describe('CookieBanner component', () => {
       >
         <div />
       </ConsentProvider>,
-    );
+    )
 
     // Banner should be present (may appear in multiple wrappers: take any)
-    const messages = await screen.findAllByText(/Utilizamos cookies/i);
-    expect(messages.length).toBeGreaterThan(0);
+    const messages = await screen.findAllByText(/Utilizamos cookies/i)
+    expect(messages.length).toBeGreaterThan(0)
 
     // Click 'Aceitar todos' should call Cookies.set via provider flow
-    const acceptBtn = screen.getByRole('button', { name: /Aceitar todos|Aceitar/i });
-    await userEvent.click(acceptBtn);
+    const acceptBtn = screen.getByRole('button', { name: /Aceitar todos|Aceitar/i })
+    await userEvent.click(acceptBtn)
 
-    expect(Cookies.set).toHaveBeenCalled();
-  });
+    expect(Cookies.set).toHaveBeenCalled()
+  })
 
   it('applies design tokens for colors and spacing when provided', async () => {
     const tokens = {
       colors: { primary: '#0000ff', text: '#101010', background: '#ffffff' },
       spacing: { padding: { banner: 5 } },
       typography: { fontSize: { banner: '16px' } },
-    };
+    }
 
     render(
       <ConsentProvider
@@ -63,14 +63,14 @@ describe('CookieBanner component', () => {
       >
         <div />
       </ConsentProvider>,
-    );
+    )
 
-    const papers = await screen.findAllByText(/Utilizamos cookies/i);
-    const paper = papers[0];
-    const computed = window.getComputedStyle(paper as Element);
+    const papers = await screen.findAllByText(/Utilizamos cookies/i)
+    const paper = papers[0]
+    const computed = window.getComputedStyle(paper as Element)
     // Check font size from tokens
-    expect(computed.fontSize).toBe('16px');
-  });
+    expect(computed.fontSize).toBe('16px')
+  })
 
   it('hides branding when hideBranding=true', async () => {
     render(
@@ -81,20 +81,20 @@ describe('CookieBanner component', () => {
       >
         <div />
       </ConsentProvider>,
-    );
+    )
 
     // Branding text should not be present
-    const matches = screen.queryAllByText(/L\u00c9dipO.eti.br|fornecido por/i);
-    expect(matches.length).toBe(0);
-  });
+    const matches = screen.queryAllByText(/L\u00c9dipO.eti.br|fornecido por/i)
+    expect(matches.length).toBe(0)
+  })
 
   it('resolves backdrop color correctly for auto theme', async () => {
     const tokens = {
       layout: { backdrop: 'auto' },
-    };
+    }
 
-    const darkTheme = createTheme({ palette: { mode: 'dark' } });
-    const lightTheme = createTheme({ palette: { mode: 'light' } });
+    const darkTheme = createTheme({ palette: { mode: 'dark' } })
+    const lightTheme = createTheme({ palette: { mode: 'light' } })
 
     const { rerender } = render(
       <ThemeProvider theme={darkTheme}>
@@ -106,12 +106,12 @@ describe('CookieBanner component', () => {
         >
           <div />
         </ConsentProvider>
-      </ThemeProvider>
-    );
+      </ThemeProvider>,
+    )
 
     // The backdrop is not directly inspectable, so we can't test its color directly.
     // We will check if the banner is rendered, which is a good proxy.
-    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull();
+    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
 
     rerender(
       <ThemeProvider theme={lightTheme}>
@@ -123,9 +123,9 @@ describe('CookieBanner component', () => {
         >
           <div />
         </ConsentProvider>
-      </ThemeProvider>
-    );
+      </ThemeProvider>,
+    )
 
-    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull();
-  });
-});
+    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+  })
+})

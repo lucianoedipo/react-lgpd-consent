@@ -98,7 +98,10 @@ export function CategoriesProvider({
   // Descoberta de cookies em modo DEV e log pelo menos uma vez, mesmo com guidance desabilitado
   React.useEffect(() => {
     try {
-      const gt = globalThis as unknown as { __LGPD_DISCOVERY_LOGGED__?: boolean; process?: { env?: { NODE_ENV?: string } } }
+      const gt = globalThis as unknown as {
+        __LGPD_DISCOVERY_LOGGED__?: boolean
+        process?: { env?: { NODE_ENV?: string } }
+      }
       const env = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
       const isDev = env === 'development'
       if (!isDev || gt.__LGPD_DISCOVERY_LOGGED__ === true || disableDiscoveryLog) return
@@ -109,8 +112,10 @@ export function CategoriesProvider({
       const PREFIX = '[🍪 LGPD-CONSENT]'
       if (typeof console !== 'undefined') {
         try {
-          console.group(`${PREFIX} 🔎 Descoberta de cookies (experimental)`) //  
-          const names = Array.from(new Set([consentName, ...discovered.map((d) => d.name)].filter(Boolean)))
+          console.group(`${PREFIX} 🔎 Descoberta de cookies (experimental)`) //
+          const names = Array.from(
+            new Set([consentName, ...discovered.map((d) => d.name)].filter(Boolean)),
+          )
           const rows = names.map((n) => ({ Cookie: n }))
           if (typeof console.table === 'function') console.table(rows)
           else console.log(rows)
