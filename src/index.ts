@@ -354,4 +354,3 @@ export {
   getAllProjectCategories,
   validateProjectPreferences,
 } from './utils/categoryUtils'
-
