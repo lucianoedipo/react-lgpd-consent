@@ -49,48 +49,61 @@ type Story = StoryObj
 const useCookieMonitor = () => {
   const [cookies, setCookies] = React.useState<Record<string, string>>({})
   const [newCookies, setNewCookies] = React.useState<Set<string>>(new Set())
+  const previousCookiesRef = React.useRef<Record<string, string>>({})
+
+  const parseCookies = React.useCallback(() => {
+    const cookieString = document.cookie
+    const parsed: Record<string, string> = {}
+
+    if (cookieString) {
+      cookieString.split(';').forEach((cookie) => {
+        const [name, ...valueParts] = cookie.trim().split('=')
+        if (name) {
+          parsed[name] = valueParts.join('=') || ''
+        }
+      })
+    }
+
+    return parsed
+  }, [])
+
+  const updateCookies = React.useCallback(() => {
+    const currentCookies = parseCookies()
+    const currentKeys = Object.keys(currentCookies)
+    const previousKeys = Object.keys(previousCookiesRef.current)
+
+    // Verificar se realmente houve mudanças antes de atualizar
+    const cookiesChanged =
+      currentKeys.length !== previousKeys.length ||
+      currentKeys.some((key) => currentCookies[key] !== previousCookiesRef.current[key])
+
+    if (!cookiesChanged) {
+      return // Não há mudanças, não precisa atualizar
+    }
+
+    // Detectar novos cookies
+    const newKeys = currentKeys.filter((key) => !previousKeys.includes(key))
+    if (newKeys.length > 0) {
+      setNewCookies((prev) => new Set([...prev, ...newKeys]))
+
+      // Remover da lista de "novos" após 3 segundos
+      setTimeout(() => {
+        setNewCookies((prev) => {
+          const updated = new Set(prev)
+          for (const key of newKeys) {
+            updated.delete(key)
+          }
+          return updated
+        })
+      }, 3000)
+    }
+
+    // Atualizar refs e state apenas se houve mudanças
+    previousCookiesRef.current = { ...currentCookies }
+    setCookies({ ...currentCookies })
+  }, [parseCookies])
 
   React.useEffect(() => {
-    const parseCookies = () => {
-      const cookieString = document.cookie
-      const parsed: Record<string, string> = {}
-
-      if (cookieString) {
-        cookieString.split(';').forEach((cookie) => {
-          const [name, ...valueParts] = cookie.trim().split('=')
-          if (name) {
-            parsed[name] = valueParts.join('=') || ''
-          }
-        })
-      }
-
-      return parsed
-    }
-
-    const updateCookies = () => {
-      const currentCookies = parseCookies()
-      const currentKeys = Object.keys(currentCookies)
-      const previousKeys = Object.keys(cookies)
-
-      // Detectar novos cookies
-      const newKeys = currentKeys.filter((key) => !previousKeys.includes(key))
-      if (newKeys.length > 0) {
-        setNewCookies((prev) => new Set([...prev, ...newKeys]))
-
-        // Remover da lista de "novos" após 3 segundos
-        const clearNewCookies = () => {
-          setNewCookies((prev) => {
-            const updated = new Set(prev)
-            newKeys.forEach((key) => updated.delete(key))
-            return updated
-          })
-        }
-        setTimeout(clearNewCookies, 3000)
-      }
-
-      setCookies(currentCookies)
-    }
-
     // Atualizar imediatamente
     updateCookies()
 
@@ -98,7 +111,7 @@ const useCookieMonitor = () => {
     const interval = setInterval(updateCookies, 500)
 
     return () => clearInterval(interval)
-  }, [cookies])
+  }, [updateCookies])
 
   return { cookies, newCookies }
 }
