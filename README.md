@@ -65,6 +65,11 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-c
 - **Categorização inteligente** usando padrões LGPD
 - **Integração nativa** com sistema de override
 
+### ⚠️ Breaking Changes
+- **Suporte a categorias customizadas**: `setPreference` e `ScriptIntegration.category` agora usam `string` ao invés de `Category`  
+- **Impacto mínimo**: Código usando strings literais continua funcionando sem alterações
+- **Consulte**: [CHANGELOG.md](./CHANGELOG.md) para guia de migração completo
+
 ---
 
 ## 📖 Uso Básico

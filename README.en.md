@@ -87,6 +87,11 @@ In development, the library prints a guidance panel in the console to help you c
 - Highlights Brazilian LGPD best practices: opt-out by default, clear policy, consent logging, retention
 - Silenced in production; SSR-safe
 
+### ⚠️ Breaking Changes v0.4.1
+- **Custom categories support**: `setPreference` and `ScriptIntegration.category` now use `string` instead of `Category`
+- **Minimal impact**: Code using literal strings continues working without changes
+- **Migration guide**: See [CHANGELOG.md](./CHANGELOG.md) for complete details
+
 ---
 
 ## 🤝 Contributing

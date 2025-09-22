@@ -141,6 +141,7 @@ O hook principal para interagir com o estado de consentimento.
 | `isModalOpen`     | `boolean`                             | `true` se o modal de preferências estiver aberto.                                        |
 | `acceptAll`       | `() => void`                          | Aceita todas as categorias de cookies.                                                   |
 | `rejectAll`       | `() => void`                          | Rejeita todas as categorias não essenciais.                                              |
+| `setPreference`   | `(cat: string, value: boolean) => void` | Define consentimento para uma categoria específica (predefinida ou customizada).      |
 | `setPreferences`  | `(prefs: ConsentPreferences) => void` | Salva um novo conjunto de preferências.                                                  |
 | `openPreferences` | `() => void`                          | Abre o modal de preferências.                                                            |
 | `resetConsent`    | `() => void`                          | Reseta o consentimento, fazendo o banner aparecer novamente.                             |

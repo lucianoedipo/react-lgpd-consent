@@ -18,7 +18,13 @@ import { ConsentPreferences } from '../types/types'
 import { getCookiesInfoForCategory } from '../utils/cookieRegistry'
 import { Branding } from './Branding'
 
+// Declaração global movida para evitar conflitos entre arquivos
 declare global {
+  /**
+   * @internal
+   * Variável global para rastrear integrações usadas.
+   * Usado internamente para logging e análise de performance.
+   */
   var __LGPD_USED_INTEGRATIONS__: string[] | undefined
 }
 

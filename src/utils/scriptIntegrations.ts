@@ -17,6 +17,11 @@
  * @category Utils
  * @since 0.2.0
  *
+ * @remarks
+ * **Breaking Change em v0.4.1**: O campo `category` mudou de `Category` para `string`
+ * para suportar categorias customizadas. Código existente usando strings literais
+ * continua funcionando sem alterações.
+ *
  * @example
  * ```typescript
  * const integration: ScriptIntegration = {

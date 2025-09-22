@@ -1366,8 +1366,23 @@ export interface ConsentContextValue {
   /**
    * Define a preferência para uma categoria específica.
    * Suporta tanto categorias predefinidas quanto customizadas.
+   *
    * @param cat - ID da categoria (predefinida ou customizada)
    * @param value - Valor do consentimento para a categoria
+   *
+   * @breakingChange
+   * **v0.4.1**: Parâmetro `cat` mudou de `Category` para `string` para suportar
+   * categorias customizadas. O uso com strings literais continua funcionando.
+   *
+   * @example
+   * ```typescript
+   * // ✅ Continua funcionando (categorias predefinidas)
+   * setPreference('analytics', true)
+   * setPreference('marketing', false)
+   *
+   * // ✅ Novo: categorias customizadas
+   * setPreference('custom-tracking', true)
+   * ```
    */
   setPreference: (cat: string, value: boolean) => void
   /** Define múltiplas preferências de uma vez e salva. */

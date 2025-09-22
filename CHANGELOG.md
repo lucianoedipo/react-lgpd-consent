@@ -73,7 +73,21 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Pipeline robusto**: Type-check + tests + lint + build + docs
 
 ### ⚠️ **Breaking Changes**
-Nenhuma breaking change - **100% retrocompatível** com v0.4.0
+
+#### 🔧 **`setPreference` Type Change** 
+- **Mudança**: `setPreference(cat: Category, value: boolean)` → `setPreference(cat: string, value: boolean)`
+- **Motivo**: Suporte a categorias customizadas além das predefinidas  
+- **Impacto**: Código TypeScript com tipo `Category` explícito pode precisar ajustes
+- **Migração**: 
+  - ✅ **Nenhuma mudança necessária** se usando strings literais (`'analytics'`, `'marketing'`)
+  - ⚠️ **Ajuste necessário** apenas se estava usando explicitamente o tipo `Category`
+  - 📚 **Guia**: Use `string` para suportar categorias customizadas ou continue usando os valores padrão
+
+#### 🔧 **`ScriptIntegration.category` Type Change**
+- **Mudança**: `category: Category` → `category: string`
+- **Motivo**: Suporte a categorias customizadas nas integrações de script
+- **Impacto**: Integrações customizadas com tipo `Category` explícito
+- **Migração**: Mesmas diretrizes do `setPreference` acima
 
 ### 🎯 **Categorias Suportadas**
 - `necessary` (sempre ativo)
