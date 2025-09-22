@@ -176,7 +176,7 @@ function logIntroOnce(): void {
   SESSION_LOGGED.intro = true
 
   console.log(
-    `%c🍪 LGPD-CONSENT v0.4.1 %c- Sistema de Consentimento Ativo`,
+    `%c🍪 LGPD-CONSENT %c- Sistema de Consentimento Ativo`,
     'background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
     'color: #2e7d32; font-weight: 500;',
   )
