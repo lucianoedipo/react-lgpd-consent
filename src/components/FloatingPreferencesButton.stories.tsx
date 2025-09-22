@@ -1,9 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import React from 'react'
-import { FloatingPreferencesButton } from './FloatingPreferencesButton'
-import { Box, Typography } from '@mui/material'
+import { Alert, Box, Card, CardContent, Chip, Paper, Stack, Typography } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ConsentProvider } from '../context/ConsentContext'
+import { useConsent } from '../hooks/useConsent'
+import { resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '../index'
+import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 
 const meta: Meta<typeof FloatingPreferencesButton> = {
   title: 'Components/FloatingPreferencesButton',
@@ -42,39 +43,41 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {
   render: (args) => (
     <ConsentProvider
-      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      categories={{ enabledCategories: ['analytics'] }}
       floatingPreferencesButtonProps={args}
     >
-      <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
-        <Typography variant="h4" gutterBottom>
-          Página com Botão Flutuante
+      <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f8fafc' }}>
+        <Typography variant="h4" gutterBottom color="primary">
+          🏠 Botão Flutuante Padrão
         </Typography>
         <Typography variant="body1" sx={{ mb: 3 }}>
-          O botão flutuante aparece no canto inferior direito da tela, permitindo que o usuário
-          reabra as configurações de cookies a qualquer momento.
+          Botão flutuante acessível que permite reconfigurar preferências a qualquer momento.
         </Typography>
 
-        <Typography variant="h6" gutterBottom>
-          Conteúdo da Página
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
-          ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-          ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        </Typography>
+        <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
+          <Chip label="Position: bottom-right" size="small" color="primary" variant="outlined" />
+          <Chip label="Always visible" size="small" color="success" variant="outlined" />
+          <Chip label="Accessibility: ✅" size="small" color="info" variant="outlined" />
+        </Stack>
 
-        <Box sx={{ height: '200px', bgcolor: '#f5f5f5', p: 2, borderRadius: 1, mb: 2 }}>
-          <Typography variant="body2">
-            Área de conteúdo simulada para demonstrar como o botão flutuante se posiciona em relação
-            ao conteúdo da página.
+        <Card elevation={1} sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              📱 Experiência do Usuário
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              O botão flutuante garante que o usuário sempre tenha acesso às configurações de
+              privacidade, promovendo transparência e controle sobre seus dados.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Paper elevation={1} sx={{ p: 3, bgcolor: 'grey.50' }}>
+          <Typography variant="body2" color="text.secondary">
+            💡 <strong>Dica:</strong> O botão aparece após o usuário tomar uma decisão inicial sobre
+            cookies e permanece acessível durante toda a navegação.
           </Typography>
-        </Box>
-
-        <Typography variant="body2" color="text.secondary">
-          Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-          nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia
-          deserunt mollit anim id est laborum.
-        </Typography>
+        </Paper>
 
         <FloatingPreferencesButton {...args} />
       </Box>
@@ -88,31 +91,40 @@ export const CustomPosition: Story = {
       categories={{ enabledCategories: ['analytics'] }}
       floatingPreferencesButtonProps={args}
     >
-      <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
-        <Typography variant="h4" gutterBottom>
-          Botão com Posicionamento Customizado
+      <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f0f9ff' }}>
+        <Typography variant="h4" gutterBottom color="info.dark">
+          📍 Posicionamento Customizado
         </Typography>
         <Typography variant="body1" sx={{ mb: 3 }}>
-          Este exemplo mostra como o botão pode ser personalizado através de props do Material-UI.
+          Demonstra como personalizar posição e estilo do botão flutuante.
         </Typography>
 
-        <Box sx={{ height: '300px', bgcolor: '#e3f2fd', p: 2, borderRadius: 1, mb: 2 }}>
+        <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} sx={{ mb: 3 }}>
+          <Chip label="Custom position" size="small" color="info" />
+          <Chip label="MUI props" size="small" color="secondary" variant="outlined" />
+          <Chip label="Flexible styling" size="small" color="primary" variant="outlined" />
+        </Stack>
+
+        <Card elevation={1} sx={{ mb: 3, bgcolor: '#dbeafe' }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              🎨 Personalização Avançada
+            </Typography>
+            <Typography variant="body2">
+              O botão flutuante herda todas as props do Fab do Material-UI, permitindo customização
+              completa de cores, tamanhos, ícones e comportamento.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <Paper elevation={2} sx={{ p: 3, bgcolor: '#bfdbfe', mb: 3 }}>
           <Typography variant="h6" gutterBottom>
             Área de Conteúdo Principal
           </Typography>
           <Typography variant="body2">
-            O botão flutuante permanece acessível independentemente do scroll da página.
+            O botão se adapta automaticamente ao layout, mantendo acessibilidade.
           </Typography>
-        </Box>
-
-        <Box sx={{ height: '300px', bgcolor: '#f3e5f5', p: 2, borderRadius: 1 }}>
-          <Typography variant="h6" gutterBottom>
-            Mais Conteúdo
-          </Typography>
-          <Typography variant="body2">
-            Demonstra como o botão se comporta com diferentes quantidades de conteúdo.
-          </Typography>
-        </Box>
+        </Paper>
 
         <FloatingPreferencesButton {...args} />
       </Box>
@@ -250,6 +262,341 @@ export const DarkTheme: Story = {
         <Typography variant="h4" gutterBottom color="white">
           Tema Escuro - Floating Button
         </Typography>
+        <FloatingPreferencesButton {...args} />
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
+// ===== NOVOS STORIES v0.4.1 =====
+
+// Status Dashboard Component
+const StatusDashboard = () => {
+  const { preferences, consented, isModalOpen } = useConsent()
+
+  return (
+    <Card elevation={2} sx={{ mb: 3 }}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          📊 Status do Sistema v0.4.1
+        </Typography>
+
+        <Alert severity={consented ? 'success' : 'info'} sx={{ mb: 2 }}>
+          Status: {consented ? '✅ Configurado' : '⏳ Aguardando'} | Modal:{' '}
+          {isModalOpen ? '🔓 Aberto' : '🔒 Fechado'}
+        </Alert>
+
+        <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+          {Object.entries(preferences).map(([category, enabled]) => (
+            <Chip
+              key={category}
+              label={`${category}: ${enabled ? '✅' : '❌'}`}
+              size="small"
+              color={enabled ? 'success' : 'default'}
+              variant={enabled ? 'filled' : 'outlined'}
+            />
+          ))}
+        </Stack>
+      </CardContent>
+    </Card>
+  )
+}
+
+export const WithAdvancedPositioning: Story = {
+  args: {
+    position: 'bottom-left',
+    offset: 32,
+  },
+  render: (args) => {
+    const advancedTexts = resolveTexts(TEXT_TEMPLATES.government, {
+      variant: 'formal',
+      language: 'pt',
+    })
+
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics', 'functional', 'marketing'],
+        }}
+        texts={advancedTexts}
+        floatingPreferencesButtonProps={args}
+      >
+        <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f8f9fa' }}>
+          <Typography variant="h4" gutterBottom color="primary">
+            🎯 Posicionamento Avançado v0.4.1
+          </Typography>
+
+          <StatusDashboard />
+
+          <Stack direction={{ xs: 'column', md: 'row' }} spacing={3}>
+            <Paper elevation={1} sx={{ p: 3, height: '300px', flex: 1 }}>
+              <Typography variant="h6" gutterBottom>
+                Conteúdo Principal
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                O botão flutuante posicionado no canto inferior esquerdo com offset personalizado.
+              </Typography>
+            </Paper>
+            <Paper elevation={1} sx={{ p: 3, height: '300px', flex: 1 }}>
+              <Typography variant="h6" gutterBottom>
+                Área Secundária
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Demonstra como o botão se adapta a diferentes layouts de página.
+              </Typography>
+            </Paper>
+          </Stack>
+
+          <Box sx={{ mt: 3 }}>
+            <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+              <Chip label="Position: bottom-left" size="small" color="info" />
+              <Chip label="Offset: 32px" size="small" color="secondary" />
+              <Chip label="Template: government" size="small" color="warning" />
+              <Chip label="Variant: formal" size="small" color="success" />
+            </Stack>
+          </Box>
+
+          <FloatingPreferencesButton {...args} />
+        </Box>
+      </ConsentProvider>
+    )
+  },
+}
+
+export const WithCustomDesignTokens: Story = {
+  args: {
+    position: 'top-right',
+    offset: 24,
+  },
+  render: (args) => {
+    const modernDesignTokens: DesignTokens = {
+      colors: {
+        primary: {
+          main: '#7c3aed', // Purple
+          light: '#a78bfa',
+          dark: '#5b21b6',
+        },
+        secondary: {
+          main: '#059669', // Emerald
+          light: '#10b981',
+          dark: '#047857',
+        },
+      },
+      layout: {
+        position: 'top',
+        backdrop: '#1f2937',
+      },
+    }
+
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics', 'marketing', 'functional', 'social'],
+        }}
+        designTokens={modernDesignTokens}
+        floatingPreferencesButtonProps={args}
+      >
+        <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f3f4f6' }}>
+          <Typography variant="h4" gutterBottom sx={{ color: '#7c3aed' }}>
+            🎨 Design Tokens v0.4.1
+          </Typography>
+
+          <StatusDashboard />
+
+          <Card elevation={2} sx={{ mb: 3 }}>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Customizações Aplicadas
+              </Typography>
+              <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                <Chip
+                  label="Primary: Purple"
+                  size="small"
+                  sx={{ bgcolor: '#7c3aed', color: 'white' }}
+                />
+                <Chip
+                  label="Secondary: Emerald"
+                  size="small"
+                  sx={{ bgcolor: '#059669', color: 'white' }}
+                />
+                <Chip label="Position: top-right" size="small" color="info" />
+                <Chip label="Custom Backdrop" size="small" color="warning" />
+              </Stack>
+            </CardContent>
+          </Card>
+
+          <Paper elevation={1} sx={{ p: 3, bgcolor: 'white' }}>
+            <Typography variant="h6" gutterBottom>
+              Interface Personalizada
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              O botão flutuante herda as cores personalizadas dos design tokens, mantendo
+              consistência visual com o resto da aplicação.
+            </Typography>
+            <Alert severity="info">
+              💡 <strong>Dica:</strong> Todos os componentes da biblioteca respeitam os design
+              tokens personalizados para uma experiência visual coesa.
+            </Alert>
+          </Paper>
+
+          <FloatingPreferencesButton {...args} />
+        </Box>
+      </ConsentProvider>
+    )
+  },
+}
+
+export const MultipleCategories: Story = {
+  args: {
+    position: 'bottom-right',
+    offset: 20,
+    tooltip: 'Configurar todas as categorias',
+  },
+  render: (args) => (
+    <ConsentProvider
+      categories={{
+        enabledCategories: ['necessary', 'analytics', 'marketing', 'functional', 'social'],
+        customCategories: [
+          {
+            id: 'ai',
+            name: 'Inteligência Artificial',
+            description: 'Recursos de IA para personalização avançada',
+          },
+          {
+            id: 'biometric',
+            name: 'Biométricos',
+            description: 'Dados biométricos para autenticação',
+          },
+        ],
+      }}
+      floatingPreferencesButtonProps={args}
+    >
+      <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#fef7e0' }}>
+        <Typography variant="h4" gutterBottom color="warning.dark">
+          🔧 Múltiplas Categorias v0.4.1
+        </Typography>
+
+        <StatusDashboard />
+
+        <Card elevation={2} sx={{ mb: 3 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              Categorias Disponíveis (7 total)
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+              <Chip label="necessary" size="small" color="error" variant="outlined" />
+              <Chip label="analytics" size="small" color="info" variant="outlined" />
+              <Chip label="marketing" size="small" color="secondary" variant="outlined" />
+              <Chip label="functional" size="small" color="success" variant="outlined" />
+              <Chip label="social" size="small" color="primary" variant="outlined" />
+              <Chip label="ai" size="small" color="warning" variant="outlined" />
+              <Chip label="biometric" size="small" sx={{ bgcolor: '#e3f2fd' }} variant="outlined" />
+            </Stack>
+          </CardContent>
+        </Card>
+
+        <Paper elevation={1} sx={{ p: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            Gerenciamento Complexo
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            O botão flutuante permanece simples e acessível mesmo com múltiplas categorias
+            complexas, incluindo categorias customizadas específicas do projeto.
+          </Typography>
+          <Alert severity="success">
+            ✅ <strong>Escalabilidade:</strong> A interface se adapta automaticamente independente
+            do número de categorias configuradas.
+          </Alert>
+        </Paper>
+
+        <FloatingPreferencesButton {...args} />
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
+export const ResponsiveDemo: Story = {
+  args: {
+    position: 'bottom-right',
+    offset: 16,
+  },
+  render: (args) => (
+    <ConsentProvider
+      categories={{
+        enabledCategories: ['analytics', 'marketing', 'functional'],
+      }}
+      floatingPreferencesButtonProps={args}
+    >
+      <Box
+        sx={{
+          minHeight: '100vh',
+          p: { xs: 2, sm: 3, md: 4 },
+          position: 'relative',
+          bgcolor: '#f0f9ff',
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+            color: 'primary.main',
+          }}
+        >
+          📱 Responsivo v0.4.1
+        </Typography>
+
+        <StatusDashboard />
+
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, md: 3 }} flexWrap="wrap">
+          <Card
+            elevation={1}
+            sx={{ height: '200px', flex: { xs: 1, sm: '1 1 300px' }, minWidth: '280px' }}
+          >
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                📱 Mobile
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Botão otimizado para telas pequenas com touch-friendly sizing.
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card
+            elevation={1}
+            sx={{ height: '200px', flex: { xs: 1, sm: '1 1 300px' }, minWidth: '280px' }}
+          >
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                📱 Tablet
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Posicionamento adaptativo para diferentes orientações.
+              </Typography>
+            </CardContent>
+          </Card>
+          <Card
+            elevation={1}
+            sx={{ height: '200px', flex: { xs: 1, sm: '1 1 300px' }, minWidth: '280px' }}
+          >
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                🖥️ Desktop
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Posicionamento preciso com hover states e tooltips.
+              </Typography>
+            </CardContent>
+          </Card>
+        </Stack>
+
+        <Alert severity="info" sx={{ mt: 3 }}>
+          <Typography variant="body2">
+            💡 <strong>Teste a responsividade:</strong> Redimensione a janela para ver como o botão
+            se adapta a diferentes breakpoints.
+          </Typography>
+        </Alert>
+
         <FloatingPreferencesButton {...args} />
       </Box>
     </ConsentProvider>

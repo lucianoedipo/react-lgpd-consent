@@ -1,3 +1,13 @@
+/** @module src/utils/scriptLoader */
+/**
+ * @category Utils
+ * @since 0.1.0
+ * Utilitários para carregamento dinâmico e seguro de scripts externos no DOM.
+ *
+ * Fornece funções para carregar scripts de terceiros de forma condicional ao consentimento LGPD,
+ * garantindo compatibilidade SSR e verificações de permissões por categoria.
+ */
+
 /**
  * @function
  * @category Utils
@@ -11,7 +21,7 @@
  *
  * @param {string} id Um identificador único para o elemento `<script>` a ser criado.
  * @param {string} src A URL do script externo a ser carregado.
- * @param {import('../types/types').Category | null} [category=null] A categoria de consentimento exigida para o script. Se o consentimento para esta categoria não for dado, o script não será carregado.
+ * @param {string | null} [category=null] A categoria de consentimento exigida para o script. Suporta tanto categorias predefinidas quanto customizadas. Se o consentimento para esta categoria não for dado, o script não será carregado.
  * @param {Record<string, string>} [attrs={}] Atributos adicionais a serem aplicados ao elemento `<script>` (ex: `{ async: 'true' }`).
  * @returns {Promise<void>} Uma Promise que resolve quando o script é carregado com sucesso, ou rejeita se o consentimento não for dado ou ocorrer um erro de carregamento.
  * @example
@@ -22,12 +32,10 @@
  *   .catch(error => console.error('Erro ao carregar script:', error))
  * ```
  */
-import type { Category } from '../types/types'
-
 export function loadScript(
   id: string,
   src: string,
-  category: Category | null = null,
+  category: string | null = null,
   attrs: Record<string, string> = {},
 ) {
   if (typeof document === 'undefined') return Promise.resolve()

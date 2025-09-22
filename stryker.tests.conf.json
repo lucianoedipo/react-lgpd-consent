@@ -1,6 +1,7 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "mutate": ["src/**/*.test.ts", "src/**/*.test.tsx"],
+  "files": ["src/**/*.ts", "src/**/*.tsx", "jest.config.cjs"],
   "testRunner": "jest",
   "jest": {
     "projectType": "custom",

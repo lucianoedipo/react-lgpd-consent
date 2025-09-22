@@ -1,67 +1,121 @@
 /* eslint-env browser, node */
 
-// src/utils/developerGuidance.ts
 import React from 'react'
-import type { ProjectCategoriesConfig } from '../types/types'
+import type { Category, ProjectCategoriesConfig } from '../types/types'
+import { COOKIE_PATTERNS_BY_CATEGORY, getCookiesInfoForCategory } from './cookieRegistry'
 
-/**
- * @interface DeveloperGuidance
- * Define a estrutura do objeto de orientação para desenvolvedores, contendo avisos, sugestões e informações sobre categorias ativas.
- */
+export type GuidanceSeverity = 'info' | 'warning' | 'error'
+
+export interface GuidanceMessage {
+  severity: GuidanceSeverity
+  message: string
+  category?: string
+  actionable?: boolean
+}
+
+export interface GuidanceConfig {
+  /** Controla se avisos devem ser exibidos */
+  showWarnings?: boolean
+  /** Controla se sugestões devem ser exibidas */
+  showSuggestions?: boolean
+  /** Controla se a tabela de categorias deve ser exibida */
+  showCategoriesTable?: boolean
+  /** Controla se as boas práticas devem ser exibidas */
+  showBestPractices?: boolean
+  /** Controla se deve exibir score de conformidade */
+  showComplianceScore?: boolean
+  /** Filtro de severidade mínima para exibir mensagens */
+  minimumSeverity?: GuidanceSeverity
+  /** Callback personalizado para processar mensagens */
+  messageProcessor?: (messages: GuidanceMessage[]) => void
+}
+
 export interface DeveloperGuidance {
-  /** Um array de strings, cada uma representando um aviso sobre a configuração. */
   warnings: string[]
-  /** Um array de strings, cada uma representando uma sugestão para melhorar a conformidade ou UX. */
   suggestions: string[]
-  /** Um array de objetos, cada um descrevendo uma categoria de cookie ativa e suas propriedades relevantes para a UI. */
+  messages: GuidanceMessage[]
   activeCategoriesInfo: {
     id: string
     name: string
     description: string
     essential: boolean
     uiRequired: boolean
+    cookies?: string[]
   }[]
-  /** Indica se a configuração padrão da biblioteca está sendo utilizada (quando nenhuma configuração explícita é fornecida). */
   usingDefaults: boolean
+  complianceScore?: number
 }
 
-/**
- * @constant
- * @category Utils
- * @since 0.2.2
- * Configuração padrão de categorias de cookies utilizada quando o desenvolvedor não especifica nenhuma configuração.
- * Inclui apenas a categoria 'analytics' além da 'necessary' (que é sempre incluída).
- */
 export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
   enabledCategories: ['analytics'],
 }
 
 /**
- * @function
- * @category Utils
- * @since 0.2.2
- * Analisa a configuração de categorias do projeto e gera um objeto de orientação para o desenvolvedor.
- * Este objeto contém avisos, sugestões e informações detalhadas sobre as categorias ativas.
+ * Calcula score de conformidade LGPD baseado na configuração (0-100)
+ */
+function calculateComplianceScore(guidance: DeveloperGuidance): number {
+  let score = 0
+  const maxScore = 100
+
+  // Pontuação base por ter configuração explícita
+  if (!guidance.usingDefaults) score += 30
+
+  // Pontuação por categorias configuradas
+  const totalCategories = guidance.activeCategoriesInfo.length
+  const toggleableCategories = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
+
+  if (totalCategories > 1) score += 20 // Além de necessary
+  if (toggleableCategories >= 2 && toggleableCategories <= 4) score += 25 // Quantidade ideal
+
+  // Pontuação por ausência de problemas críticos
+  const criticalWarnings = guidance.messages.filter((m) => m.severity === 'error').length
+  const warnings = guidance.messages.filter((m) => m.severity === 'warning').length
+
+  if (criticalWarnings === 0) score += 15
+  if (warnings === 0) score += 10
+
+  return Math.min(score, maxScore)
+}
+
+/**
+ * Analisa configuração e integrações implícitas para orientar o dev.
  *
- * @param {ProjectCategoriesConfig} [config] A configuração de categorias fornecida pelo desenvolvedor. Se não for fornecida, a configuração padrão será utilizada.
- * @returns {DeveloperGuidance} Um objeto `DeveloperGuidance` com a análise da configuração.
- *
- * Since v0.4.0: inclui `customCategories` em `activeCategoriesInfo` (com `uiRequired=false` se `essential=true`).
+ * Since v0.4.0: inclui customCategories.
+ * Since v0.4.1: considera categorias/integrações implícitas e enriquece cookies por categoria.
  */
 export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig): DeveloperGuidance {
   const guidance: DeveloperGuidance = {
     warnings: [],
     suggestions: [],
+    messages: [],
     activeCategoriesInfo: [],
     usingDefaults: !config,
+    complianceScore: 0,
+  }
+
+  const addMessage = (
+    severity: GuidanceSeverity,
+    message: string,
+    category?: string,
+    actionable = true,
+  ) => {
+    const guidanceMessage: GuidanceMessage = { severity, message, category, actionable }
+    guidance.messages.push(guidanceMessage)
+
+    // Manter compatibilidade com arrays existentes
+    if (severity === 'warning' || severity === 'error') {
+      guidance.warnings.push(message)
+    } else {
+      guidance.suggestions.push(message)
+    }
   }
 
   const finalConfig = config || DEFAULT_PROJECT_CATEGORIES
-
   if (!config) {
-    guidance.warnings.push(
-      'LGPD-CONSENT: Nenhuma configuração de categorias especificada. Usando padrão: necessary + analytics. ' +
-        'Para produção, recomenda-se especificar explicitamente as categorias via prop "categories".',
+    addMessage(
+      'warning',
+      'LGPD-CONSENT: Nenhuma configuração de categorias especificada. Usando padrão: necessary + analytics. Para produção, especifique explicitamente as categorias via prop "categories".',
+      'configuration',
     )
   }
 
@@ -71,48 +125,37 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
     description: 'Essenciais para funcionamento básico do site',
     essential: true,
     uiRequired: false,
+    cookies: COOKIE_PATTERNS_BY_CATEGORY['necessary'],
   })
 
-  const enabledCategories = finalConfig.enabledCategories || []
-  const categoryNames: Record<string, { name: string; description: string }> = {
-    analytics: {
-      name: 'Cookies Analíticos',
-      description: 'Medem uso e performance do site',
-    },
+  const enabled = (finalConfig.enabledCategories || []) as string[]
+  const NAMES: Record<string, { name: string; description: string }> = {
+    analytics: { name: 'Cookies Analíticos', description: 'Medem uso e performance do site' },
     functional: {
       name: 'Cookies Funcionais',
       description: 'Melhoram experiência e funcionalidades',
     },
-    marketing: {
-      name: 'Cookies de Marketing',
-      description: 'Publicidade direcionada e campanhas',
-    },
-    social: {
-      name: 'Cookies de Redes Sociais',
-      description: 'Integração com plataformas sociais',
-    },
-    personalization: {
-      name: 'Cookies de Personalização',
-      description: 'Adaptam conteúdo às preferências do usuário',
-    },
+    marketing: { name: 'Cookies de Marketing', description: 'Publicidade direcionada e campanhas' },
+    social: { name: 'Cookies de Redes Sociais', description: 'Integração com plataformas sociais' },
+    personalization: { name: 'Cookies de Personalização', description: 'Adaptação de conteúdo' },
   }
 
-  enabledCategories.forEach((categoryId) => {
-    const categoryInfo = categoryNames[categoryId]
-    if (categoryInfo) {
+  enabled.forEach((id) => {
+    const info = NAMES[id]
+    if (info) {
       guidance.activeCategoriesInfo.push({
-        id: categoryId,
-        name: categoryInfo.name,
-        description: categoryInfo.description,
+        id,
+        name: info.name,
+        description: info.description,
         essential: false,
         uiRequired: true,
+        cookies: COOKIE_PATTERNS_BY_CATEGORY[id as keyof typeof COOKIE_PATTERNS_BY_CATEGORY],
       })
     }
   })
 
-  // Adiciona categorias customizadas à lista de ativas (como toggleáveis, a menos que marcadas como essenciais)
-  const customCategories = finalConfig.customCategories || []
-  customCategories.forEach((cat) => {
+  const custom = finalConfig.customCategories || []
+  custom.forEach((cat) => {
     if (!cat?.id || cat.id === 'necessary') return
     guidance.activeCategoriesInfo.push({
       id: cat.id,
@@ -120,118 +163,373 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
       description: cat.description,
       essential: !!cat.essential,
       uiRequired: !cat.essential,
+      cookies: cat.cookies,
     })
   })
 
+  // Categorias implícitas por integrações
+  try {
+    const gt = globalThis as { __LGPD_REQUIRED_CATEGORIES__?: string[] }
+    const implied = (gt.__LGPD_REQUIRED_CATEGORIES__ || []).filter(Boolean)
+    implied.forEach((id) => {
+      if (!guidance.activeCategoriesInfo.find((c) => c.id === id)) {
+        const info = NAMES[id]
+        if (info) {
+          guidance.activeCategoriesInfo.push({
+            id,
+            name: info.name,
+            description: info.description,
+            essential: false,
+            uiRequired: true,
+            cookies: COOKIE_PATTERNS_BY_CATEGORY[id as keyof typeof COOKIE_PATTERNS_BY_CATEGORY],
+          })
+          if (!enabled.includes(id)) {
+            addMessage(
+              'info',
+              `Integrações detectadas requerem a categoria '${id}'. Adicione-a em categories.enabledCategories.`,
+              'integration',
+            )
+          }
+        }
+      }
+    })
+  } catch {
+    // ignore
+  }
+
+  // Enriquecer cookies (nomes) por integrações usadas
+  try {
+    const gt2 = globalThis as { __LGPD_USED_INTEGRATIONS__?: string[] }
+    const used = gt2.__LGPD_USED_INTEGRATIONS__ || []
+    guidance.activeCategoriesInfo = guidance.activeCategoriesInfo.map((c) => {
+      const info = getCookiesInfoForCategory(c.id as unknown as Category, used)
+      const names = Array.from(new Set([...(c.cookies || []), ...info.map((d) => d.name)]))
+      return { ...c, cookies: names }
+    })
+  } catch {
+    // ignore
+  }
+
   const totalToggleable = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
-
   if (totalToggleable === 0) {
-    guidance.suggestions.push(
-      'Apenas cookies necessários estão configurados. Para compliance completo LGPD, ' +
-        'considere adicionar categorias como "analytics" ou "functional" conforme uso real.',
+    addMessage(
+      'info',
+      'Apenas cookies necessários estão configurados. Para compliance LGPD, considere adicionar categorias como "analytics" ou "functional" conforme uso real.',
+      'compliance',
+    )
+  }
+  if (totalToggleable > 5) {
+    addMessage(
+      'warning',
+      `${totalToggleable} categorias opcionais detectadas. UI com muitas opções pode prejudicar a experiência. Considere agrupar categorias similares.`,
+      'usability',
     )
   }
 
-  if (totalToggleable > 5) {
-    guidance.warnings.push(
-      `${totalToggleable} categorias opcionais detectadas. UI com muitas opções pode prejudicar experiência do usuário. Considere agrupar categorias similares.`,
-    )
-  }
+  // Calcular score de conformidade LGPD
+  guidance.complianceScore = calculateComplianceScore(guidance)
 
   return guidance
 }
 
-/**
- * @function
- * @category Utils
- * @since 0.2.2
- * Exibe orientações e avisos no console do navegador durante o desenvolvimento.
- * Esta função é automaticamente desativada em builds de produção.
- *
- * @param {DeveloperGuidance} guidance O objeto de orientação gerado por `analyzeDeveloperConfiguration`.
- * @param {boolean} [disableGuidanceProp] Se `true`, desativa explicitamente a exibição das orientações, mesmo em desenvolvimento.
- */
+// Sistema de cache para evitar logs repetitivos
+const GUIDANCE_CACHE = new Set<string>()
+const SESSION_LOGGED = {
+  intro: false,
+  bestPractices: false,
+}
+
+// Funções auxiliares para logging
+function getComplianceScoreColor(score: number): string {
+  if (score >= 80) return '#4caf50'
+  if (score >= 60) return '#ff9800'
+  return '#f44336'
+}
+
+function logComplianceScore(prefix: string, score: number): void {
+  const color = getComplianceScoreColor(score)
+  console.log(
+    `%c${prefix} Score de Conformidade LGPD: ${score}/100`,
+    `color: ${color}; font-weight: bold; font-size: 14px;`,
+  )
+}
+
+function logMessagesByType(
+  prefix: string,
+  messages: GuidanceMessage[],
+  type: GuidanceSeverity,
+  config: GuidanceConfig,
+): boolean {
+  const filteredMessages = messages.filter((m) => m.severity === type)
+  if (filteredMessages.length === 0) return false
+
+  const typeConfig = {
+    error: {
+      show: config.showWarnings,
+      title: 'Erros Críticos',
+      color: '#d32f2f',
+      method: console.error,
+    },
+    warning: {
+      show: config.showWarnings,
+      title: 'Avisos de Configuração',
+      color: '#f57c00',
+      method: console.warn,
+    },
+    info: {
+      show: config.showSuggestions,
+      title: 'Sugestões',
+      color: '#2196f3',
+      method: console.info,
+    },
+  }
+
+  const typeSettings = typeConfig[type]
+  if (!typeSettings.show) return false
+
+  console.group(
+    `%c${prefix} ${typeSettings.title}`,
+    `color: ${typeSettings.color}; font-weight: bold;`,
+  )
+  filteredMessages.forEach((msg) =>
+    typeSettings.method(
+      `%c${prefix}%c ${msg.message}`,
+      `color: ${typeSettings.color};`,
+      'color: #333;',
+    ),
+  )
+  console.groupEnd()
+  return true
+}
+
+function getGuidanceHash(guidance: DeveloperGuidance): string {
+  const sortedWarnings = [...guidance.warnings].sort((a: string, b: string) => a.localeCompare(b))
+  const sortedSuggestions = [...guidance.suggestions].sort((a: string, b: string) =>
+    a.localeCompare(b),
+  )
+  const sortedCategories = guidance.activeCategoriesInfo
+    .map((c) => c.id)
+    .sort((a: string, b: string) => a.localeCompare(b))
+
+  return JSON.stringify({
+    warnings: sortedWarnings,
+    suggestions: sortedSuggestions,
+    categories: sortedCategories,
+    usingDefaults: guidance.usingDefaults,
+  })
+}
+
+function logIntroOnce(): void {
+  if (SESSION_LOGGED.intro) return
+  SESSION_LOGGED.intro = true
+
+  console.log(
+    `%c🍪 LGPD-CONSENT %c- Sistema de Consentimento Ativo`,
+    'background: #4caf50; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold;',
+    'color: #2e7d32; font-weight: 500;',
+  )
+}
+
+function logServerSideIfAvailable(guidance: DeveloperGuidance): void {
+  // Tenta logar no servidor se estiver em ambiente Node.js (SSR/dev server)
+  try {
+    const gt = globalThis as unknown as {
+      process?: {
+        stdout?: {
+          write: (data: string) => boolean
+        }
+      }
+    }
+
+    if (gt.process?.stdout?.write) {
+      const prefix = '\x1b[36m[LGPD-CONSENT]\x1b[0m'
+      const warnings = guidance.warnings.length
+      const suggestions = guidance.suggestions.length
+      const stdout = gt.process.stdout
+
+      if (warnings > 0 || suggestions > 0) {
+        stdout.write(`${prefix} 🔧 Config: ${warnings} avisos, ${suggestions} sugestões\n`)
+
+        if (warnings > 0) {
+          guidance.warnings.forEach((w: string) => {
+            stdout.write(`${prefix} \x1b[33m⚠️  ${w}\x1b[0m\n`)
+          })
+        }
+
+        if (suggestions > 0) {
+          guidance.suggestions.forEach((s: string) => {
+            stdout.write(`${prefix} \x1b[36m💡 ${s}\x1b[0m\n`)
+          })
+        }
+      }
+    }
+  } catch {
+    // Silently ignore if not in Node.js environment
+  }
+}
+
 export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
+  config?: GuidanceConfig,
 ): void {
-  // NÃO usar "window" diretamente: SSR-safe
   const gt = globalThis as unknown as {
     process?: { env?: { NODE_ENV?: string } }
     __LGPD_PRODUCTION__?: boolean
-    __LGPD_DISABLE_GUIDANCE__?: boolean
   }
-
   const nodeEnv = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
-
   const isProd = nodeEnv === 'production' || gt.__LGPD_PRODUCTION__ === true
 
-  const isDisabled = !!disableGuidanceProp || gt.__LGPD_DISABLE_GUIDANCE__ === true
+  if (isProd || disableGuidanceProp) return
 
-  if (isProd || isDisabled) return
+  // Verificar se já foi logado nesta sessão
+  const guidanceHash = getGuidanceHash(guidance)
+  if (GUIDANCE_CACHE.has(guidanceHash)) return
 
-  const PREFIX = '[🍪 LGPD-CONSENT]'
+  GUIDANCE_CACHE.add(guidanceHash)
 
-  if (guidance.warnings.length > 0) {
-    console.group(`${PREFIX} ⚠️  Avisos de Configuração`)
-    guidance.warnings.forEach((msg) => console.warn(`${PREFIX} ${msg}`))
-    console.groupEnd()
+  // Log no servidor se disponível
+  logServerSideIfAvailable(guidance)
+
+  // Configurações padrão
+  const guidanceConfig: GuidanceConfig = {
+    showWarnings: true,
+    showSuggestions: true,
+    showCategoriesTable: true,
+    showBestPractices: true,
+    showComplianceScore: true,
+    minimumSeverity: 'info',
+    ...config,
   }
 
-  if (guidance.suggestions.length > 0) {
-    console.group(`${PREFIX} 💡 Sugestões`)
-    guidance.suggestions.forEach((msg) => console.info(`${PREFIX} ${msg}`))
-    console.groupEnd()
+  // Processar mensagens customizadas se fornecido
+  if (guidanceConfig.messageProcessor) {
+    guidanceConfig.messageProcessor(guidance.messages)
+    return
   }
 
-  if (guidance.usingDefaults) {
-    console.warn(
-      `${PREFIX} 📋 Usando configuração padrão. Para personalizar, use a prop "categories" no ConsentProvider.`,
+  // Log do browser apenas para situações importantes
+  logIntroOnce()
+
+  const PREFIX = '🍪'
+  let hasImportantInfo = false
+
+  // Filtrar mensagens por severidade
+  const filteredMessages = guidance.messages.filter((msg) => {
+    const severityLevels = { info: 0, warning: 1, error: 2 }
+    const minLevel = severityLevels[guidanceConfig.minimumSeverity || 'info']
+    const msgLevel = severityLevels[msg.severity]
+    return msgLevel >= minLevel
+  })
+
+  // Exibir mensagens usando funções auxiliares
+  hasImportantInfo =
+    logMessagesByType(PREFIX, filteredMessages, 'error', guidanceConfig) || hasImportantInfo
+  hasImportantInfo =
+    logMessagesByType(PREFIX, filteredMessages, 'warning', guidanceConfig) || hasImportantInfo
+
+  // Sugestões apenas se há problemas ou usando defaults
+  if (hasImportantInfo || guidance.usingDefaults) {
+    hasImportantInfo =
+      logMessagesByType(PREFIX, filteredMessages, 'info', guidanceConfig) || hasImportantInfo
+  }
+
+  // Score de conformidade LGPD
+  if (guidanceConfig.showComplianceScore && guidance.complianceScore !== undefined) {
+    logComplianceScore(PREFIX, guidance.complianceScore)
+  }
+
+  // Tabela de categorias
+  if (guidanceConfig.showCategoriesTable && (hasImportantInfo || guidance.usingDefaults)) {
+    const rows = guidance.activeCategoriesInfo.map((cat) => ({
+      '📊 Categoria': cat.id,
+      '🏷️  Nome': cat.name,
+      '🎛️  UI': cat.uiRequired ? '✅' : '🔒',
+      '🍪 Cookies':
+        (cat.cookies || []).slice(0, 3).join(', ') +
+        (cat.cookies && cat.cookies.length > 3 ? ` (+${cat.cookies.length - 3})` : ''),
+    }))
+
+    if (typeof console.table === 'function') {
+      console.group(`%c${PREFIX} Configuração Ativa`, 'color: #4caf50; font-weight: bold;')
+      console.table(rows)
+      console.groupEnd()
+    }
+  }
+
+  // Boas práticas apenas uma vez por sessão
+  if (!SESSION_LOGGED.bestPractices && hasImportantInfo) {
+    SESSION_LOGGED.bestPractices = true
+    console.group(`%c${PREFIX} LGPD - Boas Práticas`, 'color: #9c27b0; font-weight: bold;')
+    console.info(
+      `%c${PREFIX}%c Necessary: sempre ativo • Demais: opt-out por padrão`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
     )
-  }
-
-  const rows = guidance.activeCategoriesInfo.map((cat) => ({
-    ID: cat.id,
-    Nome: cat.name,
-    'Toggle UI?': cat.uiRequired ? '✅ SIM' : '❌ NÃO (sempre ativo)',
-    'Essencial?': cat.essential ? '🔒 SIM' : '⚙️ NÃO',
-  }))
-
-  if (typeof console.table === 'function') {
-    console.group(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`)
-    console.table(rows)
-    console.info(`${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`)
+    console.info(
+      `%c${PREFIX}%c Documente políticas claras por categoria`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
+    console.info(
+      `%c${PREFIX}%c Registre consentimento com data/hora/origem`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
     console.groupEnd()
-  } else {
-    console.log(`${PREFIX} 🔧 Categorias Ativas (para UI customizada)`, rows)
-    console.info(`${PREFIX} ℹ️  Use estes dados para criar componentes customizados adequados.`)
   }
 }
 
-/**
- * @hook
- * @category Hooks
- * @since 0.2.2
- * Hook para desenvolvedores obterem orientações sobre a configuração atual da biblioteca.
- * Útil para componentes customizados verificarem se estão adequados à configuração do `ConsentProvider`.
- *
- * @param {ProjectCategoriesConfig} [config] A configuração de categorias do projeto. Se não for fornecida, a configuração padrão será utilizada.
- * @param {boolean} [disableGuidanceProp] Se `true`, desativa explicitamente a exibição das orientações no console, mesmo em desenvolvimento.
- * @returns {DeveloperGuidance} Um objeto `DeveloperGuidance` com a análise da configuração.
- */
 export function useDeveloperGuidance(
   config?: ProjectCategoriesConfig,
   disableGuidanceProp?: boolean,
+  guidanceConfig?: GuidanceConfig,
 ): DeveloperGuidance {
-  const guidance = React.useMemo(() => {
-    return analyzeDeveloperConfiguration(config)
-  }, [config])
-
+  const guidance = React.useMemo(() => analyzeDeveloperConfiguration(config), [config])
   React.useEffect(() => {
-    if (!disableGuidanceProp) {
-      logDeveloperGuidance(guidance, disableGuidanceProp)
-    }
-  }, [guidance, disableGuidanceProp])
-
+    if (!disableGuidanceProp) logDeveloperGuidance(guidance, disableGuidanceProp, guidanceConfig)
+  }, [guidance, disableGuidanceProp, guidanceConfig])
   return guidance
 }
+
+/**
+ * Presets de configuração para diferentes ambientes
+ */
+export const GUIDANCE_PRESETS = {
+  /** Configuração completa para desenvolvimento */
+  development: {
+    showWarnings: true,
+    showSuggestions: true,
+    showCategoriesTable: true,
+    showBestPractices: true,
+    showComplianceScore: true,
+    minimumSeverity: 'info' as const,
+  },
+  /** Configuração silenciosa para produção */
+  production: {
+    showWarnings: false,
+    showSuggestions: false,
+    showCategoriesTable: false,
+    showBestPractices: false,
+    showComplianceScore: false,
+    minimumSeverity: 'error' as const,
+  },
+  /** Apenas erros críticos */
+  minimal: {
+    showWarnings: true,
+    showSuggestions: false,
+    showCategoriesTable: false,
+    showBestPractices: false,
+    showComplianceScore: false,
+    minimumSeverity: 'error' as const,
+  },
+  /** Focado em conformidade LGPD */
+  compliance: {
+    showWarnings: true,
+    showSuggestions: true,
+    showCategoriesTable: true,
+    showBestPractices: true,
+    showComplianceScore: true,
+    minimumSeverity: 'warning' as const,
+  },
+} as const

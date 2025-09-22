@@ -11,10 +11,9 @@
  */
 
 // src/context/ConsentContext.tsx
-import * as React from 'react'
 import { ThemeProvider } from '@mui/material/styles'
+import * as React from 'react'
 import {
-  type Category,
   type ConsentContextValue,
   type ConsentPreferences,
   type ConsentProviderProps,
@@ -22,23 +21,23 @@ import {
   type ConsentTexts,
   type ProjectCategoriesConfig,
 } from '../types/types'
+import { createProjectPreferences, validateProjectPreferences } from '../utils/categoryUtils'
 import {
+  DEFAULT_COOKIE_OPTS,
   readConsentCookie,
   removeConsentCookie,
   writeConsentCookie,
-  DEFAULT_COOKIE_OPTS,
 } from '../utils/cookieUtils'
-import { createProjectPreferences, validateProjectPreferences } from '../utils/categoryUtils'
 // Intentionally do not create a default theme at module scope. If consumers
 // need a default theme, they can call createDefaultConsentTheme() from the utils.
-import { CategoriesProvider } from './CategoriesContext'
-import { DesignProvider } from './DesignContext'
-import { useDeveloperGuidance, DEFAULT_PROJECT_CATEGORIES } from '../utils/developerGuidance'
 import {
   _registerGlobalOpenPreferences,
   _unregisterGlobalOpenPreferences,
 } from '../hooks/useConsent'
+import { DEFAULT_PROJECT_CATEGORIES, useDeveloperGuidance } from '../utils/developerGuidance'
 import { logger } from '../utils/logger'
+import { CategoriesProvider } from './CategoriesContext'
+import { DesignProvider } from './DesignContext'
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -129,7 +128,7 @@ const DEFAULT_TEXTS: ConsentTexts = {
 type Action =
   | { type: 'ACCEPT_ALL'; config: ProjectCategoriesConfig }
   | { type: 'REJECT_ALL'; config: ProjectCategoriesConfig }
-  | { type: 'SET_CATEGORY'; category: Category; value: boolean }
+  | { type: 'SET_CATEGORY'; category: string; value: boolean }
   | {
       type: 'SET_PREFERENCES'
       preferences: ConsentPreferences
@@ -278,7 +277,9 @@ export function ConsentProvider({
   onPreferencesSaved,
   cookie: cookieOpts,
   disableDeveloperGuidance,
+  guidanceConfig,
   children,
+  disableDiscoveryLog,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(
@@ -299,7 +300,16 @@ export function ConsentProvider({
   }, [categories])
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
-  useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance)
+  useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance, guidanceConfig)
+  // Logging adicional quando Modal customizado é usado (dev only)
+  React.useEffect(() => {
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (!isProd && PreferencesModalComponent) {
+      console.info(
+        '[LGPD-CONSENT] Dica: seu PreferencesModal é customizado. Garanta exibir os detalhes dos cookies por categoria (nome, finalidade, duração) usando as APIs setCookieCatalogOverrides / setCookieCategoryOverrides e getCookiesInfoForCategory. Consulte QUICKSTART e INTEGRACOES.md.',
+      )
+    }
+  }, [PreferencesModalComponent])
 
   // Boot state: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {
@@ -353,7 +363,7 @@ export function ConsentProvider({
   const api = React.useMemo<ConsentContextValue>(() => {
     const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
     const rejectAll = () => dispatch({ type: 'REJECT_ALL', config: finalCategoriesConfig })
-    const setPreference = (category: Category, value: boolean) =>
+    const setPreference = (category: string, value: boolean) =>
       dispatch({ type: 'SET_CATEGORY', category, value })
     const setPreferences = (preferences: ConsentPreferences) => {
       dispatch({
@@ -408,6 +418,7 @@ export function ConsentProvider({
               <CategoriesProvider
                 config={finalCategoriesConfig}
                 disableDeveloperGuidance={disableDeveloperGuidance}
+                disableDiscoveryLog={disableDiscoveryLog}
               >
                 {children}
                 {/* Modal de preferências - customizável ou padrão */}

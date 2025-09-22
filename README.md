@@ -46,6 +46,32 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-c
 
 ---
 
+## ✨ Novidades v0.4.1
+
+### 🎨 Design Tokens Expandidos
+- **200+ pontos de customização** (cores, tipografia, espaçamento, layout)
+- **Sistema responsivo** com breakpoints e variações
+- **Acessibilidade nativa** com contrast ratios e focus states
+- **Temas light/dark/auto** com transições suaves
+
+### 📝 Sistema Avançado de Textos
+- **Templates pré-configurados** para ecommerce, SaaS e governo
+- **Internacionalização completa** (pt, en, es)
+- **Variações de tom** (formal, casual, técnico)
+- **Resolução automática** baseada em contexto
+
+### 🔍 Descoberta de Cookies (Experimental)
+- **Detecção automática** de cookies em runtime
+- **Categorização inteligente** usando padrões LGPD
+- **Integração nativa** com sistema de override
+
+### ⚠️ Breaking Changes
+- **Suporte a categorias customizadas**: `setPreference` e `ScriptIntegration.category` agora usam `string` ao invés de `Category`  
+- **Impacto mínimo**: Código usando strings literais continua funcionando sem alterações
+- **Consulte**: [CHANGELOG.md](./CHANGELOG.md) para guia de migração completo
+
+---
+
 ## 📖 Uso Básico
 
 Envolva sua aplicação com o `ConsentProvider` (exemplo mínimo):
@@ -88,6 +114,10 @@ Para mais detalhes sobre customização, hooks e funcionalidades, consulte os se
 
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
   - Novo na v0.4.0: suporte a `customCategories` — veja a seção “Categorias customizadas (customCategories)” no Quickstart.
+  - Novo na v0.4.1: integrações nativas para Facebook Pixel, Hotjar, Mixpanel, Clarity, Intercom e Zendesk — veja o guia [INTEGRACOES.md](./INTEGRACOES.md).
+  - Dica: use `designTokens.layout.backdrop: 'auto'` para backdrop sensível ao tema no banner bloqueante.
+  - Auto-config de categorias: a biblioteca detecta categorias requeridas pelas integrações e exibe os toggles mesmo se você esquecer de habilitar (valor inicial sempre rejeitado). Recomendamos explicitar em `categories.enabledCategories` para clareza.
+  - Páginas de Política/Termos não bloqueadas: se `policyLinkUrl` e/ou `termsLinkUrl` apontarem para a página atual, o overlay bloqueante não é aplicado — garantindo legibilidade destas páginas.
 - **[Guia da API (`API.md`)](./API.md)**: Referência completa de todos os componentes, hooks e tipos.
 - **[Guia de Conformidade (`CONFORMIDADE.md`)](./CONFORMIDADE.md)**: Detalhes sobre as funcionalidades de conformidade com a LGPD.
 - **[Guia de Integrações (`INTEGRACOES.md`)](./INTEGRACOES.md)**: Como usar as integrações nativas e criar as suas.

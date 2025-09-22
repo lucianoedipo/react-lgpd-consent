@@ -1,3 +1,13 @@
+/** @module src/utils/categoryUtils */
+/**
+ * @category Utils
+ * @since 0.2.0
+ * Utilitários para gerenciamento de categorias de consentimento LGPD.
+ *
+ * Fornece funções para criar, validar e recuperar definições de categorias de cookies,
+ * garantindo conformidade com a LGPD e suporte a categorias customizadas.
+ */
+
 import type {
   Category,
   CategoryDefinition,
@@ -184,6 +194,11 @@ export function getAllProjectCategories(config?: ProjectCategoriesConfig): Categ
 /**
  * Retorna a definição padrão de uma categoria baseada no Guia da ANPD.
  * @internal
+ * @param category A categoria para a qual obter a definição.
+ * @returns Um objeto `CategoryDefinition` com os detalhes da categoria.
+ * @remarks
+ * Esta função interna é usada para mapear categorias padrão para suas definições,
+ * incluindo nome, descrição e status essencial, conforme diretrizes da ANPD.
  */
 function getDefaultCategoryDefinition(category: Category): CategoryDefinition {
   const definitions: Record<Category, CategoryDefinition> = {

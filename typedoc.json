@@ -36,7 +36,9 @@
   },
 
   "blockTags": [
+    "@category",
     "@component",
+    "@deprecated",
     "@module",
     "@description",
     "@remarks",

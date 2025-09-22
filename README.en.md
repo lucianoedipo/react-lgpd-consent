@@ -64,6 +64,10 @@ export default function App() {
 -
 - **[QUICKSTART.en.md](./QUICKSTART.en.md)** (recommended)
   - New in v0.4.0: `customCategories` support — see the “Custom categories (customCategories)” section in the Quickstart.
+  - New in v0.4.1: native integrations for Facebook Pixel, Hotjar, Mixpanel, Clarity, Intercom, and Zendesk — see [INTEGRACOES.md](./INTEGRACOES.md).
+  - Tip: set `designTokens.layout.backdrop: 'auto'` for a theme-aware blocking banner backdrop.
+  - Auto-config of categories: the library detects required categories from integrations and surfaces toggles even if you forgot to enable them (initial value is always rejected). We still recommend explicitly listing them in `categories.enabledCategories` for clarity.
+  - Non-blocked Policy/Terms pages: if `policyLinkUrl` and/or `termsLinkUrl` point to the current page, the blocking overlay is not applied — ensuring readability of these pages.
 - **[Docs / API](./API.md)**
 - **[LGPD Compliance](./CONFORMIDADE.md)**
 - **[Integrations](./INTEGRACOES.md)**
@@ -72,6 +76,21 @@ export default function App() {
 - **[📖 Storybook - Interactive Playground](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Explore and test all components live with interactive controls.
 - **[⚙️ TypeDoc - API Reference](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: Automatically generated complete API documentation.
 - **[🏠 Documentation Portal](https://lucianoedipo.github.io/react-lgpd-consent/)**: Home page that navigates between all docs sites.
+
+### 🧑‍🏫 Developer Guidance (dev-only)
+
+In development, the library prints a guidance panel in the console to help you configure correctly:
+- Warns when using default categories; suggests making them explicit
+- Lists active categories and which ones require a UI toggle
+- Detects integrations that require categories and suggests enabling them
+- Flags excessive number of categories (UX)
+- Highlights Brazilian LGPD best practices: opt-out by default, clear policy, consent logging, retention
+- Silenced in production; SSR-safe
+
+### ⚠️ Breaking Changes v0.4.1
+- **Custom categories support**: `setPreference` and `ScriptIntegration.category` now use `string` instead of `Category`
+- **Minimal impact**: Code using literal strings continues working without changes
+- **Migration guide**: See [CHANGELOG.md](./CHANGELOG.md) for complete details
 
 ---
 

@@ -65,6 +65,40 @@ export default App
 ## 🧩 Categorias customizadas (customCategories)
 Disponível a partir da v0.4.0.
 
+## 🎨 Dica de estilo: Backdrop sensível ao tema
+
+No modo bloqueante, o banner usa um backdrop para focar a atenção do usuário. Você pode controlar via design tokens:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  designTokens={{
+    layout: {
+      // false: transparente | 'auto': ajusta ao tema | string: cor custom (ex.: '#00000088')
+      backdrop: 'auto',
+    },
+    colors: {
+      // Se omitido, usa o palette do tema MUI (background.paper, text.primary)
+      // background: '#1e1e1e',
+      // text: '#ffffff',
+    },
+  }}
+>
+  <App />
+</ConsentProvider>
+```
+
+Se `colors.background` ou `colors.text` não forem fornecidos, a lib usa automaticamente `theme.palette.background.paper` e `theme.palette.text.primary` do MUI, garantindo compatibilidade com dark mode.
+
+## 🧑‍🏫 Guia do Dev (console)
+
+Durante o desenvolvimento, o console exibe um guia com:
+- Avisos quando a configuração padrão é usada; sugestões para explicitar categorias
+- Lista de categorias ativas e quais exigem toggle
+- Detecção de integrações que requerem categorias, com sugestão para habilitá-las
+- Boas práticas LGPD (Brasil) e alertas de UX (categorias demais)
+- Silenciado automaticamente em produção; SSR-safe
+
 Adicione categorias específicas do seu projeto (ex.: chat de suporte, players de vídeo, AB testing):
 
 ```tsx
@@ -193,7 +227,6 @@ A biblioteca `react-lgpd-consent` não injeta um `ThemeProvider` global por cont
 
 ```tsx
 import { ConsentProvider, createDefaultConsentTheme } from 'react-lgpd-consent'
-
 ;<ConsentProvider
   theme={createDefaultConsentTheme()}
   categories={{ enabledCategories: ['analytics'] }}
@@ -274,6 +307,280 @@ function App() {
   )
 }
 ```
+
+### 🍪 Modal Personalizado com Detalhes dos Cookies
+
+Para casos mais avançados onde você precisa exibir informações detalhadas sobre cada cookie (nome, finalidade, duração, provedor), use `getCookiesInfoForCategory` junto com `useCategories`:
+
+```tsx
+import React from 'react'
+import {
+  ConsentProvider,
+  useCategories,
+  getCookiesInfoForCategory,
+  type CustomPreferencesModalProps,
+  type CookieDescriptor,
+} from 'react-lgpd-consent'
+
+const ModalComDetalhesCookies: React.FC<CustomPreferencesModalProps> = ({
+  preferences,
+  setPreferences,
+  closePreferences,
+  isModalOpen,
+  texts,
+}) => {
+  const { allCategories } = useCategories()
+
+  if (!isModalOpen) return null
+
+  // Simula integrações usadas no projeto (normalmente você teria isso em contexto)
+  const integracoesUsadas = ['google-analytics', 'google-tag-manager', 'mixpanel']
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100vw',
+        height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 2000,
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: 'white',
+          borderRadius: '12px',
+          padding: '2rem',
+          maxWidth: '800px',
+          maxHeight: '80vh',
+          overflow: 'auto',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.25)',
+        }}
+      >
+        <h2 style={{ marginBottom: '1rem', color: '#333' }}>{texts.modalTitle}</h2>
+        <p style={{ marginBottom: '2rem', color: '#666' }}>{texts.modalIntro}</p>
+
+        {/* Lista de categorias com detalhes dos cookies */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {allCategories.map((categoria) => {
+            const cookiesDetalhados: CookieDescriptor[] = getCookiesInfoForCategory(
+              categoria.id as any,
+              integracoesUsadas,
+            )
+
+            return (
+              <div
+                key={categoria.id}
+                style={{
+                  border: '1px solid #e0e0e0',
+                  borderRadius: '8px',
+                  padding: '1.5rem',
+                  backgroundColor: '#fafafa',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                  <input
+                    type="checkbox"
+                    id={`categoria-${categoria.id}`}
+                    checked={preferences[categoria.id] || false}
+                    onChange={(e) =>
+                      setPreferences({
+                        ...preferences,
+                        [categoria.id]: e.target.checked,
+                      })
+                    }
+                    disabled={categoria.essential}
+                    style={{ marginRight: '0.75rem', transform: 'scale(1.2)' }}
+                  />
+                  <label
+                    htmlFor={`categoria-${categoria.id}`}
+                    style={{ fontSize: '1.1rem', fontWeight: 'bold', color: '#333' }}
+                  >
+                    {categoria.name}
+                    {categoria.essential && (
+                      <span style={{ fontSize: '0.8rem', color: '#888', marginLeft: '0.5rem' }}>
+                        (sempre ativo)
+                      </span>
+                    )}
+                  </label>
+                </div>
+
+                <p style={{ marginBottom: '1rem', color: '#666', fontSize: '0.95rem' }}>
+                  {categoria.description}
+                </p>
+
+                {/* Lista de cookies desta categoria */}
+                {cookiesDetalhados.length > 0 && (
+                  <details style={{ marginTop: '1rem' }}>
+                    <summary
+                      style={{
+                        cursor: 'pointer',
+                        fontWeight: '500',
+                        color: '#4f46e5',
+                        marginBottom: '0.5rem',
+                      }}
+                    >
+                      Ver cookies desta categoria ({cookiesDetalhados.length})
+                    </summary>
+                    <div style={{ marginTop: '0.75rem', paddingLeft: '1rem' }}>
+                      {cookiesDetalhados.map((cookie, index) => (
+                        <div
+                          key={`${cookie.name}-${index}`}
+                          style={{
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e5e5',
+                            borderRadius: '6px',
+                            padding: '1rem',
+                            marginBottom: '0.75rem',
+                          }}
+                        >
+                          <h4
+                            style={{ margin: '0 0 0.5rem 0', color: '#333', fontSize: '0.95rem' }}
+                          >
+                            <code
+                              style={{
+                                backgroundColor: '#f3f4f6',
+                                padding: '2px 6px',
+                                borderRadius: '4px',
+                                fontFamily: 'monospace',
+                              }}
+                            >
+                              {cookie.name}
+                            </code>
+                          </h4>
+                          {cookie.purpose && (
+                            <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: '#555' }}>
+                              <strong>Finalidade:</strong> {cookie.purpose}
+                            </p>
+                          )}
+                          {cookie.duration && (
+                            <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: '#555' }}>
+                              <strong>Duração:</strong> {cookie.duration}
+                            </p>
+                          )}
+                          {cookie.provider && (
+                            <p style={{ margin: '0.25rem 0', fontSize: '0.9rem', color: '#555' }}>
+                              <strong>Provedor:</strong> {cookie.provider}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                )}
+
+                {/* Fallback para categorias sem cookies catalogados */}
+                {cookiesDetalhados.length === 0 &&
+                  categoria.cookies &&
+                  categoria.cookies.length > 0 && (
+                    <div style={{ marginTop: '1rem', fontSize: '0.9rem', color: '#666' }}>
+                      <strong>Padrões de cookies:</strong>{' '}
+                      {categoria.cookies.map((pattern, i) => (
+                        <code
+                          key={i}
+                          style={{
+                            backgroundColor: '#f3f4f6',
+                            padding: '2px 4px',
+                            borderRadius: '3px',
+                            marginRight: '0.5rem',
+                            fontFamily: 'monospace',
+                            fontSize: '0.8rem',
+                          }}
+                        >
+                          {pattern}
+                        </code>
+                      ))}
+                    </div>
+                  )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Botões de ação */}
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'flex-end',
+            marginTop: '2rem',
+            paddingTop: '1rem',
+            borderTop: '1px solid #e0e0e0',
+          }}
+        >
+          <button
+            onClick={closePreferences}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#6b7280',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.95rem',
+            }}
+          >
+            Cancelar
+          </button>
+          <button
+            onClick={closePreferences}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: '#4f46e5',
+              color: 'white',
+              border: 'none',
+              borderRadius: '6px',
+              cursor: 'pointer',
+              fontSize: '0.95rem',
+            }}
+          >
+            {texts.save}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AppComModalAvancado() {
+  return (
+    <ConsentProvider
+      categories={{
+        enabledCategories: ['analytics', 'marketing', 'functional'],
+      }}
+      PreferencesModalComponent={ModalComDetalhesCookies}
+      // Especifique as integrações para obter informações detalhadas dos cookies
+      scriptIntegrations={[
+        { id: 'google-analytics', config: { measurementId: 'GA_MEASUREMENT_ID' } },
+        { id: 'google-tag-manager', config: { containerId: 'GTM-XXXXXXX' } },
+        { id: 'mixpanel', config: { token: 'MIXPANEL_TOKEN' } },
+      ]}
+    >
+      <main>Minha App com Modal Avançado</main>
+    </ConsentProvider>
+  )
+}
+```
+
+#### 🔧 APIs Utilizadas no Exemplo Avançado
+
+- **`useCategories()`**: Hook que retorna informações sobre todas as categorias ativas
+- **`getCookiesInfoForCategory(categoryId, integrations)`**: Função que retorna detalhes completos dos cookies
+- **`CookieDescriptor`**: Interface TypeScript com `name`, `purpose`, `duration`, `provider`
+
+#### 💡 Principais Funcionalidades
+
+1. **Informações Detalhadas**: Cada cookie mostra nome, finalidade, duração e provedor
+2. **Organização por Categoria**: Cookies agrupados logicamente
+3. **Interface Expansível**: Detalhes dos cookies ficam em `<details>` expansível
+4. **Fallback Inteligente**: Mostra padrões básicos quando detalhes não estão disponíveis
+5. **Acessibilidade**: Labels apropriados e navegação por teclado
+6. **Design Responsivo**: Layout que se adapta a diferentes tamanhos de tela
 
 ## 🎮 Controle Programático
 

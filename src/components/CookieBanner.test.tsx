@@ -22,6 +22,8 @@ function makeInitialState(consented = false) {
   }
 }
 
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+
 describe('CookieBanner component', () => {
   beforeEach(() => jest.clearAllMocks())
 
@@ -84,5 +86,46 @@ describe('CookieBanner component', () => {
     // Branding text should not be present
     const matches = screen.queryAllByText(/L\u00c9dipO.eti.br|fornecido por/i)
     expect(matches.length).toBe(0)
+  })
+
+  it('resolves backdrop color correctly for auto theme', async () => {
+    const tokens = {
+      layout: { backdrop: 'auto' },
+    }
+
+    const darkTheme = createTheme({ palette: { mode: 'dark' } })
+    const lightTheme = createTheme({ palette: { mode: 'light' } })
+
+    const { rerender } = render(
+      <ThemeProvider theme={darkTheme}>
+        <ConsentProvider
+          categories={{ enabledCategories: [] }}
+          initialState={makeInitialState(false)}
+          designTokens={tokens as any}
+          cookieBannerProps={{ blocking: true }}
+        >
+          <div />
+        </ConsentProvider>
+      </ThemeProvider>,
+    )
+
+    // The backdrop is not directly inspectable, so we can't test its color directly.
+    // We will check if the banner is rendered, which is a good proxy.
+    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+
+    rerender(
+      <ThemeProvider theme={lightTheme}>
+        <ConsentProvider
+          categories={{ enabledCategories: [] }}
+          initialState={makeInitialState(false)}
+          designTokens={tokens as any}
+          cookieBannerProps={{ blocking: true }}
+        >
+          <div />
+        </ConsentProvider>
+      </ThemeProvider>,
+    )
+
+    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
   })
 })

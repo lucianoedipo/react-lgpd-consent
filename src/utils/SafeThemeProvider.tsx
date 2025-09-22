@@ -1,13 +1,14 @@
-import * as React from 'react'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
 import type { Theme, ThemeOptions } from '@mui/material/styles'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import * as React from 'react'
 
 /**
- * Theme Provider seguro que garante que todas as propriedades necessárias
- * estão disponíveis com fallbacks, evitando erros de propriedades indefinidas.
+ * Cria um tema seguro garantindo que todas as propriedades necessárias estão disponíveis com fallbacks,
+ * evitando erros de propriedades indefinidas.
  *
- * Usado internamente pela biblioteca para garantir compatibilidade com
- * diferentes configurações de ThemeProvider do usuário.
+ * @param userTheme - Opções de tema do usuário para mesclar com o tema base.
+ * @returns Tema Material-UI criado com fallbacks seguros aplicados.
+ * @remarks Usado internamente pela biblioteca para garantir compatibilidade com diferentes configurações de ThemeProvider do usuário.
  */
 
 const createSafeTheme = (userTheme?: ThemeOptions): Theme => {

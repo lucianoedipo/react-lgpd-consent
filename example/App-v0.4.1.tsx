@@ -21,12 +21,15 @@ import {
   createGoogleAnalyticsIntegration,
   createGoogleTagManagerIntegration,
   detectConsentCookieName,
+  // Novas funcionalidades v0.4.1
   discoverRuntimeCookies,
   resolveTexts,
   TEXT_TEMPLATES,
   useConsent,
   type DesignTokens,
 } from 'react-lgpd-consent'
+
+// ===== CONFIGURAÇÕES AVANÇADAS v0.4.1 =====
 
 // Design tokens customizados
 const designTokens: DesignTokens = {
@@ -130,7 +133,7 @@ function ConsentStatus() {
         </Box>
         <Box sx={{ minWidth: '45%' }}>
           <Typography variant="body2">
-            <strong>Performance:</strong> {preferences.performance ? '✅ Aceito' : '❌ Recusado'}
+            <strong>Social:</strong> {preferences.social ? '✅ Aceito' : '❌ Recusado'}
           </Typography>
         </Box>
       </Stack>
@@ -174,7 +177,7 @@ function CookieDiscoveryDemo() {
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
       <Typography variant="h6" gutterBottom>
-        🔍 Descoberta de Cookies
+        🔍 Descoberta de Cookies v0.4.1
       </Typography>
 
       <Button onClick={handleDiscoverCookies} variant="outlined" sx={{ mb: 2 }}>
@@ -230,11 +233,11 @@ function DesignTokensDemo() {
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
       <Typography variant="h6" gutterBottom>
-        🎨 Design Tokens Customizados
+        🎨 Design Tokens Customizados v0.4.1
       </Typography>
 
       <Typography variant="body2" sx={{ mb: 2 }}>
-        Esta aplicação usa design tokens customizados para demonstrar a flexibilidade da biblioteca.
+        Esta aplicação usa design tokens customizados para demonstrar a flexibilidade da v0.4.1.
       </Typography>
 
       <Stack direction={{ xs: 'column', md: 'row' }} spacing={2}>
@@ -271,7 +274,7 @@ function AdvancedTextDemo() {
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
       <Typography variant="h6" gutterBottom>
-        📝 Sistema Avançado de Textos
+        📝 Sistema Avançado de Textos v0.4.1
       </Typography>
 
       <Typography variant="body2" sx={{ mb: 2 }}>
@@ -291,7 +294,7 @@ function AdvancedTextDemo() {
 }
 
 // Componente principal da aplicação
-function CompleteExampleApp() {
+function App() {
   return (
     <ConsentProvider
       categories={{ enabledCategories: ['necessary', 'analytics', 'marketing', 'functional'] }}
@@ -307,11 +310,11 @@ function CompleteExampleApp() {
     >
       <Container maxWidth="lg" sx={{ py: 4 }}>
         <Typography variant="h3" component="h1" gutterBottom align="center">
-          🍪 React LGPD Consent
+          🍪 React LGPD Consent v0.4.1
         </Typography>
 
         <Typography variant="h6" component="h2" gutterBottom align="center" color="text.secondary">
-          Demonstração das Funcionalidades Avançadas
+          Demonstração das Novas Funcionalidades
         </Typography>
 
         <Divider sx={{ my: 4 }} />
@@ -353,7 +356,7 @@ function CompleteExampleApp() {
 
         <Paper elevation={2} sx={{ p: 3 }}>
           <Typography variant="h6" gutterBottom>
-            📋 Funcionalidades em Destaque
+            📋 Novidades v0.4.1
           </Typography>
 
           <ul>
@@ -371,7 +374,7 @@ function CompleteExampleApp() {
             </li>
             <li>
               <strong>Suporte a Múltiplas Categorias:</strong> necessary, analytics, marketing,
-              functional, performance
+              functional, social, personalization
             </li>
           </ul>
         </Paper>
@@ -409,7 +412,7 @@ root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <CompleteExampleApp />
+      <App />
     </ThemeProvider>
   </React.StrictMode>,
 )

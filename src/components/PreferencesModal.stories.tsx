@@ -1,10 +1,21 @@
-import type { Meta, StoryObj } from '@storybook/react-vite'
-import React from 'react'
-import { PreferencesModal } from './PreferencesModal'
-import { Box, Typography, Button, DialogProps } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
+  DialogProps,
+  Divider,
+  Stack,
+  Typography,
+} from '@mui/material'
 import { createTheme } from '@mui/material/styles'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { ConsentProvider } from '../context/ConsentContext'
 import { useConsent } from '../hooks/useConsent'
+import { resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '../index'
+import { PreferencesModal } from './PreferencesModal'
 type StoryArgs = {
   DialogProps?: Partial<DialogProps>
   hideBranding?: boolean
@@ -48,22 +59,42 @@ const ModalDemo = () => {
 
   return (
     <Box sx={{ p: 3, minHeight: '50vh' }}>
-      <Typography variant="h4" gutterBottom>
-        Demonstração do Modal de Preferências
+      <Typography variant="h4" gutterBottom color="primary">
+        🎛️ Modal de Preferências
+      </Typography>
+      <Typography variant="body1" sx={{ mb: 3 }}>
+        Interface para configuração detalhada de consentimento por categoria.
       </Typography>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6">Preferências atuais:</Typography>
-        <pre style={{ fontSize: '14px' }}>{JSON.stringify(preferences, null, 2)}</pre>
-      </Box>
+      <Card elevation={2} sx={{ mb: 3 }}>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            📊 Status Atual
+          </Typography>
+          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+            {Object.entries(preferences).map(([category, enabled]) => (
+              <Chip
+                key={category}
+                label={`${category}: ${enabled ? '✅' : '❌'}`}
+                size="small"
+                color={enabled ? 'success' : 'default'}
+                variant={enabled ? 'filled' : 'outlined'}
+              />
+            ))}
+          </Stack>
+        </CardContent>
+      </Card>
 
-      <Button variant="contained" onClick={openPreferences} disabled={isModalOpen}>
-        {isModalOpen ? 'Modal Aberto' : 'Abrir Preferências'}
-      </Button>
-
-      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-        Clique no botão acima para abrir o modal de preferências e ver como funciona.
-      </Typography>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Button variant="contained" onClick={openPreferences} disabled={isModalOpen}>
+          {isModalOpen ? '🔓 Modal Aberto' : '⚙️ Configurar Preferências'}
+        </Button>
+        <Typography variant="body2" color={isModalOpen ? 'success.main' : 'text.secondary'}>
+          {isModalOpen
+            ? 'Modal ativo - configurações disponíveis'
+            : 'Clique para abrir configurações'}
+        </Typography>
+      </Stack>
     </Box>
   )
 }
@@ -216,10 +247,10 @@ export const InteractiveDemo: Story = {
 export const DarkTheme: Story = {
   args: {
     hideBranding: false,
-    openModal: true,
+    openModal: false,
   },
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
+    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing'] }}
@@ -230,6 +261,288 @@ export const DarkTheme: Story = {
             Tema Escuro - Modal
           </Typography>
           <ModalDemo />
+        </Box>
+        <PreferencesModal {...args} DialogProps={dialogProps} />
+      </ConsentProvider>
+    )
+  },
+}
+
+// ===== NOVOS STORIES v0.4.1 =====
+
+// Modal Demo melhorado para v0.4.1
+const EnhancedModalDemo = () => {
+  const { openPreferences, preferences, isModalOpen, consented } = useConsent()
+
+  return (
+    <Card elevation={2}>
+      <CardContent>
+        <Typography variant="h6" gutterBottom>
+          🎛️ Controle de Preferências v0.4.1
+        </Typography>
+
+        <Alert severity={consented ? 'success' : 'warning'} sx={{ mb: 2 }}>
+          <Typography variant="body2">
+            Status: {consented ? '✅ Consentimento configurado' : '⏳ Aguardando configuração'}
+          </Typography>
+        </Alert>
+
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" gutterBottom>
+            Categorias Ativas:
+          </Typography>
+          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+            {Object.entries(preferences).map(([category, enabled]) => (
+              <Chip
+                key={category}
+                label={`${category}: ${enabled ? '✅' : '❌'}`}
+                size="small"
+                color={enabled ? 'success' : 'default'}
+                variant={enabled ? 'filled' : 'outlined'}
+              />
+            ))}
+          </Stack>
+        </Box>
+
+        <Divider sx={{ my: 2 }} />
+
+        <Button variant="contained" onClick={openPreferences} disabled={isModalOpen} fullWidth>
+          {isModalOpen ? '🔓 Modal Aberto' : '⚙️ Abrir Configurações'}
+        </Button>
+
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+          Interface aprimorada com status visual e categorização inteligente
+        </Typography>
+      </CardContent>
+    </Card>
+  )
+}
+
+export const WithAdvancedTextSystem: Story = {
+  args: {
+    hideBranding: false,
+    openModal: false,
+  },
+  render: (args: StoryArgs) => {
+    const saasTexts = resolveTexts(TEXT_TEMPLATES.saas, {
+      variant: 'formal',
+      language: 'pt',
+    })
+
+    const dialogProps = { ...(args.DialogProps ?? {}) }
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics', 'functional', 'marketing'],
+        }}
+        texts={saasTexts}
+      >
+        <Box sx={{ p: 3, bgcolor: '#f5f7fa' }}>
+          <Typography variant="h4" gutterBottom color="primary">
+            📝 Sistema Avançado de Textos v0.4.1
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Modal usando template SaaS formal com sistema avançado de textos.
+          </Typography>
+
+          <Stack direction="row" spacing={1} sx={{ mb: 3 }} flexWrap="wrap" gap={1}>
+            <Chip label="Template: SaaS" size="small" color="primary" />
+            <Chip label="Variant: formal" size="small" color="secondary" />
+            <Chip label="Language: pt" size="small" color="success" />
+            <Chip label="i18n Ready" size="small" color="info" />
+          </Stack>
+
+          <EnhancedModalDemo />
+        </Box>
+        <PreferencesModal {...args} DialogProps={dialogProps} />
+      </ConsentProvider>
+    )
+  },
+}
+
+export const WithCustomDesignTokens: Story = {
+  args: {
+    hideBranding: false,
+    openModal: false,
+  },
+  render: (args: StoryArgs) => {
+    const modernDesignTokens: DesignTokens = {
+      colors: {
+        primary: {
+          main: '#6366f1', // Indigo moderno
+          light: '#a5b4fc',
+          dark: '#4338ca',
+        },
+        secondary: {
+          main: '#f59e0b', // Amber
+          light: '#fbbf24',
+          dark: '#d97706',
+        },
+        background: {
+          main: '#f8fafc',
+          paper: '#ffffff',
+        },
+      },
+      spacing: {
+        padding: {
+          modal: { x: '32px', y: '24px' },
+        },
+        borderRadius: {
+          modal: '16px',
+        },
+      },
+      typography: {
+        fontSize: {
+          modal: {
+            title: '24px',
+            body: '16px',
+            button: '14px',
+          },
+        },
+        fontWeight: {
+          medium: 500,
+          semibold: 600,
+        },
+      },
+    }
+
+    const dialogProps = { ...(args.DialogProps ?? {}) }
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics', 'marketing', 'functional'],
+        }}
+        designTokens={modernDesignTokens}
+      >
+        <Box sx={{ p: 3, bgcolor: '#f8fafc' }}>
+          <Typography variant="h4" gutterBottom sx={{ color: '#6366f1' }}>
+            🎨 Design Tokens Customizados v0.4.1
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Modal com design tokens personalizados para uma experiência visual única.
+          </Typography>
+
+          <Stack direction="row" spacing={1} sx={{ mb: 3 }} flexWrap="wrap" gap={1}>
+            <Chip
+              label="Primary: Indigo"
+              size="small"
+              sx={{ bgcolor: '#6366f1', color: 'white' }}
+            />
+            <Chip
+              label="Secondary: Amber"
+              size="small"
+              sx={{ bgcolor: '#f59e0b', color: 'white' }}
+            />
+            <Chip label="Custom Spacing" size="small" color="info" />
+            <Chip label="Modern Typography" size="small" color="success" />
+          </Stack>
+
+          <EnhancedModalDemo />
+        </Box>
+        <PreferencesModal {...args} DialogProps={dialogProps} />
+      </ConsentProvider>
+    )
+  },
+}
+
+export const MultipleCategories: Story = {
+  args: {
+    hideBranding: false,
+    openModal: false,
+  },
+  render: (args: StoryArgs) => {
+    const dialogProps = { ...(args.DialogProps ?? {}) }
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['necessary', 'analytics', 'marketing', 'functional', 'social'],
+          customCategories: [
+            {
+              id: 'personalization',
+              name: 'Personalização',
+              description: 'Cookies para personalizar sua experiência baseada em suas preferências',
+            },
+            {
+              id: 'support',
+              name: 'Suporte',
+              description: 'Ferramentas de chat e suporte ao cliente',
+            },
+          ],
+        }}
+      >
+        <Box sx={{ p: 3, bgcolor: '#fff9e6' }}>
+          <Typography variant="h4" gutterBottom color="warning.dark">
+            🔧 Múltiplas Categorias v0.4.1
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Modal com todas as categorias padrão + categorias customizadas.
+          </Typography>
+
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              Categorias Disponíveis:
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+              <Chip label="necessary" size="small" color="error" variant="outlined" />
+              <Chip label="analytics" size="small" color="info" variant="outlined" />
+              <Chip label="marketing" size="small" color="secondary" variant="outlined" />
+              <Chip label="functional" size="small" color="success" variant="outlined" />
+              <Chip label="social" size="small" color="primary" variant="outlined" />
+              <Chip label="personalization" size="small" color="warning" variant="outlined" />
+              <Chip label="support" size="small" sx={{ bgcolor: '#e3f2fd' }} variant="outlined" />
+            </Stack>
+          </Box>
+
+          <EnhancedModalDemo />
+        </Box>
+        <PreferencesModal {...args} DialogProps={dialogProps} />
+      </ConsentProvider>
+    )
+  },
+}
+
+export const ResponsiveDesign: Story = {
+  args: {
+    hideBranding: false,
+    openModal: false,
+  },
+  render: (args: StoryArgs) => {
+    const dialogProps = { ...(args.DialogProps ?? {}) }
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics', 'marketing', 'functional'],
+        }}
+      >
+        <Box
+          sx={{
+            p: { xs: 2, sm: 3, md: 4 },
+            bgcolor: '#f0f4f8',
+            minHeight: '60vh',
+          }}
+        >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{
+              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+              color: 'primary.main',
+            }}
+          >
+            📱 Design Responsivo v0.4.1
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 2 }}>
+            Modal otimizado para desktop, tablet e mobile com breakpoints adaptativos.
+          </Typography>
+
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <Typography variant="body2">
+              💡 <strong>Teste a responsividade:</strong> Redimensione a janela para ver como o
+              modal se adapta a diferentes tamanhos de tela.
+            </Typography>
+          </Alert>
+
+          <EnhancedModalDemo />
         </Box>
         <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
