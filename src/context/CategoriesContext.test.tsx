@@ -1,6 +1,6 @@
-import { render, screen, act } from '@testing-library/react'
-import { CategoriesProvider, useCategories, useCategoryStatus } from './CategoriesContext'
+import { render, screen } from '@testing-library/react'
 import * as cookieDiscovery from '../utils/cookieDiscovery'
+import { CategoriesProvider, useCategories, useCategoryStatus } from './CategoriesContext'
 
 // Mocking developerGuidance functions to avoid console logs in tests
 jest.mock('../utils/developerGuidance', () => ({
@@ -28,15 +28,15 @@ describe('CategoriesContext', () => {
   const originalNodeEnv = process.env.NODE_ENV
 
   beforeEach(() => {
-    // @ts-ignore
+    // @ts-ignore - Sobrescrever NODE_ENV para simular ambiente de desenvolvimento
     global.process.env.NODE_ENV = 'development'
-    // @ts-ignore
+    // @ts-ignore - Limpar flag global de descoberta de cookies para testes isolados
     delete global.__LGPD_DISCOVERY_LOGGED__
   })
 
   afterEach(() => {
     jest.clearAllMocks()
-    // @ts-ignore
+    // @ts-ignore - Restaurar NODE_ENV original após teste
     global.process.env.NODE_ENV = originalNodeEnv
   })
 
@@ -118,7 +118,7 @@ describe('CategoriesContext', () => {
       .mockReturnValue('cookie-consent')
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {})
     const originalConsoleTable = console.table
-    // @ts-ignore
+    // @ts-ignore - Remover console.table para testar fallback para console.log em descoberta de cookies
     console.table = undefined
 
     render(

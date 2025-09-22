@@ -4,9 +4,36 @@ import React from 'react'
 import type { Category, ProjectCategoriesConfig } from '../types/types'
 import { COOKIE_PATTERNS_BY_CATEGORY, getCookiesInfoForCategory } from './cookieRegistry'
 
+export type GuidanceSeverity = 'info' | 'warning' | 'error'
+
+export interface GuidanceMessage {
+  severity: GuidanceSeverity
+  message: string
+  category?: string
+  actionable?: boolean
+}
+
+export interface GuidanceConfig {
+  /** Controla se avisos devem ser exibidos */
+  showWarnings?: boolean
+  /** Controla se sugestões devem ser exibidas */
+  showSuggestions?: boolean
+  /** Controla se a tabela de categorias deve ser exibida */
+  showCategoriesTable?: boolean
+  /** Controla se as boas práticas devem ser exibidas */
+  showBestPractices?: boolean
+  /** Controla se deve exibir score de conformidade */
+  showComplianceScore?: boolean
+  /** Filtro de severidade mínima para exibir mensagens */
+  minimumSeverity?: GuidanceSeverity
+  /** Callback personalizado para processar mensagens */
+  messageProcessor?: (messages: GuidanceMessage[]) => void
+}
+
 export interface DeveloperGuidance {
   warnings: string[]
   suggestions: string[]
+  messages: GuidanceMessage[]
   activeCategoriesInfo: {
     id: string
     name: string
@@ -16,10 +43,38 @@ export interface DeveloperGuidance {
     cookies?: string[]
   }[]
   usingDefaults: boolean
+  complianceScore?: number
 }
 
 export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
   enabledCategories: ['analytics'],
+}
+
+/**
+ * Calcula score de conformidade LGPD baseado na configuração (0-100)
+ */
+function calculateComplianceScore(guidance: DeveloperGuidance): number {
+  let score = 0
+  const maxScore = 100
+
+  // Pontuação base por ter configuração explícita
+  if (!guidance.usingDefaults) score += 30
+
+  // Pontuação por categorias configuradas
+  const totalCategories = guidance.activeCategoriesInfo.length
+  const toggleableCategories = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
+
+  if (totalCategories > 1) score += 20 // Além de necessary
+  if (toggleableCategories >= 2 && toggleableCategories <= 4) score += 25 // Quantidade ideal
+
+  // Pontuação por ausência de problemas críticos
+  const criticalWarnings = guidance.messages.filter((m) => m.severity === 'error').length
+  const warnings = guidance.messages.filter((m) => m.severity === 'warning').length
+
+  if (criticalWarnings === 0) score += 15
+  if (warnings === 0) score += 10
+
+  return Math.min(score, maxScore)
 }
 
 /**
@@ -32,14 +87,35 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   const guidance: DeveloperGuidance = {
     warnings: [],
     suggestions: [],
+    messages: [],
     activeCategoriesInfo: [],
     usingDefaults: !config,
+    complianceScore: 0,
+  }
+
+  const addMessage = (
+    severity: GuidanceSeverity,
+    message: string,
+    category?: string,
+    actionable = true,
+  ) => {
+    const guidanceMessage: GuidanceMessage = { severity, message, category, actionable }
+    guidance.messages.push(guidanceMessage)
+
+    // Manter compatibilidade com arrays existentes
+    if (severity === 'warning' || severity === 'error') {
+      guidance.warnings.push(message)
+    } else {
+      guidance.suggestions.push(message)
+    }
   }
 
   const finalConfig = config || DEFAULT_PROJECT_CATEGORIES
   if (!config) {
-    guidance.warnings.push(
+    addMessage(
+      'warning',
       'LGPD-CONSENT: Nenhuma configuração de categorias especificada. Usando padrão: necessary + analytics. Para produção, especifique explicitamente as categorias via prop "categories".',
+      'configuration',
     )
   }
 
@@ -108,8 +184,10 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
             cookies: COOKIE_PATTERNS_BY_CATEGORY[id as keyof typeof COOKIE_PATTERNS_BY_CATEGORY],
           })
           if (!enabled.includes(id)) {
-            guidance.suggestions.push(
+            addMessage(
+              'info',
               `Integrações detectadas requerem a categoria '${id}'. Adicione-a em categories.enabledCategories.`,
+              'integration',
             )
           }
         }
@@ -134,15 +212,22 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
 
   const totalToggleable = guidance.activeCategoriesInfo.filter((c) => c.uiRequired).length
   if (totalToggleable === 0) {
-    guidance.suggestions.push(
+    addMessage(
+      'info',
       'Apenas cookies necessários estão configurados. Para compliance LGPD, considere adicionar categorias como "analytics" ou "functional" conforme uso real.',
+      'compliance',
     )
   }
   if (totalToggleable > 5) {
-    guidance.warnings.push(
+    addMessage(
+      'warning',
       `${totalToggleable} categorias opcionais detectadas. UI com muitas opções pode prejudicar a experiência. Considere agrupar categorias similares.`,
+      'usability',
     )
   }
+
+  // Calcular score de conformidade LGPD
+  guidance.complianceScore = calculateComplianceScore(guidance)
 
   return guidance
 }
@@ -152,6 +237,69 @@ const GUIDANCE_CACHE = new Set<string>()
 const SESSION_LOGGED = {
   intro: false,
   bestPractices: false,
+}
+
+// Funções auxiliares para logging
+function getComplianceScoreColor(score: number): string {
+  if (score >= 80) return '#4caf50'
+  if (score >= 60) return '#ff9800'
+  return '#f44336'
+}
+
+function logComplianceScore(prefix: string, score: number): void {
+  const color = getComplianceScoreColor(score)
+  console.log(
+    `%c${prefix} Score de Conformidade LGPD: ${score}/100`,
+    `color: ${color}; font-weight: bold; font-size: 14px;`,
+  )
+}
+
+function logMessagesByType(
+  prefix: string,
+  messages: GuidanceMessage[],
+  type: GuidanceSeverity,
+  config: GuidanceConfig,
+): boolean {
+  const filteredMessages = messages.filter((m) => m.severity === type)
+  if (filteredMessages.length === 0) return false
+
+  const typeConfig = {
+    error: {
+      show: config.showWarnings,
+      title: 'Erros Críticos',
+      color: '#d32f2f',
+      method: console.error,
+    },
+    warning: {
+      show: config.showWarnings,
+      title: 'Avisos de Configuração',
+      color: '#f57c00',
+      method: console.warn,
+    },
+    info: {
+      show: config.showSuggestions,
+      title: 'Sugestões',
+      color: '#2196f3',
+      method: console.info,
+    },
+  }
+
+  const typeSettings = typeConfig[type]
+  if (!typeSettings.show) return false
+
+  console.group(
+    `%c${prefix} ${typeSettings.title}`,
+    `color: ${typeSettings.color}; font-weight: bold;`,
+  )
+  filteredMessages.forEach((msg) =>
+    typeSettings.method(
+      `%c${prefix}%c ${msg.message}`,
+      `color: ${typeSettings.color};`,
+      'color: #333;',
+    ),
+  )
+  console.groupEnd()
+  return true
 }
 
 function getGuidanceHash(guidance: DeveloperGuidance): string {
@@ -223,6 +371,7 @@ function logServerSideIfAvailable(guidance: DeveloperGuidance): void {
 export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
+  config?: GuidanceConfig,
 ): void {
   const gt = globalThis as unknown as {
     process?: { env?: { NODE_ENV?: string } }
@@ -242,34 +391,56 @@ export function logDeveloperGuidance(
   // Log no servidor se disponível
   logServerSideIfAvailable(guidance)
 
+  // Configurações padrão
+  const guidanceConfig: GuidanceConfig = {
+    showWarnings: true,
+    showSuggestions: true,
+    showCategoriesTable: true,
+    showBestPractices: true,
+    showComplianceScore: true,
+    minimumSeverity: 'info',
+    ...config,
+  }
+
+  // Processar mensagens customizadas se fornecido
+  if (guidanceConfig.messageProcessor) {
+    guidanceConfig.messageProcessor(guidance.messages)
+    return
+  }
+
   // Log do browser apenas para situações importantes
   logIntroOnce()
 
   const PREFIX = '🍪'
   let hasImportantInfo = false
 
-  // Apenas avisos críticos no browser
-  if (guidance.warnings.length > 0) {
-    hasImportantInfo = true
-    console.group(`%c${PREFIX} Avisos de Configuração`, 'color: #f57c00; font-weight: bold;')
-    guidance.warnings.forEach((msg) =>
-      console.warn(`%c${PREFIX}%c ${msg}`, 'color: #f57c00;', 'color: #bf360c;'),
-    )
-    console.groupEnd()
-  }
+  // Filtrar mensagens por severidade
+  const filteredMessages = guidance.messages.filter((msg) => {
+    const severityLevels = { info: 0, warning: 1, error: 2 }
+    const minLevel = severityLevels[guidanceConfig.minimumSeverity || 'info']
+    const msgLevel = severityLevels[msg.severity]
+    return msgLevel >= minLevel
+  })
 
-  // Sugestões importantes (apenas se houver avisos ou uso de defaults)
-  if (guidance.suggestions.length > 0 && (guidance.warnings.length > 0 || guidance.usingDefaults)) {
-    hasImportantInfo = true
-    console.group(`%c${PREFIX} Sugestões`, 'color: #2196f3; font-weight: bold;')
-    guidance.suggestions.forEach((msg) =>
-      console.info(`%c${PREFIX}%c ${msg}`, 'color: #2196f3;', 'color: #1565c0;'),
-    )
-    console.groupEnd()
-  }
+  // Exibir mensagens usando funções auxiliares
+  hasImportantInfo =
+    logMessagesByType(PREFIX, filteredMessages, 'error', guidanceConfig) || hasImportantInfo
+  hasImportantInfo =
+    logMessagesByType(PREFIX, filteredMessages, 'warning', guidanceConfig) || hasImportantInfo
 
-  // Tabela de categorias apenas se solicitado ou há problemas
+  // Sugestões apenas se há problemas ou usando defaults
   if (hasImportantInfo || guidance.usingDefaults) {
+    hasImportantInfo =
+      logMessagesByType(PREFIX, filteredMessages, 'info', guidanceConfig) || hasImportantInfo
+  }
+
+  // Score de conformidade LGPD
+  if (guidanceConfig.showComplianceScore && guidance.complianceScore !== undefined) {
+    logComplianceScore(PREFIX, guidance.complianceScore)
+  }
+
+  // Tabela de categorias
+  if (guidanceConfig.showCategoriesTable && (hasImportantInfo || guidance.usingDefaults)) {
     const rows = guidance.activeCategoriesInfo.map((cat) => ({
       '📊 Categoria': cat.id,
       '🏷️  Nome': cat.name,
@@ -312,10 +483,53 @@ export function logDeveloperGuidance(
 export function useDeveloperGuidance(
   config?: ProjectCategoriesConfig,
   disableGuidanceProp?: boolean,
+  guidanceConfig?: GuidanceConfig,
 ): DeveloperGuidance {
   const guidance = React.useMemo(() => analyzeDeveloperConfiguration(config), [config])
   React.useEffect(() => {
-    if (!disableGuidanceProp) logDeveloperGuidance(guidance, disableGuidanceProp)
-  }, [guidance, disableGuidanceProp])
+    if (!disableGuidanceProp) logDeveloperGuidance(guidance, disableGuidanceProp, guidanceConfig)
+  }, [guidance, disableGuidanceProp, guidanceConfig])
   return guidance
 }
+
+/**
+ * Presets de configuração para diferentes ambientes
+ */
+export const GUIDANCE_PRESETS = {
+  /** Configuração completa para desenvolvimento */
+  development: {
+    showWarnings: true,
+    showSuggestions: true,
+    showCategoriesTable: true,
+    showBestPractices: true,
+    showComplianceScore: true,
+    minimumSeverity: 'info' as const,
+  },
+  /** Configuração silenciosa para produção */
+  production: {
+    showWarnings: false,
+    showSuggestions: false,
+    showCategoriesTable: false,
+    showBestPractices: false,
+    showComplianceScore: false,
+    minimumSeverity: 'error' as const,
+  },
+  /** Apenas erros críticos */
+  minimal: {
+    showWarnings: true,
+    showSuggestions: false,
+    showCategoriesTable: false,
+    showBestPractices: false,
+    showComplianceScore: false,
+    minimumSeverity: 'error' as const,
+  },
+  /** Focado em conformidade LGPD */
+  compliance: {
+    showWarnings: true,
+    showSuggestions: true,
+    showCategoriesTable: true,
+    showBestPractices: true,
+    showComplianceScore: true,
+    minimumSeverity: 'warning' as const,
+  },
+} as const

@@ -277,6 +277,7 @@ export function ConsentProvider({
   onPreferencesSaved,
   cookie: cookieOpts,
   disableDeveloperGuidance,
+  guidanceConfig,
   children,
   disableDiscoveryLog,
 }: Readonly<ConsentProviderProps>) {
@@ -299,7 +300,7 @@ export function ConsentProvider({
   }, [categories])
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
-  useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance)
+  useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance, guidanceConfig)
   // Logging adicional quando Modal customizado é usado (dev only)
   React.useEffect(() => {
     const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'

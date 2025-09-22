@@ -1,7 +1,7 @@
 import {
-  discoverRuntimeCookies,
-  detectConsentCookieName,
   categorizeDiscoveredCookies,
+  detectConsentCookieName,
+  discoverRuntimeCookies,
 } from './cookieDiscovery'
 
 const mockCookie = (cookie: string) => {
@@ -23,7 +23,7 @@ jest.mock('./cookieRegistry', () => ({
 describe('discoverRuntimeCookies', () => {
   it('should return an empty array when document is not defined', () => {
     const originalDocument = global.document
-    // @ts-ignore
+    // @ts-ignore - Simular ambiente SSR onde document não existe
     global.document = undefined
     expect(discoverRuntimeCookies()).toEqual([])
     global.document = originalDocument
@@ -49,7 +49,7 @@ describe('discoverRuntimeCookies', () => {
 describe('detectConsentCookieName', () => {
   it('should return null when document is not defined', () => {
     const originalDocument = global.document
-    // @ts-ignore
+    // @ts-ignore - Simular ambiente SSR onde document não existe para detectConsentCookieName
     global.document = undefined
     expect(detectConsentCookieName()).toBeNull()
     global.document = originalDocument

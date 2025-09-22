@@ -245,7 +245,12 @@ export type { CategoryAutoConfigResult } from './utils/autoConfigureCategories'
  * @category Utils
  * @since 0.4.1
  */
-export type { DeveloperGuidance } from './utils/developerGuidance'
+export type {
+  DeveloperGuidance,
+  GuidanceConfig,
+  GuidanceMessage,
+  GuidanceSeverity,
+} from './utils/developerGuidance'
 
 /**
  * Tipo do contexto de categorias para acesso avançado.
@@ -262,6 +267,9 @@ export type { CategoriesContextValue } from './context/CategoriesContext'
 export {
   analyzeDeveloperConfiguration,
   DEFAULT_PROJECT_CATEGORIES,
+  GUIDANCE_PRESETS,
+  logDeveloperGuidance,
+  useDeveloperGuidance,
 } from './utils/developerGuidance'
 
 /**
@@ -346,3 +354,4 @@ export {
   getAllProjectCategories,
   validateProjectPreferences,
 } from './utils/categoryUtils'
+

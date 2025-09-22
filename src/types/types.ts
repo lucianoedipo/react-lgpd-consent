@@ -1,4 +1,5 @@
 import type { Theme } from '@mui/material/styles'
+import type { GuidanceConfig } from '../utils/developerGuidance'
 
 /**
  * @fileoverview
@@ -1265,6 +1266,25 @@ export interface ConsentProviderProps {
    * @since 0.4.1
    */
   disableDiscoveryLog?: boolean
+
+  /**
+   * Configuração avançada para o sistema de developer guidance.
+   * Permite controle granular sobre quais tipos de guias são exibidos e como.
+   * @since 0.4.1
+   * @example
+   * ```tsx
+   * // Usar preset de desenvolvimento
+   * guidanceConfig={GUIDANCE_PRESETS.development}
+   *
+   * // Configuração personalizada
+   * guidanceConfig={{
+   *   showWarnings: true,
+   *   showComplianceScore: true,
+   *   minimumSeverity: 'warning'
+   * }}
+   * ```
+   */
+  guidanceConfig?: GuidanceConfig
 
   /** Elementos filhos - toda a aplicação que precisa de contexto de consentimento. */
   children: React.ReactNode
