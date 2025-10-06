@@ -656,3 +656,28 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 - [ ] Base legal por categoria
 - [ ] Relatórios de compliance
 - [ ] Templates por setor
+## [0.4.2] - 06/10/2025 — Quickstarts + SSR Guide + Validação (DEV)
+
+### ✨ Quickstarts executáveis
+- Next.js (App Router) e Vite com Consent Mode v2 integrado e bloqueio real de scripts (GTM/GA4 não carregam antes do consentimento).
+- Seções no QUICKSTART.md com passos copy‑paste e validação do comportamento esperado.
+
+### 🧱 Guia SSR/Next.js (App Router)
+- Padrões seguros para evitar hydration mismatch: wrapper client‑only com `'use client'` e `dynamic({ ssr: false })`, efeitos que acessam `window/document` apenas no cliente.
+- Ordem de provedores/estilos (Emotion/MUI) e z-index/portals documentados (overlay 1299, modais ≥ 1300).
+
+### ✅ Validação de configuração do ConsentProvider (DEV)
+- Validação com Zod em desenvolvimento (import dinâmico) e sanitização leve em produção.
+- Mensagens amigáveis: alerta quando `categories` não é fornecida; remove `'necessary'` de `enabledCategories`; detecta duplicidades/valores inválidos; valida `customCategories`.
+- Testes cobrindo casos inválidos e asserts de mensagens.
+
+### 📚 Categorias — definição, uso e exemplos
+- Fonte única de verdade: `ConsentProvider.categories`. UI, hooks e integrações leem a mesma definição.
+- Esclarecimento: apenas “necessários” é obrigatório; demais categorias são opcionais conforme o negócio.
+- Exemplos mínimo (somente necessários) e completo (analytics/marketing/functional).
+
+### 🔧 Dependências
+- Adicionado: `zod@^3.23.8` (usado somente em DEV via import dinâmico; não impacta o bundle de produção).
+
+### 🧩 Sem breaking changes
+- Alterações são compatíveis; padrões seguros preservados.

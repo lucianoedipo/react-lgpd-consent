@@ -113,6 +113,7 @@ Para mais detalhes sobre customização, hooks e funcionalidades, consulte os se
 ### 📋 Documentação Principal
 
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
+  - Seção recomendada: “SSR/Next.js (App Router) — Padrões seguros” com boas práticas de `'use client'`, `dynamic({ ssr: false })` e ordem dos provedores/estilos (MUI/Emotion) para evitar hydration mismatch.
   - Novo na v0.4.0: suporte a `customCategories` — veja a seção “Categorias customizadas (customCategories)” no Quickstart.
   - Novo na v0.4.1: integrações nativas para Facebook Pixel, Hotjar, Mixpanel, Clarity, Intercom e Zendesk — veja o guia [INTEGRACOES.md](./INTEGRACOES.md).
   - Dica: use `designTokens.layout.backdrop: 'auto'` para backdrop sensível ao tema no banner bloqueante.

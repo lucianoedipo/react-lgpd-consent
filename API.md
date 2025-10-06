@@ -53,10 +53,7 @@ import { ConsentProvider } from 'react-lgpd-consent'
 function App() {
   return (
     <ConsentProvider
-      categories={{
-        // Especifique apenas as categorias que seu site utiliza
-        enabledCategories: ['analytics', 'marketing'],
-      }}
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
     >
       {/* Seu aplicativo aqui */}
     </ConsentProvider>
@@ -68,7 +65,7 @@ function App() {
 
 | Prop                               | Tipo                                               | Descrição                                                                                                          |
 | ---------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `categories`                       | `ProjectCategoriesConfig`                          | **Obrigatório**. Define as categorias de cookies ativas no seu projeto.                                            |
+| `categories`                       | `ProjectCategoriesConfig`                          | Define as categorias de cookies ativas no seu projeto. Fonte única de verdade lida por UI, hooks e integrações.    |
 | `texts`                            | `Partial<ConsentTexts>`                            | Objeto com textos customizados para a UI (banner, modal, etc.).                                                    |
 | `onConsentGiven`                   | `(state: ConsentState) => void`                    | Callback executado na primeira vez que o usuário dá o consentimento.                                               |
 | `onPreferencesSaved`               | `(prefs: ConsentPreferences) => void`              | Callback executado sempre que o usuário salva novas preferências no modal.                                         |
@@ -501,3 +498,20 @@ Para customizações avançadas e tipagem, você pode importar os seguintes tipo
 - `ConsentPreferences`: Objeto com as preferências de consentimento para cada categoria.
 - `ConsentTexts`: Objeto com todos os textos customizáveis da UI.
 - `Category`: Objeto que representa a definição de uma categoria de cookie.
+### Exemplos de categorias (mínimo e completo)
+
+Somente necessários (mínimo):
+
+```tsx
+<ConsentProvider categories={{ enabledCategories: [] }}>
+  <App />
+</ConsentProvider>
+```
+
+Conjunto completo (site com analytics/marketing):
+
+```tsx
+<ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}>
+  <App />
+</ConsentProvider>
+```

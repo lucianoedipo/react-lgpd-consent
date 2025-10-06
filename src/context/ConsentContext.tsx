@@ -38,6 +38,7 @@ import { DEFAULT_PROJECT_CATEGORIES, useDeveloperGuidance } from '../utils/devel
 import { logger } from '../utils/logger'
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
+import { validateConsentProviderProps } from '../utils/validation'
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -295,8 +296,22 @@ export function ConsentProvider({
 
   // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
-    if (categories) return categories
-    return DEFAULT_PROJECT_CATEGORIES // Fallback para o padrão
+    // Executa validação e sanitização em modo DEV; em produção apenas aplica fallback padrão
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (!categories) return DEFAULT_PROJECT_CATEGORIES
+    if (isProd) return categories
+    const { sanitized } = validateConsentProviderProps({ categories })
+    return sanitized.categories ?? categories
+  }, [categories])
+
+  // Aviso explícito em DEV quando categories não é fornecida
+  React.useEffect(() => {
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (!isProd && !categories) {
+      logger.warn(
+        "Prop 'categories' não fornecida. A lib aplicará um padrão seguro, mas recomenda-se definir 'categories.enabledCategories' explicitamente para clareza e auditoria.",
+      )
+    }
   }, [categories])
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)

@@ -89,7 +89,7 @@ export function CategoriesProvider({
       toggleableCategories,
       allCategories: guidance.activeCategoriesInfo,
     }
-  }, [config, impliedVersion]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [config, impliedVersion])  
 
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
