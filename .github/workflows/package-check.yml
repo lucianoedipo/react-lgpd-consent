@@ -13,13 +13,12 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: Clean install (npm ci)
-        run: npm ci --include=dev
-        env:
-          NODE_ENV: development
-          NPM_CONFIG_PRODUCTION: "false"
-          NPM_CONFIG_AUDIT: "false"
-          NPM_CONFIG_FUND: "false"
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Use npm version from package.json (corepack)
+        run: corepack prepare npm@11.6.1 --activate
+      - name: Clean install (npm install)
+        run: npm install --no-audit --no-fund --ignore-scripts
       - name: Build
         run: npm run build
       - name: Pack package
