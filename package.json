@@ -97,7 +97,7 @@
   },
   "dependencies": {
     "js-cookie": "^3.0.5",
-    "zod": "^3.23.8"
+    "zod": "^4.1.11"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "4.1.1",
