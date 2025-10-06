@@ -10,7 +10,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 18
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Pin npm 10 to avoid npm@11 CI bug
@@ -26,11 +26,31 @@ jobs:
           npm config set progress false
           npm config set prefer-offline false
           npm config set engine-strict false
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
       - name: Clean npm cache
         run: npm cache clean --force
       - name: Install dependencies (ci with fallback)
+        shell: bash
         run: |
-          npm ci --no-audit --no-fund --ignore-scripts || npm install --no-audit --no-fund --ignore-scripts --legacy-peer-deps
+          set -e
+          attempt() {
+            echo "Attempt $1: npm ci"
+            npm ci --no-audit --no-fund --ignore-scripts && return 0
+            echo "Attempt $1 failed. Cleaning cache and retrying..."
+            npm cache clean --force || true
+            sleep 5
+            return 1
+          }
+          if ! attempt 1; then
+            if ! attempt 2; then
+              if ! attempt 3; then
+                echo "Falling back to npm install"
+                npm install --no-audit --no-fund --ignore-scripts --legacy-peer-deps
+              fi
+            fi
+          fi
       - name: Build
         run: npm run build
       - name: Pack package
