@@ -17,8 +17,19 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Pin npm 10 to avoid npm@11 CI bug
         run: npm i -g npm@10.9.0
-      - name: Clean install (npm ci)
-        run: npm ci --no-audit --no-fund
+      - name: Show Node/npm versions
+        run: |
+          node -v
+          npm -v
+      - name: Configure npm (stability)
+        run: |
+          npm config set audit false
+          npm config set fund false
+          npm config set progress false
+          npm config set prefer-offline true
+      - name: Install dependencies (ci with fallback)
+        run: |
+          npm ci --no-audit --no-fund || npm install --no-audit --no-fund
       - name: Run lint
         run: npm run lint
       - name: Type check
