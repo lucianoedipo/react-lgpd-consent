@@ -28,6 +28,8 @@ jobs:
           cache-dependency-path: package-lock.json
       - name: Clean install (npm ci)
         run: npm ci
+        env:
+          NPM_CONFIG_PRODUCTION: "false"
       - name: Build
         run: npm run build
 
