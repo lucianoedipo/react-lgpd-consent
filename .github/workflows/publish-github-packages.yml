@@ -22,7 +22,7 @@ jobs:
         id: check_main
         shell: bash
         run: |
-          git fetch --no-tags --prune --depth=1 origin +refs/heads/main:refs/remotes/origin/main
+          git fetch --no-tags --prune origin +refs/heads/main:refs/remotes/origin/main
           if git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
             echo "on_main=true" >> "$GITHUB_OUTPUT"
             echo "Tag commit is on main. Proceeding with publish."
