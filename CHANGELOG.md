@@ -56,7 +56,18 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **222 testes passando**: 100% de sucesso sem skips
 - **94.85% cobertura**: Mantida cobertura alta
 - **0 warnings de lint**: ESLint limpo
-- **Build otimizado**: ESM 33.26KB + lazy chunks (137B + 119B)
+- **Build otimizado**: ESM 32.52 KB + lazy chunks (95B + 86B)
+
+### 📦 **Otimizações de Bundle**
+
+- **tsup.config.ts**: Configuração otimizada para tree-shaking e code-splitting
+- **ESM Bundle**: 33.26 KB → 32.52 KB (-740B, -2.2%)
+- **CJS Bundle**: 118.51 KB → 37.71 KB (CJS principal) + chunks (-68%, muito mais eficiente!)
+- **Brotli Compressed**:
+  - ESM: 17.06 KB → 16.95 KB (-110B)
+  - CJS: 68.72 KB → 18.02 KB (-74%, -50.7 KB!)
+- **Side-effects**: Configuração refinada para preservar code-splitting sem warnings
+- **Tree-shaking**: Agressivo com external de peer dependencies
 
 ### 🎯 **Decisões de Design**
 

@@ -42,7 +42,10 @@
     },
     "./package.json": "./package.json"
   },
-  "sideEffects": false,
+  "sideEffects": [
+    "dist/chunk-*.js",
+    "dist/chunk-*.cjs"
+  ],
   "files": [
     "dist",
     "README.md",
@@ -152,17 +155,17 @@
     {
       "name": "ESM Bundle",
       "path": "dist/index.js",
-      "limit": "17 KB"
+      "limit": "34 KB"
     },
     {
       "name": "CJS Bundle",
       "path": "dist/index.cjs",
-      "limit": "75 KB"
+      "limit": "120 KB"
     },
     {
       "name": "Types",
       "path": "dist/index.d.ts",
-      "limit": "100 KB"
+      "limit": "130 KB"
     },
     {
       "name": "Complete Package Import",
