@@ -1,7 +1,8 @@
-import { useConsentTexts } from '../hooks/useConsent'
-import { useDesignTokens } from '../context/DesignContext'
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
+import * as React from 'react'
+import { useDesignTokens } from '../context/DesignContext'
+import { useConsentTexts } from '../hooks/useConsent'
 
 interface BrandingProps {
   variant: 'banner' | 'modal'
@@ -36,7 +37,14 @@ const linkStyles = {
   },
 }
 
-export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
+/**
+ * Componente de branding - memoizado para evitar re-renders desnecessários.
+ * Props são estáveis (variant, hidden) e hooks são otimizados.
+ */
+export const Branding = React.memo(function Branding({
+  variant,
+  hidden = false,
+}: Readonly<BrandingProps>) {
   const texts = useConsentTexts()
   const designTokens = useDesignTokens()
   if (hidden) return null
@@ -63,4 +71,4 @@ export function Branding({ variant, hidden = false }: Readonly<BrandingProps>) {
       </Link>
     </Typography>
   )
-}
+})

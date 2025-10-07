@@ -15,6 +15,12 @@
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>
   </div>
 
+  <div>
+    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>
+    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle Size"></a>
+    <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/react-lgpd-consent?style=for-the-badge&logo=node.js&logoColor=white" alt="Node Version"></a>
+  </div>
+
   <br />
 
   <p>

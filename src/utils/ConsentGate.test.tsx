@@ -1,4 +1,3 @@
-import * as React from 'react'
 import { render, screen } from '@testing-library/react'
 import { ConsentProvider } from '../context/ConsentContext'
 import { ConsentGate } from './ConsentGate'
@@ -25,14 +24,14 @@ describe('ConsentGate', () => {
       </ConsentProvider>,
     )
 
-    expect(screen.getByTestId('inside')).toBeTruthy()
+    expect(screen.queryByTestId('inside')).not.toBeNull()
   })
 
   test('does not render children when category preference is false', () => {
     const initialState = {
       consented: true,
       isModalOpen: false,
-      preferences: { necessary: true, analytics: false },
+      preferences: { necessary: true, analytics: false }, // FALSE aqui
       version: '1.0',
       consentDate: new Date().toISOString(),
       lastUpdate: new Date().toISOString(),
@@ -43,11 +42,12 @@ describe('ConsentGate', () => {
     render(
       <ConsentProvider initialState={initialState as any}>
         <ConsentGate category="analytics">
-          <div data-testid="inside-fail">NO</div>
+          <div data-testid="inside-fail">NO</div> {/* Espera NÃO aparecer */}
         </ConsentGate>
       </ConsentProvider>,
     )
 
+    // Se false, não deve aparecer
     expect(screen.queryByTestId('inside-fail')).toBeNull()
   })
 })

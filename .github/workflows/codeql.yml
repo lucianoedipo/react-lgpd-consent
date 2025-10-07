@@ -26,6 +26,16 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
+      - name: Cache TypeScript builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            .tsbuildinfo
+            node_modules/.cache
+          key: ${{ runner.os }}-typescript-${{ hashFiles('**/tsconfig.json', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-typescript-
+
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v3
         with:

@@ -36,9 +36,9 @@ import {
 } from '../hooks/useConsent'
 import { DEFAULT_PROJECT_CATEGORIES, useDeveloperGuidance } from '../utils/developerGuidance'
 import { logger } from '../utils/logger'
+import { validateConsentProviderProps } from '../utils/validation'
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
-import { validateConsentProviderProps } from '../utils/validation'
 
 // Lazy load do PreferencesModal para evitar dependência circular
 const PreferencesModal = React.lazy(() =>
@@ -47,8 +47,14 @@ const PreferencesModal = React.lazy(() =>
   })),
 )
 
+// Lazy load do FloatingPreferencesButton para otimizar bundle inicial
+const FloatingPreferencesButton = React.lazy(() =>
+  import('../components/FloatingPreferencesButton').then((m) => ({
+    default: m.FloatingPreferencesButton,
+  })),
+)
+
 import { CookieBanner } from '../components/CookieBanner'
-import { FloatingPreferencesButton } from '../components/FloatingPreferencesButton'
 
 /**
  * Cria um estado completo de consentimento com todos os campos obrigatórios.
@@ -491,22 +497,24 @@ export function ConsentProvider({
                   ))}
 
                 {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
-                {state.consented &&
-                  !disableFloatingPreferencesButton &&
-                  (FloatingPreferencesButtonComponent ? (
-                    <FloatingPreferencesButtonComponent
-                      openPreferences={api.openPreferences}
-                      consented={api.consented}
-                      {...floatingPreferencesButtonProps}
-                    />
-                  ) : (
-                    // Encaminha `floatingPreferencesButtonProps` para o componente padrão
-                    <FloatingPreferencesButton
-                      {...((floatingPreferencesButtonProps ?? {}) as Partial<
-                        React.ComponentProps<typeof FloatingPreferencesButton>
-                      >)}
-                    />
-                  ))}
+                {state.consented && !disableFloatingPreferencesButton && (
+                  <React.Suspense fallback={null}>
+                    {FloatingPreferencesButtonComponent ? (
+                      <FloatingPreferencesButtonComponent
+                        openPreferences={api.openPreferences}
+                        consented={api.consented}
+                        {...floatingPreferencesButtonProps}
+                      />
+                    ) : (
+                      // Encaminha `floatingPreferencesButtonProps` para o componente padrão
+                      <FloatingPreferencesButton
+                        {...((floatingPreferencesButtonProps ?? {}) as Partial<
+                          React.ComponentProps<typeof FloatingPreferencesButton>
+                        >)}
+                      />
+                    )}
+                  </React.Suspense>
+                )}
               </CategoriesProvider>
             </DesignProvider>
           </HydrationCtx.Provider>
