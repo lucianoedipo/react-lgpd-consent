@@ -27,12 +27,18 @@ export enum LogLevel {
  * - Logs são habilitados por padrão em desenvolvimento e desabilitados em produção.
  * - Usa prefixo '[react-lgpd-consent]' para identificação.
  * - Métodos específicos como `componentRender` e `apiUsage` são utilizados para análises de uso.
+ * - Em produção, apenas logs de erro (ERROR) são exibidos por padrão.
  */
 class ConsentLogger {
   private static readonly IS_DEVELOPMENT =
     typeof globalThis !== 'undefined' &&
     (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env
       ?.NODE_ENV === 'development'
+
+  private static readonly IS_PRODUCTION =
+    typeof globalThis !== 'undefined' &&
+    (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env
+      ?.NODE_ENV === 'production'
 
   private static readonly LOG_PREFIX = '[react-lgpd-consent]'
 
@@ -68,60 +74,67 @@ class ConsentLogger {
 
   /**
    * Registra uma mensagem de aviso.
+   * Suprimido em produção por padrão (apenas se logging estiver explicitamente habilitado).
    * @param {...unknown[]} args Argumentos a serem logados.
    */
   warn(...args: unknown[]) {
-    if (this.enabled && this.level >= LogLevel.WARN) {
+    // Em produção, suprimir warnings a menos que explicitamente habilitado
+    if (this.enabled && this.level >= LogLevel.WARN && !ConsentLogger.IS_PRODUCTION) {
       console.warn(ConsentLogger.LOG_PREFIX, '[WARN]', ...args)
     }
   }
 
   /**
    * Registra uma mensagem informativa.
+   * Suprimido em produção por padrão.
    * @param {...unknown[]} args Argumentos a serem logados.
    */
   info(...args: unknown[]) {
-    if (this.enabled && this.level >= LogLevel.INFO) {
+    if (this.enabled && this.level >= LogLevel.INFO && !ConsentLogger.IS_PRODUCTION) {
       console.info(ConsentLogger.LOG_PREFIX, '[INFO]', ...args)
     }
   }
 
   /**
    * Registra uma mensagem de depuração.
+   * Sempre suprimido em produção.
    * @param {...unknown[]} args Argumentos a serem logados.
    */
   debug(...args: unknown[]) {
-    if (this.enabled && this.level >= LogLevel.DEBUG) {
+    if (this.enabled && this.level >= LogLevel.DEBUG && !ConsentLogger.IS_PRODUCTION) {
       console.debug(ConsentLogger.LOG_PREFIX, '[DEBUG]', ...args)
     }
   }
 
   /**
    * Inicia um grupo de logs no console.
+   * Suprimido em produção.
    * @param {...unknown[]} args Argumentos para o título do grupo.
    */
   group(...args: unknown[]) {
-    if (this.enabled && this.level >= LogLevel.DEBUG) {
+    if (this.enabled && this.level >= LogLevel.DEBUG && !ConsentLogger.IS_PRODUCTION) {
       console.group(ConsentLogger.LOG_PREFIX, ...args)
     }
   }
 
   /**
    * Finaliza o grupo de logs mais recente no console.
+   * Suprimido em produção.
    */
   groupEnd() {
-    if (this.enabled && this.level >= LogLevel.DEBUG) {
+    if (this.enabled && this.level >= LogLevel.DEBUG && !ConsentLogger.IS_PRODUCTION) {
       console.groupEnd()
     }
   }
 
   /**
    * Exibe dados tabulares no console.
+   * Suprimido em produção.
    * @param {unknown} tabularData Dados a serem exibidos na tabela.
    * @param {string[]} [properties] Propriedades opcionais para exibir.
    */
   table(tabularData: unknown, properties?: string[]) {
-    if (this.enabled && this.level >= LogLevel.DEBUG) {
+    if (this.enabled && this.level >= LogLevel.DEBUG && !ConsentLogger.IS_PRODUCTION) {
       console.table(tabularData, properties)
     }
   }

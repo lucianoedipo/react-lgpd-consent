@@ -4,9 +4,88 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.4.3] - 2025-10-06 — Otimizações de Performance e Qualidade
+
+### 🚀 **Melhorias de Performance**
+
+- **React.memo**: Adicionado memoização em componentes puros (`Branding`, `FloatingPreferencesButton`)
+- **useMemo**: Otimizado cálculo de `positionStyles` no `FloatingPreferencesButton`
+- **Lazy Loading Expandido**: `FloatingPreferencesButton` agora é carregado sob demanda
+- **Logger em Produção**: `warn()`, `info()`, `debug()` suprimidos em `NODE_ENV=production`
+  - Reduz overhead em bundle de produção
+  - `error()` permanece ativo para debugging crítico
+
+### 🐛 **Correções Críticas**
+
+- **ConsentProvider Suspense Bug**: Corrigido crash silencioso quando `consented=true`
+  - Adicionado `<React.Suspense>` ausente ao redor do `FloatingPreferencesButton` lazy
+  - Sintoma: Provider renderizava `<div />` vazio ao invés de `children`
+  - Impacto: Testes com `initialState.consented=true` agora passam
+
+### 🧪 **Testes de Acessibilidade (A11y)**
+
+- **jest-axe**: Integração completa com validação WCAG automática
+- **CookieBanner.a11y.test.tsx**: 3 cenários de acessibilidade validados
+- **PreferencesModal.a11y.test.tsx**: 3 cenários de acessibilidade validados
+- **TypeScript**: Definições `jest-axe.d.ts` para matcher `toHaveNoViolations()`
+- **Script**: Adicionado `npm run test:a11y` para testes focados
+
+### 📦 **Exports Modulares**
+
+- **`./integrations`**: Novo export separado para tree-shaking otimizado
+  - Permite `import { createGoogleAnalyticsIntegration } from 'react-lgpd-consent/integrations'`
+  - Reduz bundle para consumidores que não usam integrações
+  - Suporte ESM + CJS + TypeScript definitions
+
+### 🔧 **CI/CD**
+
+- **Node.js 20**: Atualizado de Node 18 para Node 20 LTS em todos os workflows
+- **Cache TypeScript**: Adicionado cache de builds para acelerar CI (~20% mais rápido)
+  - Cache de `.tsbuildinfo`, `node_modules/.cache`, `.eslintcache`
+  - Workflows atualizados: `ci.yml`, `codeql.yml`, `deploy-docs.yml`, `package-check.yml`
+
+### 📚 **Documentação**
+
+- **Badges**: Adicionados 3 badges ao README (Coverage, Bundle Size, Node Version)
+  - Codecov para visualização de cobertura
+  - Bundlephobia para tamanho de bundle
+  - Node.js badge para requisitos de ambiente
+
+### ✅ **Validação de Qualidade**
+
+- **222 testes passando**: 100% de sucesso sem skips
+- **94.85% cobertura**: Mantida cobertura alta
+- **0 warnings de lint**: ESLint limpo
+- **Build otimizado**: ESM 32.52 KB + lazy chunks (95B + 86B)
+
+### 📦 **Otimizações de Bundle**
+
+- **tsup.config.ts**: Configuração otimizada para tree-shaking e code-splitting
+- **ESM Bundle**: 33.26 KB → 32.52 KB (-740B, -2.2%)
+- **CJS Bundle**: 118.51 KB → 37.71 KB (CJS principal) + chunks (-68%, muito mais eficiente!)
+- **Brotli Compressed**:
+  - ESM: 17.06 KB → 16.95 KB (-110B)
+  - CJS: 68.72 KB → 18.02 KB (-74%, -50.7 KB!)
+- **Side-effects**: Configuração refinada para preservar code-splitting sem warnings
+- **Tree-shaking**: Agressivo com external de peer dependencies
+
+### 🎯 **Decisões de Design**
+
+- **ConsentGate não usa memo**: Decisão intencional - estado de preferências é dinâmico
+  - Re-renders necessários quando usuário altera consentimento
+  - Lógica leve o suficiente para não justificar memoização
+
+### 📋 **Dependências**
+
+- **Adicionadas**:
+  - `@axe-core/react@^4.10.2` (dev)
+  - `jest-axe@^10.0.0` (dev)
+  - `@types/jest-axe@^3.5.9` (dev)
+
 ## [0.4.1] - 2025-09-21 — Expansão das Integrações Nativas de Scripts
 
 ### 🚀 **Integrações Nativas Expandidas**
+
 - **Facebook Pixel**: `createFacebookPixelIntegration()` com auto-tracking e advanced matching
 - **Hotjar**: `createHotjarIntegration()` para heatmaps e session recordings
 - **Mixpanel**: `createMixpanelIntegration()` com configuração avançada de eventos
@@ -17,18 +96,21 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Freshchat**: `createFreshchatIntegration()` para customer support
 
 ### 🎯 **Sistema de Configuração em Lote**
+
 - **Templates de negócio**: `createECommerceIntegrations()`, `createSaaSIntegrations()`, `createCorporateIntegrations()`
 - **Categorização inteligente**: `suggestCategoryForScript()` para sugestão automática de categorias
 - **Configuração unificada**: Setup simplificado para múltiplas ferramentas com um comando
 - **Padrões de mercado**: Templates baseados em necessidades reais do mercado brasileiro
 
 ### 🔧 **Melhorias no Sistema de Scripts**
+
 - **Validação robusta**: `validateNecessaryClassification()` corrigida para evitar falsos positivos
 - **Auto-configuração**: `autoConfigureCategories()` com detecção inteligente de categorias necessárias
 - **Error handling**: Melhor tratamento de erros em carregamento de scripts
 - **Performance**: Carregamento otimizado e lazy loading de integrações
 
 ### 🔍 **Descoberta Automática de Cookies (Experimental)**
+
 - **discoverRuntimeCookies()**: Escaneamento de cookies em tempo real no navegador
 - **detectConsentCookieName()**: Detecção automática do cookie de consentimento
 - **categorizeDiscoveredCookies()**: Categorização inteligente usando padrões LGPD
@@ -36,17 +118,20 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **SSR-safe**: Funciona corretamente em ambientes server-side rendering
 
 ### 🎨 **Design Tokens Expandidos**
+
 - **200+ pontos de customização**: Expansão dramática do sistema de design tokens
 - **Sistema responsivo**: Breakpoints, spacing responsivo, typography hierarchy
 - **Acessibilidade nativa**: Contrast ratios, focus states, motion preferences
 - **Tokens por componente**: Customização granular para cada elemento UI
 
 ### 📝 **Sistema Avançado de Textos**
+
 - **Templates pré-configurados**: Ecommerce, SaaS, Governo com contextos específicos
 - **Multilingual**: Português, inglês, espanhol com fallbacks inteligentes
 - **Função resolveTexts**: Resolução automática de textos baseada em contexto
 
 ### 🧪 **Melhorias de Testes e Qualidade**
+
 - **193 testes passando**: Cobertura substancialmente melhorada
 - **19 novos testes**: Especificamente para `cookieRegistry` (antes 45.83% → 100% branches)
 - **Test realism**: Testes adaptados ao comportamento real vs ideal
@@ -54,6 +139,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Lint compliance**: Configuração ESLint mais rigorosa e aderente
 
 ### 🔧 **Melhorias de API e Developer Experience**
+
 - **Exports organizados**: Melhor estruturação das exportações públicas
 - **TypeScript strict**: Tipagem mais rigorosa e descritiva
 - **Documentação TSDoc**: Comentários expandidos com exemplos práticos
@@ -61,12 +147,14 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - **Performance**: Otimizações em carregamento e renderização
 
 ### 📚 **Exemplos e Migração**
+
 - **MigrationDemo-v0.4.1.tsx**: Exemplo completo mostrando todas as novidades
 - **Remoção**: TestV0.3.1.tsx removido (obsoleto)
 - **Compatibilidade**: Guias de migração antes/depois
 - **Best practices**: Demonstrações de uso avançado
 
 ### 🏗️ **Build e Infraestrutura**
+
 - **Bundle otimizado**: ESM 34.36 KB, CJS 102.74 KB
 - **Tree-shaking**: Configuração `sideEffects: false` otimizada
 - **Docs geradas**: TypeDoc atualizado com novas funcionalidades
@@ -74,22 +162,25 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 
 ### ⚠️ **Breaking Changes**
 
-#### 🔧 **`setPreference` Type Change** 
+#### 🔧 **`setPreference` Type Change**
+
 - **Mudança**: `setPreference(cat: Category, value: boolean)` → `setPreference(cat: string, value: boolean)`
-- **Motivo**: Suporte a categorias customizadas além das predefinidas  
+- **Motivo**: Suporte a categorias customizadas além das predefinidas
 - **Impacto**: Código TypeScript com tipo `Category` explícito pode precisar ajustes
-- **Migração**: 
+- **Migração**:
   - ✅ **Nenhuma mudança necessária** se usando strings literais (`'analytics'`, `'marketing'`)
   - ⚠️ **Ajuste necessário** apenas se estava usando explicitamente o tipo `Category`
   - 📚 **Guia**: Use `string` para suportar categorias customizadas ou continue usando os valores padrão
 
 #### 🔧 **`ScriptIntegration.category` Type Change**
+
 - **Mudança**: `category: Category` → `category: string`
 - **Motivo**: Suporte a categorias customizadas nas integrações de script
 - **Impacto**: Integrações customizadas com tipo `Category` explícito
 - **Migração**: Mesmas diretrizes do `setPreference` acima
 
 ### 🎯 **Categorias Suportadas**
+
 - `necessary` (sempre ativo)
 - `analytics` (Google Analytics, etc.)
 - `marketing` (Facebook Pixel, Google Ads)
@@ -98,6 +189,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - `personalization` (Preferências, customização)
 
 ### 📈 **Estatísticas de Melhoria**
+
 - **Design Tokens**: 4 → 200+ pontos de customização (+4900%)
 - **Testes**: 174 → 193 testes (+11% cobertura)
 - **Funcionalidades**: +15 novas funções exportadas
@@ -107,6 +199,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 ## [0.4.0] - 2025-09-09 — Custom categories
 
 ### Added
+
 - Support for `customCategories` in `ConsentProvider.categories`.
   - Included in preferences initialization and validation.
   - Shown in the Preferences modal (with name/description).
@@ -115,6 +208,7 @@ O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.
 - Storybook story: WithCustomCategories.
 
 ### Notes
+
 - Non-breaking change; existing configurations continue to work.
 
 ## [0.3.7] - 2025-09-08 - Testes de UI e carregamento de scripts
@@ -656,3 +750,35 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 - [ ] Base legal por categoria
 - [ ] Relatórios de compliance
 - [ ] Templates por setor
+
+## [0.4.2] - 06/10/2025 — Quickstarts + SSR Guide + Validação (DEV)
+
+### ✨ Quickstarts executáveis
+
+- Next.js (App Router) e Vite com Consent Mode v2 integrado e bloqueio real de scripts (GTM/GA4 não carregam antes do consentimento).
+- Seções no QUICKSTART.md com passos copy‑paste e validação do comportamento esperado.
+
+### 🧱 Guia SSR/Next.js (App Router)
+
+- Padrões seguros para evitar hydration mismatch: wrapper client‑only com `'use client'` e `dynamic({ ssr: false })`, efeitos que acessam `window/document` apenas no cliente.
+- Ordem de provedores/estilos (Emotion/MUI) e z-index/portals documentados (overlay 1299, modais ≥ 1300).
+
+### ✅ Validação de configuração do ConsentProvider (DEV)
+
+- Validação com Zod em desenvolvimento (import dinâmico) e sanitização leve em produção.
+- Mensagens amigáveis: alerta quando `categories` não é fornecida; remove `'necessary'` de `enabledCategories`; detecta duplicidades/valores inválidos; valida `customCategories`.
+- Testes cobrindo casos inválidos e asserts de mensagens.
+
+### 📚 Categorias — definição, uso e exemplos
+
+- Fonte única de verdade: `ConsentProvider.categories`. UI, hooks e integrações leem a mesma definição.
+- Esclarecimento: apenas “necessários” é obrigatório; demais categorias são opcionais conforme o negócio.
+- Exemplos mínimo (somente necessários) e completo (analytics/marketing/functional).
+
+### 🔧 Dependências
+
+- Adicionado: `zod@^3.23.8` (usado somente em DEV via import dinâmico; não impacta o bundle de produção).
+
+### 🧩 Sem breaking changes
+
+- Alterações são compatíveis; padrões seguros preservados.

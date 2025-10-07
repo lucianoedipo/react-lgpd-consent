@@ -39,6 +39,14 @@
 import * as React from 'react'
 import { useConsent } from '../hooks/useConsent'
 
+/**
+ * ConsentGate - renderiza children apenas se houver consentimento para a categoria.
+ * 
+ * @remarks
+ * Não usa React.memo pois o estado de preferências muda dinamicamente
+ * e o componente precisa re-renderizar quando as preferências mudam.
+ * A lógica é leve o suficiente para não justificar memoização.
+ */
 export function ConsentGate(
   props: Readonly<{
     category: string // Aceita qualquer categoria (padrão ou customizada)

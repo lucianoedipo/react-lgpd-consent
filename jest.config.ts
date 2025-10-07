@@ -3,6 +3,10 @@ import type { Config } from 'jest'
 const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  // Reduz paralelismo e consumo para evitar travamentos em ambientes limitados (ex.: WSL)
+  maxWorkers: '50%',
+  testTimeout: 30000,
+  workerIdleMemoryLimit: '512MB',
   roots: ['<rootDir>/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transform: { '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }] },

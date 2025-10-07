@@ -13,8 +13,53 @@ jobs:
           node-version: 20
           cache: npm
           cache-dependency-path: package-lock.json
-      - name: Clean install (npm ci)
-        run: npm ci
+      - name: Cache TypeScript builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            .tsbuildinfo
+            node_modules/.cache
+          key: ${{ runner.os }}-typescript-${{ hashFiles('**/tsconfig.json', '**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-typescript-
+      - name: Pin npm 10 to avoid npm@11 CI bug
+        run: npm i -g npm@10.9.0
+      - name: Show Node/npm versions
+        run: |
+          node -v
+          npm -v
+      - name: Configure npm (stability)
+        run: |
+          npm config set audit false
+          npm config set fund false
+          npm config set progress false
+          npm config set prefer-offline false
+          npm config set engine-strict false
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 20000
+          npm config set fetch-retry-maxtimeout 120000
+      - name: Clean npm cache
+        run: npm cache clean --force
+      - name: Install dependencies (ci with fallback)
+        shell: bash
+        run: |
+          set -e
+          attempt() {
+            echo "Attempt $1: npm ci"
+            npm ci --no-audit --no-fund --ignore-scripts && return 0
+            echo "Attempt $1 failed. Cleaning cache and retrying..."
+            npm cache clean --force || true
+            sleep 5
+            return 1
+          }
+          if ! attempt 1; then
+            if ! attempt 2; then
+              if ! attempt 3; then
+                echo "Falling back to npm install"
+                npm install --no-audit --no-fund --ignore-scripts --legacy-peer-deps
+              fi
+            fi
+          fi
       - name: Build
         run: npm run build
       - name: Pack package

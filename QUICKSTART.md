@@ -62,8 +62,262 @@ export default App
 
 ````
 
+## ⚡ Quickstarts: Next.js (App Router) e Vite
+
+Os exemplos a seguir integram GTM/GA4 com Consent Mode v2 e garantem que nenhum script de tracking rode antes do consentimento. Eles também mostram como usar `ConsentScriptLoader` e sincronizar os sinais do Consent Mode via `gtag('consent', ...)`.
+
+- Exemplos completos: `examples/next-app-router/*`, `examples/vite/*`
+
+### Next.js 14/15 — App Router (SSR-safe)
+
+1) Criar app Next e instalar deps
+
+```bash
+npm create next-app@latest my-app --ts --eslint --src-dir --app --no-tailwind --no-experimental-app
+cd my-app
+npm i react-lgpd-consent @mui/material @mui/icons-material @emotion/react @emotion/styled
+```
+
+2) Variáveis públicas no `.env.local`
+
+```
+NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+```
+
+3) Copiar os arquivos do exemplo e ajustar imports
+
+- De `examples/next-app-router/app/layout.tsx` → `app/layout.tsx`
+- De `examples/next-app-router/app/page.tsx` → `app/page.tsx`
+- De `examples/next-app-router/components/ClientConsent.tsx` → `app/components/ClientConsent.tsx`
+
+Observação: nos arquivos copiados, troque imports relativos para `import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'`.
+
+4) O que esse setup faz
+
+- `ClientConsent` é um componente client-only (via `dynamic(..., { ssr: false })` no layout) que:
+  - Injeta um stub de `dataLayer/gtag` e define `consent default = denied` para todos os sinais (ad_storage, ad_user_data, ad_personalization, analytics_storage).
+  - Sincroniza as mudanças do consentimento com `gtag('consent','update', ...)` mapeando as categorias: `analytics → analytics_storage`, `marketing → ad_*`.
+  - Usa `ConsentScriptLoader` para carregar GTM/GA4 somente quando as categorias permitirem. Antes disso, nenhum script de tracking é carregado.
+
+5) Rodar
+
+```bash
+npm run dev
+```
+
+Validação rápida:
+- Acesse em aba anônima: a rede não carrega `gtm.js`/`gtag/js` até aceitar preferências.
+- Ao aceitar `analytics`, o GA4 é carregado; ao aceitar `marketing`, os sinais `ad_*` são atualizados como granted.
+
+### Vite (CSR)
+
+1) Criar app Vite e instalar deps
+
+```bash
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm i react-lgpd-consent @mui/material @mui/icons-material @emotion/react @emotion/styled
+```
+
+2) Variáveis no `.env`
+
+```
+VITE_GA_ID=G-XXXXXXXXXX
+VITE_GTM_ID=GTM-XXXXXXX
+```
+
+3) Copiar os arquivos do exemplo e ajustar imports
+
+- De `examples/vite/index.html` → `index.html` (não adicione scripts do GA/GTM aqui)
+- De `examples/vite/src/main.tsx` → `src/main.tsx`
+- De `examples/vite/src/App.tsx` → `src/App.tsx`
+- De `examples/vite/src/consent/GtagConsent.tsx` → `src/consent/GtagConsent.tsx`
+
+Observação: nos arquivos copiados, troque imports relativos para `import { ... } from 'react-lgpd-consent'`.
+
+4) Rodar
+
+```bash
+npm run dev
+```
+
+Validação rápida:
+- Ao abrir a app (em nova sessão), nenhum script de tracking é baixado até que o usuário consinta.
+- Preferências atualizam `gtag('consent','update', ...)` corretamente por categoria.
+
 ## 🧩 Categorias customizadas (customCategories)
 Disponível a partir da v0.4.0.
+
+## 🍪 Categorias: definição, uso e exemplos
+
+Fonte única de verdade
+- Defina as categorias do seu projeto SOMENTE na prop `categories` do `ConsentProvider`.
+- A UI (Banner/Modal), os hooks (`useConsent`, `useCategories`) e as integrações (`ConsentScriptLoader`) leem a mesma definição. Não declare categorias em outros lugares.
+
+O que é obrigatório?
+- Apenas a categoria `necessary` é obrigatória (e já é sempre incluída automaticamente).
+- Todas as demais (`analytics`, `marketing`, `functional`, etc.) são opcionais e dependem do seu caso de negócio. Se você não usa analytics/ads/chat, simplesmente não habilite essas categorias.
+
+Como “esconder” categorias que não uso?
+- Basta não incluí-las em `enabledCategories` e não declará-las em `customCategories`. A UI não exibirá toggles para categorias ausentes.
+
+Exemplo A — Somente necessários (mínimo, comum para apps internos/governo sem tracking)
+```tsx
+import { ConsentProvider } from 'react-lgpd-consent'
+
+export default function App() {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: [] }}
+      texts={{ bannerMessage: 'Usamos apenas cookies necessários para funcionamento.' }}
+    >
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+Exemplo B — Conjunto completo (site com analytics e marketing)
+```tsx
+import { ConsentProvider } from 'react-lgpd-consent'
+
+export default function App() {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
+    >
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+Boas práticas
+- Sempre passe `categories` explicitamente. Em DEV, a biblioteca avisa quando `categories` não foi configurado para evitar ambiguidades.
+- Não classifique scripts de analytics/ads como “necessary” — use `ConsentScriptLoader` e categorias adequadas.
+- Em dúvidas, comece com “somente necessários” e evolua quando o negócio exigir outras categorias.
+
+### 🔎 Validação de configuração (DEV)
+
+Em desenvolvimento, a biblioteca valida a configuração e mostra mensagens amigáveis no console. Nada disso impacta produção (onde só ocorre uma sanitização leve).
+
+Avisos comuns e como corrigir:
+- `Prop 'categories' não fornecida...` — defina `categories.enabledCategories` de forma explícita; exemplo mínimo: `categories={{ enabledCategories: [] }}`.
+- `'necessary' é sempre incluída automaticamente` — remova `'necessary'` de `enabledCategories` (ela já é incluída por padrão).
+- `IDs de categoria duplicados detectados` — revise `enabledCategories` e `customCategories` para garantir que não há IDs repetidos.
+- `enabledCategories contém valores inválidos` — verifique se todos os itens são strings não vazias (IDs de categoria).
+- `customCategories: ... — ... deve ser uma string não vazia` — preencha `id`, `name` e `description` das categorias customizadas.
+
+Notas:
+- Validação detalhada roda apenas em `NODE_ENV !== 'production'`.
+- Em produção, a lib não carrega o validador; somente remove `'necessary'` se vier por engano, mantendo o comportamento seguro.
+
+## 🧱 SSR/Next.js (App Router) — Padrões seguros
+
+Objetivo: evitar hydration mismatch, hooks em Server Components e vazamento de scripts.
+
+Padrões recomendados
+- Envolva o app com o `ConsentProvider` apenas no cliente.
+- Use `dynamic(() => import('./ClientConsent'), { ssr: false })` no `RootLayout` (Server Component) e mova hooks e efeitos para o componente cliente.
+- Nenhum acesso a `window`/`document` no topo de módulo; use apenas dentro de `useEffect`.
+- Inicialize Consent Mode v2 com `gtag('consent','default', denied)` antes de carregar GTM/GA4; depois, atualize sinais na mudança de preferências.
+
+Exemplo de RootLayout (Server) + Client wrapper
+
+```tsx
+// app/layout.tsx (Server Component)
+import dynamic from 'next/dynamic'
+
+const ClientConsent = dynamic(() => import('./components/ClientConsent'), { ssr: false })
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pt-BR">
+      <body>
+        <ClientConsent>{children}</ClientConsent>
+      </body>
+    </html>
+  )
+}
+```
+
+```tsx
+// app/components/ClientConsent.tsx (Client Component)
+'use client'
+import React from 'react'
+import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'
+import { COMMON_INTEGRATIONS } from 'react-lgpd-consent'
+import { useConsent } from 'react-lgpd-consent'
+
+function BootstrapConsentMode() {
+  React.useEffect(() => {
+    const w = window as any
+    w.dataLayer = w.dataLayer ?? []
+    w.gtag = w.gtag ?? ((...args: any[]) => w.dataLayer.push(args))
+    w.gtag('consent', 'default', {
+      ad_storage: 'denied',
+      ad_user_data: 'denied',
+      ad_personalization: 'denied',
+      analytics_storage: 'denied',
+    })
+  }, [])
+  return null
+}
+
+function SyncConsentMode() {
+  const { consented, preferences } = useConsent()
+  React.useEffect(() => {
+    if (!consented) return
+    const w = window as any
+    w.gtag?.('consent', 'update', {
+      analytics_storage: preferences.analytics ? 'granted' : 'denied',
+      ad_storage: preferences.marketing ? 'granted' : 'denied',
+      ad_user_data: preferences.marketing ? 'granted' : 'denied',
+      ad_personalization: preferences.marketing ? 'granted' : 'denied',
+    })
+  }, [consented, preferences])
+  return null
+}
+
+export default function ClientConsent({ children }: { children: React.ReactNode }) {
+  const GA = process.env.NEXT_PUBLIC_GA_ID!
+  const GTM = process.env.NEXT_PUBLIC_GTM_ID!
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }} blocking>
+      <BootstrapConsentMode />
+      <SyncConsentMode />
+      <ConsentScriptLoader
+        integrations={[
+          COMMON_INTEGRATIONS.googleAnalytics({ measurementId: GA }),
+          COMMON_INTEGRATIONS.googleTagManager({ containerId: GTM }),
+        ]}
+      />
+      {children}
+    </ConsentProvider>
+  )
+}
+```
+
+Ordem de provedores e estilos (MUI/Emotion)
+- Preferência de ordem recomendada:
+  - `CacheProvider` (Emotion) ou `StyledEngineProvider` com `injectFirst`
+  - `ThemeProvider` (MUI)
+  - `CssBaseline`
+  - `ConsentProvider` (sem criar tema por padrão)
+- Motivo: garante injeção de estilos do MUI antes de CSS da app e evita desalinhamento visual; os componentes da lib herdam o tema quando presente.
+
+Z-index e Portals
+- Componentes MUI usam o `zIndex` do tema; modals/portals padrão usam `zIndex.modal = 1300`.
+- O overlay bloqueante do Provider usa `z-index: 1299`; o Modal/Banner usa camadas ≥ 1300.
+- Em caso de conflito com headers fixos, ajuste o `theme.zIndex` (ex.: `appBar: 1200`, `modal: 1300+`) ou os `designTokens` conforme a necessidade.
+
+Checklist SSR (evite hydration mismatch)
+- [ ] Hooks somente em Client Components (`'use client'` no topo).
+- [ ] Nada de `window`/`document`/`localStorage` no topo de módulo (apenas em `useEffect`).
+- [ ] `dynamic(..., { ssr: false })` para wrappers que usam hooks e efeitos do consentimento.
+- [ ] GTM/GA4 carregados apenas após consentimento (via `ConsentScriptLoader`).
+- [ ] Sem `<script>` de GTM/GA4 em `head`/`body`; todo carregamento vem do loader.
 
 ## 🎨 Dica de estilo: Backdrop sensível ao tema
 

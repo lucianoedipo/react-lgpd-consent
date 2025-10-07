@@ -2,7 +2,7 @@
 
 ## 🚀 Visão Geral
 
-A biblioteca oferece integrações nativas para as ferramentas mais comuns, eliminando a necessidade de código manual para o carregamento condicional de scripts de terceiros.
+A biblioteca oferece integrações nativas para as ferramentas mais comuns, eliminando a necessidade de código manual para o carregamento condicional de scripts de terceiros. As categorias usadas pelas integrações são sempre lidas da prop `categories` do `ConsentProvider` (fonte única de verdade).
 
 O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automaticamente, disparando-os apenas quando o usuário concede consentimento para a categoria correspondente.
 
@@ -181,6 +181,15 @@ const discovered = discoverRuntimeCookies()
 // 2. Categoriza e registra no catálogo de cookies do modal
 categorizeDiscoveredCookies(discovered, true)
 ```
+
+---
+
+## 🧱 Nota SSR/Next.js (App Router)
+
+Para evitar hydration mismatch e vazamento de scripts:
+- Coloque o `ConsentProvider` dentro de um Client Component e carregue-o com `dynamic(..., { ssr: false })` a partir do `RootLayout` (Server Component).
+- Use o `ConsentScriptLoader` para carregar GTM/GA4 somente após consentimento e inicialize o Consent Mode v2 com `gtag('consent','default', denied)` antes de qualquer script.
+- Consulte a seção “SSR/Next.js (App Router) — Padrões seguros” em `QUICKSTART.md` para ordem dos provedores/estilos (MUI/Emotion) e checklist SSR.
 
 ---
 

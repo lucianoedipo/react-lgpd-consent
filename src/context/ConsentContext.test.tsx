@@ -1,7 +1,6 @@
-import React from 'react'
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'
-import { ConsentProvider, useConsent, type Category } from '../index'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import Cookies from 'js-cookie'
+import { ConsentProvider, useConsent, type Category } from '../index'
 import * as devGuidance from '../utils/developerGuidance'
 
 // Mock do js-cookie
@@ -94,7 +93,7 @@ describe('ConsentProvider', () => {
     expect(screen.getByTestId('marketing').textContent).toBe('false')
   })
 
-  it('deve aceitar todas as categorias ao clicar em "Accept All"', () => {
+  it('deve aceitar todas as categorias ao clicar em "Accept All"', async () => {
     act(() => {
       render(
         <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
@@ -103,8 +102,11 @@ describe('ConsentProvider', () => {
       )
     })
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText('Accept All'))
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
     })
 
     expect(screen.getByTestId('consented').textContent).toBe('true')

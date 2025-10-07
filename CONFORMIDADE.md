@@ -62,6 +62,28 @@ Para garantir a conformidade, especifique **apenas** as categorias de cookies qu
 </ConsentProvider>
 ```
 
+### Definição de Categorias (clareza e fonte única)
+
+- A categoria `necessary` é sempre presente e cobre cookies essenciais (autenticação, segurança, operação básica do site).
+- Categorias adicionais (`analytics`, `marketing`, `functional`, etc.) são opcionais e devem refletir apenas o que seu negócio realmente utiliza. Não habilite o que não usa.
+- A fonte única de verdade para categorias é a prop `categories` do `ConsentProvider`. A UI e as integrações usam exatamente essa definição. Não declare categorias em outros lugares.
+
+Exemplo mínimo (somente necessários):
+
+```tsx
+<ConsentProvider categories={{ enabledCategories: [] }}>
+  <App />
+</ConsentProvider>
+```
+
+Exemplo completo (site com analytics/marketing):
+
+```tsx
+<ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}>
+  <App />
+</ConsentProvider>
+```
+
 ### Hooks de Validação
 
 Para construir componentes de UI customizados que reagem à configuração, utilize os hooks:

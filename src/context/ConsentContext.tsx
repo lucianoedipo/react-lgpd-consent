@@ -36,6 +36,7 @@ import {
 } from '../hooks/useConsent'
 import { DEFAULT_PROJECT_CATEGORIES, useDeveloperGuidance } from '../utils/developerGuidance'
 import { logger } from '../utils/logger'
+import { validateConsentProviderProps } from '../utils/validation'
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
 
@@ -46,8 +47,14 @@ const PreferencesModal = React.lazy(() =>
   })),
 )
 
+// Lazy load do FloatingPreferencesButton para otimizar bundle inicial
+const FloatingPreferencesButton = React.lazy(() =>
+  import('../components/FloatingPreferencesButton').then((m) => ({
+    default: m.FloatingPreferencesButton,
+  })),
+)
+
 import { CookieBanner } from '../components/CookieBanner'
-import { FloatingPreferencesButton } from '../components/FloatingPreferencesButton'
 
 /**
  * Cria um estado completo de consentimento com todos os campos obrigatórios.
@@ -295,8 +302,22 @@ export function ConsentProvider({
 
   // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
-    if (categories) return categories
-    return DEFAULT_PROJECT_CATEGORIES // Fallback para o padrão
+    // Executa validação e sanitização em modo DEV; em produção apenas aplica fallback padrão
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (!categories) return DEFAULT_PROJECT_CATEGORIES
+    if (isProd) return categories
+    const { sanitized } = validateConsentProviderProps({ categories })
+    return sanitized.categories ?? categories
+  }, [categories])
+
+  // Aviso explícito em DEV quando categories não é fornecida
+  React.useEffect(() => {
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (!isProd && !categories) {
+      logger.warn(
+        "Prop 'categories' não fornecida. A lib aplicará um padrão seguro, mas recomenda-se definir 'categories.enabledCategories' explicitamente para clareza e auditoria.",
+      )
+    }
   }, [categories])
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
@@ -476,22 +497,24 @@ export function ConsentProvider({
                   ))}
 
                 {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
-                {state.consented &&
-                  !disableFloatingPreferencesButton &&
-                  (FloatingPreferencesButtonComponent ? (
-                    <FloatingPreferencesButtonComponent
-                      openPreferences={api.openPreferences}
-                      consented={api.consented}
-                      {...floatingPreferencesButtonProps}
-                    />
-                  ) : (
-                    // Encaminha `floatingPreferencesButtonProps` para o componente padrão
-                    <FloatingPreferencesButton
-                      {...((floatingPreferencesButtonProps ?? {}) as Partial<
-                        React.ComponentProps<typeof FloatingPreferencesButton>
-                      >)}
-                    />
-                  ))}
+                {state.consented && !disableFloatingPreferencesButton && (
+                  <React.Suspense fallback={null}>
+                    {FloatingPreferencesButtonComponent ? (
+                      <FloatingPreferencesButtonComponent
+                        openPreferences={api.openPreferences}
+                        consented={api.consented}
+                        {...floatingPreferencesButtonProps}
+                      />
+                    ) : (
+                      // Encaminha `floatingPreferencesButtonProps` para o componente padrão
+                      <FloatingPreferencesButton
+                        {...((floatingPreferencesButtonProps ?? {}) as Partial<
+                          React.ComponentProps<typeof FloatingPreferencesButton>
+                        >)}
+                      />
+                    )}
+                  </React.Suspense>
+                )}
               </CategoriesProvider>
             </DesignProvider>
           </HydrationCtx.Provider>

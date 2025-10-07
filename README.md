@@ -15,6 +15,12 @@
     <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>
   </div>
 
+  <div>
+    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>
+    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle Size"></a>
+    <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/react-lgpd-consent?style=for-the-badge&logo=node.js&logoColor=white" alt="Node Version"></a>
+  </div>
+
   <br />
 
   <p>
@@ -113,6 +119,7 @@ Para mais detalhes sobre customização, hooks e funcionalidades, consulte os se
 ### 📋 Documentação Principal
 
 - **[📚 Guia de Início Rápido (`QUICKSTART.md`)](./QUICKSTART.md)**: Tutorial passo a passo com exemplos práticos, tabela completa de props, debugging e integrações.
+  - Seção recomendada: “SSR/Next.js (App Router) — Padrões seguros” com boas práticas de `'use client'`, `dynamic({ ssr: false })` e ordem dos provedores/estilos (MUI/Emotion) para evitar hydration mismatch.
   - Novo na v0.4.0: suporte a `customCategories` — veja a seção “Categorias customizadas (customCategories)” no Quickstart.
   - Novo na v0.4.1: integrações nativas para Facebook Pixel, Hotjar, Mixpanel, Clarity, Intercom e Zendesk — veja o guia [INTEGRACOES.md](./INTEGRACOES.md).
   - Dica: use `designTokens.layout.backdrop: 'auto'` para backdrop sensível ao tema no banner bloqueante.

@@ -3,6 +3,7 @@ import type { FabProps } from '@mui/material/Fab'
 import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { useTheme } from '@mui/material/styles'
+import * as React from 'react'
 import { useDesignTokens } from '../context/DesignContext'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
 import { logger } from '../utils/logger'
@@ -68,10 +69,12 @@ export interface FloatingPreferencesButtonProps {
  * Você pode substituí-lo passando seu próprio componente para a prop `FloatingPreferencesButtonComponent`
  * no `ConsentProvider`.
  *
+ * Componente memoizado para otimizar performance - só re-renderiza quando props mudam.
+ *
  * @param {Readonly<FloatingPreferencesButtonProps>} props As propriedades para customizar o botão.
  * @returns {JSX.Element | null} O componente do botão flutuante ou `null` se não for necessário exibi-lo.
  */
-export function FloatingPreferencesButton({
+export const FloatingPreferencesButton = React.memo(function FloatingPreferencesButton({
   position = 'bottom-right',
   offset = 24,
   icon = <CookieOutlined />,
@@ -84,23 +87,8 @@ export function FloatingPreferencesButton({
   const safeTheme = useThemeWithFallbacks()
   const designTokens = useDesignTokens()
 
-  logger.componentRender('FloatingPreferencesButton', {
-    position,
-    offset,
-    hideWhenConsented,
-    consented,
-  })
-
-  if (hideWhenConsented && consented) {
-    logger.debug(
-      'FloatingPreferencesButton: Hidden due to hideWhenConsented=true and consented=true',
-    )
-    return null
-  }
-
-  const tooltipText = tooltip ?? texts.preferencesButton ?? 'Gerenciar Preferências de Cookies'
-
-  const getPosition = () => {
+  // Memoizar positionStyles ANTES de qualquer early return
+  const positionStyles = React.useMemo(() => {
     const styles: React.CSSProperties = {
       position: 'fixed',
       zIndex: 1200,
@@ -118,7 +106,23 @@ export function FloatingPreferencesButton({
       default:
         return { ...styles, bottom: offset, right: offset }
     }
+  }, [position, offset])
+
+  logger.componentRender('FloatingPreferencesButton', {
+    position,
+    offset,
+    hideWhenConsented,
+    consented,
+  })
+
+  if (hideWhenConsented && consented) {
+    logger.debug(
+      'FloatingPreferencesButton: Hidden due to hideWhenConsented=true and consented=true',
+    )
+    return null
   }
+
+  const tooltipText = tooltip ?? texts.preferencesButton ?? 'Gerenciar Preferências de Cookies'
 
   return (
     <Tooltip title={tooltipText} placement="top">
@@ -127,7 +131,7 @@ export function FloatingPreferencesButton({
         color="primary"
         onClick={openPreferences}
         sx={{
-          ...getPosition(),
+          ...positionStyles,
           backgroundColor: designTokens?.colors?.primary ?? safeTheme.palette.primary.main,
           '&:hover': {
             backgroundColor: designTokens?.colors?.primary
@@ -143,4 +147,4 @@ export function FloatingPreferencesButton({
       </Fab>
     </Tooltip>
   )
-}
+})

@@ -1,4 +1,3 @@
-import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -41,8 +40,16 @@ describe('PreferencesModal', () => {
       </ConsentProvider>,
     )
 
+    // Aguardar lazy loading do modal
+    await waitFor(
+      () => {
+        const title = document.getElementById('cookie-pref-title')
+        expect(title).toBeTruthy()
+      },
+      { timeout: 3000 },
+    )
+
     const title = document.getElementById('cookie-pref-title')
-    expect(title).toBeTruthy()
     const computedTitle = window.getComputedStyle(title as Element)
     expect(computedTitle.fontSize).toBe('18px')
 
