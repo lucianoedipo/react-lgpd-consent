@@ -4,6 +4,27 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.4.4] - 2025-10-06 — Correções de CI/CD e Publicação
+
+### 🔧 **Correções de CI/CD**
+
+- **Workflow de Publicação npm**: Corrigido bug que impedia publicação mesmo quando tag estava na `main`
+  - **Problema**: `git fetch --depth=1` limitava histórico e falhava verificação de ancestralidade
+  - **Solução**: Removido `--depth=1` do fetch, aproveitando `fetch-depth: 0` do checkout
+  - **Impacto**: Tags criadas após merge para `main` agora são publicadas corretamente no npm
+
+### 📊 **Integração com Codecov**
+
+- **Upload de Coverage**: Adicionado `codecov/codecov-action@v5` ao workflow CI
+  - Envia relatórios de cobertura automaticamente para Codecov
+  - Token configurado via `secrets.CODECOV_TOKEN`
+  - Integração com badge de coverage no README
+
+### 📚 **Documentação**
+
+- **Badges**: Badge de coverage já configurado no README (v0.4.3) agora recebe dados em tempo real
+- **Workflows**: Documentação inline sobre fetch depth e verificação de ancestralidade
+
 ## [0.4.3] - 2025-10-06 — Otimizações de Performance e Qualidade
 
 ### 🚀 **Melhorias de Performance**

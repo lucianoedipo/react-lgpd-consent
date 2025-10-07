@@ -76,10 +76,6 @@ jobs:
       - name: Bundle size check
         run: npm run size-check
       - name: Upload coverage reports to Codecov
-        if: github.event_name == 'pull_request'
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
-          file: ./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

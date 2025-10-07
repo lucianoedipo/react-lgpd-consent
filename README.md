@@ -52,6 +52,19 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-c
 
 ---
 
+## ✨ Novidades v0.4.4
+
+### 🔧 CI/CD e Publicação
+- **Workflow de Publicação**: Corrigido bug que impedia publicação automática no npm quando tags eram criadas após merge para `main`
+- **Codecov Integration**: Adicionado upload automático de coverage reports para melhor visualização de cobertura de testes
+- **Badge de Coverage**: Agora atualizado em tempo real via Codecov
+
+### 📊 Qualidade e Confiabilidade
+- **Publicação Confiável**: Tags agora são publicadas corretamente quando commit está no histórico da `main`
+- **Visibilidade de Cobertura**: Integração completa com Codecov para tracking de qualidade
+
+---
+
 ## ✨ Novidades v0.4.1
 
 ### 🎨 Design Tokens Expandidos
