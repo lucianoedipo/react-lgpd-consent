@@ -57,6 +57,7 @@
     "node": ">=20.0.0"
   },
   "packageManager": "npm@11.6.1",
+  "packageManager": "npm@11.6.1",
   "scripts": {
     "clean": "rimraf node_modules package-lock.json dist docs storybook-static .cache .stryker-tmp",
     "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
@@ -97,7 +98,7 @@
   },
   "dependencies": {
     "js-cookie": "^3.0.5",
-    "zod": "^4.1.11"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "4.1.1",
@@ -120,10 +121,10 @@
     "@types/jest": "30.0.0",
     "@types/js-cookie": "3.0.6",
     "@types/node": "24.7.0",
-    "@types/react": "19.2.0",
+    "@types/react": "19.2.1",
     "@types/react-dom": "19.2.0",
-    "@typescript-eslint/eslint-plugin": "8.45.0",
-    "@typescript-eslint/parser": "8.45.0",
+    "@typescript-eslint/eslint-plugin": "8.46.0",
+    "@typescript-eslint/parser": "8.46.0",
     "cross-env": "10.1.0",
     "eslint": "9.37.0",
     "eslint-config-prettier": "10.1.8",
@@ -144,7 +145,7 @@
     "tsup": "8.5.0",
     "typedoc": "0.28.13",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.45.0"
+    "typescript-eslint": "8.46.0"
   },
   "size-limit": [
     {
