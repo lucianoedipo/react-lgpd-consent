@@ -1,11 +1,11 @@
+import { act, render } from '@testing-library/react'
 import * as React from 'react'
-import { render, act } from '@testing-library/react'
-import { ConsentScriptLoader } from './ConsentScriptLoader'
 import { ConsentProvider } from '../context/ConsentContext'
-import { createGoogleAnalyticsIntegration } from './scriptIntegrations'
-import type { ScriptIntegration } from './scriptIntegrations'
 import { useConsent } from '../hooks/useConsent'
+import { ConsentScriptLoader } from './ConsentScriptLoader'
 import { logger } from './logger'
+import type { ScriptIntegration } from './scriptIntegrations'
+import { createGoogleAnalyticsIntegration } from './scriptIntegrations'
 
 jest.mock('./scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
@@ -93,19 +93,6 @@ describe('ConsentScriptLoader behavior', () => {
   })
 
   test('reloadOnChange toggles cause re-load when enabled, and not otherwise', async () => {
-    function Controls() {
-      const { setPreference } = useConsent()
-      ;(global as any).__toggle = async () => {
-        await act(async () => {
-          setPreference('analytics' as any, false)
-        })
-        await act(async () => {
-          setPreference('analytics' as any, true)
-        })
-      }
-      return null
-    }
-
     const initialState = {
       consented: true,
       isModalOpen: false,
@@ -122,36 +109,66 @@ describe('ConsentScriptLoader behavior', () => {
 
     // Case 1: reloadOnChange=false (default) => only initial load
     jest.clearAllMocks()
+    const setPreferenceRef1 = { current: null as any }
+    const Controls1 = () => {
+      const { setPreference } = useConsent()
+      React.useEffect(() => {
+        setPreferenceRef1.current = setPreference
+      }, [setPreference])
+      return null
+    }
+
     await act(async () => {
       render(
         <ConsentProvider
           categories={{ enabledCategories: ['analytics'] }}
           initialState={initialState as any}
         >
-          <Controls />
+          <Controls1 />
           <ConsentScriptLoader integrations={[integration]} />
         </ConsentProvider>,
       )
     })
     expect(loadScript).toHaveBeenCalledTimes(1)
-    await (global as any).__toggle()
+
+    await act(async () => {
+      setPreferenceRef1.current('analytics' as any, false)
+    })
+    await act(async () => {
+      setPreferenceRef1.current('analytics' as any, true)
+    })
     expect(loadScript).toHaveBeenCalledTimes(1)
 
     // Case 2: reloadOnChange=true => loads again when re-enabled
     jest.clearAllMocks()
+    const setPreferenceRef2 = { current: null as any }
+    const Controls2 = () => {
+      const { setPreference } = useConsent()
+      React.useEffect(() => {
+        setPreferenceRef2.current = setPreference
+      }, [setPreference])
+      return null
+    }
+
     await act(async () => {
       render(
         <ConsentProvider
           categories={{ enabledCategories: ['analytics'] }}
           initialState={initialState as any}
         >
-          <Controls />
+          <Controls2 />
           <ConsentScriptLoader integrations={[integration]} reloadOnChange />
         </ConsentProvider>,
       )
     })
     expect(loadScript).toHaveBeenCalledTimes(1)
-    await (global as any).__toggle()
+
+    await act(async () => {
+      setPreferenceRef2.current('analytics' as any, false)
+    })
+    await act(async () => {
+      setPreferenceRef2.current('analytics' as any, true)
+    })
     expect(loadScript).toHaveBeenCalledTimes(2)
   })
 })

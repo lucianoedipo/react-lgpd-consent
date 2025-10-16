@@ -9,7 +9,7 @@ import FormGroup from '@mui/material/FormGroup'
 import type { SxProps, Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 import { useCategories } from '../context/CategoriesContext'
 import { useDesignTokens } from '../context/DesignContext'
 import { useConsent, useConsentTexts } from '../hooks/useConsent'
@@ -64,32 +64,32 @@ export function PreferencesModal({
   const designTokens = useDesignTokens()
   const { toggleableCategories, allCategories } = useCategories() // Categorias que precisam de toggle + metadados
 
-  // Estado local para mudanças temporárias - INICIALIZADO com valores padrão
-  const [tempPreferences, setTempPreferences] = useState<ConsentPreferences>(() => {
-    // Inicializa com state atual ou valores padrão seguros
-    const initialPrefs: ConsentPreferences = { necessary: true }
-
-    // Para cada categoria que precisa de toggle, define valor inicial
+  // Função para gerar preferências sincronizadas com o contexto
+  const getInitialPreferences = React.useCallback((): ConsentPreferences => {
+    const syncedPrefs: ConsentPreferences = { necessary: true }
     toggleableCategories.forEach((category) => {
-      initialPrefs[category.id] = preferences[category.id] ?? false
+      syncedPrefs[category.id] = preferences[category.id] ?? false
     })
+    return syncedPrefs
+  }, [preferences, toggleableCategories])
 
-    return initialPrefs
-  })
+  // Estado local para mudanças temporárias
+  const [tempPreferences, setTempPreferences] =
+    React.useState<ConsentPreferences>(getInitialPreferences)
 
-  // Sincroniza estado local com contexto quando modal abre ou preferences mudam
-  useEffect(() => {
-    if (isModalOpen) {
-      const syncedPrefs: ConsentPreferences = { necessary: true }
+  // Resincroniza quando modal abre (transição de fechado para aberto)
+  const wasOpenRef = React.useRef(isModalOpen)
+  React.useEffect(() => {
+    const justOpened = isModalOpen && !wasOpenRef.current
+    wasOpenRef.current = isModalOpen
 
-      // Sincroniza apenas categorias ativas que precisam de toggle
-      toggleableCategories.forEach((category) => {
-        syncedPrefs[category.id] = preferences[category.id] ?? false
+    if (justOpened) {
+      // Usar queueMicrotask para adiar setState e evitar execução síncrona durante o effect
+      queueMicrotask(() => {
+        setTempPreferences(getInitialPreferences())
       })
-
-      setTempPreferences(syncedPrefs)
     }
-  }, [isModalOpen, preferences, toggleableCategories])
+  }, [isModalOpen, getInitialPreferences])
 
   // Se DialogProps.open for fornecido, usa ele. Senão, usa o estado do contexto
   const open = DialogProps?.open ?? isModalOpen ?? false

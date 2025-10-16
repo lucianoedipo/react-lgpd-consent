@@ -1,7 +1,7 @@
 // src/context/CategoriesContext.tsx
 import * as React from 'react'
 import type { ProjectCategoriesConfig } from '../types/types'
-import { discoverRuntimeCookies, detectConsentCookieName } from '../utils/cookieDiscovery'
+import { detectConsentCookieName, discoverRuntimeCookies } from '../utils/cookieDiscovery'
 import { DEFAULT_COOKIE_OPTS } from '../utils/cookieUtils'
 import {
   analyzeDeveloperConfiguration,
@@ -73,9 +73,8 @@ export function CategoriesProvider({
     return () => {}
   }, [])
 
-  // Nota sobre dependência: `impliedVersion` NÃO é usado dentro do callback,
-  // mas é intencionalmente incluído para reavaliar guidance quando integrações
-  // anunciam categorias requeridas via evento global.
+  // Força reavaliação quando integrações anunciam categorias requeridas via evento global
+  // impliedVersion é usado como trigger de recálculo
   const contextValue = React.useMemo(() => {
     const finalConfig: ProjectCategoriesConfig = config || DEFAULT_PROJECT_CATEGORIES
 
@@ -83,13 +82,16 @@ export function CategoriesProvider({
 
     const toggleableCategories = guidance.activeCategoriesInfo.filter((cat) => cat.uiRequired)
 
+    // Valida que impliedVersion está sendo usado (trigger de recálculo)
+    void impliedVersion
+
     return {
       config: finalConfig,
       guidance,
       toggleableCategories,
       allCategories: guidance.activeCategoriesInfo,
     }
-  }, [config, impliedVersion])  
+  }, [config, impliedVersion])
 
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
