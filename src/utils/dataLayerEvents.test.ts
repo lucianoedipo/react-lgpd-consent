@@ -7,7 +7,11 @@
  */
 
 import type { ConsentPreferences } from '../types/types'
-import { pushConsentInitializedEvent, pushConsentUpdatedEvent } from './dataLayerEvents'
+import {
+  pushConsentInitializedEvent,
+  pushConsentUpdatedEvent,
+  useDataLayerEvents,
+} from './dataLayerEvents'
 
 describe('dataLayerEvents', () => {
   let originalWindow: typeof global.window
@@ -83,6 +87,25 @@ describe('dataLayerEvents', () => {
       // @ts-ignore - test mock window object
       const event = global.window.dataLayer[0]
       expect(event.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/)
+    })
+
+    it('should use existing dataLayer if already present', () => {
+      // Pre-criar dataLayer com evento existente
+      const existingEvent = { event: 'custom_event', data: 'test' }
+      // @ts-ignore - test mock window object
+      global.window.dataLayer = [existingEvent]
+
+      const categories: ConsentPreferences = { necessary: true }
+      pushConsentInitializedEvent(categories)
+
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer).toHaveLength(2)
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer[0]).toBe(existingEvent)
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer[1]).toMatchObject({
+        event: 'consent_initialized',
+      })
     })
   })
 
@@ -210,6 +233,117 @@ describe('dataLayerEvents', () => {
       const categories: ConsentPreferences = { necessary: true }
 
       expect(() => pushConsentUpdatedEvent(categories, 'banner')).not.toThrow()
+    })
+
+    it('should handle empty changed_categories when no previousCategories provided', () => {
+      const categories: ConsentPreferences = {
+        necessary: true,
+        analytics: true,
+        marketing: true,
+      }
+
+      pushConsentUpdatedEvent(categories, 'modal')
+
+      // @ts-ignore - test mock window object
+      const dataLayer = global.window.dataLayer
+      // @ts-ignore - test mock window object
+      const event = dataLayer[dataLayer.length - 1]
+      expect(event).toMatchObject({
+        event: 'consent_updated',
+        changed_categories: [],
+      })
+    })
+
+    it('should preserve dataLayer if already exists', () => {
+      // Pre-criar dataLayer
+      const existingEvent = { event: 'page_view' }
+      // @ts-ignore - test mock window object
+      global.window.dataLayer = [existingEvent]
+
+      pushConsentUpdatedEvent({ necessary: true }, 'banner')
+
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer).toHaveLength(2)
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer[0]).toBe(existingEvent)
+    })
+  })
+
+  describe('useDataLayerEvents', () => {
+    afterEach(() => {
+      // Limpar window após cada teste deste describe
+      // @ts-ignore - test mock window object
+      if (global.window?.dataLayer) {
+        // @ts-ignore - test mock window object
+        global.window.dataLayer = []
+      }
+    })
+
+    it('should return helper functions', () => {
+      // Limpar dataLayer antes do teste
+      // @ts-ignore - test mock window object
+      if (global.window?.dataLayer) {
+        // @ts-ignore - test mock window object
+        global.window.dataLayer = []
+      }
+
+      const helpers = useDataLayerEvents()
+
+      expect(helpers).toHaveProperty('pushInitialized')
+      expect(helpers).toHaveProperty('pushUpdated')
+      expect(typeof helpers.pushInitialized).toBe('function')
+      expect(typeof helpers.pushUpdated).toBe('function')
+    })
+
+    it('pushInitialized should work correctly', () => {
+      // Limpar dataLayer antes do teste
+      // @ts-ignore - test mock window object
+      if (global.window?.dataLayer) {
+        // @ts-ignore - test mock window object
+        global.window.dataLayer = []
+      }
+
+      const helpers = useDataLayerEvents()
+      const categories: ConsentPreferences = { necessary: true }
+
+      helpers.pushInitialized(categories)
+
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer).toBeDefined()
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer).toHaveLength(1)
+      // @ts-ignore - test mock window object
+      const event = global.window.dataLayer[0]
+      expect(event).toMatchObject({
+        event: 'consent_initialized',
+        categories,
+      })
+    })
+
+    it('pushUpdated should work correctly', () => {
+      // Limpar dataLayer antes do teste
+      // @ts-ignore - test mock window object
+      if (global.window?.dataLayer) {
+        // @ts-ignore - test mock window object
+        global.window.dataLayer = []
+      }
+
+      const helpers = useDataLayerEvents()
+      const categories: ConsentPreferences = { necessary: true, analytics: true }
+
+      helpers.pushUpdated(categories, 'modal')
+
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer).toBeDefined()
+      // @ts-ignore - test mock window object
+      expect(global.window.dataLayer).toHaveLength(1)
+      // @ts-ignore - test mock window object
+      const event = global.window.dataLayer[0]
+      expect(event).toMatchObject({
+        event: 'consent_updated',
+        origin: 'modal',
+        categories,
+      })
     })
   })
 })

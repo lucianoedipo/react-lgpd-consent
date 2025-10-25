@@ -41,7 +41,7 @@ jobs:
         run: pnpm run build
       
       - name: Pack package
-        run: pnpm pack --json > pack.json
+        run: pnpm pack
       
-      - name: Exibir arquivos do tarball
-        run: node -e "console.log(JSON.parse(require('fs').readFileSync('pack.json','utf8'))[0].files.map(f=>f.path).join('\n'))"
+      - name: Exibir conteúdo do tarball
+        run: tar -tzf react-lgpd-consent-*.tgz | sort
