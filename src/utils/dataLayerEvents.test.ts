@@ -47,7 +47,7 @@ describe('dataLayerEvents', () => {
 
       expect(event).toMatchObject({
         event: 'consent_initialized',
-        consent_version: '0.4.5',
+        consent_version: '0.4.5-test',
         categories,
       })
       expect(event).toHaveProperty('timestamp')
@@ -106,7 +106,7 @@ describe('dataLayerEvents', () => {
 
       expect(event).toMatchObject({
         event: 'consent_updated',
-        consent_version: '0.4.5',
+        consent_version: '0.4.5-test',
         origin: 'banner',
         categories,
         changed_categories: [],

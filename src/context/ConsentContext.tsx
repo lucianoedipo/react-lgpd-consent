@@ -399,7 +399,7 @@ export function ConsentProvider({
   // Evento consent_updated: dispara quando preferências mudam
   React.useEffect(() => {
     // Não disparar na hidratação inicial
-    if (!isHydrated || !state.consented) return
+    if (!isHydrated) return
 
     // Verificar se houve mudança real nas preferências
     const hasChanged = Object.keys(state.preferences).some(
@@ -412,6 +412,7 @@ export function ConsentProvider({
       logger.info('DataLayer: consent_updated event dispatched', {
         origin,
         preferences: state.preferences,
+        consented: state.consented,
       })
       previousPreferencesRef.current = state.preferences
     }

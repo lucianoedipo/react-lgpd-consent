@@ -23,6 +23,7 @@ import type {
  * @internal
  */
 // Versão da biblioteca, injetada em build time via tsup.define (ver tsup.config.ts)
+declare const __LIBRARY_VERSION__: string
 const LIBRARY_VERSION = __LIBRARY_VERSION__
 
 /**
