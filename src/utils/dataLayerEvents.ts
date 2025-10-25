@@ -22,7 +22,8 @@ import type {
  * Versão da biblioteca (extraída do package.json em build time).
  * @internal
  */
-const LIBRARY_VERSION = '0.4.5' // TODO: substituir por import de package.json em build
+// Versão da biblioteca, injetada em build time via tsup.define (ver tsup.config.ts)
+const LIBRARY_VERSION = __LIBRARY_VERSION__
 
 /**
  * Declaração do tipo dataLayer para TypeScript.
