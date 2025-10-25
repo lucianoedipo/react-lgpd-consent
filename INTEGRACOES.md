@@ -209,7 +209,177 @@ interface ScriptIntegration {
 
 ---
 
-## 📊 Categorias Recomendadas
+## � Eventos DataLayer (Google Tag Manager)
+
+A partir da versão **0.4.5**, a biblioteca dispara automaticamente eventos padronizados no `dataLayer` para facilitar rastreamento, auditoria LGPD e integrações com o Google Tag Manager.
+
+### Eventos Disponíveis
+
+#### 1. `consent_initialized`
+
+Disparado quando o sistema de consentimento é inicializado (após hidratação).
+
+**Payload:**
+```typescript
+{
+  event: 'consent_initialized',
+  consent_version: '0.4.5',
+  timestamp: '2025-10-25T13:52:33.729Z',
+  categories: {
+    necessary: true,
+    analytics: false,
+    marketing: false
+  }
+}
+```
+
+**Exemplo de uso no GTM:**
+- **Tipo de acionador**: Evento personalizado
+- **Nome do evento**: `consent_initialized`
+- **Variáveis**: `{{categories.analytics}}`, `{{categories.marketing}}`, etc.
+
+#### 2. `consent_updated`
+
+Disparado sempre que o usuário atualiza suas preferências de consentimento.
+
+**Payload:**
+```typescript
+{
+  event: 'consent_updated',
+  consent_version: '0.4.5',
+  timestamp: '2025-10-25T13:52:33.729Z',
+  origin: 'modal', // 'banner' | 'modal' | 'reset' | 'programmatic'
+  categories: {
+    necessary: true,
+    analytics: true,
+    marketing: false
+  },
+  changed_categories: ['analytics']
+}
+```
+
+**Exemplo de uso no GTM:**
+- **Tipo de acionador**: Evento personalizado
+- **Nome do evento**: `consent_updated`
+- **Condição**: `{{changed_categories}}` contém `analytics`
+- **Ação**: Disparar Google Analytics 4
+
+### Configuração no Google Tag Manager
+
+#### Passo 1: Criar Variáveis de DataLayer
+
+No GTM, crie as seguintes variáveis de camada de dados:
+
+1. **DLV - Consent Categories**
+   - Tipo: Variável da camada de dados
+   - Nome: `categories`
+
+2. **DLV - Consent Origin**
+   - Tipo: Variável da camada de dados
+   - Nome: `origin`
+
+3. **DLV - Changed Categories**
+   - Tipo: Variável da camada de dados
+   - Nome: `changed_categories`
+
+#### Passo 2: Criar Acionadores
+
+1. **Acionador: Consent Initialized**
+   - Tipo: Evento personalizado
+   - Nome do evento: `consent_initialized`
+
+2. **Acionador: Consent Updated - Analytics Accepted**
+   - Tipo: Evento personalizado
+   - Nome do evento: `consent_updated`
+   - Este acionador é acionado em: Alguns eventos personalizados
+   - Condição: `{{DLV - Consent Categories}}.analytics` igual a `true`
+
+#### Passo 3: Criar Tags
+
+1. **Tag: Google Analytics 4 (condicionada ao consentimento)**
+   - Tipo: Google Analytics: Configuração do GA4
+   - ID de medição: `G-XXXXXXXXXX`
+   - Acionador: `Consent Updated - Analytics Accepted`
+
+### Exemplo: Auditoria LGPD
+
+Crie uma tag para registrar mudanças de consentimento em um sistema de auditoria:
+
+```javascript
+// Tag HTML customizada no GTM
+<script>
+(function() {
+  var auditData = {
+    timestamp: {{DLV - timestamp}},
+    origin: {{DLV - Consent Origin}},
+    categories: {{DLV - Consent Categories}},
+    changed: {{DLV - Changed Categories}}
+  };
+  
+  // Enviar para seu sistema de auditoria
+  fetch('/api/consent-audit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(auditData)
+  });
+})();
+</script>
+```
+
+### API Programática
+
+Para casos avançados, você pode disparar eventos manualmente:
+
+```typescript
+import { pushConsentUpdatedEvent } from 'react-lgpd-consent'
+
+// Disparar evento após mudança programática
+const handleCustomUpdate = () => {
+  const newPreferences = {
+    necessary: true,
+    analytics: true,
+    marketing: false
+  }
+  
+  pushConsentUpdatedEvent(newPreferences, 'programmatic')
+}
+```
+
+### Tipos TypeScript
+
+```typescript
+import type {
+  ConsentEvent,
+  ConsentEventOrigin,
+  ConsentInitializedEvent,
+  ConsentUpdatedEvent
+} from 'react-lgpd-consent'
+
+// Origem da ação
+type ConsentEventOrigin = 'banner' | 'modal' | 'reset' | 'programmatic'
+
+// Evento de inicialização
+interface ConsentInitializedEvent {
+  event: 'consent_initialized'
+  consent_version: string
+  timestamp: string
+  categories: Record<string, boolean>
+}
+
+// Evento de atualização
+interface ConsentUpdatedEvent {
+  event: 'consent_updated'
+  consent_version: string
+  timestamp: string
+  origin: ConsentEventOrigin
+  categories: Record<string, boolean>
+  changed_categories: string[]
+}
+```
+
+---
+
+## �📊 Categorias Recomendadas
 
 | Ferramenta         | Categoria Recomendada | Justificativa                    |
 | ------------------ | --------------------- | -------------------------------- |
@@ -220,3 +390,4 @@ interface ScriptIntegration {
 | UserWay/AccessiBe  | `functional`          | Funcionalidade de acessibilidade |
 | Live Chat          | `functional`          | Funcionalidade de suporte        |
 | YouTube/Vimeo      | `social`              | Conteúdo de redes sociais        |
+

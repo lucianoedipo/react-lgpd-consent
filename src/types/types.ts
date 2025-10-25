@@ -1394,3 +1394,116 @@ export interface ConsentContextValue {
   /** Reseta o consentimento do usuário. */
   resetConsent: () => void
 }
+
+/**
+ * Origem da ação de consentimento que gerou um evento.
+ * @category Types
+ * @since 0.4.5
+ *
+ * @remarks
+ * Utilizado para rastrear a origem da ação de consentimento nos eventos do dataLayer.
+ *
+ * - `'banner'`: Ação realizada através do banner de cookies.
+ * - `'modal'`: Ação realizada através do modal de preferências.
+ * - `'reset'`: Ação de reset de consentimento.
+ * - `'programmatic'`: Ação realizada programaticamente via API.
+ *
+ * @example
+ * ```typescript
+ * const origin: ConsentEventOrigin = 'banner';
+ * ```
+ *
+ * @public
+ */
+export type ConsentEventOrigin = 'banner' | 'modal' | 'reset' | 'programmatic'
+
+/**
+ * Payload do evento `consent_initialized` disparado no dataLayer.
+ * @category Types
+ * @since 0.4.5
+ *
+ * @remarks
+ * Este evento é disparado quando o sistema de consentimento é inicializado.
+ * Útil para rastreamento de primeira visualização e auditoria LGPD.
+ *
+ * @example
+ * ```typescript
+ * // Exemplo de evento no dataLayer
+ * window.dataLayer.push({
+ *   event: 'consent_initialized',
+ *   consent_version: '0.4.5',
+ *   timestamp: '2025-10-25T13:52:33.729Z',
+ *   categories: {
+ *     necessary: true,
+ *     analytics: false,
+ *     marketing: false
+ *   }
+ * });
+ * ```
+ *
+ * @public
+ */
+export interface ConsentInitializedEvent {
+  /** Nome do evento (sempre 'consent_initialized') */
+  event: 'consent_initialized'
+  /** Versão da biblioteca react-lgpd-consent */
+  consent_version: string
+  /** Timestamp ISO 8601 da inicialização */
+  timestamp: string
+  /** Estado inicial das categorias de consentimento */
+  categories: Record<string, boolean>
+}
+
+/**
+ * Payload do evento `consent_updated` disparado no dataLayer.
+ * @category Types
+ * @since 0.4.5
+ *
+ * @remarks
+ * Este evento é disparado sempre que o usuário atualiza suas preferências de consentimento.
+ * Útil para rastreamento, auditoria LGPD e integrações com GTM.
+ *
+ * @example
+ * ```typescript
+ * // Exemplo de evento no dataLayer após aceitar analytics
+ * window.dataLayer.push({
+ *   event: 'consent_updated',
+ *   consent_version: '0.4.5',
+ *   timestamp: '2025-10-25T13:52:33.729Z',
+ *   origin: 'modal',
+ *   categories: {
+ *     necessary: true,
+ *     analytics: true,
+ *     marketing: false
+ *   },
+ *   changed_categories: ['analytics']
+ * });
+ * ```
+ *
+ * @see {@link ConsentEventOrigin} para valores possíveis de `origin`
+ * @public
+ */
+export interface ConsentUpdatedEvent {
+  /** Nome do evento (sempre 'consent_updated') */
+  event: 'consent_updated'
+  /** Versão da biblioteca react-lgpd-consent */
+  consent_version: string
+  /** Timestamp ISO 8601 da atualização */
+  timestamp: string
+  /** Origem da ação que gerou a atualização */
+  origin: ConsentEventOrigin
+  /** Estado atualizado das categorias de consentimento */
+  categories: Record<string, boolean>
+  /** Lista de categorias que foram modificadas nesta atualização */
+  changed_categories: string[]
+}
+
+/**
+ * União de todos os tipos de eventos de consentimento.
+ * @category Types
+ * @since 0.4.5
+ *
+ * @public
+ */
+export type ConsentEvent = ConsentInitializedEvent | ConsentUpdatedEvent
+

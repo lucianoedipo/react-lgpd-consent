@@ -4,6 +4,78 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.4.5] - 2025-10-25 — DataLayer Events e CI/CD
+
+### 📊 **DataLayer Events para Google Tag Manager**
+
+- **Eventos Padronizados**: Implementado contrato de eventos `consent_initialized` e `consent_updated` no `window.dataLayer`
+  - `consent_initialized`: Disparado após hidratação inicial do `ConsentProvider`
+  - `consent_updated`: Disparado quando usuário altera preferências via banner, modal ou API
+  - Payload inclui: `event`, `consent_version`, `timestamp` (ISO 8601), `categories`, `origin`, `changed_categories`
+  
+- **Rastreamento de Origem**: Campo `origin` identifica fonte da mudança de consentimento
+  - `'banner'`: Decisão feita no CookieBanner
+  - `'modal'`: Ajuste feito no PreferencesModal
+  - `'reset'`: Reset programático via API
+  - `'programmatic'`: Mudança via `setPreference()` ou `acceptAll()`
+
+- **API Pública**: Novas funções exportadas para uso customizado
+  - `pushConsentInitializedEvent(categories: ConsentPreferences)`
+  - `pushConsentUpdatedEvent(categories: ConsentPreferences, origin: ConsentEventOrigin, previousCategories?: ConsentPreferences)`
+  - Tipos: `ConsentEventOrigin`, `ConsentInitializedEvent`, `ConsentUpdatedEvent`, `ConsentEvent`
+
+- **Integração Automática**: Eventos disparados automaticamente pelo `ConsentContext`
+  - Ref `previousPreferencesRef` rastreia estado anterior para calcular `changed_categories`
+  - Logger integrado para debug de eventos em desenvolvimento
+  - SSR-safe: não quebra quando `window` é undefined
+
+- **Documentação GTM**: Seção completa adicionada em `INTEGRACOES.md`
+  - Schemas dos eventos com exemplos
+  - Passo a passo de configuração do Google Tag Manager
+  - Exemplos TypeScript de triggers e tags customizados
+  - Casos de uso: auditoria LGPD, análise de conversão, triggers condicionais
+
+### 🔧 **CI/CD e Build**
+
+- **Migração para pnpm**: Workflows atualizados de npm para pnpm
+  - `ci.yml`: Adicionado `pnpm/action-setup@v4`, substituído `npm ci` por `pnpm install --frozen-lockfile`
+  - `package-check.yml`: Migrado para pnpm
+  - `publish-github-packages.yml`: Migrado para pnpm
+  - `deploy-docs.yml`: Migrado para pnpm
+  - **Problema Resolvido**: Conflitos `ERESOLVE` com `@eslint/js` eliminados
+  - `.gitignore`: Adicionado `package-lock.json` para evitar conflitos
+
+- **Dependências**: Adicionado `@eslint/js@9.38.0` para resolver missing dependency error
+
+### 🧪 **Testes**
+
+- **dataLayerEvents.test.ts**: 10 novos testes cobrindo eventos dataLayer
+  - Push de eventos `consent_initialized` e `consent_updated`
+  - Cálculo correto de `changed_categories`
+  - Diferentes origens (banner, modal, reset, programmatic)
+  - Inicialização do dataLayer se não existir
+  - SSR-safety (não quebra quando window é undefined)
+  - Formato ISO 8601 de timestamps
+  - **Solução de Isolamento**: Testes usam estratégia de "pegar último evento" para evitar acúmulo entre testes
+
+### 📚 **Documentação**
+
+- **INTEGRACOES.md**: Nova seção "Eventos dataLayer (Google Tag Manager)" com 200+ linhas
+- **README.md**: Seção "Novidades v0.4.5" com resumo de features
+- **README.en.md**: Tradução da seção "What's New in v0.4.5"
+- **tsconfig.typedoc.json**: Corrigido para excluir `*.test.ts` (além de `*.test.tsx`)
+- **API Pública**: Exportações documentadas com TSDoc completo
+
+### 📦 **Build**
+
+- **Versão**: Bump de `0.4.4` → `0.4.5`
+- **Tamanho**: Build otimizado mantém tree-shaking e SSR-safety
+  - ESM: `dist/index.js` ~32.59 KB
+  - CJS: `dist/index.cjs` ~38.17 KB
+  - Types: `dist/index.d.ts` ~132.13 KB
+
+---
+
 ## [0.4.4] - 2025-10-06 — Correções de CI/CD e Publicação
 
 ### 🔧 **Correções de CI/CD**

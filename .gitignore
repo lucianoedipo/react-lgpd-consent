@@ -1,6 +1,7 @@
 # ---- Node / package artifacts ----
 node_modules/
 react-lgpd-consent-*.tgz
+package-lock.json
 
 # ---- Build output / distributables ----
 dist/
@@ -26,7 +27,3 @@ GEMINI.md
 .DS_Store
 .vscode/
 *.log
-
-# Ensure lockfile is tracked (required by CI)
-!package-lock.json
-AGENTS.md

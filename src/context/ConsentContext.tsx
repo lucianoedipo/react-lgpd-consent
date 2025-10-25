@@ -28,6 +28,7 @@ import {
   removeConsentCookie,
   writeConsentCookie,
 } from '../utils/cookieUtils'
+import { pushConsentInitializedEvent, pushConsentUpdatedEvent } from '../utils/dataLayerEvents'
 // Intentionally do not create a default theme at module scope. If consumers
 // need a default theme, they can call createDefaultConsentTheme() from the utils.
 import {
@@ -349,6 +350,9 @@ export function ConsentProvider({
   const [state, dispatch] = React.useReducer(reducer, boot)
   const [isHydrated, setIsHydrated] = React.useState(false)
 
+  // Ref para rastrear estado anterior (para detectar mudanças de preferências)
+  const previousPreferencesRef = React.useRef<ConsentPreferences>(state.preferences)
+
   // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
     // Executa apenas se não houver initialState (para permitir controle externo)
@@ -366,6 +370,17 @@ export function ConsentProvider({
     setIsHydrated(true)
   }, [cookie.name, initialState, finalCategoriesConfig]) // Executa apenas uma vez após mount
 
+  // Evento consent_initialized: dispara após hidratação inicial
+  React.useEffect(() => {
+    if (isHydrated) {
+      pushConsentInitializedEvent(state.preferences)
+      logger.info('DataLayer: consent_initialized event dispatched', {
+        preferences: state.preferences,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- state.preferences intencionalmente rastreado via isHydrated
+  }, [isHydrated]) // Dispara apenas uma vez após hidratação
+
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
     if (state.consented) writeConsentCookie(state, finalCategoriesConfig, cookie)
@@ -380,6 +395,27 @@ export function ConsentProvider({
     }
     prevConsented.current = state.consented
   }, [state, onConsentGiven])
+
+  // Evento consent_updated: dispara quando preferências mudam
+  React.useEffect(() => {
+    // Não disparar na hidratação inicial
+    if (!isHydrated || !state.consented) return
+
+    // Verificar se houve mudança real nas preferências
+    const hasChanged = Object.keys(state.preferences).some(
+      (key) => state.preferences[key] !== previousPreferencesRef.current[key],
+    )
+
+    if (hasChanged) {
+      const origin = state.source === 'programmatic' ? 'reset' : state.source
+      pushConsentUpdatedEvent(state.preferences, origin, previousPreferencesRef.current)
+      logger.info('DataLayer: consent_updated event dispatched', {
+        origin,
+        preferences: state.preferences,
+      })
+      previousPreferencesRef.current = state.preferences
+    }
+  }, [state.preferences, state.consented, state.source, isHydrated])
 
   const api = React.useMemo<ConsentContextValue>(() => {
     const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
