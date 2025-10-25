@@ -368,4 +368,71 @@ describe('ConsentProvider Additional Tests', () => {
   })
 
   // Teste removido: Custom categories foram descontinuadas na v0.3.0+
+
+  describe('DataLayer events after reset', () => {
+    it('deve disparar consent_updated após resetConsent', async () => {
+      // Mockar Cookies.get para retornar undefined (sem cookie salvo)
+      ;(Cookies.get as jest.Mock).mockReturnValue(undefined)
+
+      // Mock do window.dataLayer
+      const mockDataLayer: Array<Record<string, unknown>> = []
+      // @ts-ignore - test mock
+      global.window.dataLayer = mockDataLayer
+
+      render(
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+          <TestComponentExtended />
+        </ConsentProvider>,
+      )
+
+      // Aguardar hidratação - deve iniciar com consented: false (sem cookie salvo)
+      await waitFor(() => {
+        expect(screen.getByTestId('analytics').textContent).toBe('false')
+      })
+
+      // Limpar dataLayer inicial
+      mockDataLayer.length = 0
+
+      // Aceitar todas as categorias
+      fireEvent.click(screen.getByText('Accept All'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
+
+      // Verificar que consent_updated foi disparado
+      const acceptEvent = mockDataLayer.find((e) => e.event === 'consent_updated')
+      expect(acceptEvent).toBeDefined()
+
+      // Limpar novamente
+      mockDataLayer.length = 0
+
+      // Executar reset
+      fireEvent.click(screen.getByText('Reset Consent'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('false')
+      })
+
+      // Verificar que consent_updated foi disparado após reset
+      const resetEvent = mockDataLayer.find((e) => e.event === 'consent_updated')
+      expect(resetEvent).toBeDefined()
+      expect(resetEvent?.origin).toBe('reset')
+
+      // Limpar novamente
+      mockDataLayer.length = 0
+
+      // Aceitar novamente após reset
+      fireEvent.click(screen.getByText('Accept All'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
+
+      // Verificar que consent_updated foi disparado após accept
+      const postResetAcceptEvent = mockDataLayer.find((e) => e.event === 'consent_updated')
+      expect(postResetAcceptEvent).toBeDefined()
+      expect(postResetAcceptEvent?.origin).toBe('banner')
+    })
+  })
 })

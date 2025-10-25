@@ -138,6 +138,7 @@ export { ConsentScriptLoader, useConsentScriptLoader } from './utils/ConsentScri
  */
 export {
   COMMON_INTEGRATIONS,
+  INTEGRATION_TEMPLATES,
   createClarityIntegration,
   createCorporateIntegrations,
   createECommerceIntegrations,
@@ -150,7 +151,6 @@ export {
   createSaaSIntegrations,
   createUserWayIntegration,
   createZendeskChatIntegration,
-  INTEGRATION_TEMPLATES,
   suggestCategoryForScript,
   type ClarityConfig,
   type CorporateConfig,
@@ -229,7 +229,7 @@ export type { AdvancedConsentTexts } from './types/advancedTexts'
  * @since 0.4.1
  * @category Utils
  */
-export { EXPANDED_DEFAULT_TEXTS, resolveTexts, TEXT_TEMPLATES } from './types/advancedTexts'
+export { EXPANDED_DEFAULT_TEXTS, TEXT_TEMPLATES, resolveTexts } from './types/advancedTexts'
 
 /**
  * Tipos para o sistema de auto-configuração de categorias.
@@ -265,9 +265,9 @@ export type { CategoriesContextValue } from './context/CategoriesContext'
  * @since 0.4.1
  */
 export {
-  analyzeDeveloperConfiguration,
   DEFAULT_PROJECT_CATEGORIES,
   GUIDANCE_PRESETS,
+  analyzeDeveloperConfiguration,
   logDeveloperGuidance,
   useDeveloperGuidance,
 } from './utils/developerGuidance'
@@ -354,3 +354,27 @@ export {
   getAllProjectCategories,
   validateProjectPreferences,
 } from './utils/categoryUtils'
+
+/**
+ * Utilitários para disparar eventos de consentimento no dataLayer (GTM).
+ * @category Utils
+ * @since 0.4.5
+ */
+export {
+  pushConsentInitializedEvent,
+  pushConsentUpdatedEvent,
+  useDataLayerEvents,
+} from './utils/dataLayerEvents'
+
+/**
+ * Tipos de eventos de consentimento para dataLayer (GTM).
+ * @category Types
+ * @since 0.4.5
+ */
+export type {
+  ConsentEvent,
+  ConsentEventOrigin,
+  ConsentInitializedEvent,
+  ConsentUpdatedEvent,
+} from './types/types'
+

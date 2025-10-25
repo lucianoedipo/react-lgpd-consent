@@ -52,6 +52,21 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-c
 
 ---
 
+## ✨ Novidades v0.4.5
+
+### 📊 DataLayer Events para Google Tag Manager
+- **Eventos Padronizados**: `consent_initialized` e `consent_updated` disparados automaticamente
+- **Rastreamento de Origem**: Identifica se decisão veio do banner, modal, reset ou API programática
+- **Auditoria LGPD**: Histórico completo de mudanças com `changed_categories` e timestamps ISO 8601
+- **Integração GTM**: Documentação completa com exemplos de triggers e tags
+- **API Pública**: Funções `pushConsentInitializedEvent` e `pushConsentUpdatedEvent` exportadas
+
+### 🔧 Melhorias de CI/CD
+- **Migração para pnpm**: Workflows atualizados de npm para pnpm, resolvendo conflitos de dependências
+- **Build Otimizado**: Pipeline mais rápido e confiável
+
+---
+
 ## ✨ Novidades v0.4.4
 
 ### 🔧 CI/CD e Publicação
