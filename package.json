@@ -1,105 +1,30 @@
 {
-  "name": "react-lgpd-consent",
-  "version": "0.4.5",
-  "description": "Biblioteca de consentimento LGPD, integrações nativas e sistema extensível para React.",
-  "keywords": [
-    "lgpd",
-    "anpd",
-    "cookie",
-    "consent",
-    "react",
-    "typescript",
-    "js-cookie",
-    "consentimento",
-    "privacidade",
-    "acessibilidade",
-    "google-analytics",
-    "userway"
-  ],
-  "publishConfig": {
-    "access": "public"
-  },
-  "author": {
-    "name": "Luciano Édipo",
-    "email": "luciano.psilva@anpd.gov.br",
-    "url": "https://github.com/lucianoedipo"
-  },
-  "license": "MIT",
-  "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./integrations": {
-      "types": "./dist/utils/scriptIntegrations.d.ts",
-      "import": "./dist/utils/scriptIntegrations.js",
-      "require": "./dist/utils/scriptIntegrations.cjs"
-    },
-    "./package.json": "./package.json"
-  },
-  "sideEffects": [
-    "dist/chunk-*.js",
-    "dist/chunk-*.cjs"
-  ],
-  "files": [
-    "dist",
-    "README.md",
-    "README.en.md",
-    "QUICKSTART.md",
-    "QUICKSTART.en.md",
-    "LICENSE",
-    "CHANGELOG.md"
-  ],
+  "name": "@react-lgpd-consent/workspace",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Workspace PNPM para os pacotes react-lgpd-consent.",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "clean": "rimraf node_modules package-lock.json dist docs storybook-static .cache .stryker-tmp",
-    "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
-    "lint": "eslint \"**/*.{ts,tsx}\" --cache",
-    "lint:ci": "eslint \"**/*.{ts,tsx}\" --cache --max-warnings=0",
-    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\" \"eslint.config.js\"",
-    "type-check": "tsc --noEmit",
-    "test": "jest --config jest.config.ts",
-    "test:a11y": "jest --config jest.config.ts --testMatch='**/*.a11y.test.tsx'",
-    "test:coverage": "jest --config jest.config.ts --coverage",
-    "coverage-check": "node scripts/coverage-check.cjs",
-    "size-check": "size-limit",
-    "mutation": "npx stryker run",
-    "mutation:tests": "npx stryker run ./stryker.tests.conf.json",
-    "prepublishOnly": "npm run build",
-    "docs:generate": "typedoc --out docs",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lucianoedipo/react-lgpd-consent.git"
-  },
-  "bugs": {
-    "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
-  },
-  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/",
-  "peerDependencies": {
-    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
-    "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
-    "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@mui/icons-material": {
-      "optional": true
-    }
-  },
-  "dependencies": {
-    "js-cookie": "^3.0.5",
-    "zod": "^4.1.12"
+    "clean": "pnpm -r run clean",
+    "build": "pnpm -r run build",
+    "dev": "pnpm --filter react-lgpd-consent dev",
+    "lint": "pnpm -r run lint",
+    "lint:ci": "pnpm -r run lint:ci",
+    "format": "pnpm -r run format",
+    "type-check": "pnpm -r run type-check",
+    "test": "pnpm -r run test",
+    "test:a11y": "pnpm --filter react-lgpd-consent test:a11y",
+    "test:coverage": "pnpm --filter react-lgpd-consent test:coverage",
+    "coverage-check": "pnpm --filter react-lgpd-consent coverage-check",
+    "size-check": "pnpm --filter react-lgpd-consent size-check",
+    "mutation": "pnpm --filter react-lgpd-consent mutation",
+    "mutation:tests": "pnpm --filter react-lgpd-consent mutation:tests",
+    "prepublishOnly": "pnpm --filter react-lgpd-consent prepublishOnly",
+    "docs:generate": "pnpm --filter react-lgpd-consent docs:generate",
+    "storybook": "pnpm --filter react-lgpd-consent storybook",
+    "build-storybook": "pnpm --filter react-lgpd-consent build-storybook"
   },
   "devDependencies": {
     "@axe-core/react": "^4.11.0",
@@ -151,28 +76,5 @@
     "typedoc": "0.28.14",
     "typescript": "5.9.3",
     "typescript-eslint": "8.46.2"
-  },
-  "size-limit": [
-    {
-      "name": "ESM Bundle",
-      "path": "dist/index.js",
-      "limit": "34 KB"
-    },
-    {
-      "name": "CJS Bundle",
-      "path": "dist/index.cjs",
-      "limit": "120 KB"
-    },
-    {
-      "name": "Types",
-      "path": "dist/index.d.ts",
-      "limit": "130 KB"
-    },
-    {
-      "name": "Complete Package Import",
-      "path": "dist/index.js",
-      "import": "{ ConsentProvider, useConsent, ConsentScriptLoader }",
-      "limit": "15 KB"
-    }
-  ]
+  }
 }

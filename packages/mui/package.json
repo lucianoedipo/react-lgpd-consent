@@ -1,0 +1,56 @@
+{
+  "name": "@react-lgpd-consent/mui",
+  "version": "0.5.0",
+  "description": "Camada de componentes Material-UI para react-lgpd-consent.",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --cache",
+    "lint:ci": "eslint \"src/**/*.{ts,tsx}\" --cache --max-warnings=0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "test": "jest --config ../../jest.config.ts"
+  },
+  "peerDependencies": {
+    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mui/icons-material": {
+      "optional": true
+    },
+    "@mui/material": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@react-lgpd-consent/core": "workspace:^0.5.0"
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "name": "@react-lgpd-consent/core",
+  "version": "0.5.0",
+  "description": "Núcleo da biblioteca de consentimento LGPD para React (estado, hooks e utilitários).",
+  "keywords": [
+    "lgpd",
+    "consent",
+    "react",
+    "typescript",
+    "cookies"
+  ],
+  "author": {
+    "name": "Luciano Édipo",
+    "email": "luciano.psilva@anpd.gov.br",
+    "url": "https://github.com/lucianoedipo"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --cache",
+    "lint:ci": "eslint \"src/**/*.{ts,tsx}\" --cache --max-warnings=0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "test": "jest --config ../../jest.config.ts",
+    "docs:generate": "echo \"No docs generation for core yet\""
+  },
+  "peerDependencies": {
+    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mui/icons-material": {
+      "optional": true
+    },
+    "@mui/material": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "js-cookie": "^3.0.5",
+    "zod": "^4.1.12"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucianoedipo/react-lgpd-consent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
+  },
+  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/"
+}

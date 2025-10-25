@@ -4,14 +4,11 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "declaration": true,
-    "outDir": "dist",
     "moduleResolution": "bundler",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
     "strict": true,
     "resolveJsonModule": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["dist", "scripts", "coverage", "storybook-static", "node_modules"]
+  }
 }

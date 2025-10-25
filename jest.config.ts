@@ -7,9 +7,11 @@ const config: Config = {
   maxWorkers: '50%',
   testTimeout: 30000,
   workerIdleMemoryLimit: '512MB',
-  roots: ['<rootDir>/src'],
+  roots: ['<rootDir>/packages/core/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  transform: { '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'tsconfig.json' }] },
+  transform: {
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'packages/core/tsconfig.json' }],
+  },
   // Use an early setup file to silence console output during module collection,
   // and keep the regular setup for testing-library and Jest helpers.
   setupFiles: ['<rootDir>/jest.console-setup.ts'],
@@ -18,11 +20,11 @@ const config: Config = {
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
   // Coverage configuration
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.stories.{ts,tsx}',
-    '!src/**/*.test.{ts,tsx}',
-    '!src/**/*.spec.{ts,tsx}',
-    '!src/@types/**',
+    'packages/core/src/**/*.{ts,tsx}',
+    '!packages/core/src/**/*.stories.{ts,tsx}',
+    '!packages/core/src/**/*.test.{ts,tsx}',
+    '!packages/core/src/**/*.spec.{ts,tsx}',
+    '!packages/core/src/@types/**',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'json-summary', 'html'],

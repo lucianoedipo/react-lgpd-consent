@@ -1,0 +1,140 @@
+{
+  "name": "react-lgpd-consent",
+  "version": "0.5.0",
+  "description": "Biblioteca de consentimento LGPD, integrações nativas e sistema extensível para React.",
+  "keywords": [
+    "lgpd",
+    "anpd",
+    "cookie",
+    "consent",
+    "react",
+    "typescript",
+    "js-cookie",
+    "consentimento",
+    "privacidade",
+    "acessibilidade",
+    "google-analytics",
+    "userway"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "author": {
+    "name": "Luciano Édipo",
+    "email": "luciano.psilva@anpd.gov.br",
+    "url": "https://github.com/lucianoedipo"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./core": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js",
+      "require": "./dist/core.cjs"
+    },
+    "./mui": {
+      "types": "./dist/mui.d.ts",
+      "import": "./dist/mui.js",
+      "require": "./dist/mui.cjs"
+    },
+    "./integrations": {
+      "types": "@react-lgpd-consent/core/dist/utils/scriptIntegrations.d.ts",
+      "import": "@react-lgpd-consent/core/dist/utils/scriptIntegrations.js",
+      "require": "@react-lgpd-consent/core/dist/utils/scriptIntegrations.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": [
+    "dist/chunk-*.js",
+    "dist/chunk-*.cjs"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "README.en.md",
+    "QUICKSTART.md",
+    "QUICKSTART.en.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "clean": "rimraf dist",
+    "build": "cross-env NODE_ENV=production tsup src/index.ts src/core.ts src/mui.ts --format esm,cjs --dts --clean",
+    "dev": "cross-env NODE_ENV=development tsup src/index.ts src/core.ts src/mui.ts --format esm,cjs --dts --watch",
+    "lint": "eslint \"src/**/*.{ts,tsx}\" --cache",
+    "lint:ci": "eslint \"src/**/*.{ts,tsx}\" --cache --max-warnings=0",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "test": "jest --config ../../jest.config.ts",
+    "test:a11y": "jest --config ../../jest.config.ts --testMatch='**/*.a11y.test.tsx'",
+    "test:coverage": "jest --config ../../jest.config.ts --coverage",
+    "coverage-check": "node ../../scripts/coverage-check.cjs",
+    "size-check": "size-limit",
+    "mutation": "npx stryker run",
+    "mutation:tests": "npx stryker run ../../stryker.tests.conf.json",
+    "prepublishOnly": "pnpm run build",
+    "docs:generate": "typedoc --out ../../docs",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucianoedipo/react-lgpd-consent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
+  },
+  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/",
+  "peerDependencies": {
+    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-dom": "^18.2.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@mui/icons-material": {
+      "optional": true
+    },
+    "@mui/material": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@react-lgpd-consent/core": "workspace:^0.5.0",
+    "@react-lgpd-consent/mui": "workspace:^0.5.0"
+  },
+  "size-limit": [
+    {
+      "name": "ESM Bundle",
+      "path": "dist/index.js",
+      "limit": "34 KB"
+    },
+    {
+      "name": "CJS Bundle",
+      "path": "dist/index.cjs",
+      "limit": "120 KB"
+    },
+    {
+      "name": "Types",
+      "path": "dist/index.d.ts",
+      "limit": "130 KB"
+    },
+    {
+      "name": "Complete Package Import",
+      "path": "dist/index.js",
+      "import": "{ ConsentProvider, useConsent, ConsentScriptLoader }",
+      "limit": "15 KB"
+    }
+  ]
+}
