@@ -7,13 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      js-cookie:
-        specifier: ^3.0.5
-        version: 3.0.5
-      zod:
-        specifier: ^4.1.12
-        version: 4.1.12
     devDependencies:
       '@axe-core/react':
         specifier: ^4.11.0
@@ -162,6 +155,66 @@ importers:
       typescript-eslint:
         specifier: 8.46.2
         version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
+
+  packages/core:
+    dependencies:
+      '@mui/icons-material':
+        specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
+        version: 7.3.4(@mui/material@7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.2)(react@19.2.0)
+      '@mui/material':
+        specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
+        version: 7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      js-cookie:
+        specifier: ^3.0.5
+        version: 3.0.5
+      react:
+        specifier: ^18.2.0 || ^19.0.0
+        version: 19.2.0
+      react-dom:
+        specifier: ^18.2.0 || ^19.0.0
+        version: 19.2.0(react@19.2.0)
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
+
+  packages/mui:
+    dependencies:
+      '@mui/icons-material':
+        specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
+        version: 7.3.4(@mui/material@7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.2)(react@19.2.0)
+      '@mui/material':
+        specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
+        version: 7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@react-lgpd-consent/core':
+        specifier: workspace:^0.5.0
+        version: link:../core
+      react:
+        specifier: ^18.2.0 || ^19.0.0
+        version: 19.2.0
+      react-dom:
+        specifier: ^18.2.0 || ^19.0.0
+        version: 19.2.0(react@19.2.0)
+
+  packages/react-lgpd-consent:
+    dependencies:
+      '@mui/icons-material':
+        specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
+        version: 7.3.4(@mui/material@7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0))(@types/react@19.2.2)(react@19.2.0)
+      '@mui/material':
+        specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
+        version: 7.3.4(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react@19.2.0))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      '@react-lgpd-consent/core':
+        specifier: workspace:^0.5.0
+        version: link:../core
+      '@react-lgpd-consent/mui':
+        specifier: workspace:^0.5.0
+        version: link:../mui
+      react:
+        specifier: ^18.2.0 || ^19.0.0
+        version: 19.2.0
+      react-dom:
+        specifier: ^18.2.0 || ^19.0.0
+        version: 19.2.0(react@19.2.0)
 
 packages:
 

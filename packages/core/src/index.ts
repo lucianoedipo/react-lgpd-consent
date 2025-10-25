@@ -15,17 +15,6 @@
  * @category Main
  */
 
-// Componentes
-
-/**
- * Modal de preferências de cookies conforme configuração do projeto.
- * Exibe categorias ativas e permite ao usuário ajustar consentimentos.
- * @category Components
- * @component
- * @since 0.4.1
- */
-export { PreferencesModal } from './components/PreferencesModal'
-
 // Contexto + Hooks
 
 /**
@@ -81,6 +70,7 @@ export {
  * @since 0.4.1
  */
 export { useCategories, useCategoryStatus } from './context/CategoriesContext'
+export { DesignProvider, useDesignTokens } from './context/DesignContext'
 
 // Utils
 
@@ -108,19 +98,6 @@ export {
   detectConsentCookieName,
   discoverRuntimeCookies,
 } from './utils/cookieDiscovery'
-
-/**
- * Tema padrão para componentes de consentimento.
- * @category Utils
- * @since 0.4.1
- */
-/**
- * Fábrica do tema padrão para componentes de consentimento.
- * Use somente quando realmente necessário; preferir herdar o tema do app.
- * @category Utils
- * @since 0.4.1
- */
-export { createDefaultConsentTheme, defaultConsentTheme } from './utils/theme'
 
 /**
  * Loader de scripts condicionado ao consentimento do usuário.
@@ -277,7 +254,7 @@ export {
  * @category Utils
  * @since 0.4.1
  */
-export { LogLevel, setDebugLogging } from './utils/logger'
+export { LogLevel, logger, setDebugLogging } from './utils/logger'
 
 // Cookie registry APIs (overrides + lookup)
 export {
@@ -285,47 +262,6 @@ export {
   setCookieCatalogOverrides,
   setCookieCategoryOverrides,
 } from './utils/cookieRegistry'
-
-// Componentes padrão (para wrapping ou uso avançado)
-
-/**
- * Banner de cookies padrão, exibido na parte inferior da tela para coletar consentimento inicial.
- * @category Components
- * @component
- * @since 0.4.1
- */
-export { CookieBanner } from './components/CookieBanner'
-
-/**
- * Botão flutuante para abrir preferências de consentimento, posicionado em canto da tela.
- * @category Components
- * @component
- * @since 0.4.1
- */
-export { FloatingPreferencesButton } from './components/FloatingPreferencesButton'
-
-// Tipos de props dos componentes para uso avançado
-
-/**
- * Tipos de props para o componente CookieBanner.
- * @category Types
- * @since 0.4.1
- */
-export type { CookieBannerProps } from './components/CookieBanner'
-
-/**
- * Tipos de props para o componente FloatingPreferencesButton.
- * @category Types
- * @since 0.4.1
- */
-export type { FloatingPreferencesButtonProps } from './components/FloatingPreferencesButton'
-
-/**
- * Tipos de props para o componente PreferencesModal.
- * @category Types
- * @since 0.4.1
- */
-export type { PreferencesModalProps } from './components/PreferencesModal'
 
 /**
  * Tipos de props para o componente ConsentScriptLoader.
@@ -377,4 +313,3 @@ export type {
   ConsentInitializedEvent,
   ConsentUpdatedEvent,
 } from './types/types'
-

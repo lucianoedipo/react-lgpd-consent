@@ -26,16 +26,24 @@ nvm use 20
 
 ### Visão Geral
 
-A `react-lgpd-consent` é uma biblioteca **client-side** focada em aplicações React. A arquitetura é baseada em:
+Desde a versão **0.5.0** a biblioteca é publicada como um **workspace PNPM** composto por três pacotes:
 
-- **Context API**: Gerenciamento de estado global do consentimento.
-- **Material-UI**: Componentes de interface prontos e customizáveis.
-- **js-cookie**: Persistência leve e confiável das preferências do usuário.
-- **TypeScript**: Type safety completo para uma melhor experiência de desenvolvimento.
+- `@react-lgpd-consent/core`: Núcleo com contextos, hooks, validadores, integrações e utilitários (sem compromisso com UI).
+- `@react-lgpd-consent/mui`: Camada de componentes baseada em Material-UI. Inicialmente funciona como _proxy_ dos componentes existentes.
+- `react-lgpd-consent`: Pacote agregador que mantém a API pública atual e reexporta os módulos dos pacotes anteriores.
 
-### Status Atual (v0.3.1+)
+A stack continua baseada em:
 
-A versão atual é estável e focada em correções de produção e melhorias de compatibilidade. A arquitetura foi consolidada na v0.3.0 para renderizar a UI (banner, modal) automaticamente através do `ConsentProvider`, simplificando o uso. A v0.3.1+ introduziu melhorias no controle programático do modal e na compatibilidade de temas.
+- **Context API** para gerenciamento global do consentimento.
+- **js-cookie** + **zod** para persistência e validação.
+- **TypeScript** para garantir contratos estáveis.
+- **Material-UI** opcional para os componentes fornecidos pela camada MUI.
+
+### Status Atual (v0.5.0)
+
+- Estrutura modularizada em workspace sem quebrar a API existente.
+- `@react-lgpd-consent/mui` inicia como package de fachada para os componentes padrão.
+- Documentação e pipeline atualizados para trabalhar com filtros `pnpm --filter`.
 
 ### Suporte
 
@@ -44,14 +52,13 @@ A versão atual é estável e focada em correções de produção e melhorias de
 
 ## 📁 Estrutura do Projeto
 
-```
-src/
-├── components/         # Componentes UI (CookieBanner, PreferencesModal, etc.)
-├── context/            # Contextos React (ConsentContext, CategoriesContext)
-├── hooks/              # Hooks públicos (useConsent, useCategories, etc.)
-├── types/              # Definições TypeScript
-├── utils/              # Utilitários (ConsentGate, ScriptLoader, etc.)
-└── index.ts            # Ponto de entrada da API pública
+packages/
+├── core/               # Núcleo (contextos, hooks, utils, tipos)
+│   └── src/
+├── mui/                # Camada Material-UI (reexporta componentes)
+│   └── src/
+└── react-lgpd-consent/ # Pacote agregador publicado no npm
+    └── src/
 ```
 
 ## 🔄 Fluxo de Estado
@@ -113,18 +120,24 @@ O cookie armazena apenas as informações essenciais para a persistência do con
 
 O projeto utiliza `tsup` para compilar o código TypeScript para os formatos ESM e CJS, garantindo compatibilidade com diferentes sistemas de módulos.
 
-### Configuração `tsup.config.js`
+### Configuração `packages/react-lgpd-consent/tsup.config.ts`
 
-```javascript
-export default {
-  entry: ['src/index.ts'],
+```ts
+export default defineConfig({
+  entry: ['src/index.ts', 'src/core.ts', 'src/mui.ts'],
   format: ['esm', 'cjs'],
   dts: true,
   clean: true,
-  external: ['react', 'react-dom', '@mui/material', 'js-cookie'],
   splitting: true,
   treeshake: true,
-}
+  external: [
+    'react',
+    'react-dom',
+    'react/jsx-runtime',
+    '@react-lgpd-consent/core',
+    '@react-lgpd-consent/mui',
+  ],
+})
 ```
 
 ## 🧪 Estratégia de Testes
@@ -144,16 +157,16 @@ Os testes são escritos com Jest e React Testing Library e estão localizados ju
 ```bash
 git clone https://github.com/lucianoedipo/react-lgpd-consent.git
 cd react-lgpd-consent
-npm install
-npm run build
+pnpm install
+pnpm --filter react-lgpd-consent build
 ```
 
 ### Workflow de Desenvolvimento
 
 1.  Crie uma branch: `git checkout -b feature/nova-funcionalidade`
-2.  Desenvolva com `npm run dev` (ativa o modo watch do `tsup`).
+2.  Desenvolva com `pnpm --filter react-lgpd-consent dev` (modo watch do `tsup`).
 3.  Adicione testes para sua nova funcionalidade.
-4.  Verifique se todos os testes e o linter estão passando: `npm test` e `npm run lint`.
+4.  Verifique se todos os testes e o linter estão passando: `pnpm test` e `pnpm lint`.
 5.  Faça o commit seguindo o padrão de [Conventional Commits](https://www.conventionalcommits.org/).
 6.  Abra um Pull Request no GitHub.
 

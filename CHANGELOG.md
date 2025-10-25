@@ -875,3 +875,17 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 ### 🧩 Sem breaking changes
 
 - Alterações são compatíveis; padrões seguros preservados.
+## [0.5.0] - 25/10/2025 — Modularização inicial do workspace
+
+### 🧱 Estrutura modular
+- Repositório convertido em workspace PNPM com três pacotes: `@react-lgpd-consent/core`, `@react-lgpd-consent/mui` e `react-lgpd-consent`.
+- Pacote agregador passa a construir entradas adicionais (`core` e `mui`) expondo subpath exports oficiais.
+
+### 🎨 Camada MUI dedicada
+- Publicação inicial de `@react-lgpd-consent/mui` como _proxy_ dos componentes padrão.
+- Metadados de peer dependencies ajustados para reforçar que Material-UI é opcional (requerido apenas para a camada visual).
+
+### 🧰 Ferramentas & DX
+- Scripts de lint/test/build convertidos para `pnpm --filter react-lgpd-consent <comando>`.
+- Jest e TypeDoc atualizados para apontar para `packages/core` e `packages/react-lgpd-consent`.
+- Documentação (README, QUICKSTART, DEVELOPMENT) revisada para explicar a nova arquitetura e o processo de migração gradual.

@@ -1,6 +1,10 @@
 # Guia da API - react-lgpd-consent
 
-Este documento é a referência técnica oficial para a API da biblioteca `react-lgpd-consent` (v0.4.1+).
+Este documento é a referência técnica oficial para a API da biblioteca `react-lgpd-consent` (v0.5.0+), publicada como conjunto de pacotes:
+
+- `react-lgpd-consent`: agregador com a API pública original.
+- `react-lgpd-consent/core`: subpath export do pacote principal (delegando para `@react-lgpd-consent/core`).
+- `react-lgpd-consent/mui`: subpath export que expõe a camada Material-UI (`@react-lgpd-consent/mui`).
 
 ## Exports Principais
 

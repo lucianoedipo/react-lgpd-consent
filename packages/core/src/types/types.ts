@@ -1,4 +1,3 @@
-import type { Theme } from '@mui/material/styles'
 import type { GuidanceConfig } from '../utils/developerGuidance'
 
 /**
@@ -1114,25 +1113,6 @@ export interface ConsentProviderProps {
   texts?: Partial<ConsentTexts>
 
   /**
-   * Tema Material-UI a ser aplicado aos componentes via ThemeProvider.
-   *
-   * Observação importante: a biblioteca NÃO cria/mescla tema automaticamente.
-   * Se você fornecer um `theme` aqui, ele será repassado diretamente ao `ThemeProvider`.
-   * Se não fornecer, a lib não envolverá com `ThemeProvider` e herdará o tema do app.
-   *
-   * @example
-   * ```tsx
-   * import { createTheme } from '@mui/material/styles'
-   * const appTheme = createTheme({ palette: { primary: { main: '#1976d2' } } })
-   *
-   * <ConsentProvider theme={appTheme}>
-   *   <App />
-   * </ConsentProvider>
-   * ```
-   */
-  theme?: Theme
-
-  /**
    * Tokens de design para customização visual avançada.
    * Oferece controle direto sobre cores, fontes, espaçamento e layout.
    *
@@ -1506,4 +1486,3 @@ export interface ConsentUpdatedEvent {
  * @public
  */
 export type ConsentEvent = ConsentInitializedEvent | ConsentUpdatedEvent
-

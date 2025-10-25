@@ -10,12 +10,14 @@ import type { SxProps, Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
-import { useCategories } from '../context/CategoriesContext'
-import { useDesignTokens } from '../context/DesignContext'
-import { useConsent, useConsentTexts } from '../hooks/useConsent'
-import type { Category } from '../types/types'
-import { ConsentPreferences } from '../types/types'
-import { getCookiesInfoForCategory } from '../utils/cookieRegistry'
+import {
+  getCookiesInfoForCategory,
+  useCategories,
+  useConsent,
+  useConsentTexts,
+  useDesignTokens,
+} from '@react-lgpd-consent/core'
+import type { Category, ConsentPreferences } from '@react-lgpd-consent/core'
 import { Branding } from './Branding'
 
 // Declaração global movida para evitar conflitos entre arquivos

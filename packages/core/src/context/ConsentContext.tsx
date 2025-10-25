@@ -4,14 +4,13 @@
  *
  * Este arquivo implementa o contexto global que gerencia o estado de consentimento,
  * coordena componentes de UI (banner, modal, botão flutuante) e fornece integração
- * com cookies, temas Material-UI e sistema de debug/logging.
+ * com cookies e sistema de debug/logging.
  *
  * @author Luciano Édipo
  * @since 0.1.0
  */
 
 // src/context/ConsentContext.tsx
-import { ThemeProvider } from '@mui/material/styles'
 import * as React from 'react'
 import {
   type ConsentContextValue,
@@ -40,22 +39,6 @@ import { logger } from '../utils/logger'
 import { validateConsentProviderProps } from '../utils/validation'
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
-
-// Lazy load do PreferencesModal para evitar dependência circular
-const PreferencesModal = React.lazy(() =>
-  import('../components/PreferencesModal').then((m) => ({
-    default: m.PreferencesModal,
-  })),
-)
-
-// Lazy load do FloatingPreferencesButton para otimizar bundle inicial
-const FloatingPreferencesButton = React.lazy(() =>
-  import('../components/FloatingPreferencesButton').then((m) => ({
-    default: m.FloatingPreferencesButton,
-  })),
-)
-
-import { CookieBanner } from '../components/CookieBanner'
 
 /**
  * Cria um estado completo de consentimento com todos os campos obrigatórios.
@@ -268,8 +251,6 @@ export function ConsentProvider({
   initialState,
   categories,
   texts: textsProp,
-  theme,
-
   designTokens,
   PreferencesModalComponent,
   preferencesModalProps = {},
@@ -280,7 +261,7 @@ export function ConsentProvider({
   disableFloatingPreferencesButton = false,
   blocking = false,
   blockingStrategy = 'auto',
-  hideBranding = false,
+  hideBranding: _hideBranding = false,
   onConsentGiven,
   onPreferencesSaved,
   cookie: cookieOpts,
@@ -299,8 +280,6 @@ export function ConsentProvider({
   // This avoids altering the app's theme context and prevents SSR/context regressions.
   // Importante: não criar/mesclar tema aqui para não sobrescrever o tema do app hospedeiro.
   // Apenas passamos adiante o tema fornecido pelo consumidor (se houver).
-  const mergedTheme = theme
-
   // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
     // Executa validação e sanitização em modo DEV; em produção apenas aplica fallback padrão
@@ -479,21 +458,17 @@ export function ConsentProvider({
                 disableDiscoveryLog={disableDiscoveryLog}
               >
                 {children}
-                {/* Modal de preferências - customizável ou padrão */}
-                <React.Suspense fallback={null}>
-                  {PreferencesModalComponent ? (
-                    <PreferencesModalComponent
-                      preferences={api.preferences}
-                      setPreferences={api.setPreferences}
-                      closePreferences={api.closePreferences}
-                      isModalOpen={api.isModalOpen}
-                      texts={texts}
-                      {...preferencesModalProps}
-                    />
-                  ) : (
-                    <PreferencesModal hideBranding={hideBranding} />
-                  )}
-                </React.Suspense>
+                {/* Modal de preferências - renderizado apenas quando fornecido */}
+                {PreferencesModalComponent ? (
+                  <PreferencesModalComponent
+                    preferences={api.preferences}
+                    setPreferences={api.setPreferences}
+                    closePreferences={api.closePreferences}
+                    isModalOpen={api.isModalOpen}
+                    texts={texts}
+                    {...preferencesModalProps}
+                  />
+                ) : null}
 
                 {/* Overlay de bloqueio no Provider (opt-in via blockingStrategy) */}
                 {blocking && isHydrated && !state.consented && blockingStrategy === 'provider' && (
@@ -515,7 +490,7 @@ export function ConsentProvider({
                 {/* Cookie Banner - renderizado se não houver consentimento e estiver hidratado */}
                 {!state.consented &&
                   isHydrated &&
-                  (CookieBannerComponent ? (
+                  CookieBannerComponent && (
                     <CookieBannerComponent
                       consented={api.consented}
                       acceptAll={api.acceptAll}
@@ -525,33 +500,18 @@ export function ConsentProvider({
                       blocking={blocking}
                       {...cookieBannerProps}
                     />
-                  ) : (
-                    <CookieBanner
-                      blocking={blocking}
-                      hideBranding={hideBranding}
-                      {...cookieBannerProps}
-                    />
-                  ))}
+                  )}
 
                 {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
-                {state.consented && !disableFloatingPreferencesButton && (
-                  <React.Suspense fallback={null}>
-                    {FloatingPreferencesButtonComponent ? (
-                      <FloatingPreferencesButtonComponent
-                        openPreferences={api.openPreferences}
-                        consented={api.consented}
-                        {...floatingPreferencesButtonProps}
-                      />
-                    ) : (
-                      // Encaminha `floatingPreferencesButtonProps` para o componente padrão
-                      <FloatingPreferencesButton
-                        {...((floatingPreferencesButtonProps ?? {}) as Partial<
-                          React.ComponentProps<typeof FloatingPreferencesButton>
-                        >)}
-                      />
-                    )}
-                  </React.Suspense>
-                )}
+                {state.consented &&
+                  !disableFloatingPreferencesButton &&
+                  FloatingPreferencesButtonComponent && (
+                    <FloatingPreferencesButtonComponent
+                      openPreferences={api.openPreferences}
+                      consented={api.consented}
+                      {...floatingPreferencesButtonProps}
+                    />
+                  )}
               </CategoriesProvider>
             </DesignProvider>
           </HydrationCtx.Provider>
@@ -559,10 +519,6 @@ export function ConsentProvider({
       </ActionsCtx.Provider>
     </StateCtx.Provider>
   )
-
-  if (mergedTheme) {
-    return <ThemeProvider theme={mergedTheme}>{content}</ThemeProvider>
-  }
 
   return content
 }

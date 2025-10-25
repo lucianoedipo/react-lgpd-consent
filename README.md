@@ -48,7 +48,17 @@
 npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-cookie
 ```
 
-**Dependências peer:** `react`, `react-dom`, `@mui/material` e `js-cookie`.
+**Dependências peer:** `react`, `react-dom` e, se você utilizar os componentes prontos, `@mui/material` + `@mui/icons-material`. A camada MUI agora está publicada separadamente como `@react-lgpd-consent/mui`.
+
+---
+
+## ✨ Novidades v0.5.0
+
+- **Workspace PNPM**: o repositório foi modularizado em três pacotes — `@react-lgpd-consent/core`, `@react-lgpd-consent/mui` e o agregador `react-lgpd-consent`.
+- **Camada MUI isolada**: os componentes padrão agora vivem na camada MUI (por enquanto ainda como proxy), preparando o terreno para UI totalmente opcional.
+- **Subpaths oficiais**: você pode importar diretamente `react-lgpd-consent/core` ou `react-lgpd-consent/mui` conforme necessidade.
+- **Scripts unificados com filtros**: `pnpm --filter react-lgpd-consent <comando>` executa build/test/lint no pacote principal sem afetar os demais.
+- **Documentação atualizada**: README, QUICKSTART e docs refletem a nova arquitetura modular.
 
 ---
 
