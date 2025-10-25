@@ -209,7 +209,7 @@ interface ScriptIntegration {
 
 ---
 
-## � Eventos DataLayer (Google Tag Manager)
+## 📊 Eventos DataLayer (Google Tag Manager)
 
 A partir da versão **0.4.5**, a biblioteca dispara automaticamente eventos padronizados no `dataLayer` para facilitar rastreamento, auditoria LGPD e integrações com o Google Tag Manager.
 
