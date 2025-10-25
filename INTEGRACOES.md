@@ -379,7 +379,7 @@ interface ConsentUpdatedEvent {
 
 ---
 
-## �📊 Categorias Recomendadas
+## 📊 Categorias Recomendadas
 
 | Ferramenta         | Categoria Recomendada | Justificativa                    |
 | ------------------ | --------------------- | -------------------------------- |
