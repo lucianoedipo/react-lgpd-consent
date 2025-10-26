@@ -39,6 +39,14 @@ export interface PreferencesModalProps {
   DialogProps?: Partial<DialogProps>
   /** Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" no modal. Padrão: `false`. */
   hideBranding?: boolean
+  /** Estado de abertura do modal passado pelo Provider. Quando fornecido via PreferencesModalComponent, substitui o valor do hook useConsent. */
+  isModalOpen?: boolean
+  /** Preferências de consentimento passadas pelo Provider. Quando fornecido via PreferencesModalComponent. */
+  preferences?: ConsentPreferences
+  /** Função para atualizar preferências passada pelo Provider. Quando fornecido via PreferencesModalComponent. */
+  setPreferences?: (preferences: ConsentPreferences) => void
+  /** Função para fechar o modal passada pelo Provider. Quando fornecido via PreferencesModalComponent. */
+  closePreferences?: () => void
 }
 
 /**
@@ -60,8 +68,19 @@ export interface PreferencesModalProps {
 export function PreferencesModal({
   DialogProps,
   hideBranding = false,
+  isModalOpen: isModalOpenProp,
+  preferences: preferencesProp,
+  setPreferences: setPreferencesProp,
+  closePreferences: closePreferencesProp,
 }: Readonly<PreferencesModalProps>) {
-  const { preferences, setPreferences, closePreferences, isModalOpen } = useConsent()
+  // Quando usado via PreferencesModalComponent, usa as props passadas pelo Provider
+  // Quando usado standalone, usa os hooks do contexto
+  const hookValue = useConsent()
+  const preferences = preferencesProp ?? hookValue.preferences
+  const setPreferences = setPreferencesProp ?? hookValue.setPreferences
+  const closePreferences = closePreferencesProp ?? hookValue.closePreferences
+  const isModalOpen = isModalOpenProp ?? hookValue.isModalOpen
+  
   const texts = useConsentTexts()
   const designTokens = useDesignTokens()
   const { toggleableCategories, allCategories } = useCategories() // Categorias que precisam de toggle + metadados

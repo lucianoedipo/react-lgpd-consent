@@ -559,3 +559,39 @@ export const ResponsiveDesign: Story = {
     )
   },
 }
+
+
+// Story de teste para verificar se o modal abre
+export const AlwaysOpen: Story = {
+  args: {
+    hideBranding: false,
+    openModal: true,
+  },
+  render: (args: StoryArgs) => {
+    return (
+      <ConsentProvider
+        categories={{
+          enabledCategories: ['analytics', 'marketing'],
+        }}
+        PreferencesModalComponent={(props) => (
+          <PreferencesModal {...args} {...props} DialogProps={{ open: true }} />
+        )}
+      >
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h4" gutterBottom color="primary">
+            🔍 Teste: Modal Sempre Aberto
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            Esta story força o modal a aparecer automaticamente para teste.
+          </Typography>
+          <Alert severity="info">
+            <Typography variant="body2">
+              O modal deve estar visível ao carregar esta story.
+            </Typography>
+          </Alert>
+        </Box>
+      </ConsentProvider>
+    )
+  },
+}
+
