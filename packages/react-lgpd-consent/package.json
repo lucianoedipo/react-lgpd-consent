@@ -86,7 +86,7 @@
     "prepublishOnly": "pnpm run build",
     "docs:generate": "typedoc --options ../../typedoc.json",
     "storybook": "storybook dev -p 6006 --config-dir ../../.storybook",
-    "build-storybook": "storybook build --config-dir ../../.storybook"
+    "build-storybook": "storybook build --config-dir ../../.storybook --output-dir ../../storybook-static"
   },
   "repository": {
     "type": "git",
