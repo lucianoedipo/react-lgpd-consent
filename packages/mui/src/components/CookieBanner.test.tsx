@@ -1,9 +1,8 @@
-import React from 'react'
+import { ConsentProvider } from '@react-lgpd-consent/core'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Cookies from 'js-cookie'
-import { ConsentProvider } from '@react-lgpd-consent/core'
 
 jest.mock('js-cookie')
 

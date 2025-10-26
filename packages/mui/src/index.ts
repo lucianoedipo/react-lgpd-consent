@@ -19,13 +19,14 @@
 export * from '@react-lgpd-consent/core'
 
 // Componentes MUI
-export { CookieBanner } from './components/CookieBanner'
-export { PreferencesModal } from './components/PreferencesModal'
-export { FloatingPreferencesButton } from './components/FloatingPreferencesButton'
 export { Branding } from './components/Branding'
+export { CookieBanner } from './components/CookieBanner'
+export { FloatingPreferencesButton } from './components/FloatingPreferencesButton'
+export { PreferencesModal } from './components/PreferencesModal'
 
 // Tipos dos componentes MUI
-export type { CookieBannerProps } from './components/CookieBanner'
-export type { PreferencesModalProps } from './components/PreferencesModal'
-export type { FloatingPreferencesButtonProps } from './components/FloatingPreferencesButton'
 export type { BrandingProps } from './components/Branding'
+export type { CookieBannerProps } from './components/CookieBanner'
+export type { FloatingPreferencesButtonProps } from './components/FloatingPreferencesButton'
+export type { PreferencesModalProps } from './components/PreferencesModal'
+

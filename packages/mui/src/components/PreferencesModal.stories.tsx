@@ -8,18 +8,18 @@ import {
   DialogProps,
   Divider,
   Stack,
-  Typography,
   ThemeProvider,
+  Typography,
 } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ConsentProvider,
-  useConsent,
   resolveTexts,
   TEXT_TEMPLATES,
+  useConsent,
   type DesignTokens,
 } from '@react-lgpd-consent/core'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { PreferencesModal } from './PreferencesModal'
 type StoryArgs = {
   DialogProps?: Partial<DialogProps>

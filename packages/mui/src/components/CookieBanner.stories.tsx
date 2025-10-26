@@ -1,7 +1,12 @@
-import { Box, Chip, Stack, Typography, ThemeProvider } from '@mui/material'
+import { Box, Chip, Stack, ThemeProvider, Typography } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
+import {
+  ConsentProvider,
+  resolveTexts,
+  TEXT_TEMPLATES,
+  type DesignTokens,
+} from '@react-lgpd-consent/core'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConsentProvider, resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '@react-lgpd-consent/core'
 import { CookieBanner } from './CookieBanner'
 
 const meta: Meta<typeof CookieBanner> = {

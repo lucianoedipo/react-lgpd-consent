@@ -9,9 +9,9 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import { ConsentProvider, ConsentScriptLoader, useConsent } from '@react-lgpd-consent/core'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { ConsentProvider, useConsent, ConsentScriptLoader } from '@react-lgpd-consent/core'
 
 const meta: Meta = {
   title: 'Internal/DeveloperGuidance',

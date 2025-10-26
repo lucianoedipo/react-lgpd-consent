@@ -1,13 +1,23 @@
-import { Alert, Box, Card, CardContent, Chip, Paper, Stack, Typography, ThemeProvider } from '@mui/material'
+import {
+  Alert,
+  Box,
+  Card,
+  CardContent,
+  Chip,
+  Paper,
+  Stack,
+  ThemeProvider,
+  Typography,
+} from '@mui/material'
 import { createTheme } from '@mui/material/styles'
-import type { Meta, StoryObj } from '@storybook/react-vite'
 import {
   ConsentProvider,
-  useConsent,
   resolveTexts,
   TEXT_TEMPLATES,
+  useConsent,
   type DesignTokens,
 } from '@react-lgpd-consent/core'
+import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 
 const meta: Meta<typeof FloatingPreferencesButton> = {
@@ -261,7 +271,13 @@ export const DarkTheme: Story = {
         floatingPreferencesButtonProps={args}
       >
         <Box
-          sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#121212', color: 'white' }}
+          sx={{
+            minHeight: '100vh',
+            p: 3,
+            position: 'relative',
+            bgcolor: '#121212',
+            color: 'white',
+          }}
         >
           <Typography variant="h4" gutterBottom color="white">
             Tema Escuro - Floating Button

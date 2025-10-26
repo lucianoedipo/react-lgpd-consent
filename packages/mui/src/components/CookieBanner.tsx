@@ -19,25 +19,24 @@
  * @since 0.1.0
  */
 
-import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import type { PaperProps } from '@mui/material/Paper'
-import Snackbar from '@mui/material/Snackbar'
-import type { SnackbarProps } from '@mui/material/Snackbar'
-import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
+import Button from '@mui/material/Button'
 import Link from '@mui/material/Link'
-import React from 'react'
+import type { PaperProps } from '@mui/material/Paper'
+import Paper from '@mui/material/Paper'
+import type { SnackbarProps } from '@mui/material/Snackbar'
+import Snackbar from '@mui/material/Snackbar'
+import Stack from '@mui/material/Stack'
+import type { SxProps, Theme } from '@mui/material/styles'
+import Typography from '@mui/material/Typography'
 import {
-  useConsent,
-  useConsentTexts,
-  useConsentHydration,
-  useDesignTokens,
   logger,
+  useConsent,
+  useConsentHydration,
+  useConsentTexts,
+  useDesignTokens,
 } from '@react-lgpd-consent/core'
 import { Branding } from './Branding'
-import type { Theme, SxProps } from '@mui/material/styles'
 
 /**
  * Propriedades para customizar o comportamento e aparência do componente CookieBanner.
