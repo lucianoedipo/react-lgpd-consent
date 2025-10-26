@@ -80,7 +80,7 @@ export function PreferencesModal({
   const setPreferences = setPreferencesProp ?? hookValue.setPreferences
   const closePreferences = closePreferencesProp ?? hookValue.closePreferences
   const isModalOpen = isModalOpenProp ?? hookValue.isModalOpen
-  
+
   const texts = useConsentTexts()
   const designTokens = useDesignTokens()
   const { toggleableCategories, allCategories } = useCategories() // Categorias que precisam de toggle + metadados

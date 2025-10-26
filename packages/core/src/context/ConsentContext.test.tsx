@@ -422,7 +422,6 @@ describe('ConsentProvider Additional Tests', () => {
       fireEvent.click(screen.getByText('Accept All'))
       await waitFor(() => expect(screen.getByTestId('consented').textContent).toBe('true'))
     })
-
     ;(Cookies.set as jest.Mock).mockClear()
     ;(Cookies.remove as jest.Mock).mockClear()
     onConsentVersionChange.mockClear()

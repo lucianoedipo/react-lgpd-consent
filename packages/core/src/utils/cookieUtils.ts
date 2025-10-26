@@ -8,11 +8,7 @@ import Cookies from 'js-cookie'
  * Veja `src/types/types.ts` para a definição da estrutura `ConsentCookieData`.
  */
 
-import type {
-  ConsentCookieOptions,
-  ConsentState,
-  ProjectCategoriesConfig,
-} from '../types/types'
+import type { ConsentCookieOptions, ConsentState, ProjectCategoriesConfig } from '../types/types'
 import { ensureNecessaryAlwaysOn } from './categoryUtils'
 import { logger } from './logger'
 

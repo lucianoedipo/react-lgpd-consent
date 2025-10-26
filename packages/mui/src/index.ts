@@ -29,4 +29,3 @@ export type { ConsentProviderProps } from './components/ConsentProvider'
 export type { CookieBannerProps } from './components/CookieBanner'
 export type { FloatingPreferencesButtonProps } from './components/FloatingPreferencesButton'
 export type { PreferencesModalProps } from './components/PreferencesModal'
-
