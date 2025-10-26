@@ -68,7 +68,36 @@ jobs:
             echo "NPM_TOKEN not set, skipping npm publish"
             exit 0
           fi
-          npm publish --access public
+          
+          # Publicar todos os pacotes do monorepo
+          # Usar || true para não falhar se um pacote já estiver publicado
+          echo "📦 Publishing packages..."
+          
+          # Tentar publicar cada pacote individualmente para melhor controle de erros
+          for package_dir in packages/*/; do
+            package_name=$(node -p "require('./${package_dir}package.json').name")
+            package_version=$(node -p "require('./${package_dir}package.json').version")
+            
+            echo "Attempting to publish ${package_name}@${package_version}..."
+            
+            if pnpm publish --filter "${package_name}" --access public --no-git-checks 2>&1 | tee publish.log; then
+              echo "✅ Successfully published ${package_name}@${package_version}"
+            else
+              # Verificar se o erro é porque o pacote já existe
+              if grep -q "cannot publish over the previously published versions" publish.log || \
+                 grep -q "You cannot publish over the previously published versions" publish.log || \
+                 grep -q "already exists" publish.log; then
+                echo "⏭️  ${package_name}@${package_version} already published, skipping"
+              else
+                echo "❌ Failed to publish ${package_name}@${package_version}"
+                cat publish.log
+                exit 1
+              fi
+            fi
+            rm -f publish.log
+          done
+          
+          echo "✨ Publish process completed!"
 
       - name: Skipped publish (tag not on main)
         if: steps.check_main.outputs.on_main != 'true'

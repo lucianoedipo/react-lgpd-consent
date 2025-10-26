@@ -69,11 +69,15 @@ jobs:
           cp -r storybook-static/* integrated-docs/storybook/
 
           # Criar página de navegação principal com metadados dinâmicos para SEO
-          VERSION=$(node -p "require('./package.json').version")
-          NAME=$(node -p "require('./package.json').name")
-          DESC=$(node -p "require('./package.json').description")
-          HOMEPAGE=$(node -p "require('./package.json').homepage")
-          KEYWORDS=$(node -p "(require('./package.json').keywords||[]).join(', ')")
+          # Pegar versões dos pacotes publicados
+          VERSION_CORE=$(node -p "require('./packages/core/package.json').version")
+          VERSION_MUI=$(node -p "require('./packages/mui/package.json').version")
+          VERSION_MAIN=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
+          VERSION="${VERSION_MAIN}" # Usar versão do agregador como principal
+          NAME=$(node -p "require('./packages/react-lgpd-consent/package.json').name")
+          DESC=$(node -p "require('./packages/react-lgpd-consent/package.json').description")
+          HOMEPAGE=$(node -p "require('./packages/react-lgpd-consent/package.json').homepage")
+          KEYWORDS=$(node -p "(require('./packages/react-lgpd-consent/package.json').keywords||[]).join(', ')")
 
           cat > integrated-docs/index.html <<EOF
           <!DOCTYPE html>
@@ -167,8 +171,12 @@ jobs:
               </a>
 
               <a href="https://www.npmjs.com/package/${NAME}" class="nav-card" aria-label="View on npm">
-                <div class="nav-title">📦 Pacote no NPM</div>
-                <div class="nav-desc">Veja o pacote publicado no NPM. Versão atual: <strong>v${VERSION}</strong>.</div>
+                <div class="nav-title">📦 Pacotes no NPM</div>
+                <div class="nav-desc">
+                  <strong>react-lgpd-consent</strong> v${VERSION_MAIN} (agregador)<br>
+                  <strong>@react-lgpd-consent/mui</strong> v${VERSION_MUI} (componentes MUI)<br>
+                  <strong>@react-lgpd-consent/core</strong> v${VERSION_CORE} (headless)
+                </div>
               </a>
 
             </div>
