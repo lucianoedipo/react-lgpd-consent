@@ -4,11 +4,13 @@ Esta branch adiciona monitoramento rigoroso de bundle size e cobertura de testes
 
 ## 🎯 Features Implementadas
 
-### ✅ Size Limit Integration
-- **ESM Bundle**: Limite de 12KB (atual: ~8.86KB) ✅
-- **CJS Bundle**: Limite de 75KB (atual: ~9.54KB) ✅
-- **Types**: Limite de 100KB (atual: ~13B) ✅
-- **Complete Import**: Limite de 15KB (atual: ~7.54KB) ✅
+### ✅ Size Limit Integration (v0.5.0 - MUI Package)
+- **ESM Bundle**: Limite de 70KB (atual: ~67.64KB) ✅
+- **CJS Bundle**: Limite de 120KB (atual: ~68.71KB) ✅
+- **Types**: Limite de 130KB (atual: ~67.64KB) ✅
+- **Complete Import**: Limite de 65KB (atual: ~63.33KB) ✅
+
+> **Nota**: Os limites refletem o pacote `react-lgpd-consent` que re-exporta `@react-lgpd-consent/mui` (incluindo componentes UI Material-UI). Para bundle menor (~86KB), use `@react-lgpd-consent/core` (headless, sem UI).
 
 ### ✅ Coverage Monitoring
 - **Statements**: Threshold 85% (atual: 94.85%) ✅
@@ -49,13 +51,14 @@ O workflow `.github/workflows/ci.yml` agora inclui:
 
 ### `package.json`
 - Scripts `test:coverage`, `coverage-check`, `size-check`
-- Size-limit configuration com limites específicos
+- Size-limit configuration com limites específicos para MUI package
 - DevDependencies: `size-limit`, `@size-limit/preset-small-lib`
 
-### `jest.config.ts`
+### `jest.config.mjs`
 - Coverage thresholds configurados
 - Coverage collectors para arquivos src
 - Reporters: text, lcov, json-summary, html
+- ESM-compatible configuration (native ES modules)
 
 ### `scripts/coverage-check.cjs`
 - Script Node.js para enforcement de coverage thresholds

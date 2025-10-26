@@ -118,7 +118,7 @@
     {
       "name": "ESM Bundle",
       "path": "dist/index.js",
-      "limit": "34 KB"
+      "limit": "70 KB"
     },
     {
       "name": "CJS Bundle",
@@ -134,7 +134,7 @@
       "name": "Complete Package Import",
       "path": "dist/index.js",
       "import": "{ ConsentProvider, useConsent, ConsentScriptLoader }",
-      "limit": "15 KB"
+      "limit": "65 KB"
     }
   ]
 }
