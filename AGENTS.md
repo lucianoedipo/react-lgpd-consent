@@ -73,7 +73,7 @@ npm run docs:generate
 - Update `src/index.ts` when adding/removing public exports; `package.json` points `types: dist/index.d.ts`
 
 ## Testing Guidelines
-- Framework: Jest + Testing Library (`jest.config.ts`, `jest.setup.ts`)
+- Framework: Jest + Testing Library (`jest.config.mjs`, `jest.setup.ts`)
 - Location: tests near code; name as `*.test.ts(x)`; use `*.behavior.test.tsx` for UI flows
 - Avoid implementation details; assert behavior and accessibility roles/labels
 - Run `npm test` locally; consider `npm run mutation` for critical logic

@@ -55,7 +55,7 @@
     "lint:ci": "eslint \"src/**/*.{ts,tsx}\" --cache --max-warnings=0",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",
     "type-check": "tsc --noEmit",
-    "test": "jest --config ../../jest.config.ts",
+    "test": "jest --config ../../jest.config.mjs",
     "docs:generate": "echo \"No docs generation for core yet\""
   },
   "peerDependencies": {

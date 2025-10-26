@@ -63,7 +63,7 @@ Objetivo: permitir que um agente de codificação seja imediatamente produtivo n
   - Exemplo: ajuste do backdrop (ver `src/components/CookieBanner.tsx`) deve suportar: `false` (sem backdrop), string (cor customizada) e fallback seguro (preto translúcido).
 
 - **Testes e convenções de teste**
-  - **Framework**: Jest + Testing Library (`jest.config.ts`, `jest.setup.ts`).
+  - **Framework**: Jest + Testing Library (`jest.config.mjs`, `jest.setup.ts`).
   - **Localização**: arquivos de teste co-localizados; nome: `*.test.tsx` ou `*.test.ts`; use `*.behavior.test.tsx` para fluxos UI.
   - **Foco**: evitar detalhes de implementação; assert behavior e accessibility roles/labels.
   - **LGPD-específico**: testar gerenciamento de estado de consentimento, validações de categoria, mock de integrações de scripts, verificar behavior SSR-safe, testar overrides de design tokens e integração MUI `sx`.

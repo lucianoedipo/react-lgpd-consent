@@ -14,7 +14,7 @@
   "testRunner": "jest",
   "jest": {
     "projectType": "custom",
-    "configFile": "jest.config.ts"
+    "configFile": "jest.config.mjs"
   },
 
   "buildCommand": "tsc --noEmit",
