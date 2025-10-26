@@ -46,9 +46,9 @@
       "require": "./dist/mui.cjs"
     },
     "./integrations": {
-      "types": "@react-lgpd-consent/core/dist/utils/scriptIntegrations.d.ts",
-      "import": "@react-lgpd-consent/core/dist/utils/scriptIntegrations.js",
-      "require": "@react-lgpd-consent/core/dist/utils/scriptIntegrations.cjs"
+      "types": "./dist/integrations.d.ts",
+      "import": "./dist/integrations.js",
+      "require": "./dist/integrations.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -70,8 +70,8 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build": "cross-env NODE_ENV=production tsup src/index.ts src/core.ts src/mui.ts --format esm,cjs --dts --clean",
-    "dev": "cross-env NODE_ENV=development tsup src/index.ts src/core.ts src/mui.ts --format esm,cjs --dts --watch",
+    "build": "cross-env NODE_ENV=production tsup",
+    "dev": "cross-env NODE_ENV=development tsup --watch",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --cache",
     "lint:ci": "eslint \"src/**/*.{ts,tsx}\" --cache --max-warnings=0",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",

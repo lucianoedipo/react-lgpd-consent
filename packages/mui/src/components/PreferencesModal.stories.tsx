@@ -50,7 +50,6 @@ const meta: Meta<typeof PreferencesModal> = {
   } as unknown as any,
   args: {
     hideBranding: false,
-    DialogProps: { open: false },
     openModal: false,
   } as unknown as any,
 }
@@ -106,11 +105,10 @@ const ModalDemo = () => {
 
 export const Default: Story = {
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <ModalDemo />
       </ConsentProvider>
@@ -120,13 +118,12 @@ export const Default: Story = {
 
 export const WithAllCategories: Story = {
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
       <ConsentProvider
         categories={{
           enabledCategories: ['analytics', 'marketing', 'functional', 'social'],
         }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -144,7 +141,6 @@ export const WithAllCategories: Story = {
 
 export const CustomTexts: Story = {
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'functional'] }}
@@ -154,7 +150,7 @@ export const CustomTexts: Story = {
           save: '💾 Salvar Configurações',
           necessaryAlwaysOn: '🔒 Sempre Ativo',
         }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -172,7 +168,6 @@ export const CustomTexts: Story = {
 
 export const ECommerceExample: Story = {
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing'] }}
@@ -181,7 +176,7 @@ export const ECommerceExample: Story = {
           modalIntro: 'Gerencie como coletamos dados para melhorar sua experiência de compra:',
           save: 'Salvar e Continuar Comprando',
         }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3, bgcolor: '#f9f9f9', minHeight: '50vh' }}>
           <Typography variant="h4" gutterBottom>
@@ -199,7 +194,6 @@ export const ECommerceExample: Story = {
 
 export const CorporateExample: Story = {
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'functional'] }}
@@ -209,7 +203,7 @@ export const CorporateExample: Story = {
           save: 'Confirmar Configurações',
         }}
         hideBranding={true}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3, bgcolor: '#e8f5e8', minHeight: '50vh' }}>
           <Typography variant="h4" gutterBottom>
@@ -230,11 +224,10 @@ export const InteractiveDemo: Story = {
     hideBranding: true,
   },
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -259,12 +252,11 @@ export const DarkTheme: Story = {
     openModal: false,
   },
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
         <ConsentProvider
           categories={{ enabledCategories: ['analytics', 'marketing'] }}
-          PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+          PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
         >
           <Box sx={{ p: 3, bgcolor: '#121212', minHeight: '50vh', color: 'white' }}>
             <Typography variant="h4" gutterBottom color="white">
@@ -338,15 +330,13 @@ export const WithAdvancedTextSystem: Story = {
       variant: 'formal',
       language: 'pt',
     })
-
-    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ConsentProvider
         categories={{
           enabledCategories: ['analytics', 'functional', 'marketing'],
         }}
         texts={saasTexts}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3, bgcolor: '#f5f7fa' }}>
           <Typography variant="h4" gutterBottom color="primary">
@@ -415,15 +405,13 @@ export const WithCustomDesignTokens: Story = {
         },
       },
     }
-
-    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ConsentProvider
         categories={{
           enabledCategories: ['analytics', 'marketing', 'functional'],
         }}
         designTokens={modernDesignTokens}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3, bgcolor: '#f8fafc' }}>
           <Typography variant="h4" gutterBottom sx={{ color: '#6366f1' }}>
@@ -461,7 +449,6 @@ export const MultipleCategories: Story = {
     openModal: false,
   },
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ConsentProvider
         categories={{
@@ -479,7 +466,7 @@ export const MultipleCategories: Story = {
             },
           ],
         }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box sx={{ p: 3, bgcolor: '#fff9e6' }}>
           <Typography variant="h4" gutterBottom color="warning.dark">
@@ -517,13 +504,12 @@ export const ResponsiveDesign: Story = {
     openModal: false,
   },
   render: (args: StoryArgs) => {
-    const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ConsentProvider
         categories={{
           enabledCategories: ['analytics', 'marketing', 'functional'],
         }}
-        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
       >
         <Box
           sx={{
@@ -560,7 +546,6 @@ export const ResponsiveDesign: Story = {
   },
 }
 
-
 // Story de teste para verificar se o modal abre
 export const AlwaysOpen: Story = {
   args: {
@@ -574,7 +559,7 @@ export const AlwaysOpen: Story = {
           enabledCategories: ['analytics', 'marketing'],
         }}
         PreferencesModalComponent={(props) => (
-          <PreferencesModal {...args} {...props} DialogProps={{ open: true }} />
+          <PreferencesModal {...props} {...args} DialogProps={{ open: true }} />
         )}
       >
         <Box sx={{ p: 3 }}>
@@ -595,3 +580,12 @@ export const AlwaysOpen: Story = {
   },
 }
 
+export const DebugForceOpen: Story = {
+  render: () => {
+    return (
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+        <PreferencesModal isModalOpen={true} />
+      </ConsentProvider>
+    )
+  },
+}

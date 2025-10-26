@@ -19,6 +19,7 @@ import {
   type DesignTokens,
 } from '@react-lgpd-consent/core'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { PreferencesModal } from './PreferencesModal'
 
 const meta: Meta<typeof ConsentProvider> = {
   title: 'Components/ConsentProvider',
@@ -149,7 +150,7 @@ export const Default: Story = {
     },
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <ConsentDemo />
     </ConsentProvider>
   ),
@@ -164,7 +165,7 @@ export const WithBlocking: Story = {
     blockingStrategy: 'provider',
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <ConsentDemo />
     </ConsentProvider>
   ),
@@ -184,7 +185,7 @@ export const CustomTexts: Story = {
     },
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <ConsentDemo />
     </ConsentProvider>
   ),
@@ -199,7 +200,7 @@ export const MinimalSetup: Story = {
     disableFloatingPreferencesButton: true,
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <ConsentDemo />
     </ConsentProvider>
   ),
@@ -218,7 +219,7 @@ export const ECommerce: Story = {
     },
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <Box sx={{ p: 3 }}>
         <Typography variant="h4" gutterBottom>
           🛒 Loja Virtual
@@ -248,7 +249,7 @@ export const Corporate: Story = {
     },
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <Box sx={{ p: 3, bgcolor: '#f5f5f5', minHeight: '50vh' }}>
         <Typography variant="h4" gutterBottom>
           🏢 Sistema Corporativo
@@ -268,7 +269,7 @@ export const DarkTheme: Story = {
   },
   render: (args) => (
     <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
-      <ConsentProvider {...args}>
+      <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
         <Box sx={{ p: 3, bgcolor: '#121212', color: 'white', minHeight: '50vh' }}>
           <ConsentDemo />
         </Box>
@@ -288,7 +289,7 @@ export const WithCustomCategories: Story = {
     },
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <ConsentDemo />
     </ConsentProvider>
   ),
@@ -367,7 +368,7 @@ export const WithAdvancedTextSystem: Story = {
     }),
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <Box sx={{ p: 3, bgcolor: '#f8fffe' }}>
         <Typography variant="h4" gutterBottom color="primary">
           �️ Sistema de Textos Avançado v0.4.1
@@ -417,7 +418,7 @@ export const WithCustomDesignTokens: Story = {
     } as DesignTokens,
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <Box sx={{ p: 3, bgcolor: '#fef3c7', minHeight: '100vh' }}>
         <Typography variant="h4" gutterBottom sx={{ color: '#d97706' }}>
           🎨 Design Tokens Personalizados v0.4.1
@@ -476,7 +477,7 @@ export const CompleteIntegrationDemo: Story = {
     blockingStrategy: 'provider',
   },
   render: (args) => (
-    <ConsentProvider {...args}>
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
       <Box sx={{ p: 3, bgcolor: '#f0f4f8' }}>
         <Typography variant="h4" gutterBottom color="primary">
           🚀 Integração Completa v0.4.1

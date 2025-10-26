@@ -19,6 +19,7 @@ import {
 } from '@react-lgpd-consent/core'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FloatingPreferencesButton } from './FloatingPreferencesButton'
+import { PreferencesModal } from './PreferencesModal'
 
 const meta: Meta<typeof FloatingPreferencesButton> = {
   title: 'Components/FloatingPreferencesButton',
@@ -59,6 +60,7 @@ export const Default: Story = {
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f8fafc' }}>
         <Typography variant="h4" gutterBottom color="primary">
@@ -104,6 +106,7 @@ export const CustomPosition: Story = {
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f0f9ff' }}>
         <Typography variant="h4" gutterBottom color="info.dark">
@@ -151,6 +154,7 @@ export const WithLongContent: Story = {
     <ConsentProvider
       categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box sx={{ minHeight: '200vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -201,6 +205,7 @@ export const Disabled: Story = {
       categories={{ enabledCategories: ['analytics'] }}
       disableFloatingPreferencesButton={true}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box sx={{ minHeight: '100vh', p: 3 }}>
         <Typography variant="h4" gutterBottom>
@@ -229,6 +234,7 @@ export const MultipleSizes: Story = {
     <ConsentProvider
       categories={{ enabledCategories: ['analytics'] }}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative' }}>
         <Typography variant="h4" gutterBottom>
@@ -269,6 +275,7 @@ export const DarkTheme: Story = {
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing'] }}
         floatingPreferencesButtonProps={args}
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box
           sx={{
@@ -341,6 +348,7 @@ export const WithAdvancedPositioning: Story = {
         }}
         texts={advancedTexts}
         floatingPreferencesButtonProps={args}
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f8f9fa' }}>
           <Typography variant="h4" gutterBottom color="primary">
@@ -416,6 +424,7 @@ export const WithCustomDesignTokens: Story = {
         }}
         designTokens={modernDesignTokens}
         floatingPreferencesButtonProps={args}
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f3f4f6' }}>
           <Typography variant="h4" gutterBottom sx={{ color: '#7c3aed' }}>
@@ -491,6 +500,7 @@ export const MultipleCategories: Story = {
         ],
       }}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#fef7e0' }}>
         <Typography variant="h4" gutterBottom color="warning.dark">
@@ -547,6 +557,7 @@ export const ResponsiveDemo: Story = {
         enabledCategories: ['analytics', 'marketing', 'functional'],
       }}
       floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
     >
       <Box
         sx={{

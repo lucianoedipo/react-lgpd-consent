@@ -12,6 +12,7 @@ import {
   useConsent,
 } from '@react-lgpd-consent/core'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { PreferencesModal } from '../components/PreferencesModal'
 
 // Helper to make integrations safe for Storybook (avoid real network requests)
 function withMockSrc<T extends { src: string }>(i: T): T {
@@ -124,6 +125,7 @@ export const Playground: Story = {
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
         disableFloatingPreferencesButton
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="h4" gutterBottom align="center">
@@ -192,6 +194,7 @@ export const EcommerceTemplate: Story = {
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
         disableFloatingPreferencesButton
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
@@ -224,6 +227,7 @@ export const SaaSTemplate: Story = {
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'functional'] }}
         disableFloatingPreferencesButton
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
@@ -256,6 +260,7 @@ export const CorporateTemplate: Story = {
       <ConsentProvider
         categories={{ enabledCategories: ['analytics', 'functional'] }}
         disableFloatingPreferencesButton
+        PreferencesModalComponent={PreferencesModal}
       >
         <Box sx={{ p: 2 }}>
           <Typography variant="h6" gutterBottom>
