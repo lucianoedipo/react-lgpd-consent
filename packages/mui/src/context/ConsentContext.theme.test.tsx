@@ -1,5 +1,5 @@
 import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles'
-import { ConsentProvider } from '@react-lgpd-consent/core'
+import { ConsentProvider } from '@react-lgpd-consent/mui'
 import { render, screen } from '@testing-library/react'
 
 function ThemeInspector() {
@@ -20,5 +20,17 @@ describe('ConsentProvider theme integration', () => {
     )
 
     expect(screen.getByTestId('theme-primary').textContent).toBe('#ff0000')
+  })
+
+  test('applies theme prop quando fornecido diretamente', () => {
+    const providerTheme = createTheme({ palette: { primary: { main: '#00aa55' } } })
+
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }} theme={providerTheme}>
+        <ThemeInspector />
+      </ConsentProvider>,
+    )
+
+    expect(screen.getByTestId('theme-primary').textContent).toBe('#00aa55')
   })
 })

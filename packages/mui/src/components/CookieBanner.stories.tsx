@@ -5,7 +5,7 @@ import {
   resolveTexts,
   TEXT_TEMPLATES,
   type DesignTokens,
-} from '@react-lgpd-consent/core'
+} from '@react-lgpd-consent/mui'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { CookieBanner } from './CookieBanner'
 

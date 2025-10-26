@@ -7,10 +7,18 @@ const config: Config = {
   maxWorkers: '50%',
   testTimeout: 30000,
   workerIdleMemoryLimit: '512MB',
-  roots: ['<rootDir>/packages/core/src'],
+  roots: ['<rootDir>/packages/core/src', '<rootDir>/packages/mui/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/packages/core/tsconfig.json' }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.base.json' }],
+  },
+  moduleNameMapper: {
+    '^@react-lgpd-consent/core$': '<rootDir>/packages/core/src',
+    '^@react-lgpd-consent/core/(.*)$': '<rootDir>/packages/core/src/$1',
+    '^@react-lgpd-consent/mui$': '<rootDir>/packages/mui/src',
+    '^@react-lgpd-consent/mui/(.*)$': '<rootDir>/packages/mui/src/$1',
+    '^react-lgpd-consent$': '<rootDir>/packages/react-lgpd-consent/src',
+    '^react-lgpd-consent/(.*)$': '<rootDir>/packages/react-lgpd-consent/src/$1',
   },
   // Use an early setup file to silence console output during module collection,
   // and keep the regular setup for testing-library and Jest helpers.
@@ -21,10 +29,11 @@ const config: Config = {
   // Coverage configuration
   collectCoverageFrom: [
     'packages/core/src/**/*.{ts,tsx}',
-    '!packages/core/src/**/*.stories.{ts,tsx}',
-    '!packages/core/src/**/*.test.{ts,tsx}',
-    '!packages/core/src/**/*.spec.{ts,tsx}',
-    '!packages/core/src/@types/**',
+    'packages/mui/src/**/*.{ts,tsx}',
+    '!packages/**/src/**/*.stories.{ts,tsx}',
+    '!packages/**/src/**/*.test.{ts,tsx}',
+    '!packages/**/src/**/*.spec.{ts,tsx}',
+    '!packages/**/src/@types/**',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'json-summary', 'html'],

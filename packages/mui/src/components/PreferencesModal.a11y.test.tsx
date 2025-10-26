@@ -2,7 +2,7 @@
  * Testes de acessibilidade (a11y) para o PreferencesModal
  * Usa jest-axe para validar conformidade com WCAG
  */
-import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
+import { ConsentProvider, useConsent } from '@react-lgpd-consent/mui'
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe, toHaveNoViolations } from 'jest-axe'

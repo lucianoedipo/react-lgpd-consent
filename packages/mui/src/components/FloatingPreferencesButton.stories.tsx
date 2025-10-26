@@ -16,7 +16,7 @@ import {
   TEXT_TEMPLATES,
   useConsent,
   type DesignTokens,
-} from '@react-lgpd-consent/core'
+} from '@react-lgpd-consent/mui'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 import { PreferencesModal } from './PreferencesModal'

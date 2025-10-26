@@ -2,7 +2,7 @@
  * Testes de acessibilidade (a11y) para o CookieBanner
  * Usa jest-axe para validar conformidade com WCAG
  */
-import { ConsentProvider } from '@react-lgpd-consent/core'
+import { ConsentProvider } from '@react-lgpd-consent/mui'
 import { render } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
 

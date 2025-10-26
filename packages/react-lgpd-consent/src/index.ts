@@ -1,1 +1,1 @@
-export * from '@react-lgpd-consent/core'
+export * from '@react-lgpd-consent/mui'

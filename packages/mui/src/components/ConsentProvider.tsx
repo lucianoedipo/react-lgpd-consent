@@ -8,10 +8,14 @@
  * @category Components
  */
 
+import type { Theme } from '@mui/material/styles'
+import { ThemeProvider } from '@mui/material/styles'
 import {
   ConsentProvider as ConsentProviderCore,
   type ConsentProviderProps as ConsentProviderCoreProps,
 } from '@react-lgpd-consent/core'
+import { CookieBanner } from './CookieBanner'
+import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 import { PreferencesModal } from './PreferencesModal'
 
 /**
@@ -31,6 +35,37 @@ export interface ConsentProviderProps extends ConsentProviderCoreProps {
    * @since 0.5.0
    */
   disableDefaultModal?: boolean
+  /**
+   * Se `true`, desabilita a injeção automática do CookieBanner padrão.
+   * Útil quando se deseja uma implementação própria, mantendo outras integrações.
+   *
+   * @default false
+   * @since 0.5.0
+   */
+  disableDefaultBanner?: boolean
+  /**
+   * Se `true`, desabilita a injeção automática do FloatingPreferencesButton.
+   * Normalmente não é necessário — `disableFloatingPreferencesButton` já oculta o botão.
+   *
+   * @default false
+   * @since 0.5.0
+   */
+  disableDefaultFloatingButton?: boolean
+  /**
+   * Tema Material-UI a ser aplicado ao redor dos componentes padrões.
+   *
+   * @remarks
+   * O tema é aplicado apenas nesta camada de apresentação. O core permanece agnóstico.
+   *
+   * @example
+   * ```tsx
+   * const theme = createTheme({ palette: { primary: { main: '#1976d2' } } })
+   * <ConsentProvider theme={theme} />
+   * ```
+   *
+   * @since 0.5.0
+   */
+  theme?: Theme
 }
 
 /**
@@ -113,7 +148,16 @@ export interface ConsentProviderProps extends ConsentProviderCoreProps {
  */
 export function ConsentProvider({
   disableDefaultModal = false,
+  disableDefaultBanner = false,
+  disableDefaultFloatingButton = false,
   PreferencesModalComponent,
+  CookieBannerComponent,
+  FloatingPreferencesButtonComponent,
+  theme,
+  hideBranding,
+  cookieBannerProps,
+  preferencesModalProps,
+  floatingPreferencesButtonProps,
   children,
   ...coreProps
 }: ConsentProviderProps) {
@@ -123,16 +167,46 @@ export function ConsentProvider({
     ? PreferencesModalComponent
     : PreferencesModalComponent || PreferencesModal
 
-  return (
+  const bannerComponent = disableDefaultBanner
+    ? CookieBannerComponent
+    : CookieBannerComponent || CookieBanner
+
+  const floatingButtonComponent = disableDefaultFloatingButton
+    ? FloatingPreferencesButtonComponent
+    : FloatingPreferencesButtonComponent || FloatingPreferencesButton
+
+  const mergedCookieBannerProps = {
+    ...cookieBannerProps,
+    hideBranding: cookieBannerProps?.hideBranding ?? hideBranding,
+  }
+
+  const mergedPreferencesModalProps = {
+    ...preferencesModalProps,
+    hideBranding: preferencesModalProps?.hideBranding ?? hideBranding,
+  }
+
+  const provider = (
     <ConsentProviderCore
       {...coreProps}
+      hideBranding={hideBranding}
+      cookieBannerProps={mergedCookieBannerProps}
+      preferencesModalProps={mergedPreferencesModalProps}
+      floatingPreferencesButtonProps={floatingPreferencesButtonProps}
+      CookieBannerComponent={bannerComponent as ConsentProviderCoreProps['CookieBannerComponent']}
       PreferencesModalComponent={
         modalComponent as ConsentProviderCoreProps['PreferencesModalComponent']
+      }
+      FloatingPreferencesButtonComponent={
+        floatingButtonComponent as ConsentProviderCoreProps['FloatingPreferencesButtonComponent']
       }
     >
       {children}
     </ConsentProviderCore>
   )
+
+  if (!theme) return provider
+
+  return <ThemeProvider theme={theme}>{provider}</ThemeProvider>
 }
 
 // Adiciona displayName para melhor debugging

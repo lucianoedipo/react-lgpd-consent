@@ -1,4 +1,4 @@
-import { ConsentProvider } from '@react-lgpd-consent/core'
+import { ConsentProvider } from '@react-lgpd-consent/mui'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
