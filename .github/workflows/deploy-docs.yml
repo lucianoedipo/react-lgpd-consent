@@ -85,32 +85,32 @@ jobs:
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${NAME} - Documentação e Playground</title>
-            <meta name="description" content="${DESC}">
-            <meta name="keywords" content="${KEYWORDS}">
+            <title>react-lgpd-consent - Documentação e Playground</title>
+            <meta name="description" content="Biblioteca React para gerenciamento de consentimento LGPD">
+            <meta name="keywords" content="lgpd, gdpr, consent, react, privacy, cookies">
             <meta name="author" content="Luciano Édipo">
             <meta name="robots" content="index, follow">
-            <link rel="canonical" href="${HOMEPAGE}">
+            <link rel="canonical" href="https://lucianoedipo.github.io/react-lgpd-consent">
 
             <!-- Open Graph -->
-            <meta property="og:title" content="${NAME} - Documentação">
-            <meta property="og:description" content="${DESC}">
+            <meta property="og:title" content="react-lgpd-consent - Documentação">
+            <meta property="og:description" content="Biblioteca React para gerenciamento de consentimento LGPD">
             <meta property="og:type" content="website">
-            <meta property="og:url" content="${HOMEPAGE}">
+            <meta property="og:url" content="https://lucianoedipo.github.io/react-lgpd-consent">
 
             <!-- Twitter Card -->
             <meta name="twitter:card" content="summary">
-            <meta name="twitter:title" content="${NAME} - Documentação">
-            <meta name="twitter:description" content="${DESC}">
+            <meta name="twitter:title" content="react-lgpd-consent - Documentação">
+            <meta name="twitter:description" content="Biblioteca React para gerenciamento de consentimento LGPD">
 
             <!-- JSON-LD (SoftwareApplication / SoftwareSourceCode) -->
             <script type="application/ld+json">
             {
               "@context": "https://schema.org",
               "@type": "SoftwareApplication",
-              "name": "${NAME}",
-              "description": "${DESC}",
-              "url": "${HOMEPAGE}",
+              "name": "react-lgpd-consent",
+              "description": "Biblioteca React para gerenciamento de consentimento LGPD",
+              "url": "https://lucianoedipo.github.io/react-lgpd-consent",
               "applicationCategory": "DeveloperTool",
               "softwareVersion": "${VERSION}",
               "author": {
@@ -137,7 +137,7 @@ jobs:
           </head>
           <body>
             <div class="container">
-              <h1>${NAME}</h1>
+              <h1>react-lgpd-consent</h1>
               <div class="subtitle">
                 <div>Biblioteca React para gerenciamento de consentimento LGPD</div>
                 <div class="version">v${VERSION}</div>
@@ -145,8 +145,8 @@ jobs:
 
               <div class="actions">
                 <!-- NPM badge + link -->
-                <a href="https://www.npmjs.com/package/${NAME}" aria-label="View on npm">
-                  <img class="badge" src="https://img.shields.io/npm/v/${NAME}.svg" alt="npm version">
+                <a href="https://www.npmjs.com/package/react-lgpd-consent" aria-label="View on npm">
+                  <img class="badge" src="https://img.shields.io/npm/v/react-lgpd-consent.svg" alt="npm version">
                 </a>
 
                 <!-- GitHub badge -->
@@ -170,7 +170,7 @@ jobs:
                 <div class="nav-desc">Código fonte, issues, releases e documentação adicional no GitHub.</div>
               </a>
 
-              <a href="https://www.npmjs.com/package/${NAME}" class="nav-card" aria-label="View on npm">
+              <a href="https://www.npmjs.com/package/react-lgpd-consent" class="nav-card" aria-label="View on npm">
                 <div class="nav-title">📦 Pacotes no NPM</div>
                 <div class="nav-desc">
                   <strong>react-lgpd-consent</strong> v${VERSION_MAIN} (agregador)<br>

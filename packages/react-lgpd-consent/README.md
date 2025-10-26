@@ -1,12 +1,12 @@
-<div align="center"><div align="center"><div align="center">
+<div align="center"><div align="center"><div align="center"><div align="center">
 
   <h1>react-lgpd-consent 🍪</h1>
 
-  <p><strong>Gerenciamento de consentimento de cookies em conformidade com a LGPD</strong></p>  <h1>react-lgpd-consent 🍪</h1>  <h1>react-lgpd-consent 🍪</h1>
+  <p><strong>Gerenciamento de consentimento de cookies em conformidade com a LGPD</strong></p>  <h1>react-lgpd-consent 🍪</h1>
 
 
 
-  <div>  <p><strong>Gerenciamento de consentimento de cookies em conformidade com a LGPD</strong></p>  <p><strong>Uma biblioteca React para gerenciamento de consentimento de cookies em conformidade com a LGPD.</strong></p>
+  <div>  <p><strong>Gerenciamento de consentimento de cookies em conformidade com a LGPD</strong></p>  <h1>react-lgpd-consent 🍪</h1>  <h1>react-lgpd-consent 🍪</h1>
 
     <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
 
@@ -14,119 +14,119 @@
 
     <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
 
-    <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>  <div>  <div>
+    <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>  <div>  <p><strong>Gerenciamento de consentimento de cookies em conformidade com a LGPD</strong></p>  <p><strong>Uma biblioteca React para gerenciamento de consentimento de cookies em conformidade com a LGPD.</strong></p>
 
   </div>
 
-    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
+    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
 
   <div>
 
-    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
+    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
 
     <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18%2B%2019-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+19"></a>
 
-    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
+    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
 
   </div>
 
-    <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>  <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>
+    <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>  <div>  <div>
 
   <div>
 
-    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>  </div>  </div>
+    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>  </div>
 
     <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white&label=Bundle" alt="Bundle Size"></a>
 
-  </div>
+  </div>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
 
 
 
-  <br />  <div>  <div>
+  <br />  <div>
 
 
 
-  <p>    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>
+  <p>    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
 
     <a href="#-instalação"><strong>Instalação</strong></a> •
 
-    <a href="#-início-rápido"><strong>Início Rápido</strong></a> •    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18%2B%2019-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+19"></a>    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18+-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+"></a>
+    <a href="#-início-rápido"><strong>Início Rápido</strong></a> •    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18%2B%2019-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+19"></a>
 
     <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/QUICKSTART.md"><strong>📚 Guia Completo</strong></a> •
 
-    <a href="#-documentação"><strong>Documentação</strong></a> •    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>
+    <a href="#-documentação"><strong>Documentação</strong></a> •    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
 
     <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/packages/react-lgpd-consent/README.en.md">🇺🇸 English</a>
 
-  </p>  </div>  </div>
+  </p>  </div>
 
 </div>
 
-
+    <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>  <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>
 
 ---
 
-  <div>  <div>
+  <div>
 
 ## 🎯 O que há de novo na v0.5.0
 
-    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>
+    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>  </div>  </div>
 
 ### 🏗️ Arquitetura Modular (BREAKING CHANGE)
 
-    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white&label=Bundle" alt="Bundle Size"></a>    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle Size"></a>
+    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white&label=Bundle" alt="Bundle Size"></a>
 
 A v0.5.0 introduz uma **arquitetura monorepo** com 3 pacotes independentes:
 
-  </div>    <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/react-lgpd-consent?style=for-the-badge&logo=node.js&logoColor=white" alt="Node Version"></a>
+  </div>
 
 | Pacote | Descrição | Bundle | Use quando... |
 
-|--------|-----------|--------|---------------|  </div>
+|--------|-----------|--------|---------------|
 
-| [`@react-lgpd-consent/core`](https://www.npmjs.com/package/@react-lgpd-consent/core) | Lógica headless sem UI | ~86 KB | Você vai criar sua própria UI customizada |
+| **`@react-lgpd-consent/core`** | Lógica headless sem UI | ~86 KB | Você vai criar sua própria UI customizada |
 
-| [`@react-lgpd-consent/mui`](https://www.npmjs.com/package/@react-lgpd-consent/mui) | Componentes Material-UI prontos | ~104 KB | Você quer componentes UI prontos com MUI |  <br />
+| **`@react-lgpd-consent/mui`** | Componentes Material-UI prontos | ~104 KB | Você quer componentes UI prontos com MUI |  <br />  <div>  <div>
 
-| `react-lgpd-consent` | Agregador (re-exporta MUI) | ~104 KB | **Compatibilidade com v0.4.x** |
+| **`react-lgpd-consent`** | Agregador (re-exporta MUI) | ~104 KB | **Compatibilidade com v0.4.x** |
 
-  <br />
+
 
 > **💡 Este pacote (`react-lgpd-consent`)** é o agregador que mantém compatibilidade retroativa. Ele re-exporta `@react-lgpd-consent/mui` e funciona exatamente como a v0.4.x, mas agora com a nova arquitetura.
 
-  <p>
+  <p>    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>
 
 ### ✨ Novos Recursos v0.5.0
 
-    <a href="#-instalação"><strong>Instalação</strong></a> •  <p>
+    <a href="#-instalação"><strong>Instalação</strong></a> •
 
 - ✅ **Auto-injeção de Componentes**: `ConsentProvider` do MUI injeta automaticamente Banner, Modal e Floating Button
 
-- ✅ **Tema MUI Integrado**: Suporte a ThemeProvider opcional com `createDefaultConsentTheme()`    <a href="#-início-rápido"><strong>Início Rápido</strong></a> •    <a href="#-instalação"><strong>Instalação</strong></a> •
+- ✅ **Tema MUI Integrado**: Suporte a ThemeProvider opcional com `createDefaultConsentTheme()`    <a href="#-início-rápido"><strong>Início Rápido</strong></a> •    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18%2B%2019-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+19"></a>    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18+-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+"></a>
 
 - ✅ **Controle Granular**: Props para desabilitar componentes individuais (`disableDefaultBanner`, `disableDefaultModal`, `disableDefaultFloatingButton`)
 
-- ✅ **Warnings de Desenvolvedor**: Sistema inteligente que avisa quando faltam componentes UI (apenas em DEV)    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/QUICKSTART.md"><strong>📚 Guia Completo</strong></a> •    <a href="#-uso-básico"><strong>Uso Básico</strong></a> •
+- ✅ **Warnings de Desenvolvedor**: Sistema inteligente que avisa quando faltam componentes UI (apenas em DEV)    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/QUICKSTART.md"><strong>📚 Guia Completo</strong></a> •
 
 - ✅ **Monorepo TypeScript**: Paths configurados para melhor DX em IDEs
 
-    <a href="#-documentação"><strong>Documentação</strong></a> •  <a href="./QUICKSTART.md"><strong>📚 Guia de Início Rápido</strong></a> •
+    <a href="#-documentação"><strong>Documentação</strong></a> •    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>
 
 ### 📦 Migração de v0.4.x → v0.5.0
 
-    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/README.en.md">🇺🇸 English</a>  <a href="#-documentação-completa"><strong>Documentação</strong></a> •
+    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/packages/react-lgpd-consent/README.en.md">🇺🇸 English</a>
 
 **Se você usa `react-lgpd-consent` (este pacote):**
 
-  </p>  <a href="./README.en.md">🇺🇸 🇬🇧 English</a> •
+  </p>  </div>  </div>
 
 ✅ **Nenhuma mudança necessária!** A API é 100% retrocompatível.
 
-</div>    <a href="#-como-contribuir"><strong>Contribuir</strong></a>
+</div>
 
 ```tsx
 
-// v0.4.x - continua funcionando  </p>
+// v0.4.x - continua funcionando
 
 import { ConsentProvider, useConsent } from 'react-lgpd-consent'
 
@@ -134,31 +134,31 @@ import { ConsentProvider, useConsent } from 'react-lgpd-consent'
 
 // v0.5.0 - mesma API, mesmos componentes
 
-import { ConsentProvider, useConsent } from 'react-lgpd-consent'  <!-- Quickstart callout (mantido) -->
+import { ConsentProvider, useConsent } from 'react-lgpd-consent'  <div>  <div>
 
 ```
 
-## 🎯 O que há de novo na v0.5.0  <p align="center">
+## 🎯 O que há de novo na v0.5.0
 
 **Se você quer otimizar o bundle:**
 
-    <a href="./QUICKSTART.md"><img src="https://img.shields.io/badge/Quickstart-Iniciar%20R%C3%A1pido-blue?style=for-the-badge&logo=book" alt="Quickstart"></a>
+    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>
 
 ```tsx
 
-// Opção 1: Core (headless) + sua própria UI (~86 KB)### 🏗️ Arquitetura Modular (BREAKING CHANGE)  </p>
+// Opção 1: Core (headless) + sua própria UI (~86 KB)### 🏗️ Arquitetura Modular (BREAKING CHANGE)
 
 import { ConsentProvider } from '@react-lgpd-consent/core'
 
-
+    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white&label=Bundle" alt="Bundle Size"></a>    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle Size"></a>
 
 // Opção 2: MUI com componentes prontos (~104 KB)
 
-import { ConsentProvider } from '@react-lgpd-consent/mui'A v0.5.0 introduz uma **arquitetura monorepo** com 3 pacotes independentes:  <p align="center"><strong>Comece por aqui:</strong> siga o <a href="./QUICKSTART.md">Guia de Início Rápido (QUICKSTART.md)</a> para um tutorial passo-a-passo, exemplos TypeScript, tabela de props e integração com MUI — recomendado para usuários novos.</p>
+import { ConsentProvider } from '@react-lgpd-consent/mui'A v0.5.0 introduz uma **arquitetura monorepo** com 3 pacotes independentes:
 
 
 
-// Opção 3: Agregador (compatibilidade) (~104 KB)</div>
+// Opção 3: Agregador (compatibilidade) (~104 KB)  </div>    <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/react-lgpd-consent?style=for-the-badge&logo=node.js&logoColor=white" alt="Node Version"></a>
 
 import { ConsentProvider } from 'react-lgpd-consent' // Este pacote
 
@@ -166,167 +166,295 @@ import { ConsentProvider } from 'react-lgpd-consent' // Este pacote
 
 
 
----|--------|-----------|--------|---------------|---
+---|--------|-----------|--------|---------------|  </div>
 
 
 
-## 🚀 Instalação| **`@react-lgpd-consent/core`** | Lógica headless sem UI | ~86 KB | Você vai criar sua própria UI customizada |
+## 🚀 Instalação| [`@react-lgpd-consent/core`](https://www.npmjs.com/package/@react-lgpd-consent/core) | Lógica headless sem UI | ~86 KB | Você vai criar sua própria UI customizada |
 
 
 
-```bash| **`@react-lgpd-consent/mui`** | Componentes Material-UI prontos | ~104 KB | Você quer componentes UI prontos com MUI |## 🚀 Instalação
+```bash| [`@react-lgpd-consent/mui`](https://www.npmjs.com/package/@react-lgpd-consent/mui) | Componentes Material-UI prontos | ~104 KB | Você quer componentes UI prontos com MUI |  <br />
 
 npm install react-lgpd-consent
 
-```| **`react-lgpd-consent`** | Agregador (re-exporta MUI) | ~104 KB | **Compatibilidade com v0.4.x** |
+```| `react-lgpd-consent` | Agregador (re-exporta MUI) | ~104 KB | **Compatibilidade com v0.4.x** |
 
 
 
-### Dependências Peer (instaladas automaticamente se não existirem)```bash
+### Dependências Peer (instaladas automaticamente se não existirem)  <br />
 
 
 
-```bash> **💡 Este pacote (`react-lgpd-consent`)** é o agregador que mantém compatibilidade retroativa. Ele re-exporta `@react-lgpd-consent/mui` e funciona exatamente como a v0.4.x, mas agora com a nova arquitetura.npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-cookie
+```bash> **💡 Este pacote (`react-lgpd-consent`)** é o agregador que mantém compatibilidade retroativa. Ele re-exporta `@react-lgpd-consent/mui` e funciona exatamente como a v0.4.x, mas agora com a nova arquitetura.
 
 npm install react react-dom @mui/material @emotion/react @emotion/styled
 
-``````
+```  <p>
 
 
 
----### ✨ Novos Recursos v0.5.0
+**Dependências peer:** `react`, `react-dom`, `@mui/material` e `js-cookie`.### ✨ Novos Recursos v0.5.0
 
 
 
-## ⚡ Início Rápido**Dependências peer:** `react`, `react-dom`, `@mui/material` e `js-cookie`.
+---    <a href="#-instalação"><strong>Instalação</strong></a> •  <p>
 
 
 
-### Setup Básico (3 linhas de código)- ✅ **Auto-injeção de Componentes**: `ConsentProvider` do MUI injeta automaticamente Banner, Modal e Floating Button
+## ⚡ Início Rápido- ✅ **Auto-injeção de Componentes**: `ConsentProvider` do MUI injeta automaticamente Banner, Modal e Floating Button
 
 
 
-```tsx- ✅ **Tema MUI Integrado**: Suporte a ThemeProvider opcional com `createDefaultConsentTheme()`---
+### Setup Básico (3 linhas de código)- ✅ **Tema MUI Integrado**: Suporte a ThemeProvider opcional com `createDefaultConsentTheme()`    <a href="#-início-rápido"><strong>Início Rápido</strong></a> •    <a href="#-instalação"><strong>Instalação</strong></a> •
+
+
+
+```tsx- ✅ **Controle Granular**: Props para desabilitar componentes individuais (`disableDefaultBanner`, `disableDefaultModal`, `disableDefaultFloatingButton`)
 
 import { ConsentProvider } from 'react-lgpd-consent'
 
-- ✅ **Controle Granular**: Props para desabilitar componentes individuais (`disableDefaultBanner`, `disableDefaultModal`, `disableDefaultFloatingButton`)
+- ✅ **Warnings de Desenvolvedor**: Sistema inteligente que avisa quando faltam componentes UI (apenas em DEV)    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/QUICKSTART.md"><strong>📚 Guia Completo</strong></a> •    <a href="#-uso-básico"><strong>Uso Básico</strong></a> •
 
 export default function App() {
 
-  return (- ✅ **Warnings de Desenvolvedor**: Sistema inteligente que avisa quando faltam componentes UI (apenas em DEV)## ✨ Novidades v0.4.5
+  return (- ✅ **Monorepo TypeScript**: Paths configurados para melhor DX em IDEs
 
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
 
-      <YourApp />- ✅ **Monorepo TypeScript**: Paths configurados para melhor DX em IDEs
+      <YourApp />    <a href="#-documentação"><strong>Documentação</strong></a> •  <a href="./QUICKSTART.md"><strong>📚 Guia de Início Rápido</strong></a> •
 
     </ConsentProvider>
 
-  )### 📊 DataLayer Events para Google Tag Manager
+  )### 📦 Migração de v0.4.x → v0.5.0
 
 }
 
-```### 📦 Migração de v0.4.x → v0.5.0- **Eventos Padronizados**: `consent_initialized` e `consent_updated` disparados automaticamente
+```    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/README.en.md">🇺🇸 English</a>  <a href="#-documentação-completa"><strong>Documentação</strong></a> •
 
 
 
-**Isso já inclui:**- **Rastreamento de Origem**: Identifica se decisão veio do banner, modal, reset ou API programática
+**Isso já inclui:****Se você usa `react-lgpd-consent` (este pacote):**
 
 - ✅ Banner de cookies
 
-- ✅ Modal de preferências**Se você usa `react-lgpd-consent` (este pacote):**- **Auditoria LGPD**: Histórico completo de mudanças com `changed_categories` e timestamps ISO 8601
+- ✅ Modal de preferências  </p>  <a href="./README.en.md">🇺🇸 🇬🇧 English</a> •
 
 - ✅ Botão flutuante para reabrir preferências
 
-- ✅ Persistência em cookies- **Integração GTM**: Documentação completa com exemplos de triggers e tags
+- ✅ Persistência em cookies✅ **Nenhuma mudança necessária!** A API é 100% retrocompatível.
 
 - ✅ SSR-safe (Next.js, Remix)
 
-✅ **Nenhuma mudança necessária!** A API é 100% retrocompatível.- **API Pública**: Funções `pushConsentInitializedEvent` e `pushConsentUpdatedEvent` exportadas
+</div>    <a href="#-como-contribuir"><strong>Contribuir</strong></a>
 
 ### Acessar Estado de Consentimento
 
-
+```tsx
 
 ```tsx
 
-import { useConsent } from 'react-lgpd-consent'```tsx### 🔧 Melhorias de CI/CD
+import { useConsent } from 'react-lgpd-consent'// v0.4.x - continua funcionando  </p>
 
 
 
-function MyComponent() {// v0.4.x - continua funcionando- **Migração para pnpm**: Workflows atualizados de npm para pnpm, resolvendo conflitos de dependências
+function MyComponent() {import { ConsentProvider, useConsent } from 'react-lgpd-consent'
 
   const { preferences, acceptCategory, rejectCategory } = useConsent()
 
-import { ConsentProvider, useConsent } from 'react-lgpd-consent'- **Build Otimizado**: Pipeline mais rápido e confiável
+---
 
   if (preferences.analytics) {
 
-    // Analytics está permitido, carregue scripts
+    // Analytics está permitido, carregue scripts// v0.5.0 - mesma API, mesmos componentes
 
   }
 
-// v0.5.0 - mesma API, mesmos componentes---
+import { ConsentProvider, useConsent } from 'react-lgpd-consent'  <!-- Quickstart callout (mantido) -->
 
   return (
 
-    <button onClick={() => acceptCategory('marketing')}>import { ConsentProvider, useConsent } from 'react-lgpd-consent'
+    <button onClick={() => acceptCategory('marketing')}>```
 
       Aceitar Marketing
 
-    </button>```## ✨ Novidades v0.4.4
+    </button>## 🎯 O que há de novo na v0.5.0  <p align="center">
 
   )
+
+}**Se você quer otimizar o bundle:**
+
+```
+
+    <a href="./QUICKSTART.md"><img src="https://img.shields.io/badge/Quickstart-Iniciar%20R%C3%A1pido-blue?style=for-the-badge&logo=book" alt="Quickstart"></a>
+
+### Carregar Scripts Condicionados ao Consentimento
+
+```tsx
+
+```tsx
+
+import { ConsentScriptLoader } from 'react-lgpd-consent'// Opção 1: Core (headless) + sua própria UI (~86 KB)### 🏗️ Arquitetura Modular (BREAKING CHANGE)  </p>
+
+
+
+function Analytics() {import { ConsentProvider } from '@react-lgpd-consent/core'
+
+  return (
+
+    <ConsentScriptLoader
+
+      category="analytics"
+
+      src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"// Opção 2: MUI com componentes prontos (~104 KB)
+
+      strategy="afterInteractive"
+
+    >import { ConsentProvider } from '@react-lgpd-consent/mui'A v0.5.0 introduz uma **arquitetura monorepo** com 3 pacotes independentes:  <p align="center"><strong>Comece por aqui:</strong> siga o <a href="./QUICKSTART.md">Guia de Início Rápido (QUICKSTART.md)</a> para um tutorial passo-a-passo, exemplos TypeScript, tabela de props e integração com MUI — recomendado para usuários novos.</p>
+
+      {`
+
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag(){dataLayer.push(arguments);}
+
+        gtag('js', new Date());// Opção 3: Agregador (compatibilidade) (~104 KB)</div>
+
+        gtag('config', 'GA_MEASUREMENT_ID');
+
+      `}import { ConsentProvider } from 'react-lgpd-consent' // Este pacote
+
+    </ConsentScriptLoader>
+
+  )```| Pacote | Descrição | Bundle | Use quando... |
 
 }
 
 ```
 
-**Se você quer otimizar o bundle:**### 🔧 CI/CD e Publicação
 
-### Carregar Scripts Condicionados ao Consentimento
 
-- **Workflow de Publicação**: Corrigido bug que impedia publicação automática no npm quando tags eram criadas após merge para `main`
+------|--------|-----------|--------|---------------|---
+
+
+
+## 🎨 Customização
+
+
+
+### Tema Material-UI## 🚀 Instalação| **`@react-lgpd-consent/core`** | Lógica headless sem UI | ~86 KB | Você vai criar sua própria UI customizada |
+
+
 
 ```tsx
 
-import { ConsentScriptLoader } from 'react-lgpd-consent'```tsx- **Codecov Integration**: Adicionado upload automático de coverage reports para melhor visualização de cobertura de testes
+import { ConsentProvider, createDefaultConsentTheme } from 'react-lgpd-consent'
+
+```bash| **`@react-lgpd-consent/mui`** | Componentes Material-UI prontos | ~104 KB | Você quer componentes UI prontos com MUI |## 🚀 Instalação
+
+<ConsentProvider
+
+  theme={createDefaultConsentTheme({npm install react-lgpd-consent
+
+    palette: {
+
+      primary: { main: '#your-brand-color' }```| **`react-lgpd-consent`** | Agregador (re-exporta MUI) | ~104 KB | **Compatibilidade com v0.4.x** |
+
+    }
+
+  })}
+
+  categories={{ enabledCategories: ['analytics'] }}
+
+>### Dependências Peer (instaladas automaticamente se não existirem)```bash
+
+  <App />
+
+</ConsentProvider>
+
+```
+
+```bash> **💡 Este pacote (`react-lgpd-consent`)** é o agregador que mantém compatibilidade retroativa. Ele re-exporta `@react-lgpd-consent/mui` e funciona exatamente como a v0.4.x, mas agora com a nova arquitetura.npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-cookie
+
+### Desabilitar Componentes Padrão
+
+npm install react react-dom @mui/material @emotion/react @emotion/styled
+
+```tsx
+
+import { ConsentProvider, CookieBanner, PreferencesModal } from 'react-lgpd-consent'``````
 
 
 
-function Analytics() {// Opção 1: Core (headless) + sua própria UI (~86 KB)- **Badge de Coverage**: Agora atualizado em tempo real via Codecov
+<ConsentProvider
 
-  return (
+  categories={{ enabledCategories: ['analytics'] }}
 
-    <ConsentScriptLoaderimport { ConsentProvider } from '@react-lgpd-consent/core'
+  disableDefaultBanner---### ✨ Novos Recursos v0.5.0
 
-      category="analytics"
+  disableDefaultModal
 
-      src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"### 📊 Qualidade e Confiabilidade
+>
 
-      strategy="afterInteractive"
+  {/* Use seus próprios componentes */}
 
-    >// Opção 2: MUI com componentes prontos (~104 KB)- **Publicação Confiável**: Tags agora são publicadas corretamente quando commit está no histórico da `main`
+  <CookieBanner position="bottom-left" />## ⚡ Início Rápido**Dependências peer:** `react`, `react-dom`, `@mui/material` e `js-cookie`.
 
-      {`
+  <PreferencesModal showBranding={false} />
 
-        window.dataLayer = window.dataLayer || [];import { ConsentProvider } from '@react-lgpd-consent/mui'- **Visibilidade de Cobertura**: Integração completa com Codecov para tracking de qualidade
+  <App />
 
-        function gtag(){dataLayer.push(arguments);}
+</ConsentProvider>
 
-        gtag('js', new Date());
+```### Setup Básico (3 linhas de código)- ✅ **Auto-injeção de Componentes**: `ConsentProvider` do MUI injeta automaticamente Banner, Modal e Floating Button
 
-        gtag('config', 'GA_MEASUREMENT_ID');
 
-      `}// Opção 3: Agregador (compatibilidade) (~104 KB)---
 
-    </ConsentScriptLoader>
+### Design Tokens Avançados
 
-  )import { ConsentProvider } from 'react-lgpd-consent' // Este pacote
 
-}
 
-``````## ✨ Novidades v0.4.1
+```tsx```tsx- ✅ **Tema MUI Integrado**: Suporte a ThemeProvider opcional com `createDefaultConsentTheme()`---
+
+<ConsentProvider
+
+  categories={{ enabledCategories: ['analytics'] }}import { ConsentProvider } from 'react-lgpd-consent'
+
+  designTokens={{
+
+    colors: {- ✅ **Controle Granular**: Props para desabilitar componentes individuais (`disableDefaultBanner`, `disableDefaultModal`, `disableDefaultFloatingButton`)
+
+      primary: '#1976d2',
+
+      secondary: '#dc004e',export default function App() {
+
+      background: '#ffffff',
+
+    },  return (- ✅ **Warnings de Desenvolvedor**: Sistema inteligente que avisa quando faltam componentes UI (apenas em DEV)## ✨ Novidades v0.4.5
+
+    layout: {
+
+      backdropColor: 'rgba(0, 0, 0, 0.8)',    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+
+      bannerPosition: 'bottom-center',
+
+    },      <YourApp />- ✅ **Monorepo TypeScript**: Paths configurados para melhor DX em IDEs
+
+    typography: {
+
+      fontFamily: 'Inter, sans-serif',    </ConsentProvider>
+
+    }
+
+  }}  )### 📊 DataLayer Events para Google Tag Manager
+
+>
+
+  <App />}
+
+</ConsentProvider>
+
+``````### 📦 Migração de v0.4.x → v0.5.0- **Eventos Padronizados**: `consent_initialized` e `consent_updated` disparados automaticamente
 
 
 
@@ -334,11 +462,224 @@ function Analytics() {// Opção 1: Core (headless) + sua própria UI (~86 KB)- 
 
 
 
-## 🎨 Customização---### 🎨 Design Tokens Expandidos
+## 📚 Documentação**Isso já inclui:**- **Rastreamento de Origem**: Identifica se decisão veio do banner, modal, reset ou API programática
 
 
 
-### Tema Material-UI- **200+ pontos de customização** (cores, tipografia, espaçamento, layout)
+### 📖 Guias Completos (GitHub)- ✅ Banner de cookies
+
+
+
+- **[📚 Quickstart](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/QUICKSTART.md)**: Tutorial passo-a-passo com exemplos TypeScript- ✅ Modal de preferências**Se você usa `react-lgpd-consent` (este pacote):**- **Auditoria LGPD**: Histórico completo de mudanças com `changed_categories` e timestamps ISO 8601
+
+- **[🏗️ API Reference](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/API.md)**: Referência completa de componentes, hooks e tipos
+
+- **[⚖️ Conformidade LGPD](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/CONFORMIDADE.md)**: Detalhes sobre compliance e auditoria- ✅ Botão flutuante para reabrir preferências
+
+- **[🔌 Integrações](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/INTEGRACOES.md)**: Google Analytics, GTM, Facebook Pixel, Hotjar, etc.
+
+- **[🏛️ Arquitetura](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/ARCHITECTURE.md)**: Detalhes da arquitetura monorepo v0.5.0- ✅ Persistência em cookies- **Integração GTM**: Documentação completa com exemplos de triggers e tags
+
+- **[📝 Changelog](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/CHANGELOG.md)**: Histórico completo de versões
+
+- ✅ SSR-safe (Next.js, Remix)
+
+### 🎨 Documentação Interativa (GitHub Pages)
+
+✅ **Nenhuma mudança necessária!** A API é 100% retrocompatível.- **API Pública**: Funções `pushConsentInitializedEvent` e `pushConsentUpdatedEvent` exportadas
+
+- **[🎭 Storybook - Playground Interativo](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Explore e teste todos os componentes em tempo real
+
+- **[⚙️ TypeDoc - API Docs](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: Documentação da API gerada automaticamente### Acessar Estado de Consentimento
+
+- **[🏠 Portal de Documentação](https://lucianoedipo.github.io/react-lgpd-consent/)**: Navegação central entre todas as docs
+
+
+
+---
+
+```tsx
+
+## 🔌 Integrações Nativas
+
+import { useConsent } from 'react-lgpd-consent'```tsx### 🔧 Melhorias de CI/CD
+
+A biblioteca possui integrações prontas para:
+
+
+
+- ✅ **Google Analytics 4** (GA4)
+
+- ✅ **Google Tag Manager** (GTM)function MyComponent() {// v0.4.x - continua funcionando- **Migração para pnpm**: Workflows atualizados de npm para pnpm, resolvendo conflitos de dependências
+
+- ✅ **Facebook Pixel**
+
+- ✅ **Hotjar**  const { preferences, acceptCategory, rejectCategory } = useConsent()
+
+- ✅ **Microsoft Clarity**
+
+- ✅ **Mixpanel**import { ConsentProvider, useConsent } from 'react-lgpd-consent'- **Build Otimizado**: Pipeline mais rápido e confiável
+
+- ✅ **Intercom**
+
+- ✅ **Zendesk**  if (preferences.analytics) {
+
+- ✅ **UserWay** (Acessibilidade)
+
+    // Analytics está permitido, carregue scripts
+
+```tsx
+
+import { ConsentScriptLoader, createGoogleAnalyticsIntegration } from 'react-lgpd-consent'  }
+
+
+
+<ConsentScriptLoader integration={createGoogleAnalyticsIntegration('GA_ID')} />// v0.5.0 - mesma API, mesmos componentes---
+
+```
+
+  return (
+
+**[Ver guia completo de integrações →](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/INTEGRACOES.md)**
+
+    <button onClick={() => acceptCategory('marketing')}>import { ConsentProvider, useConsent } from 'react-lgpd-consent'
+
+---
+
+      Aceitar Marketing
+
+## 🧩 Ecossistema de Pacotes
+
+    </button>```## ✨ Novidades v0.4.4
+
+```
+
+react-lgpd-consent (este pacote - agregador)  )
+
+├── @react-lgpd-consent/core      # Headless (86 KB)
+
+└── @react-lgpd-consent/mui       # MUI Components (104 KB)}
+
+```
+
+```
+
+### Quando usar cada pacote?
+
+**Se você quer otimizar o bundle:**### 🔧 CI/CD e Publicação
+
+| Cenário | Pacote Recomendado |
+
+|---------|-------------------|### Carregar Scripts Condicionados ao Consentimento
+
+| **Migração de v0.4.x** | `react-lgpd-consent` (este) |
+
+| **UI customizada completa** | `@react-lgpd-consent/core` |- **Workflow de Publicação**: Corrigido bug que impedia publicação automática no npm quando tags eram criadas após merge para `main`
+
+| **Componentes MUI prontos** | `@react-lgpd-consent/mui` |
+
+| **Novo projeto com MUI** | `@react-lgpd-consent/mui` |```tsx
+
+| **Bundle otimizado** | `@react-lgpd-consent/core` |
+
+import { ConsentScriptLoader } from 'react-lgpd-consent'```tsx- **Codecov Integration**: Adicionado upload automático de coverage reports para melhor visualização de cobertura de testes
+
+---
+
+
+
+## 🌟 Características
+
+function Analytics() {// Opção 1: Core (headless) + sua própria UI (~86 KB)- **Badge de Coverage**: Agora atualizado em tempo real via Codecov
+
+- ✅ **TypeScript First**: Tipos completos e inferência automática
+
+- ✅ **SSR-Safe**: Compatível com Next.js (App Router + Pages Router), Remix  return (
+
+- ✅ **Zero Config**: Funciona out-of-the-box com defaults sensatos
+
+- ✅ **Acessível**: WCAG 2.1 AA compliance, keyboard navigation, screen readers    <ConsentScriptLoaderimport { ConsentProvider } from '@react-lgpd-consent/core'
+
+- ✅ **Responsivo**: Mobile-first design com breakpoints adaptativos
+
+- ✅ **Tree-shakeable**: Import apenas o que você usa      category="analytics"
+
+- ✅ **Temas**: Light/Dark/Auto com transições suaves
+
+- ✅ **i18n**: Suporte a múltiplos idiomas (pt-BR, en, es)      src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"### 📊 Qualidade e Confiabilidade
+
+- ✅ **Auditável**: Logs de desenvolvedor e eventos DataLayer para GTM
+
+      strategy="afterInteractive"
+
+---
+
+    >// Opção 2: MUI com componentes prontos (~104 KB)- **Publicação Confiável**: Tags agora são publicadas corretamente quando commit está no histórico da `main`
+
+## 🤝 Contribuindo
+
+      {`
+
+Contribuições são bem-vindas! Veja o [Guia de Desenvolvimento](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/DEVELOPMENT.md).
+
+        window.dataLayer = window.dataLayer || [];import { ConsentProvider } from '@react-lgpd-consent/mui'- **Visibilidade de Cobertura**: Integração completa com Codecov para tracking de qualidade
+
+1. Fork o repositório
+
+2. Crie uma branch: `git checkout -b feature/minha-feature`        function gtag(){dataLayer.push(arguments);}
+
+3. Commit: `git commit -m 'feat: minha nova feature'`
+
+4. Push: `git push origin feature/minha-feature`        gtag('js', new Date());
+
+5. Abra um Pull Request
+
+        gtag('config', 'GA_MEASUREMENT_ID');
+
+---
+
+      `}// Opção 3: Agregador (compatibilidade) (~104 KB)---
+
+## 📄 Licença
+
+    </ConsentScriptLoader>
+
+MIT © [Luciano Edipo](https://github.com/lucianoedipo)
+
+  )import { ConsentProvider } from 'react-lgpd-consent' // Este pacote
+
+---
+
+}
+
+## 🔗 Links Úteis
+
+``````## ✨ Novidades v0.4.1
+
+- **[GitHub Repository](https://github.com/lucianoedipo/react-lgpd-consent)**
+
+- **[NPM Package - react-lgpd-consent](https://www.npmjs.com/package/react-lgpd-consent)** (agregador)
+
+- **[NPM Package - @react-lgpd-consent/mui](https://www.npmjs.com/package/@react-lgpd-consent/mui)** (componentes MUI)
+
+- **[NPM Package - @react-lgpd-consent/core](https://www.npmjs.com/package/@react-lgpd-consent/core)** (headless)---
+
+- **[Issues & Bugs](https://github.com/lucianoedipo/react-lgpd-consent/issues)**
+
+- **[Changelog](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/CHANGELOG.md)**
+
+
+
+---## 🎨 Customização---### 🎨 Design Tokens Expandidos
+
+
+
+<div align="center">
+
+  <sub>Feito com ❤️ para a comunidade React brasileira</sub>
+
+</div>### Tema Material-UI- **200+ pontos de customização** (cores, tipografia, espaçamento, layout)
+
 
 
 
