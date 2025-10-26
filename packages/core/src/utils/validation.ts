@@ -14,8 +14,7 @@ export type ValidationResult = {
   errors: string[]
 }
 
-const isDev = () =>
-  typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production'
+const isDev = () => typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production'
 
 /**
  * Valida e saneia as props do ConsentProvider em modo DEV.
@@ -46,7 +45,6 @@ export function validateConsentProviderProps(
   // DEV: tenta carregar Zod dinamicamente para validações detalhadas
   let z: typeof import('zod') | undefined
   try {
-     
     z = require('zod') as typeof import('zod')
   } catch {
     // Ambiente de teste/build pode não resolver 'zod' — segue com validações leves

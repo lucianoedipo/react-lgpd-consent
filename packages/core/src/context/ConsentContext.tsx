@@ -488,19 +488,17 @@ export function ConsentProvider({
                 )}
 
                 {/* Cookie Banner - renderizado se não houver consentimento e estiver hidratado */}
-                {!state.consented &&
-                  isHydrated &&
-                  CookieBannerComponent && (
-                    <CookieBannerComponent
-                      consented={api.consented}
-                      acceptAll={api.acceptAll}
-                      rejectAll={api.rejectAll}
-                      openPreferences={api.openPreferences}
-                      texts={texts}
-                      blocking={blocking}
-                      {...cookieBannerProps}
-                    />
-                  )}
+                {!state.consented && isHydrated && CookieBannerComponent && (
+                  <CookieBannerComponent
+                    consented={api.consented}
+                    acceptAll={api.acceptAll}
+                    rejectAll={api.rejectAll}
+                    openPreferences={api.openPreferences}
+                    texts={texts}
+                    blocking={blocking}
+                    {...cookieBannerProps}
+                  />
+                )}
 
                 {/* Floating Preferences Button - renderizado se houver consentimento e não estiver desabilitado */}
                 {state.consented &&

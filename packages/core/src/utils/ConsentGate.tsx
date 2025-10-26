@@ -41,7 +41,7 @@ import { useConsent } from '../hooks/useConsent'
 
 /**
  * ConsentGate - renderiza children apenas se houver consentimento para a categoria.
- * 
+ *
  * @remarks
  * Não usa React.memo pois o estado de preferências muda dinamicamente
  * e o componente precisa re-renderizar quando as preferências mudam.
