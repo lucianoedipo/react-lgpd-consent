@@ -84,12 +84,12 @@
     "README.md",
     "README.en.md",
     "QUICKSTART.md",
-    "QUICKSTART.en.md",
     "MIGRATION.md",
     "ARCHITECTURE.md",
-    "CHANGELOG.md",
     "DEVELOPMENT.md",
     "CONFORMIDADE.md",
-    "INTEGRACOES.md"
+    "packages/react-lgpd-consent/API.md",
+    "packages/react-lgpd-consent/INTEGRACOES.md",
+    "packages/react-lgpd-consent/CHANGELOG.md"
   ]
 }

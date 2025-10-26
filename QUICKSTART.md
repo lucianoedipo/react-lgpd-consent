@@ -1,234 +1,466 @@
-# 🚀 Guia de Início Rápido
+# 🚀 Quick Start - Desenvolvimento (Monorepo)# 🚀 Guia de Início Rápido
 
-Este guia fornece tudo o que você precisa para integrar rapidamente a biblioteca `react-lgpd-consent` em seu projeto React.
 
-## 📦 Instalação
 
-```bash
+> **Para usuários finais**: Veja [`packages/react-lgpd-consent/QUICKSTART.md`](packages/react-lgpd-consent/QUICKSTART.md)Este guia fornece tudo o que você precisa para integrar rapidamente a biblioteca `react-lgpd-consent` em seu projeto React.
+
+
+
+Este guia é para **desenvolvedores** que querem contribuir ou fazer build local do monorepo.## 📦 Instalação
+
+
+
+## 📦 Estrutura do Monorepo```bash
+
 npm install react-lgpd-consent
-# ou
-yarn add react-lgpd-consent
-```
 
-### Dependências Peer
+```# ou
 
-```bash
-npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
-```
+react-lgpd-consent/yarn add react-lgpd-consent
 
-> ℹ️ **Modularização (v0.5.0+)**
+├── packages/```
+
+│   ├── core/                    # @react-lgpd-consent/core (headless)
+
+│   ├── mui/                     # @react-lgpd-consent/mui (componentes)### Dependências Peer
+
+│   └── react-lgpd-consent/      # react-lgpd-consent (agregador)
+
+├── examples/```bash
+
+│   ├── vite/                    # Exemplo Vitenpm install @mui/material @mui/icons-material @emotion/react @emotion/styled
+
+│   └── next-app-router/         # Exemplo Next.js```
+
+└── docs/                        # TypeDoc + Storybook (gh-pages)
+
+```> ℹ️ **Modularização (v0.5.0+)**
+
 >
-> - `react-lgpd-consent` continua sendo o pacote principal publicado.
+
+## 🛠️ Setup Inicial> - `react-lgpd-consent` continua sendo o pacote principal publicado.
+
 > - `@react-lgpd-consent/core` expõe apenas contextos, hooks e utilitários (sem UI).
-> - `@react-lgpd-consent/mui` publica os componentes baseados em Material-UI (atualmente um proxy).
-> - Use os novos subpaths (`react-lgpd-consent/core`, `react-lgpd-consent/mui`) conforme a necessidade.
+
+### Pré-requisitos> - `@react-lgpd-consent/mui` publica os componentes baseados em Material-UI (atualmente um proxy).
+
+- Node.js >= 20 (veja `.nvmrc`)> - Use os novos subpaths (`react-lgpd-consent/core`, `react-lgpd-consent/mui`) conforme a necessidade.
+
+- pnpm >= 10
 
 ## 🎯 Uso Básico (30 segundos)
 
+### Instalação
+
 ````tsx
-import React from 'react'
-import { ConsentProvider } from 'react-lgpd-consent'
 
-function App() {
+```bashimport React from 'react'
+
+# Clonar repositórioimport { ConsentProvider } from 'react-lgpd-consent'
+
+git clone https://github.com/lucianoedipo/react-lgpd-consent.git
+
+cd react-lgpd-consentfunction App() {
+
   return (
-    <ConsentProvider
-      categories={{
+
+# Instalar dependências (workspace completo)    <ConsentProvider
+
+pnpm install      categories={{
+
         enabledCategories: ['analytics', 'marketing'],
-      }}
-    >
+
+# Build de todos os pacotes      }}
+
+pnpm run build    >
+
       <main>
-        <h1>Minha Aplicação</h1>
-        {/* Seu conteúdo aqui */}
-      </main>
+
+# Rodar testes em todos os pacotes        <h1>Minha Aplicação</h1>
+
+pnpm test        {/* Seu conteúdo aqui */}
+
+```      </main>
+
     </ConsentProvider>
-  )
 
-## 🧭 Storybook — quick note
+## 📝 Comandos Principais  )
 
-This repository ships an interactive Storybook playground used for manual testing and visual exploration of components. Quick commands:
+
+
+### Build & Dev## 🧭 Storybook — quick note
+
+```bash
+
+# Build de todos os pacotesThis repository ships an interactive Storybook playground used for manual testing and visual exploration of components. Quick commands:
+
+pnpm run build
 
 - Run locally (development):
 
-```bash
+# Watch mode (rebuild automático)
+
+pnpm run dev```bash
+
 npm run storybook
-````
+
+# Build apenas do core````
+
+pnpm --filter @react-lgpd-consent/core run build
 
 - Build static Storybook (for publishing to GitHub Pages):
 
-```bash
-npm run build-storybook
+# Build apenas do mui
+
+pnpm --filter @react-lgpd-consent/mui run build```bash
+
+```npm run build-storybook
+
 ```
 
-Notes:
+### Testes
 
-- The Storybook preview (`.storybook/preview.tsx`) applies a clean environment between stories (removes consent cookie and performs defensive DOM cleanup). Check that file when creating stories that rely on a clean initial state.
+```bashNotes:
 
-}
+# Rodar todos os testes
+
+pnpm test- The Storybook preview (`.storybook/preview.tsx`) applies a clean environment between stories (removes consent cookie and performs defensive DOM cleanup). Check that file when creating stories that rely on a clean initial state.
+
+
+
+# Watch mode}
+
+pnpm test -- --watch
 
 export default App
 
-````
+# Coverage
 
-## ⚡ Quickstarts: Next.js (App Router) e Vite
+pnpm test -- --coverage````
 
-Os exemplos a seguir integram GTM/GA4 com Consent Mode v2 e garantem que nenhum script de tracking rode antes do consentimento. Eles também mostram como usar `ConsentScriptLoader` e sincronizar os sinais do Consent Mode via `gtag('consent', ...)`.
 
-- Exemplos completos: `examples/next-app-router/*`, `examples/vite/*`
 
-### Next.js 14/15 — App Router (SSR-safe)
+# Mutation testing (Stryker)## ⚡ Quickstarts: Next.js (App Router) e Vite
+
+pnpm run mutation
+
+```Os exemplos a seguir integram GTM/GA4 com Consent Mode v2 e garantem que nenhum script de tracking rode antes do consentimento. Eles também mostram como usar `ConsentScriptLoader` e sincronizar os sinais do Consent Mode via `gtag('consent', ...)`.
+
+
+
+### Qualidade de Código- Exemplos completos: `examples/next-app-router/*`, `examples/vite/*`
+
+```bash
+
+# Type-check (todos os pacotes)### Next.js 14/15 — App Router (SSR-safe)
+
+pnpm run type-check
 
 1) Criar app Next e instalar deps
 
-```bash
+# Linting
+
+pnpm run lint```bash
+
 npm create next-app@latest my-app --ts --eslint --src-dir --app --no-tailwind --no-experimental-app
-cd my-app
-npm i react-lgpd-consent @mui/material @mui/icons-material @emotion/react @emotion/styled
+
+# Formataçãocd my-app
+
+pnpm run formatnpm i react-lgpd-consent @mui/material @mui/icons-material @emotion/react @emotion/styled
+
 ```
 
-2) Variáveis públicas no `.env.local`
+# Size-check (bundle size)
+
+pnpm run size-check2) Variáveis públicas no `.env.local`
 
 ```
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+
 ```
+
+### DocumentaçãoNEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
+
+```bashNEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
+
+# Storybook (playground interativo)```
+
+pnpm run storybook
 
 3) Copiar os arquivos do exemplo e ajustar imports
 
-- De `examples/next-app-router/app/layout.tsx` → `app/layout.tsx`
+# Build Storybook
+
+pnpm run build-storybook- De `examples/next-app-router/app/layout.tsx` → `app/layout.tsx`
+
 - De `examples/next-app-router/app/page.tsx` → `app/page.tsx`
-- De `examples/next-app-router/components/ClientConsent.tsx` → `app/components/ClientConsent.tsx`
 
-Observação: nos arquivos copiados, troque imports relativos para `import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'`.
+# Gerar TypeDoc- De `examples/next-app-router/components/ClientConsent.tsx` → `app/components/ClientConsent.tsx`
 
-4) O que esse setup faz
+pnpm run docs:generate
 
-- `ClientConsent` é um componente client-only (via `dynamic(..., { ssr: false })` no layout) que:
-  - Injeta um stub de `dataLayer/gtag` e define `consent default = denied` para todos os sinais (ad_storage, ad_user_data, ad_personalization, analytics_storage).
-  - Sincroniza as mudanças do consentimento com `gtag('consent','update', ...)` mapeando as categorias: `analytics → analytics_storage`, `marketing → ad_*`.
+```Observação: nos arquivos copiados, troque imports relativos para `import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'`.
+
+
+
+### Exemplos4) O que esse setup faz
+
+```bash
+
+# Rodar exemplo Vite- `ClientConsent` é um componente client-only (via `dynamic(..., { ssr: false })` no layout) que:
+
+cd examples/vite  - Injeta um stub de `dataLayer/gtag` e define `consent default = denied` para todos os sinais (ad_storage, ad_user_data, ad_personalization, analytics_storage).
+
+pnpm dev  - Sincroniza as mudanças do consentimento com `gtag('consent','update', ...)` mapeando as categorias: `analytics → analytics_storage`, `marketing → ad_*`.
+
   - Usa `ConsentScriptLoader` para carregar GTM/GA4 somente quando as categorias permitirem. Antes disso, nenhum script de tracking é carregado.
 
-5) Rodar
+# Rodar exemplo Next.js
 
-```bash
+cd examples/next-app-router5) Rodar
+
+pnpm dev
+
+``````bash
+
 npm run dev
-```
 
-Validação rápida:
+## 📤 Publicação (CI/CD)```
+
+
+
+A publicação é **automática via CI** ao criar uma tag:Validação rápida:
+
 - Acesse em aba anônima: a rede não carrega `gtm.js`/`gtag/js` até aceitar preferências.
-- Ao aceitar `analytics`, o GA4 é carregado; ao aceitar `marketing`, os sinais `ad_*` são atualizados como granted.
 
-### Vite (CSR)
+```bash- Ao aceitar `analytics`, o GA4 é carregado; ao aceitar `marketing`, os sinais `ad_*` são atualizados como granted.
 
-1) Criar app Vite e instalar deps
+# 1. Atualizar versões nos packages (manualmente)
 
-```bash
-npm create vite@latest my-app -- --template react-ts
-cd my-app
+# packages/core/package.json - version: "0.5.1"### Vite (CSR)
+
+# packages/mui/package.json - version: "0.5.1"
+
+# packages/react-lgpd-consent/package.json - version: "0.5.3"1) Criar app Vite e instalar deps
+
+
+
+# 2. Commitar mudanças```bash
+
+git add .npm create vite@latest my-app -- --template react-ts
+
+git commit -m "chore: bump versions to 0.5.x"cd my-app
+
 npm i react-lgpd-consent @mui/material @mui/icons-material @emotion/react @emotion/styled
-```
+
+# 3. Criar tag (formato: vX.Y.Z)```
+
+git tag v0.5.3
 
 2) Variáveis no `.env`
 
-```
-VITE_GA_ID=G-XXXXXXXXXX
-VITE_GTM_ID=GTM-XXXXXXX
-```
+# 4. Push com tags
 
-3) Copiar os arquivos do exemplo e ajustar imports
+git push --tags```
+
+VITE_GA_ID=G-XXXXXXXXXX
+
+# CI vai automaticamente:VITE_GTM_ID=GTM-XXXXXXX
+
+# - Publicar @react-lgpd-consent/core@0.5.1```
+
+# - Publicar @react-lgpd-consent/mui@0.5.1  
+
+# - Publicar react-lgpd-consent@0.5.33) Copiar os arquivos do exemplo e ajustar imports
+
+```
 
 - De `examples/vite/index.html` → `index.html` (não adicione scripts do GA/GTM aqui)
-- De `examples/vite/src/main.tsx` → `src/main.tsx`
+
+**Workflow**: `.github/workflows/publish-github-packages.yml`- De `examples/vite/src/main.tsx` → `src/main.tsx`
+
 - De `examples/vite/src/App.tsx` → `src/App.tsx`
-- De `examples/vite/src/consent/GtagConsent.tsx` → `src/consent/GtagConsent.tsx`
 
-Observação: nos arquivos copiados, troque imports relativos para `import { ... } from 'react-lgpd-consent'`.
+## 🔍 Estrutura de Pacotes- De `examples/vite/src/consent/GtagConsent.tsx` → `src/consent/GtagConsent.tsx`
 
-4) Rodar
 
-```bash
+
+### @react-lgpd-consent/coreObservação: nos arquivos copiados, troque imports relativos para `import { ... } from 'react-lgpd-consent'`.
+
+- **Headless** (sem UI)
+
+- Context, hooks, lógica de consentimento4) Rodar
+
+- Target: Desenvolvedores que querem criar UI própria
+
+- Size: ~86 KB```bash
+
 npm run dev
-```
 
-Validação rápida:
-- Ao abrir a app (em nova sessão), nenhum script de tracking é baixado até que o usuário consinta.
-- Preferências atualizam `gtag('consent','update', ...)` corretamente por categoria.
+### @react-lgpd-consent/mui```
+
+- Componentes Material-UI
+
+- CookieBanner, PreferencesModal, FloatingButtonValidação rápida:
+
+- Depende de `@react-lgpd-consent/core`- Ao abrir a app (em nova sessão), nenhum script de tracking é baixado até que o usuário consinta.
+
+- Target: Desenvolvedores que querem UI pronta- Preferências atualizam `gtag('consent','update', ...)` corretamente por categoria.
+
+- Size: ~104 KB
 
 ## 🧩 Categorias customizadas (customCategories)
-Disponível a partir da v0.4.0.
 
-## 🍪 Categorias: definição, uso e exemplos
+### react-lgpd-consent (agregador)Disponível a partir da v0.4.0.
 
-Fonte única de verdade
+- Re-exporta tudo do `@react-lgpd-consent/mui`
+
+- Melhor DX (developer experience)## 🍪 Categorias: definição, uso e exemplos
+
+- Target: Maioria dos usuários finais
+
+- Size: ~104 KBFonte única de verdade
+
 - Defina as categorias do seu projeto SOMENTE na prop `categories` do `ConsentProvider`.
-- A UI (Banner/Modal), os hooks (`useConsent`, `useCategories`) e as integrações (`ConsentScriptLoader`) leem a mesma definição. Não declare categorias em outros lugares.
 
-O que é obrigatório?
-- Apenas a categoria `necessary` é obrigatória (e já é sempre incluída automaticamente).
-- Todas as demais (`analytics`, `marketing`, `functional`, etc.) são opcionais e dependem do seu caso de negócio. Se você não usa analytics/ads/chat, simplesmente não habilite essas categorias.
+## 📚 Convenções- A UI (Banner/Modal), os hooks (`useConsent`, `useCategories`) e as integrações (`ConsentScriptLoader`) leem a mesma definição. Não declare categorias em outros lugares.
 
-Como “esconder” categorias que não uso?
-- Basta não incluí-las em `enabledCategories` e não declará-las em `customCategories`. A UI não exibirá toggles para categorias ausentes.
 
-Exemplo A — Somente necessários (mínimo, comum para apps internos/governo sem tracking)
+
+### CommitsO que é obrigatório?
+
+Usar [Conventional Commits](https://www.conventionalcommits.org/):- Apenas a categoria `necessary` é obrigatória (e já é sempre incluída automaticamente).
+
+- `feat:` - Nova funcionalidade- Todas as demais (`analytics`, `marketing`, `functional`, etc.) são opcionais e dependem do seu caso de negócio. Se você não usa analytics/ads/chat, simplesmente não habilite essas categorias.
+
+- `fix:` - Correção de bug
+
+- `docs:` - DocumentaçãoComo “esconder” categorias que não uso?
+
+- `test:` - Testes- Basta não incluí-las em `enabledCategories` e não declará-las em `customCategories`. A UI não exibirá toggles para categorias ausentes.
+
+- `chore:` - Manutenção
+
+- `refactor:` - RefatoraçãoExemplo A — Somente necessários (mínimo, comum para apps internos/governo sem tracking)
+
 ```tsx
-import { ConsentProvider } from 'react-lgpd-consent'
 
-export default function App() {
-  return (
-    <ConsentProvider
+### Códigoimport { ConsentProvider } from 'react-lgpd-consent'
+
+- **Linguagem**: TypeScript (ESM)
+
+- **Formatação**: Prettier (no semicolons, single quotes, width 100)export default function App() {
+
+- **Linting**: ESLint flat config  return (
+
+- **Testes**: Jest + Testing Library    <ConsentProvider
+
       categories={{ enabledCategories: [] }}
-      texts={{ bannerMessage: 'Usamos apenas cookies necessários para funcionamento.' }}
-    >
-      <YourApp />
-    </ConsentProvider>
-  )
-}
-```
 
-Exemplo B — Conjunto completo (site com analytics e marketing)
+### Documentação (TSDoc)      texts={{ bannerMessage: 'Usamos apenas cookies necessários para funcionamento.' }}
+
+- `@category` - Categoria do export    >
+
+- `@component` - Tag para componentes React      <YourApp />
+
+- `@example` - Exemplos de uso    </ConsentProvider>
+
+- `@param` - Parâmetros de função  )
+
+- `@returns` - Tipo de retorno}
+
+- `@since` - Versão introduzida```
+
+
+
+## 🐛 DebuggingExemplo B — Conjunto completo (site com analytics e marketing)
+
 ```tsx
-import { ConsentProvider } from 'react-lgpd-consent'
 
-export default function App() {
-  return (
+### Problemas com peer dependenciesimport { ConsentProvider } from 'react-lgpd-consent'
+
+```bash
+
+pnpm install --legacy-peer-depsexport default function App() {
+
+```  return (
+
     <ConsentProvider
-      categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
-    >
-      <YourApp />
-    </ConsentProvider>
-  )
-}
+
+### Limpar build      categories={{ enabledCategories: ['analytics', 'marketing', 'functional'] }}
+
+```bash    >
+
+pnpm run clean      <YourApp />
+
+pnpm install    </ConsentProvider>
+
+pnpm run build  )
+
+```}
+
 ```
 
-Boas práticas
-- Sempre passe `categories` explicitamente. Em DEV, a biblioteca avisa quando `categories` não foi configurado para evitar ambiguidades.
-- Não classifique scripts de analytics/ads como “necessary” — use `ConsentScriptLoader` e categorias adequadas.
-- Em dúvidas, comece com “somente necessários” e evolua quando o negócio exigir outras categorias.
+### Verificar bundle size
 
-### 🔎 Validação de configuração (DEV)
+```bashBoas práticas
 
-Em desenvolvimento, a biblioteca valida a configuração e mostra mensagens amigáveis no console. Nada disso impacta produção (onde só ocorre uma sanitização leve).
+cd packages/react-lgpd-consent- Sempre passe `categories` explicitamente. Em DEV, a biblioteca avisa quando `categories` não foi configurado para evitar ambiguidades.
 
-Avisos comuns e como corrigir:
-- `Prop 'categories' não fornecida...` — defina `categories.enabledCategories` de forma explícita; exemplo mínimo: `categories={{ enabledCategories: [] }}`.
+pnpm run size-check- Não classifique scripts de analytics/ads como “necessary” — use `ConsentScriptLoader` e categorias adequadas.
+
+```- Em dúvidas, comece com “somente necessários” e evolua quando o negócio exigir outras categorias.
+
+
+
+## 📖 Documentação Completa### 🔎 Validação de configuração (DEV)
+
+
+
+- **API Reference**: https://lucianoedipo.github.io/react-lgpd-consentEm desenvolvimento, a biblioteca valida a configuração e mostra mensagens amigáveis no console. Nada disso impacta produção (onde só ocorre uma sanitização leve).
+
+- **Storybook**: https://lucianoedipo.github.io/react-lgpd-consent/storybook
+
+- **Contributing**: [`DEVELOPMENT.md`](DEVELOPMENT.md)Avisos comuns e como corrigir:
+
+- **Architecture**: [`AGENTS.md`](AGENTS.md)- `Prop 'categories' não fornecida...` — defina `categories.enabledCategories` de forma explícita; exemplo mínimo: `categories={{ enabledCategories: [] }}`.
+
 - `'necessary' é sempre incluída automaticamente` — remova `'necessary'` de `enabledCategories` (ela já é incluída por padrão).
-- `IDs de categoria duplicados detectados` — revise `enabledCategories` e `customCategories` para garantir que não há IDs repetidos.
+
+## 🤝 Contribuindo- `IDs de categoria duplicados detectados` — revise `enabledCategories` e `customCategories` para garantir que não há IDs repetidos.
+
 - `enabledCategories contém valores inválidos` — verifique se todos os itens são strings não vazias (IDs de categoria).
-- `customCategories: ... — ... deve ser uma string não vazia` — preencha `id`, `name` e `description` das categorias customizadas.
 
-Notas:
-- Validação detalhada roda apenas em `NODE_ENV !== 'production'`.
-- Em produção, a lib não carrega o validador; somente remove `'necessary'` se vier por engano, mantendo o comportamento seguro.
+1. Fork o repositório- `customCategories: ... — ... deve ser uma string não vazia` — preencha `id`, `name` e `description` das categorias customizadas.
 
-## 🧱 SSR/Next.js (App Router) — Padrões seguros
+2. Crie uma branch: `git checkout -b feat/minha-feature`
 
-Objetivo: evitar hydration mismatch, hooks em Server Components e vazamento de scripts.
+3. Faça as mudanças e **teste localmente**:Notas:
 
-Padrões recomendados
-- Envolva o app com o `ConsentProvider` apenas no cliente.
+   ```bash- Validação detalhada roda apenas em `NODE_ENV !== 'production'`.
+
+   pnpm run type-check- Em produção, a lib não carrega o validador; somente remove `'necessary'` se vier por engano, mantendo o comportamento seguro.
+
+   pnpm test
+
+   pnpm run lint## 🧱 SSR/Next.js (App Router) — Padrões seguros
+
+   pnpm run build
+
+   ```Objetivo: evitar hydration mismatch, hooks em Server Components e vazamento de scripts.
+
+4. Commit: `git commit -m "feat: adiciona nova feature"`
+
+5. Push: `git push origin feat/minha-feature`Padrões recomendados
+
+6. Abra um Pull Request- Envolva o app com o `ConsentProvider` apenas no cliente.
+
 - Use `dynamic(() => import('./ClientConsent'), { ssr: false })` no `RootLayout` (Server Component) e mova hooks e efeitos para o componente cliente.
-- Nenhum acesso a `window`/`document` no topo de módulo; use apenas dentro de `useEffect`.
+
+## 📄 Licença- Nenhum acesso a `window`/`document` no topo de módulo; use apenas dentro de `useEffect`.
+
 - Inicialize Consent Mode v2 com `gtag('consent','default', denied)` antes de carregar GTM/GA4; depois, atualize sinais na mudança de preferências.
+
+MIT - [@lucianoedipo](https://github.com/lucianoedipo)
 
 Exemplo de RootLayout (Server) + Client wrapper
 

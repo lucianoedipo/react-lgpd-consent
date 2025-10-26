@@ -1,344 +1,1126 @@
-<div align="center">
-  <h1>react-lgpd-consent 🍪</h1>
-  <p><strong>Uma biblioteca React para gerenciamento de consentimento de cookies em conformidade com a LGPD.</strong></p>
+# react-lgpd-consent# react-lgpd-consent<div align="center"><div align="center">
 
-  <div>
-    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
-    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
-    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
-  <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>
-  </div>
 
-  <div>
-    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>
-    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18+-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+"></a>
-    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>
-  </div>
 
-  <div>
-    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>
-    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle Size"></a>
-    <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/react-lgpd-consent?style=for-the-badge&logo=node.js&logoColor=white" alt="Node Version"></a>
-  </div>
+> Biblioteca React modular para gerenciamento de consentimento LGPD/GDPR
 
-  <br />
 
-  <p>
-    <a href="#-instalação"><strong>Instalação</strong></a> •
-    <a href="#-uso-básico"><strong>Uso Básico</strong></a> •
-  <a href="./QUICKSTART.md"><strong>📚 Guia de Início Rápido</strong></a> •
-  <a href="#-documentação-completa"><strong>Documentação</strong></a> •
-  <a href="./README.en.md">🇺🇸 🇬🇧 English</a> •
-    <a href="#-como-contribuir"><strong>Contribuir</strong></a>
-  </p>
 
-  <!-- Quickstart callout (mantido) -->
-  <p align="center">
-    <a href="./QUICKSTART.md"><img src="https://img.shields.io/badge/Quickstart-Iniciar%20R%C3%A1pido-blue?style=for-the-badge&logo=book" alt="Quickstart"></a>
-  </p>
+[![npm version](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)> Biblioteca React modular para gerenciamento de consentimento LGPD/GDPR  <h1>react-lgpd-consent 🍪</h1>  <h1>react-lgpd-consent 🍪</h1>
 
-  <p align="center"><strong>Comece por aqui:</strong> siga o <a href="./QUICKSTART.md">Guia de Início Rápido (QUICKSTART.md)</a> para um tutorial passo-a-passo, exemplos TypeScript, tabela de props e integração com MUI — recomendado para usuários novos.</p>
-</div>
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+
+
+
+**Documentação**: https://lucianoedipo.github.io/react-lgpd-consent  [![npm version](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)  <p><strong>Monorepo - Biblioteca React para gerenciamento de consentimento LGPD</strong></p>  <p><strong>Uma biblioteca React para gerenciamento de consentimento de cookies em conformidade com a LGPD.</strong></p>
+
+**Storybook**: https://lucianoedipo.github.io/react-lgpd-consent/storybook
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
-## 🚀 Instalação
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 
-### Opção 1: Pacote Completo (UI + Lógica)
+## 📦 Pacotes
 
-```bash
-npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
-```
 
-### Opção 2: Core Apenas (Headless - sem UI)
 
-```bash
+Este é um **monorepo** que contém 3 pacotes publicados no npm:
+
+**Documentação**: https://lucianoedipo.github.io/react-lgpd-consent    <div>  <div>
+
+### [@react-lgpd-consent/core](packages/core)
+
+[![npm](https://img.shields.io/npm/v/@react-lgpd-consent/core.svg)](https://www.npmjs.com/package/@react-lgpd-consent/core)**Storybook**: https://lucianoedipo.github.io/react-lgpd-consent/storybook
+
+
+
+**Headless** (sem UI) - Context, hooks e lógica de consentimento.    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white" alt="NPM Version"></a>
+
+
+
+```bash---
+
 npm install @react-lgpd-consent/core
+
+```    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>    <a href="https://www.npmjs.com/package/react-lgpd-consent"><img src="https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white" alt="Downloads"></a>
+
+
+
+**Para quem?** Desenvolvedores que querem **criar sua própria UI** personalizada.## 📦 Pacotes
+
+
+
+- ✅ Gerenciamento de estado de consentimento    <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>    <a href="https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white" alt="License"></a>
+
+- ✅ Hooks React (`useConsent`, `useConsentCategory`)
+
+- ✅ Utilidades de cookies e localStorageEste é um **monorepo** que contém 3 pacotes publicados no npm:
+
+- ✅ SSR-safe (Next.js, Remix)
+
+- ✅ Tree-shakeable  </div>  <a href="https://lucianoedipo.github.io/react-lgpd-consent/storybook/"><img src="https://img.shields.io/badge/Storybook-Playground-ff4785?style=for-the-badge&logo=storybook&logoColor=white" alt="Storybook"></a>
+
+- 📦 **~86 KB** (gzipped)
+
+### [@react-lgpd-consent/core](packages/core)
+
+---
+
+[![npm](https://img.shields.io/npm/v/@react-lgpd-consent/core.svg)](https://www.npmjs.com/package/@react-lgpd-consent/core)  </div>
+
+### [@react-lgpd-consent/mui](packages/mui)
+
+[![npm](https://img.shields.io/npm/v/@react-lgpd-consent/mui.svg)](https://www.npmjs.com/package/@react-lgpd-consent/mui)
+
+
+
+**Componentes Material-UI** prontos para uso.**Headless** (sem UI) - Context, hooks e lógica de consentimento.  <div>
+
+
+
+```bash
+
+npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
+
+``````bash    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>  <div>
+
+
+
+**Para quem?** Desenvolvedores que já usam **Material-UI** e querem UI pronta.npm install @react-lgpd-consent/core
+
+
+
+- ✅ `CookieBanner` - Banner de consentimento customizável```    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18%2B%2019-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+19"></a>    <a href="https://www.typescriptlang.org/"><img src="https://img.shields.io/badge/TypeScript-Ready-3178c6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript Ready"></a>
+
+- ✅ `PreferencesModal` - Modal de preferências de cookies
+
+- ✅ `FloatingPreferencesButton` - Botão flutuante para reabrir modal
+
+- ✅ Suporte a temas MUI
+
+- ✅ Totalmente acessível (ARIA, keyboard navigation)**Para quem?** Desenvolvedores que querem **criar sua própria UI** personalizada.    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>    <a href="https://reactjs.org/"><img src="https://img.shields.io/badge/React-18+-61dafb?style=for-the-badge&logo=react&logoColor=white" alt="React 18+"></a>
+
+- 📦 **~104 KB** (gzipped, inclui core)
+
+
+
+---
+
+- ✅ Gerenciamento de estado de consentimento  </div>    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-Compatible-000000?style=for-the-badge&logo=next.js&logoColor=white" alt="Next.js Compatible"></a>
+
+### [react-lgpd-consent](packages/react-lgpd-consent) ⭐ **Recomendado**
+
+[![npm](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)- ✅ Hooks React (`useConsent`, `useConsentCategory`)
+
+
+
+**Pacote agregador** - Re-exporta tudo do `@react-lgpd-consent/mui` (melhor DX).- ✅ Utilidades de cookies e localStorage  </div>
+
+
+
+```bash- ✅ SSR-safe (Next.js, Remix)
+
+npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
+
+```- ✅ Tree-shakeable  <br />
+
+
+
+**Para quem?** **Maioria dos usuários** - Instale este se você quer começar rápido com UI pronta.- 📦 **~86 KB** (gzipped)
+
+
+
+- ✅ Tudo do `@react-lgpd-consent/mui` + `@react-lgpd-consent/core`  <div>
+
+- ✅ Um único pacote para gerenciar
+
+- ✅ Melhor experiência de desenvolvedor (DX)---
+
+- 📦 **~104 KB** (gzipped)
+
+  <p>    <a href="https://codecov.io/gh/lucianoedipo/react-lgpd-consent"><img src="https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white" alt="Coverage"></a>
+
+---
+
+### [@react-lgpd-consent/mui](packages/mui)
+
+## 🚀 Quick Start
+
+[![npm](https://img.shields.io/npm/v/@react-lgpd-consent/mui.svg)](https://www.npmjs.com/package/@react-lgpd-consent/mui)    <a href="#-pacotes"><strong>Pacotes</strong></a> •    <a href="https://bundlephobia.com/package/react-lgpd-consent"><img src="https://img.shields.io/bundlephobia/minzip/react-lgpd-consent?style=for-the-badge&logo=webpack&logoColor=white" alt="Bundle Size"></a>
+
+### Instalação Rápida (Agregador)
+
+
+
+```bash
+
+npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled**Componentes Material-UI** prontos para uso.    <a href="#-instalação-rápida"><strong>Instalação</strong></a> •    <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/react-lgpd-consent?style=for-the-badge&logo=node.js&logoColor=white" alt="Node Version"></a>
+
 ```
+
+
+
+### Uso Básico
+
+```bash    <a href="./QUICKSTART.md"><strong>📚 Quickstart</strong></a> •  </div>
+
+```tsx
+
+import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
+
+
+
+function App() {```    <a href="#-documentação"><strong>Docs</strong></a> •
+
+  return (
+
+    <ConsentProvider
+
+      categories={[
+
+        { id: 'necessary', label: 'Essenciais', required: true },**Para quem?** Desenvolvedores que já usam **Material-UI** e querem UI pronta.    <a href="./README.en.md">🇺🇸 English</a>  <br />
+
+        { id: 'analytics', label: 'Análise', required: false },
+
+        { id: 'marketing', label: 'Marketing', required: false }
+
+      ]}
+
+    >- ✅ `CookieBanner` - Banner de consentimento customizável  </p>
+
+      <CookieBanner />
+
+      {/* Seu app aqui */}- ✅ `PreferencesModal` - Modal de preferências de cookies
+
+    </ConsentProvider>
+
+  )- ✅ `FloatingPreferencesButton` - Botão flutuante para reabrir modal</div>  <p>
+
+}
+
+```- ✅ Suporte a temas MUI
+
+
+
+📖 **Documentação completa**: [`packages/react-lgpd-consent/README.md`](packages/react-lgpd-consent/README.md)- ✅ Totalmente acessível (ARIA, keyboard navigation)    <a href="#-instalação"><strong>Instalação</strong></a> •
+
+
+
+---- 📦 **~104 KB** (gzipped, inclui core)
+
+
+
+## 🎯 Qual Pacote Usar?---    <a href="#-uso-básico"><strong>Uso Básico</strong></a> •
+
+
+
+| Cenário | Pacote Recomendado |---
+
+|---------|-------------------|
+
+| **Quero começar rápido com UI pronta** | ⭐ `react-lgpd-consent` |  <a href="./QUICKSTART.md"><strong>📚 Guia de Início Rápido</strong></a> •
+
+| **Já uso Material-UI no projeto** | `@react-lgpd-consent/mui` |
+
+| **Quero criar minha própria UI** | `@react-lgpd-consent/core` |### [react-lgpd-consent](packages/react-lgpd-consent) ⭐ **Recomendado**
+
+| **Preciso de headless (API apenas)** | `@react-lgpd-consent/core` |
+
+[![npm](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)## 📦 Pacotes  <a href="#-documentação-completa"><strong>Documentação</strong></a> •
+
+---
+
+
+
+## 🛠️ Desenvolvimento
+
+**Pacote agregador** - Re-exporta tudo do `@react-lgpd-consent/mui` (melhor DX).  <a href="./README.en.md">🇺🇸 🇬🇧 English</a> •
+
+### Pré-requisitos
+
+- Node.js >= 20 (veja `.nvmrc`)
+
+- pnpm >= 10
+
+```bashEste monorepo contém 3 pacotes independentes:    <a href="#-como-contribuir"><strong>Contribuir</strong></a>
+
+### Setup
+
+```bashnpm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
+
+# Clonar repositório
+
+git clone https://github.com/lucianoedipo/react-lgpd-consent.git```  </p>
+
+cd react-lgpd-consent
+
+
+
+# Instalar dependências
+
+pnpm install**Para quem?** **Maioria dos usuários** - Instale este se você quer começar rápido com UI pronta.| Pacote | Versão | Descrição | Bundle Size |
+
+
+
+# Build de todos os pacotes
+
+pnpm run build
+
+- ✅ Tudo do `@react-lgpd-consent/mui` + `@react-lgpd-consent/core`|--------|--------|-----------|-------------|  <!-- Quickstart callout (mantido) -->
+
+# Rodar testes
+
+pnpm test- ✅ Um único pacote para gerenciar
+
+
+
+# Storybook (playground)- ✅ Melhor experiência de desenvolvedor (DX)| **[@react-lgpd-consent/core](./packages/core)** | [![npm](https://img.shields.io/npm/v/@react-lgpd-consent/core?color=cb3837)](https://www.npmjs.com/package/@react-lgpd-consent/core) | Lógica headless (sem UI) | ~86 KB |  <p align="center">
+
+pnpm run storybook
+
+```- 📦 **~104 KB** (gzipped)
+
+
+
+📖 **Guia completo**: [`QUICKSTART.md`](QUICKSTART.md)| **[@react-lgpd-consent/mui](./packages/mui)** | [![npm](https://img.shields.io/npm/v/@react-lgpd-consent/mui?color=cb3837)](https://www.npmjs.com/package/@react-lgpd-consent/mui) | Componentes Material-UI prontos | ~104 KB |    <a href="./QUICKSTART.md"><img src="https://img.shields.io/badge/Quickstart-Iniciar%20R%C3%A1pido-blue?style=for-the-badge&logo=book" alt="Quickstart"></a>
+
+
+
+------
+
+
+
+## 📚 Documentação| **[react-lgpd-consent](./packages/react-lgpd-consent)** | [![npm](https://img.shields.io/npm/v/react-lgpd-consent?color=cb3837)](https://www.npmjs.com/package/react-lgpd-consent) | Agregador (compatibilidade v0.4.x) | ~104 KB |  </p>
+
+
+
+### 📖 Guias (GitHub - Raiz do Monorepo)## 🚀 Quick Start
+
+- 🚀 **[Quick Start (Dev)](QUICKSTART.md)**: Setup do workspace, comandos principais
+
+- 🏗️ **[Development Guide](DEVELOPMENT.md)**: Convenções de código, PRs, commits
+
+- 🏛️ **[Architecture](ARCHITECTURE.md)**: Estrutura do monorepo v0.5.0
+
+- 🤖 **[Agent Instructions](AGENTS.md)**: Instruções para agentes de codificação### Instalação Rápida (Agregador)
+
+- ⚖️ **[Conformidade LGPD](CONFORMIDADE.md)**: Compliance, auditoria, logs
+
+- 🔄 **[Migração v0.4.x → v0.5.0](MIGRATION.md)**: Guia de migração---  <p align="center"><strong>Comece por aqui:</strong> siga o <a href="./QUICKSTART.md">Guia de Início Rápido (QUICKSTART.md)</a> para um tutorial passo-a-passo, exemplos TypeScript, tabela de props e integração com MUI — recomendado para usuários novos.</p>
+
+
+
+### 📦 Guias do Pacote Agregador```bash
+
+- 📘 **[API Reference](packages/react-lgpd-consent/API.md)**: Referência completa de componentes, hooks e tipos
+
+- 🔌 **[Integrações](packages/react-lgpd-consent/INTEGRACOES.md)**: GA4, GTM, Facebook Pixel, Hotjar, etc.npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled</div>
+
+- 📝 **[Changelog](packages/react-lgpd-consent/CHANGELOG.md)**: Histórico de versões do agregador
+
+- 🚀 **[Quick Start (Usuários)](packages/react-lgpd-consent/QUICKSTART.md)**: Tutorial para consumidores da lib```
+
+
+
+### 🎨 Documentação Interativa (GitHub Pages)## 🎯 Qual Pacote Usar?
+
+- **[🎭 Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Playground interativo
+
+- **[⚙️ TypeDoc](https://lucianoedipo.github.io/react-lgpd-consent/)**: API docs gerada automaticamente### Uso Básico
+
+- **[🏠 Portal](https://lucianoedipo.github.io/react-lgpd-consent/)**: Navegação central
+
+---
+
+---
+
+```tsx
+
+## 🏗️ Estrutura do Monorepo
+
+import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'### 🎨 Componentes Prontos com Material-UI
+
+```
+
+react-lgpd-consent/
+
+├── packages/
+
+│   ├── core/                    # @react-lgpd-consent/core (headless)function App() {## 🚀 Instalação
+
+│   ├── mui/                     # @react-lgpd-consent/mui (componentes MUI)
+
+│   └── react-lgpd-consent/      # react-lgpd-consent (agregador)  return (
+
+│       ├── API.md              # ← Referência de API (TypeDoc)
+
+│       ├── INTEGRACOES.md      # ← Guia de integrações    <ConsentProvider**Recomendado para:** Aplicações que já usam MUI ou querem componentes UI prontos
+
+│       └── CHANGELOG.md        # ← Changelog do agregador
+
+├── examples/      categories={[
+
+│   ├── vite/                    # Exemplo Vite + React
+
+│   └── next-app-router/         # Exemplo Next.js App Router        { id: 'necessary', label: 'Essenciais', required: true },### Opção 1: Pacote Completo (UI + Lógica)
+
+├── docs/                        # TypeDoc (gh-pages)
+
+├── storybook-static/            # Storybook build (gh-pages)        { id: 'analytics', label: 'Análise', required: false },
+
+├── QUICKSTART.md                # ← Quick Start para DESENVOLVEDORES
+
+├── DEVELOPMENT.md               # ← Guia de desenvolvimento        { id: 'marketing', label: 'Marketing', required: false }```bash
+
+├── ARCHITECTURE.md              # ← Arquitetura do monorepo
+
+├── CONFORMIDADE.md              # ← Conformidade LGPD      ]}
+
+├── MIGRATION.md                 # ← Guia de migração v0.4 → v0.5
+
+└── .github/workflows/           # CI/CD (testes, build, publish)    >npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled```bash
+
+```
+
+      <CookieBanner />
+
+---
+
+      {/* Seu app aqui */}```npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
+
+## 🤝 Contribuindo
+
+    </ConsentProvider>
+
+Contribuições são bem-vindas! Por favor:
+
+  )```
+
+1. Fork o repositório
+
+2. Crie uma branch: `git checkout -b feat/minha-feature`}
+
+3. Faça as mudanças e **teste localmente**:
+
+   ```bash``````tsx
+
+   pnpm run type-check
+
+   pnpm test
+
+   pnpm run lint
+
+   pnpm run build📖 **Documentação completa**: [`packages/react-lgpd-consent/README.md`](packages/react-lgpd-consent/README.md)import { ConsentProvider } from '@react-lgpd-consent/mui'### Opção 2: Core Apenas (Headless - sem UI)
+
+   ```
+
+4. Commit: `git commit -m "feat: adiciona nova feature"`
+
+5. Push: `git push origin feat/minha-feature`
+
+6. Abra um Pull Request---
+
+
+
+📖 Leia o guia completo: [`DEVELOPMENT.md`](DEVELOPMENT.md)
+
+
+
+---## 🎯 Qual Pacote Usar?<ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>```bash
+
+
+
+## 📄 Licença
+
+
+
+MIT © [@lucianoedipo](https://github.com/lucianoedipo)| Cenário | Pacote Recomendado |  <App />npm install @react-lgpd-consent/core
+
+
+
+---|---------|-------------------|
+
+
+
+## 🔗 Links| **Quero começar rápido com UI pronta** | ⭐ `react-lgpd-consent` |</ConsentProvider>```
+
+
+
+- **npm**: https://www.npmjs.com/package/react-lgpd-consent| **Já uso Material-UI no projeto** | `@react-lgpd-consent/mui` |
+
+- **GitHub**: https://github.com/lucianoedipo/react-lgpd-consent
+
+- **Issues**: https://github.com/lucianoedipo/react-lgpd-consent/issues| **Quero criar minha própria UI** | `@react-lgpd-consent/core` |```
+
+- **Discussions**: https://github.com/lucianoedipo/react-lgpd-consent/discussions
+
+| **Preciso de headless (API apenas)** | `@react-lgpd-consent/core` |
 
 ### Opção 3: Pacote Agregador (Compatibilidade v0.4.x)
 
+---
+
+### ⚡ Headless (UI Customizada)
+
+## 🛠️ Desenvolvimento
+
 ```bash
-npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
+
+### Pré-requisitos
+
+- Node.js >= 20 (veja `.nvmrc`)**Recomendado para:** Apps que usam outro design system (TailwindCSS, Chakra UI, etc.)npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
+
+- pnpm >= 10
+
 ```
 
-**Dependências:**
-- **Core**: `react@>=18`, `react-dom@>=18`, `js-cookie@3`, `zod@4`
-- **MUI (apenas se usar UI)**: `@mui/material@>=5`, `@emotion/react`, `@emotion/styled`
-- **Opcional**: `@mui/icons-material` (para ícones customizados)
+### Setup
 
-**Qual escolher?**
-- 🎨 **Use `@react-lgpd-consent/mui`** se quer componentes prontos com Material-UI (~104 KB)
-- ⚡ **Use `@react-lgpd-consent/core`** se vai criar UI customizada ou usar outra lib de componentes (~86 KB)
-- 🔄 **Use `react-lgpd-consent`** para manter compatibilidade com v0.4.x (~104 KB)
+```bash```bash
 
-> 📖 **Migrando de v0.4.x?** Consulte o [Guia de Migração](./MIGRATION.md)
+# Clonar repositório
+
+git clone https://github.com/lucianoedipo/react-lgpd-consent.gitnpm install @react-lgpd-consent/core**Dependências:**
+
+cd react-lgpd-consent
+
+```- **Core**: `react@>=18`, `react-dom@>=18`, `js-cookie@3`, `zod@4`
+
+# Instalar dependências
+
+pnpm install- **MUI (apenas se usar UI)**: `@mui/material@>=5`, `@emotion/react`, `@emotion/styled`
+
+
+
+# Build de todos os pacotes```tsx- **Opcional**: `@mui/icons-material` (para ícones customizados)
+
+pnpm run build
+
+import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
+
+# Rodar testes
+
+pnpm test**Qual escolher?**
+
+
+
+# Storybook (playground)<ConsentProvider categories={{ enabledCategories: ['analytics'] }}>- 🎨 **Use `@react-lgpd-consent/mui`** se quer componentes prontos com Material-UI (~104 KB)
+
+pnpm run storybook
+
+```  <YourCustomBanner />- ⚡ **Use `@react-lgpd-consent/core`** se vai criar UI customizada ou usar outra lib de componentes (~86 KB)
+
+
+
+📖 **Guia completo**: [`QUICKSTART.md`](QUICKSTART.md)  <App />- 🔄 **Use `react-lgpd-consent`** para manter compatibilidade com v0.4.x (~104 KB)
+
+
+
+---</ConsentProvider>
+
+
+
+## 📚 Documentação```> 📖 **Migrando de v0.4.x?** Consulte o [Guia de Migração](./MIGRATION.md)
+
+
+
+- 📖 **API Reference**: https://lucianoedipo.github.io/react-lgpd-consent
+
+- 📚 **Storybook**: https://lucianoedipo.github.io/react-lgpd-consent/storybook
+
+- 🚀 **Quick Start (Dev)**: [`QUICKSTART.md`](QUICKSTART.md)### 🔄 Compatibilidade v0.4.x---
+
+- 🏗️ **Development Guide**: [`DEVELOPMENT.md`](DEVELOPMENT.md)
+
+- 🤖 **Agent Instructions**: [`AGENTS.md`](AGENTS.md)
+
+- 📜 **Changelog**: [`packages/*/CHANGELOG.md`](packages/)
+
+- ⚖️ **Conformidade LGPD**: [`CONFORMIDADE.md`](CONFORMIDADE.md)**Recomendado para:** Migração sem breaking changes## ✨ Novidades v0.5.0
+
+
 
 ---
 
-## ✨ Novidades v0.5.0
 
-### 🏗️ Arquitetura Modular
 
-- **Três pacotes independentes**:
-  - `@react-lgpd-consent/core` — Lógica headless de consentimento (sem dependências de UI)
-  - `@react-lgpd-consent/mui` — Componentes UI completos usando Material-UI
-  - `react-lgpd-consent` — Pacote agregador (mantido para compatibilidade)
+## 🏗️ Estrutura do Monorepo```bash### 🏗️ Arquitetura Modular
 
-- **Tree-shaking eficiente**: Instale apenas o que você precisa
-  - Core: 86 KB ESM (lógica pura)
-  - MUI: +18 KB (componentes UI)
-  
-- **Flexibilidade total**:
-  - Use core com sua própria biblioteca de componentes
-  - Use mui para componentes prontos
-  - Use react-lgpd-consent para compatibilidade
 
-- **Breaking Changes**:
-  - ❌ Removida prop `theme` do `ConsentProvider`
+
+```npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
+
+react-lgpd-consent/
+
+├── packages/```- **Três pacotes independentes**:
+
+│   ├── core/                    # @react-lgpd-consent/core (headless)
+
+│   ├── mui/                     # @react-lgpd-consent/mui (componentes MUI)  - `@react-lgpd-consent/core` — Lógica headless de consentimento (sem dependências de UI)
+
+│   └── react-lgpd-consent/      # react-lgpd-consent (agregador)
+
+├── examples/```tsx  - `@react-lgpd-consent/mui` — Componentes UI completos usando Material-UI
+
+│   ├── vite/                    # Exemplo Vite + React
+
+│   └── next-app-router/         # Exemplo Next.js App Router// Código v0.4.x continua funcionando sem mudanças  - `react-lgpd-consent` — Pacote agregador (mantido para compatibilidade)
+
+├── docs/                        # TypeDoc (gh-pages)
+
+├── storybook-static/            # Storybook build (gh-pages)import { ConsentProvider, useConsent } from 'react-lgpd-consent'
+
+└── .github/workflows/           # CI/CD (testes, build, publish)
+
+``````- **Tree-shaking eficiente**: Instale apenas o que você precisa
+
+
+
+---  - Core: 86 KB ESM (lógica pura)
+
+
+
+## 🤝 Contribuindo---  - MUI: +18 KB (componentes UI)
+
+
+
+Contribuições são bem-vindas! Por favor:  
+
+
+
+1. Fork o repositório## 🚀 Instalação Rápida- **Flexibilidade total**:
+
+2. Crie uma branch: `git checkout -b feat/minha-feature`
+
+3. Faça as mudanças e **teste localmente**:  - Use core com sua própria biblioteca de componentes
+
+   ```bash
+
+   pnpm run type-check### Opção 1: Pacote Completo com UI (Mais Comum)  - Use mui para componentes prontos
+
+   pnpm test
+
+   pnpm run lint  - Use react-lgpd-consent para compatibilidade
+
+   pnpm run build
+
+   ``````bash
+
+4. Commit: `git commit -m "feat: adiciona nova feature"`
+
+5. Push: `git push origin feat/minha-feature`npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled- **Breaking Changes**:
+
+6. Abra um Pull Request
+
+```  - ❌ Removida prop `theme` do `ConsentProvider`
+
+📖 Leia o guia completo: [`DEVELOPMENT.md`](DEVELOPMENT.md)
+
   - ✅ Use `ThemeProvider` do Material-UI diretamente
-  - 📖 Ver [MIGRATION.md](./MIGRATION.md) para detalhes completos
 
-### 📦 Workspace PNPM
-- Monorepo organizado com workspaces
-- Scripts unificados com filtros
-- Build independente por pacote
-- Publicação npm separada
+---
 
-### 🔄 Migração Simplificada
-- Pacote `react-lgpd-consent` mantido para compatibilidade
-- Guia de migração completo disponível
+### Opção 2: Core Headless (UI Customizada)  - 📖 Ver [MIGRATION.md](./MIGRATION.md) para detalhes completos
+
+## 📄 Licença
+
+
+
+MIT © [@lucianoedipo](https://github.com/lucianoedipo)
+
+```bash### 📦 Workspace PNPM
+
+---
+
+npm install @react-lgpd-consent/core- Monorepo organizado com workspaces
+
+## 🔗 Links
+
+```- Scripts unificados com filtros
+
+- **npm**: https://www.npmjs.com/package/react-lgpd-consent
+
+- **GitHub**: https://github.com/lucianoedipo/react-lgpd-consent- Build independente por pacote
+
+- **Issues**: https://github.com/lucianoedipo/react-lgpd-consent/issues
+
+- **Discussions**: https://github.com/lucianoedipo/react-lgpd-consent/discussions### Opção 3: Agregador (Compatibilidade)- Publicação npm separada
+
+
+
+
+```bash### 🔄 Migração Simplificada
+
+npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled- Pacote `react-lgpd-consent` mantido para compatibilidade
+
+```- Guia de migração completo disponível
+
 - Zero breaking changes para usuários do pacote agregador
 
----
+**Dependências Peer:**
 
-## ✨ Novidades v0.4.5
+- `react@>=18`, `react-dom@>=18`---
 
-### 📊 DataLayer Events para Google Tag Manager
+- `js-cookie@3` (gerenciamento de cookies)
+
+- `@mui/material@>=5`, `@emotion/react`, `@emotion/styled` (apenas se usar pacote MUI)## ✨ Novidades v0.4.5
+
+
+
+---### 📊 DataLayer Events para Google Tag Manager
+
 - **Eventos Padronizados**: `consent_initialized` e `consent_updated` disparados automaticamente
-- **Rastreamento de Origem**: Identifica se decisão veio do banner, modal, reset ou API programática
-- **Auditoria LGPD**: Histórico completo de mudanças com `changed_categories` e timestamps ISO 8601
-- **Integração GTM**: Documentação completa com exemplos de triggers e tags
-- **API Pública**: Funções `pushConsentInitializedEvent` e `pushConsentUpdatedEvent` exportadas
 
-### 🔧 Melhorias de CI/CD
-- **Migração para pnpm**: Workflows atualizados de npm para pnpm, resolvendo conflitos de dependências
-- **Build Otimizado**: Pipeline mais rápido e confiável
+## ⚡ Exemplo Básico- **Rastreamento de Origem**: Identifica se decisão veio do banner, modal, reset ou API programática
+
+- **Auditoria LGPD**: Histórico completo de mudanças com `changed_categories` e timestamps ISO 8601
+
+```tsx- **Integração GTM**: Documentação completa com exemplos de triggers e tags
+
+import { ConsentProvider } from '@react-lgpd-consent/mui'- **API Pública**: Funções `pushConsentInitializedEvent` e `pushConsentUpdatedEvent` exportadas
+
+
+
+export default function App() {### 🔧 Melhorias de CI/CD
+
+  return (- **Migração para pnpm**: Workflows atualizados de npm para pnpm, resolvendo conflitos de dependências
+
+    <ConsentProvider - **Build Otimizado**: Pipeline mais rápido e confiável
+
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+
+    >---
+
+      <YourApp />
+
+    </ConsentProvider>## ✨ Novidades v0.4.4
+
+  )
+
+}### 🔧 CI/CD e Publicação
+
+```- **Workflow de Publicação**: Corrigido bug que impedia publicação automática no npm quando tags eram criadas após merge para `main`
+
+- **Codecov Integration**: Adicionado upload automático de coverage reports para melhor visualização de cobertura de testes
+
+**Isso já inclui:**- **Badge de Coverage**: Agora atualizado em tempo real via Codecov
+
+- ✅ Banner de cookies bloqueante
+
+- ✅ Modal de preferências### 📊 Qualidade e Confiabilidade
+
+- ✅ Botão flutuante para reabrir- **Publicação Confiável**: Tags agora são publicadas corretamente quando commit está no histórico da `main`
+
+- ✅ Persistência em cookies- **Visibilidade de Cobertura**: Integração completa com Codecov para tracking de qualidade
+
+- ✅ SSR-safe (Next.js, Remix)
 
 ---
-
-## ✨ Novidades v0.4.4
-
-### 🔧 CI/CD e Publicação
-- **Workflow de Publicação**: Corrigido bug que impedia publicação automática no npm quando tags eram criadas após merge para `main`
-- **Codecov Integration**: Adicionado upload automático de coverage reports para melhor visualização de cobertura de testes
-- **Badge de Coverage**: Agora atualizado em tempo real via Codecov
-
-### 📊 Qualidade e Confiabilidade
-- **Publicação Confiável**: Tags agora são publicadas corretamente quando commit está no histórico da `main`
-- **Visibilidade de Cobertura**: Integração completa com Codecov para tracking de qualidade
 
 ---
 
 ## ✨ Novidades v0.4.1
 
-### 🎨 Design Tokens Expandidos
-- **200+ pontos de customização** (cores, tipografia, espaçamento, layout)
-- **Sistema responsivo** com breakpoints e variações
-- **Acessibilidade nativa** com contrast ratios e focus states
-- **Temas light/dark/auto** com transições suaves
+## 📚 Documentação
 
-### 📝 Sistema Avançado de Textos
-- **Templates pré-configurados** para ecommerce, SaaS e governo
-- **Internacionalização completa** (pt, en, es)
-- **Variações de tom** (formal, casual, técnico)
+### 🎨 Design Tokens Expandidos
+
+### 📖 Guias (GitHub)- **200+ pontos de customização** (cores, tipografia, espaçamento, layout)
+
+- **Sistema responsivo** com breakpoints e variações
+
+- **[Quickstart](./QUICKSTART.md)**: Tutorial passo-a-passo- **Acessibilidade nativa** com contrast ratios e focus states
+
+- **[API Reference](./API.md)**: Referência completa- **Temas light/dark/auto** com transições suaves
+
+- **[Conformidade LGPD](./CONFORMIDADE.md)**: Compliance e auditoria
+
+- **[Integrações](./INTEGRACOES.md)**: GA4, GTM, Facebook Pixel, Hotjar### 📝 Sistema Avançado de Textos
+
+- **[Arquitetura](./ARCHITECTURE.md)**: Detalhes do monorepo v0.5.0- **Templates pré-configurados** para ecommerce, SaaS e governo
+
+- **[Migração v0.4.x → v0.5.0](./MIGRATION.md)**: Guia de migração- **Internacionalização completa** (pt, en, es)
+
+- **[Changelog](./CHANGELOG.md)**: Histórico de versões- **Variações de tom** (formal, casual, técnico)
+
 - **Resolução automática** baseada em contexto
 
-### 🔍 Descoberta de Cookies (Experimental)
-- **Detecção automática** de cookies em runtime
-- **Categorização inteligente** usando padrões LGPD
-- **Integração nativa** com sistema de override
+### 🎨 Documentação Interativa (GitHub Pages)
 
-### ⚠️ Breaking Changes
+### 🔍 Descoberta de Cookies (Experimental)
+
+- **[🎭 Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**: Playground interativo- **Detecção automática** de cookies em runtime
+
+- **[⚙️ TypeDoc](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**: API docs gerada automaticamente- **Categorização inteligente** usando padrões LGPD
+
+- **[🏠 Portal](https://lucianoedipo.github.io/react-lgpd-consent/)**: Navegação central- **Integração nativa** com sistema de override
+
+
+
+---### ⚠️ Breaking Changes
+
 - **Suporte a categorias customizadas**: `setPreference` e `ScriptIntegration.category` agora usam `string` ao invés de `Category`  
-- **Impacto mínimo**: Código usando strings literais continua funcionando sem alterações
+
+## 🏗️ Estrutura do Monorepo- **Impacto mínimo**: Código usando strings literais continua funcionando sem alterações
+
 - **Consulte**: [CHANGELOG.md](./CHANGELOG.md) para guia de migração completo
 
----
-
-## 🏗️ Arquitetura de Pacotes
-
-A biblioteca está organizada em três pacotes independentes para máxima flexibilidade:
-
-```
-react-lgpd-consent/
-├── @react-lgpd-consent/core      # Lógica headless (86 KB)
-│   ├── ConsentProvider           # Context provider
-│   ├── useConsent                # Hook principal
-│   ├── scriptIntegrations        # GA, GTM, UserWay
-│   └── utilities                 # Logger, cookies, scripts
-│
-├── @react-lgpd-consent/mui       # Componentes UI (18 KB + core)
-│   ├── CookieBanner             # Banner de consentimento
-│   ├── PreferencesModal         # Modal de preferências
-│   ├── FloatingPreferencesButton # Botão flutuante
-│   └── Branding                 # Logo/branding
-│
-└── react-lgpd-consent            # Agregador (compatibilidade)
-    └── Re-exports @react-lgpd-consent/mui
 ```
 
-### Comparativo de Pacotes
+react-lgpd-consent/---
 
-| Aspecto | Core | MUI | Agregador |
-|---------|------|-----|-----------|
-| **Tamanho** | 86 KB ESM | 104 KB (core + mui) | 104 KB |
-| **UI Incluída** | ❌ | ✅ | ✅ |
+├── packages/
+
+│   ├── core/                    # @react-lgpd-consent/core (headless)## 🏗️ Arquitetura de Pacotes
+
+│   │   ├── src/
+
+│   │   │   ├── context/         # ConsentContext, CategoriesContextA biblioteca está organizada em três pacotes independentes para máxima flexibilidade:
+
+│   │   │   ├── hooks/           # useConsent, useCategories
+
+│   │   │   ├── utils/           # logger, cookieUtils, scriptLoader```
+
+│   │   │   └── types/           # TypeScript typesreact-lgpd-consent/
+
+│   │   └── package.json         # v0.5.0├── @react-lgpd-consent/core      # Lógica headless (86 KB)
+
+│   ││   ├── ConsentProvider           # Context provider
+
+│   ├── mui/                     # @react-lgpd-consent/mui (UI components)│   ├── useConsent                # Hook principal
+
+│   │   ├── src/│   ├── scriptIntegrations        # GA, GTM, UserWay
+
+│   │   │   ├── components/      # CookieBanner, PreferencesModal, FloatingButton│   └── utilities                 # Logger, cookies, scripts
+
+│   │   │   ├── theme/           # createDefaultConsentTheme()│
+
+│   │   │   └── provider/        # ConsentProvider com auto-inject├── @react-lgpd-consent/mui       # Componentes UI (18 KB + core)
+
+│   │   └── package.json         # v0.5.0│   ├── CookieBanner             # Banner de consentimento
+
+│   ││   ├── PreferencesModal         # Modal de preferências
+
+│   └── react-lgpd-consent/      # Agregador (compatibilidade v0.4.x)│   ├── FloatingPreferencesButton # Botão flutuante
+
+│       ├── src/│   └── Branding                 # Logo/branding
+
+│       │   └── index.ts         # Re-exports de @react-lgpd-consent/mui│
+
+│       └── package.json         # v0.5.2└── react-lgpd-consent            # Agregador (compatibilidade)
+
+│    └── Re-exports @react-lgpd-consent/mui
+
+├── examples/```
+
+│   ├── next-app-router/         # Exemplo Next.js App Router
+
+│   └── vite/                    # Exemplo Vite + React### Comparativo de Pacotes
+
+│
+
+├── docs/                        # TypeDoc output| Aspecto | Core | MUI | Agregador |
+
+├── storybook-static/            # Storybook build|---------|------|-----|-----------|
+
+└── .github/workflows/           # CI/CD (test, build, publish, docs)| **Tamanho** | 86 KB ESM | 104 KB (core + mui) | 104 KB |
+
+```| **UI Incluída** | ❌ | ✅ | ✅ |
+
 | **Dep. MUI** | ❌ | ✅ (peer) | ✅ (peer) |
-| **Customização** | ✅✅✅ Total | ✅✅ Alta | ✅✅ Alta |
+
+---| **Customização** | ✅✅✅ Total | ✅✅ Alta | ✅✅ Alta |
+
 | **Setup** | Manual UI | Plug & Play | Plug & Play |
-| **Tree-shaking** | ✅✅✅ Ótimo | ✅✅ Bom | ✅✅ Bom |
+
+## 🛠️ Desenvolvimento| **Tree-shaking** | ✅✅✅ Ótimo | ✅✅ Bom | ✅✅ Bom |
+
 | **Recomendado para** | UI própria | Maioria dos casos | Migração v0.4.x |
 
+### Pré-requisitos
+
 ---
 
-## 🎯 Casos de Uso
+- **Node.js**: >= 20 (veja `.nvmrc`)
 
-### Quando usar `@react-lgpd-consent/core`
+- **pnpm**: >= 10## 🎯 Casos de Uso
 
-✅ Você já tem um design system próprio  
-✅ Está usando Tailwind, Chakra, shadcn/ui, etc.  
-✅ Quer máximo controle sobre a UI  
-✅ Precisa minimizar bundle size  
+
+
+### Setup Local### Quando usar `@react-lgpd-consent/core`
+
+
+
+```bash✅ Você já tem um design system próprio  
+
+# Clone o repositório✅ Está usando Tailwind, Chakra, shadcn/ui, etc.  
+
+git clone https://github.com/lucianoedipo/react-lgpd-consent.git✅ Quer máximo controle sobre a UI  
+
+cd react-lgpd-consent✅ Precisa minimizar bundle size  
+
 ✅ Projeto não usa Material-UI  
 
-**Exemplo:**
+# Instalar dependências
+
+pnpm install**Exemplo:**
+
 ```tsx
-import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
+
+# Build de todos os pacotesimport { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
+
+pnpm run build
 
 function MyBanner() {
-  const { acceptAll, declineAll } = useConsent()
-  return <div className="my-design">{/* Sua UI */}</div>
+
+# Rodar testes  const { acceptAll, declineAll } = useConsent()
+
+pnpm run test  return <div className="my-design">{/* Sua UI */}</div>
+
 }
-```
+
+# Iniciar Storybook```
+
+pnpm run storybook
 
 ### Quando usar `@react-lgpd-consent/mui`
 
-✅ Quer começar rápido com componentes prontos  
+# Type-check
+
+pnpm run type-check✅ Quer começar rápido com componentes prontos  
+
 ✅ Já usa Material-UI no projeto  
-✅ Precisa de LGPD compliance out-of-the-box  
-✅ Quer acessibilidade nativa (WCAG 2.1)  
-✅ Aceita customização via design tokens  
 
-**Exemplo:**
+# Lint✅ Precisa de LGPD compliance out-of-the-box  
+
+pnpm run lint✅ Quer acessibilidade nativa (WCAG 2.1)  
+
+```✅ Aceita customização via design tokens  
+
+
+
+### Scripts Principais**Exemplo:**
+
 ```tsx
-import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
 
-function App() {
-  return (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
-      <CookieBanner /> {/* Pronto para usar! */}
-    </ConsentProvider>
-  )
-}
-```
+```bashimport { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
 
-### Quando usar `react-lgpd-consent`
+pnpm run build          # Build de todos os pacotes
 
-✅ Está migrando de v0.4.x  
+pnpm run test           # Rodar todos os testes (Jest)function App() {
+
+pnpm run type-check     # TypeScript compile check  return (
+
+pnpm run lint           # ESLint    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+
+pnpm run format         # Prettier      <CookieBanner /> {/* Pronto para usar! */}
+
+pnpm run storybook      # Iniciar Storybook em http://localhost:6006    </ConsentProvider>
+
+pnpm run docs:generate  # Gerar TypeDoc em ./docs  )
+
+pnpm run mutation       # Mutation testing (Stryker - opcional, lento)}
+
+``````
+
+
+
+### Publicação (CI/CD)### Quando usar `react-lgpd-consent`
+
+
+
+Pacotes são publicados automaticamente via GitHub Actions quando uma tag é criada:✅ Está migrando de v0.4.x  
+
 ✅ Quer compatibilidade máxima  
-✅ Prefere pacote único tradicional  
 
----
+```bash✅ Prefere pacote único tradicional  
 
-## 🚦 Início Rápido
+# Exemplo: publicar nova versão
 
-### Setup Mínimo (30 segundos)
+cd packages/react-lgpd-consent---
 
-```tsx
+npm version patch  # ou minor, major
+
+git push --tags## 🚦 Início Rápido
+
+# CI vai publicar automaticamente para npm
+
+```### Setup Mínimo (30 segundos)
+
+
+
+---```tsx
+
 // 1. Instale
-// npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
 
-// 2. Importe
-import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
+## 🌟 Características// npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
 
-// 3. Use
-function App() {
-  return (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
-      <CookieBanner />
-      <YourApp />
-    </ConsentProvider>
-  )
+
+
+- ✅ **TypeScript First**: Tipos completos e inferência automática// 2. Importe
+
+- ✅ **SSR-Safe**: Next.js (App Router + Pages Router), Remiximport { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
+
+- ✅ **Modular**: 3 pacotes independentes para flexibilidade máxima
+
+- ✅ **Tree-shakeable**: Import apenas o que você usa// 3. Use
+
+- ✅ **Zero Config**: Defaults sensatos, funciona out-of-the-boxfunction App() {
+
+- ✅ **Acessível**: WCAG 2.1 AA, keyboard navigation, screen readers  return (
+
+- ✅ **Responsivo**: Mobile-first design    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+
+- ✅ **Temas**: Light/Dark/Auto com transições suaves      <CookieBanner />
+
+- ✅ **i18n**: pt-BR, en, es (extensível)      <YourApp />
+
+- ✅ **Auditável**: Logs de desenvolvedor + DataLayer events (GTM)    </ConsentProvider>
+
+- ✅ **Integrações Nativas**: GA4, GTM, Facebook Pixel, Hotjar, Mixpanel, Clarity  )
+
 }
-```
 
-### Setup com Google Analytics
+---```
 
-```tsx
+
+
+## 🔌 Integrações### Setup com Google Analytics
+
+
+
+Integrações prontas para:```tsx
+
 import { ConsentProvider, CookieBanner, createGoogleAnalyticsIntegration } from '@react-lgpd-consent/mui'
 
-const ga = createGoogleAnalyticsIntegration('G-XXXXXXXXXX')
+- ✅ Google Analytics 4 (GA4)
 
-function App() {
-  return (
-    <ConsentProvider
-      categories={{ enabledCategories: ['analytics'] }}
-      integrations={[ga]}
-    >
+- ✅ Google Tag Manager (GTM)const ga = createGoogleAnalyticsIntegration('G-XXXXXXXXXX')
+
+- ✅ Facebook Pixel
+
+- ✅ Hotjarfunction App() {
+
+- ✅ Microsoft Clarity  return (
+
+- ✅ Mixpanel    <ConsentProvider
+
+- ✅ Intercom      categories={{ enabledCategories: ['analytics'] }}
+
+- ✅ Zendesk      integrations={[ga]}
+
+- ✅ UserWay (Acessibilidade)    >
+
       <CookieBanner />
-      <YourApp />
+
+**[Ver guia completo →](./INTEGRACOES.md)**      <YourApp />
+
     </ConsentProvider>
-  )
+
+---  )
+
 }
-```
 
-### Setup Headless (Core)
+## 🤝 Contribuindo```
 
-```tsx
+
+
+Contribuições são bem-vindas! Veja [DEVELOPMENT.md](./DEVELOPMENT.md) para detalhes.### Setup Headless (Core)
+
+
+
+### Workflow```tsx
+
 import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
 
-function CustomBanner() {
-  const { acceptAll, declineAll, consented } = useConsent()
-  if (consented) return null
-  
+1. Fork o repositório
+
+2. Crie uma branch: `git checkout -b feature/minha-feature`function CustomBanner() {
+
+3. Commit: `git commit -m 'feat: minha nova feature'`  const { acceptAll, declineAll, consented } = useConsent()
+
+4. Push: `git push origin feature/minha-feature`  if (consented) return null
+
+5. Abra um Pull Request  
+
   return (
-    <div className="fixed bottom-0 bg-gray-900 text-white p-4">
+
+### Padrões    <div className="fixed bottom-0 bg-gray-900 text-white p-4">
+
       <button onClick={acceptAll}>Aceitar Cookies</button>
-      <button onClick={declineAll}>Apenas Necessários</button>
-    </div>
-  )
-}
 
-function App() {
+- **Commits**: Conventional Commits (`feat:`, `fix:`, `docs:`, etc.)      <button onClick={declineAll}>Apenas Necessários</button>
+
+- **TypeScript**: ESLint + Prettier (no semicolons, single quotes, width 100)    </div>
+
+- **Testes**: Jest + Testing Library (cobertura >= 80%)  )
+
+- **Docs**: TSDoc para APIs públicas}
+
+
+
+---function App() {
+
   return (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+
+## 📄 Licença    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+
       <CustomBanner />
-      <YourApp />
+
+MIT © [Luciano Edipo](https://github.com/lucianoedipo)      <YourApp />
+
     </ConsentProvider>
-  )
+
+---  )
+
 }
-```
 
----
+## 🔗 Links Úteis```
 
-## 📖 Uso Básico
 
-Envolva sua aplicação com o `ConsentProvider` (exemplo mínimo):
 
-```tsx
+### Pacotes NPM---
+
+
+
+- **[react-lgpd-consent](https://www.npmjs.com/package/react-lgpd-consent)** (agregador)## 📖 Uso Básico
+
+- **[@react-lgpd-consent/mui](https://www.npmjs.com/package/@react-lgpd-consent/mui)** (componentes MUI)
+
+- **[@react-lgpd-consent/core](https://www.npmjs.com/package/@react-lgpd-consent/core)** (headless)Envolva sua aplicação com o `ConsentProvider` (exemplo mínimo):
+
+
+
+### Recursos```tsx
+
 import { ConsentProvider } from 'react-lgpd-consent'
 
-export default function App() {
-  return (
-    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
-      <YourApp />
-    </ConsentProvider>
-  )
-}
-```
+- **[GitHub Repository](https://github.com/lucianoedipo/react-lgpd-consent)**
 
-## Nota sobre ThemeProvider e tema padrão
+- **[Storybook Playground](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)**export default function App() {
+
+- **[TypeDoc API](https://lucianoedipo.github.io/react-lgpd-consent/docs/)**  return (
+
+- **[Issues & Bugs](https://github.com/lucianoedipo/react-lgpd-consent/issues)**    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+
+- **[Releases](https://github.com/lucianoedipo/react-lgpd-consent/releases)**      <YourApp />
+
+    </ConsentProvider>
+
+---  )
+
+}
+
+<div align="center">```
+
+  <sub>Feito com ❤️ para a comunidade React brasileira</sub>
+
+</div>## Nota sobre ThemeProvider e tema padrão
+
 
 A biblioteca não cria um `ThemeProvider` global automaticamente. Ela tenta herdar o tema do seu app quando você já possui um `ThemeProvider` do MUI. Se você quiser aplicar explicitamente um tema de fallback para os componentes de consentimento, use a fábrica exportada `createDefaultConsentTheme()` e passe via prop `theme`:
 
