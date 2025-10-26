@@ -40,7 +40,7 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
 npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
 ```
 
-**Depois (v0.5.0 - Opção B: Pacote MUI direto):**
+**Depois (v0.5.0 - Opção B: Pacote MUI direto - RECOMENDADO):**
 ```bash
 # Mesma funcionalidade, pacote mais explícito
 npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
@@ -49,7 +49,34 @@ npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
 **Mudanças no código:**
 ```diff
 -import { ConsentProvider, CookieBanner } from 'react-lgpd-consent'
-+import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
++import { ConsentProvider, CookieBanner, FloatingPreferencesButton } from '@react-lgpd-consent/mui'
+
+ function App() {
+   return (
+     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+       <CookieBanner />
+-      <PreferencesModal />
+       <FloatingPreferencesButton />
++      {/* O PreferencesModal é injetado automaticamente! */}
+     </ConsentProvider>
+   )
+ }
+```
+
+> ✨ **Novidade v0.5.0:** O `ConsentProvider` do pacote MUI automaticamente renderiza o `PreferencesModal`. Você não precisa incluí-lo manualmente!
+
+**Customizando o modal:**
+```tsx
+import { ConsentProvider, PreferencesModal } from '@react-lgpd-consent/mui'
+
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  PreferencesModalComponent={(props) => (
+    <PreferencesModal {...props} hideBranding={true} />
+  )}
+>
+  <YourApp />
+</ConsentProvider>
 ```
 
 ### Cenário 2: Headless/UI Customizada (Novo uso)
@@ -87,6 +114,19 @@ function App() {
       <CustomBanner />
       {/* Seu app */}
     </ConsentProvider>
+  )
+}
+```
+
+**Alternativa: Usar ConsentProviderHeadless do MUI:**
+```tsx
+import { ConsentProviderHeadless, useConsent } from '@react-lgpd-consent/mui'
+
+function App() {
+  return (
+    <ConsentProviderHeadless categories={{ enabledCategories: ['analytics'] }}>
+      <CustomBanner />
+    </ConsentProviderHeadless>
   )
 }
 ```

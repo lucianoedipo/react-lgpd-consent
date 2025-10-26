@@ -34,7 +34,6 @@ pnpm add @react-lgpd-consent/mui @mui/material @mui/icons-material
 import { 
   ConsentProvider, 
   CookieBanner, 
-  PreferencesModal,
   FloatingPreferencesButton 
 } from '@react-lgpd-consent/mui'
 
@@ -42,10 +41,57 @@ function App() {
   return (
     <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       <CookieBanner policyLinkUrl="/privacy-policy" />
-      <PreferencesModal />
       <FloatingPreferencesButton />
+      {/* O PreferencesModal é injetado automaticamente! */}
       <YourApp />
     </ConsentProvider>
+  )
+}
+```
+
+> ✨ **Nota:** O `ConsentProvider` deste pacote automaticamente renderiza o `PreferencesModal`. Você não precisa incluí-lo manualmente!
+
+### Customizando o Modal de Preferências
+
+```tsx
+import { ConsentProvider, PreferencesModal } from '@react-lgpd-consent/mui'
+
+function App() {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      PreferencesModalComponent={(props) => (
+        <PreferencesModal {...props} hideBranding={true} />
+      )}
+    >
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+### Uso Headless (Avançado)
+
+Se você quiser controle total sobre a UI:
+
+```tsx
+import { ConsentProviderHeadless, useConsent } from '@react-lgpd-consent/mui'
+
+function App() {
+  return (
+    <ConsentProviderHeadless categories={{ enabledCategories: ['analytics'] }}>
+      <CustomUI />
+    </ConsentProviderHeadless>
+  )
+}
+
+function CustomUI() {
+  const { acceptAll, rejectAll } = useConsent()
+  return (
+    <div>
+      <button onClick={acceptAll}>Aceitar</button>
+      <button onClick={rejectAll}>Rejeitar</button>
+    </div>
   )
 }
 ```

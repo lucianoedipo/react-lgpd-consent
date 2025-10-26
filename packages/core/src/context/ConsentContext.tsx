@@ -300,6 +300,9 @@ export function ConsentProvider({
     }
   }, [categories])
 
+  // Ref para controlar aviso sobre componentes UI ausentes (exibe apenas uma vez)
+  const didWarnAboutMissingUI = React.useRef(false)
+
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
   useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance, guidanceConfig)
   // Logging adicional quando Modal customizado é usado (dev only)
@@ -468,7 +471,43 @@ export function ConsentProvider({
                     texts={texts}
                     {...preferencesModalProps}
                   />
-                ) : null}
+                ) : (
+                  // Aviso de desenvolvimento: usuário pode estar esquecendo de fornecer componentes UI
+                  process.env.NODE_ENV === 'development' &&
+                  typeof window !== 'undefined' &&
+                  !didWarnAboutMissingUI.current &&
+                  !CookieBannerComponent &&
+                  !FloatingPreferencesButtonComponent &&
+                  (() => {
+                    didWarnAboutMissingUI.current = true
+                    console.warn(
+                      '%c[@react-lgpd-consent/core] Aviso: Nenhum componente UI fornecido',
+                      'color: #ff9800; font-weight: bold; font-size: 14px',
+                      `\n\n` +
+                        `⚠️  O ConsentProvider do core é HEADLESS (sem interface visual).\n` +
+                        `    Usuários não verão banner de consentimento nem conseguirão gerenciar preferências.\n\n` +
+                        `📦 Componentes UI ausentes:\n` +
+                        `   • CookieBanner - Banner de consentimento inicial\n` +
+                        `   • PreferencesModal - Modal de gerenciamento de preferências\n` +
+                        `   • FloatingPreferencesButton - Botão para reabrir preferências\n\n` +
+                        `✅ Soluções:\n\n` +
+                        `   1️⃣  Usar pacote MUI (RECOMENDADO - componentes prontos):\n` +
+                        `       import { ConsentProvider } from '@react-lgpd-consent/mui'\n` +
+                        `       // Modal, banner e botão injetados automaticamente!\n\n` +
+                        `   2️⃣  Fornecer seus próprios componentes:\n` +
+                        `       <ConsentProvider\n` +
+                        `         CookieBannerComponent={YourBanner}\n` +
+                        `         PreferencesModalComponent={YourModal}\n` +
+                        `         FloatingPreferencesButtonComponent={YourButton}\n` +
+                        `       />\n\n` +
+                        `   3️⃣  Usar headless (sem UI - intencional):\n` +
+                        `       // Use hooks como useConsent() para criar UI customizada\n` +
+                        `       // Ignore este aviso se for intencional\n\n` +
+                        `📚 Docs: https://github.com/lucianoedipo/react-lgpd-consent#usage\n`,
+                    )
+                    return null
+                  })()
+                )}
 
                 {/* Overlay de bloqueio no Provider (opt-in via blockingStrategy) */}
                 {blocking && isHydrated && !state.consented && blockingStrategy === 'provider' && (
