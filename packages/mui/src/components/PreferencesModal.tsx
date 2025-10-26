@@ -9,7 +9,7 @@ import FormGroup from '@mui/material/FormGroup'
 import type { SxProps, Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import * as React from 'react'
+import type { Category, ConsentPreferences } from '@react-lgpd-consent/core'
 import {
   getCookiesInfoForCategory,
   useCategories,
@@ -17,7 +17,7 @@ import {
   useConsentTexts,
   useDesignTokens,
 } from '@react-lgpd-consent/core'
-import type { Category, ConsentPreferences } from '@react-lgpd-consent/core'
+import * as React from 'react'
 import { Branding } from './Branding'
 
 // Declaração global movida para evitar conflitos entre arquivos
