@@ -1,7 +1,6 @@
-/**export * from './utils/scriptIntegrations'
-
- * @module react-lgpd-consent/integrationsexport * from './utils/ConsentScriptLoader'
-
+/**
+ * @module react-lgpd-consent/integrations
+ *
  * @description
  * Re-exporta todas as integrações de scripts de terceiros do pacote @react-lgpd-consent/core.
  * 
