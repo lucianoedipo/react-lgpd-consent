@@ -1,9 +1,9 @@
 import { Alert, Box, Button, Card, CardContent, Chip, Stack, Typography } from '@mui/material'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConsentProvider } from '../context/ConsentContext'
-import { useConsent } from '../hooks/useConsent'
-import { ConsentScriptLoader } from './ConsentScriptLoader'
 import {
+  ConsentProvider,
+  useConsent,
+  ConsentScriptLoader,
   createCorporateIntegrations,
   createECommerceIntegrations,
   createFacebookPixelIntegration,
@@ -11,7 +11,7 @@ import {
   createHotjarIntegration,
   createMixpanelIntegration,
   createSaaSIntegrations,
-} from './scriptIntegrations'
+} from '@react-lgpd-consent/core'
 
 // Helper to make integrations safe for Storybook (avoid real network requests)
 function withMockSrc<T extends { src: string }>(i: T): T {

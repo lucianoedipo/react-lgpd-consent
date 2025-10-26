@@ -10,7 +10,7 @@ const config: Config = {
   roots: ['<rootDir>/packages/core/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: 'packages/core/tsconfig.json' }],
+    '^.+\\.(ts|tsx)$': ['ts-jest', { tsconfig: '<rootDir>/packages/core/tsconfig.json' }],
   },
   // Use an early setup file to silence console output during module collection,
   // and keep the regular setup for testing-library and Jest helpers.

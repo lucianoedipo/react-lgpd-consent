@@ -1,7 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
-import { ConsentProvider } from '../index'
+import { ConsentProvider } from '@react-lgpd-consent/core'
 
 import { Branding } from './Branding'
 

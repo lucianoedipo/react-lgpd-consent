@@ -8,13 +8,17 @@ import {
   Divider,
   Stack,
   Typography,
+  ThemeProvider,
 } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConsentProvider } from '../context/ConsentContext'
-import { useConsent } from '../hooks/useConsent'
-import { resolveTexts, TEXT_TEMPLATES } from '../index'
-import type { DesignTokens } from '../types/types'
+import {
+  ConsentProvider,
+  useConsent,
+  resolveTexts,
+  TEXT_TEMPLATES,
+  type DesignTokens,
+} from '@react-lgpd-consent/core'
 
 const meta: Meta<typeof ConsentProvider> = {
   title: 'Components/ConsentProvider',
@@ -263,11 +267,13 @@ export const DarkTheme: Story = {
     categories: { enabledCategories: ['analytics', 'marketing'] },
   },
   render: (args) => (
-    <ConsentProvider {...args} theme={createTheme({ palette: { mode: 'dark' } })}>
-      <Box sx={{ p: 3, bgcolor: '#121212', color: 'white', minHeight: '50vh' }}>
-        <ConsentDemo />
-      </Box>
-    </ConsentProvider>
+    <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
+      <ConsentProvider {...args}>
+        <Box sx={{ p: 3, bgcolor: '#121212', color: 'white', minHeight: '50vh' }}>
+          <ConsentDemo />
+        </Box>
+      </ConsentProvider>
+    </ThemeProvider>
   ),
 }
 

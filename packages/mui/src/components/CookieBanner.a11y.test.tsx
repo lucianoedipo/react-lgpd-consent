@@ -4,7 +4,7 @@
  */
 import { render } from '@testing-library/react'
 import { axe, toHaveNoViolations } from 'jest-axe'
-import { ConsentProvider } from '../context/ConsentContext'
+import { ConsentProvider } from '@react-lgpd-consent/core'
 
 expect.extend(toHaveNoViolations)
 

@@ -29,10 +29,14 @@ import Stack from '@mui/material/Stack'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import React from 'react'
-import { useConsent, useConsentTexts, useConsentHydration } from '../hooks/useConsent'
-import { useDesignTokens } from '../context/DesignContext'
+import {
+  useConsent,
+  useConsentTexts,
+  useConsentHydration,
+  useDesignTokens,
+  logger,
+} from '@react-lgpd-consent/core'
 import { Branding } from './Branding'
-import { logger } from '../utils/logger'
 import type { Theme, SxProps } from '@mui/material/styles'
 
 /**

@@ -5,8 +5,7 @@
 import { render, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe, toHaveNoViolations } from 'jest-axe'
-import { ConsentProvider } from '../context/ConsentContext'
-import { useConsent } from '../hooks/useConsent'
+import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
 
 expect.extend(toHaveNoViolations)
 

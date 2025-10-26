@@ -9,12 +9,17 @@ import {
   Divider,
   Stack,
   Typography,
+  ThemeProvider,
 } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConsentProvider } from '../context/ConsentContext'
-import { useConsent } from '../hooks/useConsent'
-import { resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '../index'
+import {
+  ConsentProvider,
+  useConsent,
+  resolveTexts,
+  TEXT_TEMPLATES,
+  type DesignTokens,
+} from '@react-lgpd-consent/core'
 import { PreferencesModal } from './PreferencesModal'
 type StoryArgs = {
   DialogProps?: Partial<DialogProps>
@@ -252,18 +257,17 @@ export const DarkTheme: Story = {
   render: (args: StoryArgs) => {
     const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
-      <ConsentProvider
-        categories={{ enabledCategories: ['analytics', 'marketing'] }}
-        theme={createTheme({ palette: { mode: 'dark' } })}
-      >
-        <Box sx={{ p: 3, bgcolor: '#121212', minHeight: '50vh', color: 'white' }}>
-          <Typography variant="h4" gutterBottom color="white">
-            Tema Escuro - Modal
-          </Typography>
-          <ModalDemo />
-        </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
-      </ConsentProvider>
+      <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+          <Box sx={{ p: 3, bgcolor: '#121212', minHeight: '50vh', color: 'white' }}>
+            <Typography variant="h4" gutterBottom color="white">
+              Tema Escuro - Modal
+            </Typography>
+            <ModalDemo />
+          </Box>
+          <PreferencesModal {...args} DialogProps={dialogProps} />
+        </ConsentProvider>
+      </ThemeProvider>
     )
   },
 }

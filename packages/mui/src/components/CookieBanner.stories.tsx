@@ -1,8 +1,7 @@
-import { Box, Chip, Stack, Typography } from '@mui/material'
+import { Box, Chip, Stack, Typography, ThemeProvider } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConsentProvider } from '../context/ConsentContext'
-import { resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '../index'
+import { ConsentProvider, resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '@react-lgpd-consent/core'
 import { CookieBanner } from './CookieBanner'
 
 const meta: Meta<typeof CookieBanner> = {
@@ -70,7 +69,7 @@ export const Default: Story = {
   ),
 }
 
-export const WithBlocking: Story = {
+export const ECommerceVariant: Story = {
   args: {
     debug: true,
     blocking: true,
@@ -197,55 +196,56 @@ export const DarkTheme: Story = {
     debug: true,
   },
   render: (args) => (
-    <ConsentProvider
-      categories={{ enabledCategories: ['analytics'] }}
-      CookieBannerComponent={() => null}
-      theme={createTheme({ palette: { mode: 'dark' } })}
-    >
-      <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#0f172a', color: 'white' }}>
-        <Box sx={{ p: 3 }}>
-          <Typography variant="h4" gutterBottom color="primary.light">
-            🌙 Tema Escuro
-          </Typography>
-          <Typography variant="body1" color="grey.300" sx={{ mb: 3 }}>
-            Banner adaptado para interfaces escuras com contraste otimizado.
-          </Typography>
-
-          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} sx={{ mb: 2 }}>
-            <Chip
-              label="Theme: dark"
-              size="small"
-              sx={{ bgcolor: 'grey.800', color: 'grey.100' }}
-            />
-            <Chip
-              label="Contrast: optimized"
-              size="small"
-              sx={{ bgcolor: 'primary.dark', color: 'white' }}
-            />
-            <Chip
-              label="Accessibility: ✅"
-              size="small"
-              sx={{ bgcolor: 'success.dark', color: 'white' }}
-            />
-          </Stack>
-
-          <Box
-            sx={{
-              p: 2,
-              bgcolor: 'grey.900',
-              borderRadius: 1,
-              border: '1px solid',
-              borderColor: 'grey.700',
-            }}
-          >
-            <Typography variant="body2" color="grey.300">
-              🎨 <strong>Design Escuro:</strong> Banner integrado com tema escuro da aplicação.
+    <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        CookieBannerComponent={() => null}
+      >
+        <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#0f172a', color: 'white' }}>
+          <Box sx={{ p: 3 }}>
+            <Typography variant="h4" gutterBottom color="primary.light">
+              🌙 Tema Escuro
             </Typography>
+            <Typography variant="body1" color="grey.300" sx={{ mb: 3 }}>
+              Banner adaptado para interfaces escuras com contraste otimizado.
+            </Typography>
+
+            <Stack direction="row" spacing={1} flexWrap="wrap" gap={1} sx={{ mb: 2 }}>
+              <Chip
+                label="Theme: dark"
+                size="small"
+                sx={{ bgcolor: 'grey.800', color: 'grey.100' }}
+              />
+              <Chip
+                label="Contrast: optimized"
+                size="small"
+                sx={{ bgcolor: 'primary.dark', color: 'white' }}
+              />
+              <Chip
+                label="Accessibility: ✅"
+                size="small"
+                sx={{ bgcolor: 'success.dark', color: 'white' }}
+              />
+            </Stack>
+
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: 'grey.900',
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'grey.700',
+              }}
+            >
+              <Typography variant="body2" color="grey.300">
+                🎨 <strong>Design Escuro:</strong> Banner integrado com tema escuro da aplicação.
+              </Typography>
+            </Box>
           </Box>
+          <CookieBanner {...args} />
         </Box>
-        <CookieBanner {...args} />
-      </Box>
-    </ConsentProvider>
+      </ConsentProvider>
+    </ThemeProvider>
   ),
 }
 

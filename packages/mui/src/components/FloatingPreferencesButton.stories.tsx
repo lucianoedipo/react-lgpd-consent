@@ -1,9 +1,13 @@
-import { Alert, Box, Card, CardContent, Chip, Paper, Stack, Typography } from '@mui/material'
+import { Alert, Box, Card, CardContent, Chip, Paper, Stack, Typography, ThemeProvider } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { ConsentProvider } from '../context/ConsentContext'
-import { useConsent } from '../hooks/useConsent'
-import { resolveTexts, TEXT_TEMPLATES, type DesignTokens } from '../index'
+import {
+  ConsentProvider,
+  useConsent,
+  resolveTexts,
+  TEXT_TEMPLATES,
+  type DesignTokens,
+} from '@react-lgpd-consent/core'
 import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 
 const meta: Meta<typeof FloatingPreferencesButton> = {
@@ -251,20 +255,21 @@ export const DarkTheme: Story = {
     offset: 24,
   },
   render: (args) => (
-    <ConsentProvider
-      categories={{ enabledCategories: ['analytics', 'marketing'] }}
-      theme={createTheme({ palette: { mode: 'dark' } })}
-      floatingPreferencesButtonProps={args}
-    >
-      <Box
-        sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#121212', color: 'white' }}
+    <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'marketing'] }}
+        floatingPreferencesButtonProps={args}
       >
-        <Typography variant="h4" gutterBottom color="white">
-          Tema Escuro - Floating Button
-        </Typography>
-        <FloatingPreferencesButton {...args} />
-      </Box>
-    </ConsentProvider>
+        <Box
+          sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#121212', color: 'white' }}
+        >
+          <Typography variant="h4" gutterBottom color="white">
+            Tema Escuro - Floating Button
+          </Typography>
+          <FloatingPreferencesButton {...args} />
+        </Box>
+      </ConsentProvider>
+    </ThemeProvider>
   ),
 }
 

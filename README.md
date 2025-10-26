@@ -44,21 +44,71 @@
 
 ## 🚀 Instalação
 
+### Opção 1: Pacote Completo (UI + Lógica)
+
 ```bash
-npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-cookie
+npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
 ```
 
-**Dependências peer:** `react`, `react-dom` e, se você utilizar os componentes prontos, `@mui/material` + `@mui/icons-material`. A camada MUI agora está publicada separadamente como `@react-lgpd-consent/mui`.
+### Opção 2: Core Apenas (Headless - sem UI)
+
+```bash
+npm install @react-lgpd-consent/core
+```
+
+### Opção 3: Pacote Agregador (Compatibilidade v0.4.x)
+
+```bash
+npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled
+```
+
+**Dependências:**
+- **Core**: `react@>=18`, `react-dom@>=18`, `js-cookie@3`, `zod@4`
+- **MUI (apenas se usar UI)**: `@mui/material@>=5`, `@emotion/react`, `@emotion/styled`
+- **Opcional**: `@mui/icons-material` (para ícones customizados)
+
+**Qual escolher?**
+- 🎨 **Use `@react-lgpd-consent/mui`** se quer componentes prontos com Material-UI (~104 KB)
+- ⚡ **Use `@react-lgpd-consent/core`** se vai criar UI customizada ou usar outra lib de componentes (~86 KB)
+- 🔄 **Use `react-lgpd-consent`** para manter compatibilidade com v0.4.x (~104 KB)
+
+> 📖 **Migrando de v0.4.x?** Consulte o [Guia de Migração](./MIGRATION.md)
 
 ---
 
 ## ✨ Novidades v0.5.0
 
-- **Workspace PNPM**: o repositório foi modularizado em três pacotes — `@react-lgpd-consent/core`, `@react-lgpd-consent/mui` e o agregador `react-lgpd-consent`.
-- **Camada MUI isolada**: os componentes padrão agora vivem na camada MUI (por enquanto ainda como proxy), preparando o terreno para UI totalmente opcional.
-- **Subpaths oficiais**: você pode importar diretamente `react-lgpd-consent/core` ou `react-lgpd-consent/mui` conforme necessidade.
-- **Scripts unificados com filtros**: `pnpm --filter react-lgpd-consent <comando>` executa build/test/lint no pacote principal sem afetar os demais.
-- **Documentação atualizada**: README, QUICKSTART e docs refletem a nova arquitetura modular.
+### 🏗️ Arquitetura Modular
+
+- **Três pacotes independentes**:
+  - `@react-lgpd-consent/core` — Lógica headless de consentimento (sem dependências de UI)
+  - `@react-lgpd-consent/mui` — Componentes UI completos usando Material-UI
+  - `react-lgpd-consent` — Pacote agregador (mantido para compatibilidade)
+
+- **Tree-shaking eficiente**: Instale apenas o que você precisa
+  - Core: 86 KB ESM (lógica pura)
+  - MUI: +18 KB (componentes UI)
+  
+- **Flexibilidade total**:
+  - Use core com sua própria biblioteca de componentes
+  - Use mui para componentes prontos
+  - Use react-lgpd-consent para compatibilidade
+
+- **Breaking Changes**:
+  - ❌ Removida prop `theme` do `ConsentProvider`
+  - ✅ Use `ThemeProvider` do Material-UI diretamente
+  - 📖 Ver [MIGRATION.md](./MIGRATION.md) para detalhes completos
+
+### 📦 Workspace PNPM
+- Monorepo organizado com workspaces
+- Scripts unificados com filtros
+- Build independente por pacote
+- Publicação npm separada
+
+### 🔄 Migração Simplificada
+- Pacote `react-lgpd-consent` mantido para compatibilidade
+- Guia de migração completo disponível
+- Zero breaking changes para usuários do pacote agregador
 
 ---
 
@@ -113,6 +163,162 @@ npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-c
 - **Suporte a categorias customizadas**: `setPreference` e `ScriptIntegration.category` agora usam `string` ao invés de `Category`  
 - **Impacto mínimo**: Código usando strings literais continua funcionando sem alterações
 - **Consulte**: [CHANGELOG.md](./CHANGELOG.md) para guia de migração completo
+
+---
+
+## 🏗️ Arquitetura de Pacotes
+
+A biblioteca está organizada em três pacotes independentes para máxima flexibilidade:
+
+```
+react-lgpd-consent/
+├── @react-lgpd-consent/core      # Lógica headless (86 KB)
+│   ├── ConsentProvider           # Context provider
+│   ├── useConsent                # Hook principal
+│   ├── scriptIntegrations        # GA, GTM, UserWay
+│   └── utilities                 # Logger, cookies, scripts
+│
+├── @react-lgpd-consent/mui       # Componentes UI (18 KB + core)
+│   ├── CookieBanner             # Banner de consentimento
+│   ├── PreferencesModal         # Modal de preferências
+│   ├── FloatingPreferencesButton # Botão flutuante
+│   └── Branding                 # Logo/branding
+│
+└── react-lgpd-consent            # Agregador (compatibilidade)
+    └── Re-exports @react-lgpd-consent/mui
+```
+
+### Comparativo de Pacotes
+
+| Aspecto | Core | MUI | Agregador |
+|---------|------|-----|-----------|
+| **Tamanho** | 86 KB ESM | 104 KB (core + mui) | 104 KB |
+| **UI Incluída** | ❌ | ✅ | ✅ |
+| **Dep. MUI** | ❌ | ✅ (peer) | ✅ (peer) |
+| **Customização** | ✅✅✅ Total | ✅✅ Alta | ✅✅ Alta |
+| **Setup** | Manual UI | Plug & Play | Plug & Play |
+| **Tree-shaking** | ✅✅✅ Ótimo | ✅✅ Bom | ✅✅ Bom |
+| **Recomendado para** | UI própria | Maioria dos casos | Migração v0.4.x |
+
+---
+
+## 🎯 Casos de Uso
+
+### Quando usar `@react-lgpd-consent/core`
+
+✅ Você já tem um design system próprio  
+✅ Está usando Tailwind, Chakra, shadcn/ui, etc.  
+✅ Quer máximo controle sobre a UI  
+✅ Precisa minimizar bundle size  
+✅ Projeto não usa Material-UI  
+
+**Exemplo:**
+```tsx
+import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
+
+function MyBanner() {
+  const { acceptAll, declineAll } = useConsent()
+  return <div className="my-design">{/* Sua UI */}</div>
+}
+```
+
+### Quando usar `@react-lgpd-consent/mui`
+
+✅ Quer começar rápido com componentes prontos  
+✅ Já usa Material-UI no projeto  
+✅ Precisa de LGPD compliance out-of-the-box  
+✅ Quer acessibilidade nativa (WCAG 2.1)  
+✅ Aceita customização via design tokens  
+
+**Exemplo:**
+```tsx
+import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
+
+function App() {
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+      <CookieBanner /> {/* Pronto para usar! */}
+    </ConsentProvider>
+  )
+}
+```
+
+### Quando usar `react-lgpd-consent`
+
+✅ Está migrando de v0.4.x  
+✅ Quer compatibilidade máxima  
+✅ Prefere pacote único tradicional  
+
+---
+
+## 🚦 Início Rápido
+
+### Setup Mínimo (30 segundos)
+
+```tsx
+// 1. Instale
+// npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
+
+// 2. Importe
+import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
+
+// 3. Use
+function App() {
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+      <CookieBanner />
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+### Setup com Google Analytics
+
+```tsx
+import { ConsentProvider, CookieBanner, createGoogleAnalyticsIntegration } from '@react-lgpd-consent/mui'
+
+const ga = createGoogleAnalyticsIntegration('G-XXXXXXXXXX')
+
+function App() {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      integrations={[ga]}
+    >
+      <CookieBanner />
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+### Setup Headless (Core)
+
+```tsx
+import { ConsentProvider, useConsent } from '@react-lgpd-consent/core'
+
+function CustomBanner() {
+  const { acceptAll, declineAll, consented } = useConsent()
+  if (consented) return null
+  
+  return (
+    <div className="fixed bottom-0 bg-gray-900 text-white p-4">
+      <button onClick={acceptAll}>Aceitar Cookies</button>
+      <button onClick={declineAll}>Apenas Necessários</button>
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+      <CustomBanner />
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
 
 ---
 

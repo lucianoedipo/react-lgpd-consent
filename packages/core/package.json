@@ -1,13 +1,20 @@
 {
   "name": "@react-lgpd-consent/core",
   "version": "0.5.0",
-  "description": "Núcleo da biblioteca de consentimento LGPD para React (estado, hooks e utilitários).",
+  "description": "Núcleo da biblioteca de consentimento LGPD para React - Estado, hooks e utilitários sem dependências de UI",
   "keywords": [
     "lgpd",
+    "anpd",
     "consent",
+    "cookies",
     "react",
     "typescript",
-    "cookies"
+    "privacy",
+    "gdpr",
+    "headless",
+    "core",
+    "hooks",
+    "acessibilidade"
   ],
   "author": {
     "name": "Luciano Édipo",

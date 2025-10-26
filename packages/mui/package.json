@@ -1,7 +1,26 @@
 {
   "name": "@react-lgpd-consent/mui",
   "version": "0.5.0",
-  "description": "Camada de componentes Material-UI para react-lgpd-consent.",
+  "description": "Componentes Material-UI prontos para gerenciamento de consentimento LGPD/ANPD",
+  "keywords": [
+    "lgpd",
+    "anpd",
+    "consent",
+    "cookies",
+    "react",
+    "typescript",
+    "material-ui",
+    "mui",
+    "privacy",
+    "gdpr",
+    "acessibilidade",
+    "ui-components"
+  ],
+  "author": {
+    "name": "Luciano Édipo",
+    "email": "luciano.psilva@anpd.gov.br",
+    "url": "https://github.com/lucianoedipo"
+  },
   "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs",
@@ -37,16 +56,13 @@
     "test": "jest --config ../../jest.config.ts"
   },
   "peerDependencies": {
-    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
     "@mui/material": "^7.0.0 || ^6.0.0 || ^5.15.0",
+    "@mui/icons-material": "^7.0.0 || ^6.0.0 || ^5.15.0",
     "react": "^18.2.0 || ^19.0.0",
     "react-dom": "^18.2.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@mui/icons-material": {
-      "optional": true
-    },
-    "@mui/material": {
       "optional": true
     }
   },

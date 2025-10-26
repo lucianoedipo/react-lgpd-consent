@@ -1,7 +1,11 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist"
+    "outDir": "dist",
+    "paths": {
+      "@react-lgpd-consent/core": ["../core/src"],
+      "@react-lgpd-consent/mui": ["../mui/src"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["dist"]

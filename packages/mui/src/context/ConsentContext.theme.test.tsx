@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { ThemeProvider, createTheme, useTheme } from '@mui/material/styles'
 import { render, screen } from '@testing-library/react'
-import { ConsentProvider } from './ConsentContext'
+import { ConsentProvider } from '@react-lgpd-consent/core'
 
 function ThemeInspector() {
   const theme = useTheme()

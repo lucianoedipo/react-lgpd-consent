@@ -1,6 +1,9 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": ["packages/react-lgpd-consent/src/index.ts"],
+  "entryPoints": [
+    "packages/core/src/index.ts",
+    "packages/mui/src/index.ts"
+  ],
   "out": "docs",
   "tsconfig": "tsconfig.typedoc.json",
 
@@ -82,6 +85,8 @@
     "README.en.md",
     "QUICKSTART.md",
     "QUICKSTART.en.md",
+    "MIGRATION.md",
+    "ARCHITECTURE.md",
     "CHANGELOG.md",
     "DEVELOPMENT.md",
     "CONFORMIDADE.md",

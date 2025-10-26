@@ -17,9 +17,7 @@ import {
 } from '@mui/material'
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
-import { ConsentProvider } from '../context/ConsentContext'
-import { useConsent } from '../hooks/useConsent'
-import { ConsentScriptLoader } from './ConsentScriptLoader'
+import { ConsentProvider, useConsent, ConsentScriptLoader } from '@react-lgpd-consent/core'
 
 const meta: Meta = {
   title: 'Internal/CookieDetection',

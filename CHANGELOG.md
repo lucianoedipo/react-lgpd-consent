@@ -2,7 +2,147 @@
 
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
-O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/), e este projeto segue [Semantic Versioning](https://semver.org/lang/pt-BR/).
+# Changelog
+
+Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
+e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
+
+## [0.5.0] - 2025-10-25
+
+### 🏗️ Arquitetura Modular - MAJOR REFACTOR
+
+Esta versão introduz uma **arquitetura modular** que separa a lógica de consentimento (core) dos componentes UI (mui).
+
+### ✨ Added
+
+- **Três pacotes independentes**:
+  - `@react-lgpd-consent/core` (86 KB ESM) - Lógica headless sem dependências de UI
+  - `@react-lgpd-consent/mui` (18 KB ESM) - Componentes UI completos usando Material-UI
+  - `react-lgpd-consent` (104 KB ESM) - Pacote agregador mantido para compatibilidade
+
+- **Tree-shaking eficiente**: Instale apenas o que você precisa
+  - Core isolado permite uso com qualquer biblioteca de UI
+  - MUI opcional como peer dependency
+  
+- **Workspace PNPM**: Monorepo organizado com builds independentes
+- **Guia de migração completo**: [MIGRATION.md](./MIGRATION.md) documentando todos os cenários
+- **Scripts de publicação**: Suporte para publicar pacotes independentemente
+
+### ⚠️ Breaking Changes
+
+- **Removida prop `theme` do `ConsentProvider`**
+  - **Antes**: `<ConsentProvider theme={createTheme({...})} />`
+  - **Depois**: Use `<ThemeProvider>` do Material-UI diretamente
+  - **Razão**: Separação de responsabilidades - tema do MUI gerenciado pelo MUI
+  - **Migração**: Ver [MIGRATION.md](./MIGRATION.md) seção "Breaking Changes"
+
+### 🔄 Changed
+
+- Estrutura de pacotes reorganizada em monorepo
+- Imports atualizados para usar workspace dependencies
+- TypeScript paths configurados para resolução de módulos
+- Jest configurado para resolver tsconfig corretamente
+- Stories refatoradas para usar `ThemeProvider` explicitamente
+
+### 📦 Package Structure
+
+```
+packages/
+├── core/           # @react-lgpd-consent/core
+│   ├── src/
+│   │   ├── context/     # ConsentProvider, CategoriesContext
+│   │   ├── hooks/       # useConsent, useCategories
+│   │   ├── utils/       # scriptIntegrations, logger
+│   │   └── types/       # TypeScript definitions
+│   └── package.json
+│
+├── mui/            # @react-lgpd-consent/mui
+│   ├── src/
+│   │   ├── components/  # CookieBanner, PreferencesModal, etc.
+│   │   └── index.ts     # Re-exports core + UI components
+│   └── package.json
+│
+└── react-lgpd-consent/  # Aggregator (compatibilidade)
+    └── package.json     # Re-exports @react-lgpd-consent/mui
+```
+
+### 📊 Bundle Sizes
+
+| Pacote | ESM | CJS | DTS | Dependências |
+|--------|-----|-----|-----|--------------|
+| `@react-lgpd-consent/core` | 86.04 KB | 89.12 KB | 125.82 KB | React, js-cookie, zod |
+| `@react-lgpd-consent/mui` | 17.69 KB | 20.95 KB | 11.78 KB | core + @mui/material (peer) |
+| `react-lgpd-consent` | 104 KB* | 110 KB* | 138 KB* | mui (workspace) |
+
+\* Bundle final = core + mui (~104 KB total)
+
+### 🎯 Migration Paths
+
+1. **Uso de componentes UI** (maioria dos usuários):
+   ```bash
+   # Opção A: Pacote agregador (zero mudanças)
+   npm install react-lgpd-consent@0.5.0
+   
+   # Opção B: Pacote MUI direto (recomendado)
+   npm install @react-lgpd-consent/mui
+   ```
+
+2. **Headless/UI customizada**:
+   ```bash
+   npm uninstall react-lgpd-consent @mui/material
+   npm install @react-lgpd-consent/core
+   ```
+
+3. **NextJS App Router**:
+   ```tsx
+   // Separação clara client/server
+   'use client'
+   import { ConsentProvider } from '@react-lgpd-consent/mui'
+   ```
+
+### ✅ Maintained (Sem Breaking Changes)
+
+- Todas as APIs públicas do `useConsent`
+- Props de `ConsentProvider` (exceto `theme`)
+- Componentes `CookieBanner`, `PreferencesModal`, `FloatingPreferencesButton`
+- Sistema de textos e templates (`TEXT_TEMPLATES`, `resolveTexts`)
+- Sistema de design tokens (`designTokens`)
+- Integrações (Google Analytics, GTM, UserWay, etc.)
+- SSR/NextJS support
+- TypeScript types completos
+
+### 🔧 Fixed
+
+- Jest configuração: tsconfig path resolution
+- Stories: uso correto de ThemeProvider
+- Type-check: todos os pacotes passam sem erros
+- Tests: 207 testes passando em todos os pacotes
+
+### 📚 Documentation
+
+- Novo [MIGRATION.md](./MIGRATION.md) com:
+  - 3 cenários de migração detalhados
+  - Comparativo de bundles
+  - Troubleshooting completo
+  - Exemplos antes/depois
+- README atualizado com:
+  - 3 opções de instalação
+  - Comparativo de pacotes
+  - Guia de escolha
+- READMEs específicos para core e mui packages
+
+### 🚀 Development
+
+- PNPM workspaces configurados
+- Scripts: `build:core`, `build:mui`, `build:main`
+- Scripts: `publish:core`, `publish:mui`, `publish:main`, `publish:all`
+- Type-check executado em todos os pacotes
+- Tests executados em todos os pacotes
+- Node >= 20.0.0 requerido
+
+---
 
 ## [0.4.5] - 2025-10-25 — DataLayer Events e CI/CD
 

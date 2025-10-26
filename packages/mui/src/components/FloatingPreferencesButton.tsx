@@ -4,9 +4,12 @@ import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { useTheme } from '@mui/material/styles'
 import * as React from 'react'
-import { useDesignTokens } from '../context/DesignContext'
-import { useConsent, useConsentTexts } from '../hooks/useConsent'
-import { logger } from '../utils/logger'
+import {
+  useDesignTokens,
+  useConsent,
+  useConsentTexts,
+  logger,
+} from '@react-lgpd-consent/core'
 
 /**
  * Função utilitária para acessar propriedades de tema com fallbacks seguros.

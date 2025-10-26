@@ -1,10 +1,9 @@
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
 import * as React from 'react'
-import { useDesignTokens } from '../context/DesignContext'
-import { useConsentTexts } from '../hooks/useConsent'
+import { useDesignTokens, useConsentTexts } from '@react-lgpd-consent/core'
 
-interface BrandingProps {
+export interface BrandingProps {
   variant: 'banner' | 'modal'
   hidden?: boolean
 }

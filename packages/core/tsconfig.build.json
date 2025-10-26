@@ -2,10 +2,8 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
-    "paths": {
-      "@react-lgpd-consent/core": ["../core/src"]
-    }
+    "rootDir": "src"
   },
   "include": ["src/**/*"],
-  "exclude": ["dist"]
+  "exclude": ["dist", "**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx", "**/*.spec.ts"]
 }

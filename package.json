@@ -9,6 +9,9 @@
   "scripts": {
     "clean": "pnpm -r run clean",
     "build": "pnpm -r run build",
+    "build:core": "pnpm --filter @react-lgpd-consent/core build",
+    "build:mui": "pnpm --filter @react-lgpd-consent/mui build",
+    "build:main": "pnpm --filter react-lgpd-consent build",
     "dev": "pnpm --filter react-lgpd-consent dev",
     "lint": "pnpm -r run lint",
     "lint:ci": "pnpm -r run lint:ci",
@@ -22,6 +25,10 @@
     "mutation": "pnpm --filter react-lgpd-consent mutation",
     "mutation:tests": "pnpm --filter react-lgpd-consent mutation:tests",
     "prepublishOnly": "pnpm --filter react-lgpd-consent prepublishOnly",
+    "publish:core": "pnpm --filter @react-lgpd-consent/core publish",
+    "publish:mui": "pnpm --filter @react-lgpd-consent/mui publish",
+    "publish:main": "pnpm --filter react-lgpd-consent publish",
+    "publish:all": "pnpm -r publish",
     "docs:generate": "pnpm --filter react-lgpd-consent docs:generate",
     "storybook": "pnpm --filter react-lgpd-consent storybook",
     "build-storybook": "pnpm --filter react-lgpd-consent build-storybook"
