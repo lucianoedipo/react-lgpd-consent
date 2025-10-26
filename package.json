@@ -2,6 +2,7 @@
   "name": "@react-lgpd-consent/workspace",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "description": "Workspace PNPM para os pacotes react-lgpd-consent.",
   "engines": {
     "node": ">=20.0.0"
