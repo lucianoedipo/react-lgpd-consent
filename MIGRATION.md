@@ -717,9 +717,9 @@ function App() {
 ## 📚 Recursos Adicionais
 
 - [README Principal](./README.md) - Documentação geral
-- [API Reference](./API.md) - API completa
+- [API Reference](./packages/react-lgpd-consent/API.md) - API completa
 - [Exemplos](./examples/) - Exemplos práticos
-- [CHANGELOG](./CHANGELOG.md) - Histórico de mudanças
+- [CHANGELOG](./packages/react-lgpd-consent/CHANGELOG.md) - Histórico de mudanças
 
 ## ❓ Perguntas Frequentes
 
