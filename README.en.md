@@ -46,7 +46,17 @@
 npm install react-lgpd-consent @mui/material @emotion/react @emotion/styled js-cookie
 ```
 
-**Peer dependencies:** `react`, `react-dom`, `@mui/material` and `js-cookie`.
+**Peer dependencies:** `react`, `react-dom` and (only if you rely on the bundled UI) `@mui/material` + `@mui/icons-material`. The Material-UI layer now ships as `@react-lgpd-consent/mui`.
+
+---
+
+## ✨ What's New in v0.5.0
+
+- **PNPM workspace** with three packages: `@react-lgpd-consent/core`, `@react-lgpd-consent/mui` and the aggregator `react-lgpd-consent`.
+- **Dedicated MUI layer** published as a proxy package, paving the way for consumers that prefer a fully custom UI.
+- **Official subpath exports**: import from `react-lgpd-consent/core` or `react-lgpd-consent/mui` as needed.
+- **Filtered scripts**: run `pnpm --filter react-lgpd-consent <command>` to target the public bundle.
+- **Docs refresh** explaining the new layout and migration guidance.
 
 ---
 

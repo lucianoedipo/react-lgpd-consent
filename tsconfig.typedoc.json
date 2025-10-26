@@ -1,11 +1,10 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "./packages/react-lgpd-consent/tsconfig.json",
   "exclude": [
     "dist",
     "node_modules",
-    "src/**/*.test.ts",
-    "src/**/*.test.tsx",
-    "src/**/*.spec.tsx",
-    "src/context/ConsentContext.additional.test.tsx"
+    "packages/**/src/**/*.test.ts",
+    "packages/**/src/**/*.test.tsx",
+    "packages/**/src/**/*.spec.tsx"
   ]
 }

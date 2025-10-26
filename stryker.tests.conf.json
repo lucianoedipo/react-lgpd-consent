@@ -1,11 +1,11 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
   "mutate": ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  "files": ["src/**/*.ts", "src/**/*.tsx", "jest.config.cjs"],
+  "files": ["src/**/*.ts", "src/**/*.tsx", "jest.config.mjs"],
   "testRunner": "jest",
   "jest": {
     "projectType": "custom",
-    "configFile": "jest.config.cjs"
+    "configFile": "jest.config.mjs"
   },
   "buildCommand": "tsc --noEmit",
   "tsconfigFile": "tsconfig.json",

@@ -16,6 +16,13 @@ yarn add react-lgpd-consent
 npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
 ```
 
+> ℹ️ **Modularization (v0.5.0+)**
+>
+> - `react-lgpd-consent` remains the main npm package.
+> - `@react-lgpd-consent/core` exposes contexts, hooks and utilities only.
+> - `@react-lgpd-consent/mui` ships the Material-UI layer (currently a proxy).
+> - Subpath imports (`react-lgpd-consent/core`, `react-lgpd-consent/mui`) are available for advanced setups.
+
 ## 🎯 Basic Usage (30 seconds)
 
 ```tsx

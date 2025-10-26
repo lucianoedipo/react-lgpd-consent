@@ -48,7 +48,7 @@ export default [
 
   // Código da lib (produção)
   {
-    files: ['src/**/*.{ts,tsx}'],
+    files: ['packages/**/*.{ts,tsx}'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
