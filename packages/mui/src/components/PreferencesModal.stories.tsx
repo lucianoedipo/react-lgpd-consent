@@ -108,9 +108,11 @@ export const Default: Story = {
   render: (args: StoryArgs) => {
     const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
-      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'marketing'] }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+      >
         <ModalDemo />
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -124,6 +126,7 @@ export const WithAllCategories: Story = {
         categories={{
           enabledCategories: ['analytics', 'marketing', 'functional', 'social'],
         }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -134,7 +137,6 @@ export const WithAllCategories: Story = {
           </Typography>
           <ModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -152,6 +154,7 @@ export const CustomTexts: Story = {
           save: '💾 Salvar Configurações',
           necessaryAlwaysOn: '🔒 Sempre Ativo',
         }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
@@ -162,7 +165,6 @@ export const CustomTexts: Story = {
           </Typography>
           <ModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -179,6 +181,7 @@ export const ECommerceExample: Story = {
           modalIntro: 'Gerencie como coletamos dados para melhorar sua experiência de compra:',
           save: 'Salvar e Continuar Comprando',
         }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3, bgcolor: '#f9f9f9', minHeight: '50vh' }}>
           <Typography variant="h4" gutterBottom>
@@ -189,7 +192,6 @@ export const ECommerceExample: Story = {
           </Typography>
           <ModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -207,6 +209,7 @@ export const CorporateExample: Story = {
           save: 'Confirmar Configurações',
         }}
         hideBranding={true}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3, bgcolor: '#e8f5e8', minHeight: '50vh' }}>
           <Typography variant="h4" gutterBottom>
@@ -217,7 +220,6 @@ export const CorporateExample: Story = {
           </Typography>
           <ModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -230,7 +232,10 @@ export const InteractiveDemo: Story = {
   render: (args: StoryArgs) => {
     const dialogProps = { ...(args.DialogProps ?? {}), open: !!args.openModal }
     return (
-      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'marketing'] }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+      >
         <Box sx={{ p: 3 }}>
           <Typography variant="h4" gutterBottom>
             Demo Interativo
@@ -243,7 +248,6 @@ export const InteractiveDemo: Story = {
 
           <ModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -258,14 +262,16 @@ export const DarkTheme: Story = {
     const dialogProps = { ...(args.DialogProps ?? {}) }
     return (
       <ThemeProvider theme={createTheme({ palette: { mode: 'dark' } })}>
-        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics', 'marketing'] }}
+          PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
+        >
           <Box sx={{ p: 3, bgcolor: '#121212', minHeight: '50vh', color: 'white' }}>
             <Typography variant="h4" gutterBottom color="white">
               Tema Escuro - Modal
             </Typography>
             <ModalDemo />
           </Box>
-          <PreferencesModal {...args} DialogProps={dialogProps} />
         </ConsentProvider>
       </ThemeProvider>
     )
@@ -340,6 +346,7 @@ export const WithAdvancedTextSystem: Story = {
           enabledCategories: ['analytics', 'functional', 'marketing'],
         }}
         texts={saasTexts}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3, bgcolor: '#f5f7fa' }}>
           <Typography variant="h4" gutterBottom color="primary">
@@ -358,7 +365,6 @@ export const WithAdvancedTextSystem: Story = {
 
           <EnhancedModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -417,6 +423,7 @@ export const WithCustomDesignTokens: Story = {
           enabledCategories: ['analytics', 'marketing', 'functional'],
         }}
         designTokens={modernDesignTokens}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3, bgcolor: '#f8fafc' }}>
           <Typography variant="h4" gutterBottom sx={{ color: '#6366f1' }}>
@@ -443,7 +450,6 @@ export const WithCustomDesignTokens: Story = {
 
           <EnhancedModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -473,6 +479,7 @@ export const MultipleCategories: Story = {
             },
           ],
         }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box sx={{ p: 3, bgcolor: '#fff9e6' }}>
           <Typography variant="h4" gutterBottom color="warning.dark">
@@ -499,7 +506,6 @@ export const MultipleCategories: Story = {
 
           <EnhancedModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
@@ -517,6 +523,7 @@ export const ResponsiveDesign: Story = {
         categories={{
           enabledCategories: ['analytics', 'marketing', 'functional'],
         }}
+        PreferencesModalComponent={(props) => <PreferencesModal {...args} {...props} DialogProps={dialogProps} />}
       >
         <Box
           sx={{
@@ -548,7 +555,6 @@ export const ResponsiveDesign: Story = {
 
           <EnhancedModalDemo />
         </Box>
-        <PreferencesModal {...args} DialogProps={dialogProps} />
       </ConsentProvider>
     )
   },
