@@ -80,6 +80,15 @@ describe('cookieUtils', () => {
     )
   })
 
+  it('removeConsentCookie aplica domínio customizado quando fornecido', () => {
+    ;(Cookies.remove as jest.Mock).mockClear()
+    removeConsentCookie({ domain: '.example.com' })
+    expect(Cookies.remove).toHaveBeenCalledWith('cookieConsent', {
+      path: '/',
+      domain: '.example.com',
+    })
+  })
+
   it('readConsentCookie migrates legacy cookie without version', () => {
     const legacy = {
       consented: true,
