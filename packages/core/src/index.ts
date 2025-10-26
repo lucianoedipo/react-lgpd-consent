@@ -81,6 +81,7 @@ export { DesignProvider, useDesignTokens } from './context/DesignContext'
  * @since 0.4.1
  */
 export { ConsentGate } from './utils/ConsentGate'
+export { buildConsentStorageKey } from './utils/cookieUtils'
 
 /**
  * Função utilitária para carregamento dinâmico de scripts externos.
@@ -175,6 +176,8 @@ export type {
    * Props do ConsentProvider principal.
    */
   ConsentProviderProps,
+  ConsentStorageConfig,
+  ConsentVersionChangeContext,
   ConsentState,
   ConsentTexts,
   CookieDescriptor,
@@ -286,6 +289,7 @@ export { defaultTexts } from './context/ConsentContext'
  * @since 0.4.1
  */
 export {
+  ensureNecessaryAlwaysOn,
   createProjectPreferences,
   getAllProjectCategories,
   validateProjectPreferences,

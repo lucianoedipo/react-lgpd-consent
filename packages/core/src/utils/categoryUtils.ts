@@ -92,6 +92,22 @@ export function createProjectPreferences(
 }
 
 /**
+ * Garante que a categoria `necessary` permaneça ativa em qualquer estrutura de preferências.
+ * @category Utils
+ * @since 0.5.2
+ */
+export function ensureNecessaryAlwaysOn(preferences: ConsentPreferences): ConsentPreferences {
+  if (preferences.necessary === true) {
+    return { ...preferences, necessary: true }
+  }
+
+  return {
+    ...preferences,
+    necessary: true,
+  }
+}
+
+/**
  * Valida um objeto de preferências de consentimento, removendo categorias que não estão permitidas pela configuração do projeto.
  * @category Utils
  * @since 0.2.6

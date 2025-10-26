@@ -45,6 +45,7 @@ const TestComponentExtended = () => {
     <div>
       <div data-testid="consented">{consented.toString()}</div>
       <div data-testid="isModalOpen">{isModalOpen?.toString() || 'false'}</div>
+      <div data-testid="necessary">{preferences.necessary?.toString() || 'false'}</div>
       <div data-testid="analytics">{preferences.analytics?.toString() || 'false'}</div>
       <div data-testid="marketing">{preferences.marketing?.toString() || 'false'}</div>
       <div data-testid="custom-category">{preferences.custom?.toString() || 'false'}</div>
@@ -58,6 +59,19 @@ const TestComponentExtended = () => {
       >
         Set Prefs
       </button>
+      <button onClick={() => setPreference('necessary' as Category, false)}>
+        Try Disable Necessary
+      </button>
+      <button
+        onClick={() =>
+          setPreferences({
+            ...preferences,
+            necessary: false,
+          })
+        }
+      >
+        Submit Without Necessary
+      </button>
       <button onClick={() => setPreference('custom' as Category, true)}>Set Custom True</button>
       <button onClick={openPreferences}>Open Modal</button>
       <button onClick={closePreferences}>Close Modal</button>
@@ -70,6 +84,7 @@ describe('ConsentProvider', () => {
   beforeEach(() => {
     ;(Cookies.get as jest.Mock).mockClear()
     ;(Cookies.set as jest.Mock).mockClear()
+    ;(Cookies.remove as jest.Mock).mockClear()
     logGuidanceSpy = jest.spyOn(devGuidance, 'logDeveloperGuidance')
     consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation(() => {})
   })
@@ -282,7 +297,10 @@ describe('ConsentProvider Additional Tests', () => {
 
     expect(screen.getByTestId('consented').textContent).toBe('false')
     expect(screen.getByTestId('analytics').textContent).toBe('false')
-    expect(removeCookieSpy).toHaveBeenCalledWith('cookieConsent', { path: '/' })
+    expect(removeCookieSpy).toHaveBeenCalledWith(
+      'lgpd-consent__v1',
+      expect.objectContaining({ path: '/' }),
+    )
     expect(setCookieSpy).not.toHaveBeenCalled() // Não deve setar um novo cookie após reset
   })
 
@@ -341,6 +359,26 @@ describe('ConsentProvider Additional Tests', () => {
     })
   })
 
+  it('mantém a categoria necessary sempre ativa em qualquer operação de atualização', async () => {
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    expect(screen.getByTestId('necessary').textContent).toBe('true')
+
+    fireEvent.click(screen.getByText('Try Disable Necessary'))
+    await waitFor(() => {
+      expect(screen.getByTestId('necessary').textContent).toBe('true')
+    })
+
+    fireEvent.click(screen.getByText('Submit Without Necessary'))
+    await waitFor(() => {
+      expect(screen.getByTestId('necessary').textContent).toBe('true')
+    })
+  })
+
   it('deve inicializar com o initialState fornecido', () => {
     const initialMockState = {
       version: '1.0',
@@ -365,6 +403,68 @@ describe('ConsentProvider Additional Tests', () => {
     expect(screen.getByTestId('analytics').textContent).toBe('true')
     expect(screen.getByTestId('marketing').textContent).toBe('false')
     expect(screen.getByTestId('isModalOpen').textContent).toBe('false') // isModalOpen deve ser false na hidratação
+  })
+
+  it('deve forçar re-consentimento ao alterar storage.version e notificar via onConsentVersionChange', async () => {
+    const onConsentVersionChange = jest.fn()
+
+    const { rerender } = render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        storage={{ namespace: 'Portal.GOV', version: '2025-Q3' }}
+        onConsentVersionChange={onConsentVersionChange}
+      >
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Accept All'))
+      await waitFor(() => expect(screen.getByTestId('consented').textContent).toBe('true'))
+    })
+
+    ;(Cookies.set as jest.Mock).mockClear()
+    ;(Cookies.remove as jest.Mock).mockClear()
+    onConsentVersionChange.mockClear()
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        storage={{ namespace: 'Portal.GOV', version: '2025-Q4' }}
+        onConsentVersionChange={onConsentVersionChange}
+      >
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    await waitFor(() => {
+      expect(onConsentVersionChange).toHaveBeenCalledTimes(1)
+    })
+
+    const [firstRemoveCall, secondRemoveCall] = (Cookies.remove as jest.Mock).mock.calls
+    expect(firstRemoveCall[0]).toBe('portal.gov__v2025-q3')
+    expect(secondRemoveCall[0]).toBe('portal.gov__v2025-q4')
+
+    expect(onConsentVersionChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        previousKey: 'portal.gov__v2025-q3',
+        nextKey: 'portal.gov__v2025-q4',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('consented').textContent).toBe('false')
+    })
+
+    // resetConsent helper permanece idempotente
+    const { resetConsent } = onConsentVersionChange.mock.calls[0][0]
+    act(() => {
+      resetConsent()
+    })
+    await waitFor(() => {
+      expect(screen.getByTestId('consented').textContent).toBe('false')
+    })
+    expect(Cookies.set).not.toHaveBeenCalled()
   })
 
   // Teste removido: Custom categories foram descontinuadas na v0.3.0+

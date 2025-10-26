@@ -4,6 +4,7 @@ import {
   writeConsentCookie,
   removeConsentCookie,
   createInitialConsentState,
+  buildConsentStorageKey,
 } from './cookieUtils'
 import type { ConsentState } from '../types/types'
 
@@ -73,7 +74,10 @@ describe('cookieUtils', () => {
 
   it('removeConsentCookie calls Cookies.remove with default path', () => {
     removeConsentCookie()
-    expect(Cookies.remove).toHaveBeenCalledWith('cookieConsent', { path: '/' })
+    expect(Cookies.remove).toHaveBeenCalledWith(
+      'cookieConsent',
+      expect.objectContaining({ path: '/' }),
+    )
   })
 
   it('readConsentCookie migrates legacy cookie without version', () => {
@@ -110,6 +114,50 @@ describe('cookieUtils', () => {
     ;(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify(sample))
     const out = readConsentCookie('cookieConsent')
     expect(out).toBeNull()
+  })
+
+  it('writeConsentCookie força necessary=true antes de persistir', () => {
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: false, analytics: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+    const config = { enabledCategories: ['analytics'] } as any
+
+    writeConsentCookie(state, config)
+
+    const [, value] = (Cookies.set as jest.Mock).mock.calls.pop()
+    const parsed = JSON.parse(value)
+    expect(parsed.preferences.necessary).toBe(true)
+  })
+
+  it('writeConsentCookie forwards domain option when provided', () => {
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true, analytics: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+    const config = { enabledCategories: ['analytics'] } as any
+
+    writeConsentCookie(state, config, { name: 'foo', domain: '.example.com' })
+
+    const [, , opts] = (Cookies.set as jest.Mock).mock.calls.pop()
+    expect(opts).toMatchObject({ domain: '.example.com', path: '/' })
+  })
+
+  it('buildConsentStorageKey normaliza namespace e versão', () => {
+    expect(buildConsentStorageKey({ namespace: 'Portal.GOV', version: '2025 Q4' })).toBe(
+      'portal.gov__v2025-q4',
+    )
+    expect(buildConsentStorageKey()).toBe('lgpd-consent__v1')
   })
 
   // SSR-specific branches are environment-dependent and flaky under jsdom

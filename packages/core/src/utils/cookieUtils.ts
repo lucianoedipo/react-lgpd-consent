@@ -8,8 +8,34 @@ import Cookies from 'js-cookie'
  * Veja `src/types/types.ts` para a definição da estrutura `ConsentCookieData`.
  */
 
-import type { ConsentCookieOptions, ConsentState, ProjectCategoriesConfig } from '../types/types'
+import type {
+  ConsentCookieOptions,
+  ConsentState,
+  ProjectCategoriesConfig,
+} from '../types/types'
+import { ensureNecessaryAlwaysOn } from './categoryUtils'
 import { logger } from './logger'
+
+const DEFAULT_STORAGE_NAMESPACE = 'lgpd-consent'
+const DEFAULT_STORAGE_VERSION = '1'
+
+/**
+ * Gera o nome da chave de armazenamento (cookie/localStorage) combinando namespace e versão.
+ * @param options.namespace Namespace lógico do consentimento (ex.: domínio raiz).
+ * @param options.version Versão atual do consentimento (ex.: lote de políticas).
+ */
+export function buildConsentStorageKey(options?: {
+  namespace?: string | null
+  version?: string | null
+}): string {
+  const namespaceRaw = options?.namespace?.trim() || DEFAULT_STORAGE_NAMESPACE
+  const versionRaw = options?.version?.trim() || DEFAULT_STORAGE_VERSION
+
+  const sanitizedNamespace = namespaceRaw.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()
+  const sanitizedVersion = versionRaw.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()
+
+  return `${sanitizedNamespace}__v${sanitizedVersion}`
+}
 
 /**
  * Opções padrão para persistência do cookie de consentimento.
@@ -27,6 +53,7 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   sameSite: 'Lax',
   secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : false,
   path: '/',
+  domain: undefined,
 }
 
 /**
@@ -141,11 +168,12 @@ export function writeConsentCookie(
 
   const now = new Date().toISOString()
   const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
+  const preferences = ensureNecessaryAlwaysOn(state.preferences)
 
   const cookieData = {
     version: COOKIE_SCHEMA_VERSION,
     consented: state.consented,
-    preferences: state.preferences,
+    preferences,
     consentDate: state.consentDate || now,
     lastUpdate: now,
     source: source,
@@ -159,6 +187,7 @@ export function writeConsentCookie(
     sameSite: o.sameSite,
     secure: o.secure,
     path: o.path,
+    domain: o.domain,
   })
 
   logger.info('Consent cookie saved', {
@@ -211,6 +240,6 @@ export function removeConsentCookie(opts?: Partial<ConsentCookieOptions>) {
 
   const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
   logger.cookieOperation('delete', o.name)
-  Cookies.remove(o.name, { path: o.path })
+  Cookies.remove(o.name, { path: o.path, domain: o.domain })
   logger.info('Consent cookie removed')
 }

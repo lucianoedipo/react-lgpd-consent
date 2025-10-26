@@ -59,6 +59,8 @@
   "files": [
     "dist",
     "README.md",
+    "API.md",
+    "package.json",
     "README.en.md",
     "QUICKSTART.md",
     "QUICKSTART.en.md",
