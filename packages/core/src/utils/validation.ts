@@ -14,7 +14,7 @@ export type ValidationResult = {
   errors: string[]
 }
 
-const isDev = () => typeof process !== 'undefined' && process?.env?.NODE_ENV !== 'production'
+const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
 
 /**
  * Valida e saneia as props do ConsentProvider em modo DEV.
