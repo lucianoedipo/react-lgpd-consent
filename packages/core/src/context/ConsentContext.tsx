@@ -382,12 +382,19 @@ export function ConsentProvider({
   React.useEffect(() => {
     const previousCookie = previousCookieRef.current
 
-    if (previousCookie.name === cookie.name) {
+    // Compara nome, domínio e path para detectar qualquer mudança relevante
+    const isSameCookie =
+      previousCookie.name === cookie.name &&
+      previousCookie.domain === cookie.domain &&
+      previousCookie.path === cookie.path
+
+    if (isSameCookie) {
       previousCookieRef.current = cookie
       return
     }
 
     skipCookiePersistRef.current = true
+    // Remove cookie antigo (pode ter domínio diferente)
     removeConsentCookie(previousCookie)
 
     const reset = () => {

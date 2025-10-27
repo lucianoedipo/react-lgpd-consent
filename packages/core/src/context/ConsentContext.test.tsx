@@ -589,5 +589,133 @@ describe('ConsentProvider Additional Tests', () => {
       warnSpy.mockRestore()
       process.env.NODE_ENV = originalEnv
     })
+
+    it('limpa cookie antigo quando storage.domain muda (mesmo namespace/versão)', async () => {
+      const mockCookiesGet = Cookies.get as jest.Mock
+      const mockCookiesSet = Cookies.set as jest.Mock
+      const mockCookiesRemove = Cookies.remove as jest.Mock
+
+      // Simula cookie existente no domínio antigo
+      mockCookiesGet.mockReturnValue(
+        JSON.stringify({
+          version: '1.0',
+          consented: true,
+          preferences: { necessary: true, analytics: true },
+          consentDate: '2024-01-01T00:00:00.000Z',
+          lastUpdate: '2024-01-01T00:00:00.000Z',
+          source: 'banner',
+          projectConfig: { categories: ['necessary', 'analytics'], strictNecessary: true },
+        }),
+      )
+
+      const { rerender } = render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1', domain: '.example.com' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
+
+      // Limpar mocks
+      mockCookiesRemove.mockClear()
+      mockCookiesSet.mockClear()
+
+      // Mudança de domínio (mantendo namespace e versão)
+      rerender(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1', domain: '.subdomain.example.com' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        // Deve ter removido o cookie do domínio antigo
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/',
+          domain: '.example.com',
+        })
+
+        // Deve ter removido o cookie do novo domínio (reset)
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/',
+          domain: '.subdomain.example.com',
+        })
+
+        // Deve ter resetado o consentimento
+        expect(screen.getByTestId('consented').textContent).toBe('false')
+      })
+    })
+
+    it('limpa cookie antigo quando storage.path muda (mesmo namespace/versão)', async () => {
+      const mockCookiesGet = Cookies.get as jest.Mock
+      const mockCookiesSet = Cookies.set as jest.Mock
+      const mockCookiesRemove = Cookies.remove as jest.Mock
+
+      // Simula cookie existente no path antigo
+      mockCookiesGet.mockReturnValue(
+        JSON.stringify({
+          version: '1.0',
+          consented: true,
+          preferences: { necessary: true, analytics: true },
+          consentDate: '2024-01-01T00:00:00.000Z',
+          lastUpdate: '2024-01-01T00:00:00.000Z',
+          source: 'banner',
+          projectConfig: { categories: ['necessary', 'analytics'], strictNecessary: true },
+        }),
+      )
+
+      const { rerender } = render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1' }}
+          cookie={{ path: '/' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
+
+      // Limpar mocks
+      mockCookiesRemove.mockClear()
+      mockCookiesSet.mockClear()
+
+      // Mudança de path (mantendo namespace e versão)
+      rerender(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1' }}
+          cookie={{ path: '/subpath' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        // Deve ter removido o cookie do path antigo
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/',
+          domain: undefined,
+        })
+
+        // Deve ter removido o cookie do novo path (reset)
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/subpath',
+          domain: undefined,
+        })
+
+        // Deve ter resetado o consentimento
+        expect(screen.getByTestId('consented').textContent).toBe('false')
+      })
+    })
   })
 })
