@@ -1,6 +1,6 @@
 {
   "name": "react-lgpd-consent",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Biblioteca de consentimento LGPD, integrações nativas e sistema extensível para React.",
   "keywords": [
     "lgpd",
@@ -114,8 +114,8 @@
     }
   },
   "dependencies": {
-    "@react-lgpd-consent/core": "workspace:^0.5.0",
-    "@react-lgpd-consent/mui": "workspace:^0.5.0"
+    "@react-lgpd-consent/core": "workspace:^0.5.1",
+    "@react-lgpd-consent/mui": "workspace:^0.5.1"
   },
   "size-limit": [
     {
