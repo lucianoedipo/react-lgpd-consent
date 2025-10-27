@@ -599,6 +599,60 @@ export interface ConsentCookieOptions {
   secure: boolean
   /** Caminho do cookie. Padrão: '/' */
   path: string
+  /**
+   * Domínio do cookie (ex.: `.example.com` para compartilhar entre subdomínios).
+   * Se não definido, o navegador usa o domínio atual.
+   * @since 0.5.2
+   */
+  domain?: string
+}
+
+/**
+ * Configuração de versionamento da chave de storage utilizada pelo consentimento.
+ * @category Types
+ * @since 0.5.2
+ * @public
+ *
+ * @remarks
+ * Combine `namespace` e `version` para gerar um nome de cookie único por aplicação
+ * e ciclo de consentimento. Ao alterar a `version`, o consentimento anterior é
+ * automaticamente considerado inválido, garantindo novo fluxo de consentimento.
+ */
+export interface ConsentStorageConfig {
+  /**
+   * Namespace lógico do consentimento (ex.: nome do produto ou domínio raiz).
+   * @defaultValue `'lgpd-consent'`
+   */
+  namespace?: string
+  /**
+   * Versão do consentimento atual. Incrementar ou alterar o valor força re-consentimento.
+   * Use valores sem espaços (ex.: `'2025.10'`, `'marketing-v2'`).
+   * @defaultValue `'1'`
+   */
+  version?: string
+  /**
+   * Domínio compartilhado do cookie (ex.: `.example.com` para múltiplos subdomínios).
+   * Se definido, sobrescreve `cookie.domain`.
+   */
+  domain?: string
+}
+
+/**
+ * Payload entregue ao callback `onConsentVersionChange`.
+ * @category Types
+ * @since 0.5.2
+ * @public
+ */
+export interface ConsentVersionChangeContext {
+  /** Nome da chave anterior utilizada pelo armazenamento de consentimento (cookie). */
+  previousKey: string | null
+  /** Nova chave aplicada após a mudança de namespace/versão. */
+  nextKey: string
+  /**
+   * Helper para gatilhar o reset imediato do estado de consentimento.
+   * Útil para cenários onde o consumidor controla estado adicional (ex.: localStorage).
+   */
+  resetConsent: () => void
 }
 
 /**
@@ -1265,6 +1319,32 @@ export interface ConsentProviderProps {
    * ```
    */
   guidanceConfig?: GuidanceConfig
+  /**
+   * Configuração da chave de armazenamento (cookie/localStorage) do consentimento.
+   * Permite definir namespace, versão e domínio compartilhado.
+   * @since 0.5.2
+   */
+  storage?: ConsentStorageConfig
+  /**
+   * Callback disparado quando a chave de armazenamento muda (ex.: bump de versão).
+   * Recebe a chave anterior, a nova chave e um helper `resetConsent`.
+   * @since 0.5.2
+   *
+   * @example
+   * ```tsx
+   * <ConsentProvider
+   *   storage={{ namespace: 'portal.gov.br', version: '2025-Q4' }}
+   *   onConsentVersionChange={({ previousKey, nextKey, resetConsent }) => {
+   *     console.info('[consent] versão alterada', { previousKey, nextKey })
+   *     analytics.clearUserStorage()
+   *     resetConsent()
+   *   }}
+   * >
+   *   <App />
+   * </ConsentProvider>
+   * ```
+   */
+  onConsentVersionChange?: (context: ConsentVersionChangeContext) => void
 
   /** Elementos filhos - toda a aplicação que precisa de contexto de consentimento. */
   children: React.ReactNode

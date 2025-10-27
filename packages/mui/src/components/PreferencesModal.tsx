@@ -31,39 +31,242 @@ declare global {
 }
 
 /**
- * @interface PreferencesModalProps
- * Propriedades para customizar o componente `PreferencesModal`.
+ * Propriedades para customizar o comportamento e aparência do componente PreferencesModal.
+ *
+ * @remarks
+ * Esta interface permite controle total sobre o modal de preferências de consentimento LGPD.
+ * O modal pode ser usado de duas formas:
+ * - **Automático**: Renderizado pelo ConsentProvider quando usuário clica em "Preferências"
+ * - **Manual**: Controlado externamente via props `isModalOpen`, `preferences`, etc.
+ *
+ * ### Integração com Material-UI
+ * - Suporte completo a theming via `ThemeProvider`
+ * - Props diretas para Dialog do MUI via `DialogProps`
+ * - Compatibilidade com design tokens customizados
+ *
+ * @category Components
+ * @public
+ * @since 0.1.0
+ *
+ * @example Uso automático (renderizado pelo Provider)
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics'] }}
+ *   preferencesModalProps={{ hideBranding: true }}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Uso manual com controle externo
+ * ```tsx
+ * function CustomPreferencesModal() {
+ *   const [open, setOpen] = useState(false)
+ *   const { preferences, setPreferences } = useConsent()
+ *
+ *   return (
+ *     <PreferencesModal
+ *       isModalOpen={open}
+ *       preferences={preferences}
+ *       setPreferences={setPreferences}
+ *       closePreferences={() => setOpen(false)}
+ *       DialogProps={{ maxWidth: 'md' }}
+ *     />
+ *   )
+ * }
+ * ```
  */
 export interface PreferencesModalProps {
-  /** Propriedades opcionais para customizar o componente `Dialog` do Material-UI. */
+  /**
+   * Propriedades opcionais para customizar o componente `Dialog` do Material-UI.
+   *
+   * @remarks
+   * Permite customização avançada do comportamento do modal: posição, transição,
+   * largura máxima, e outros atributos do Dialog do MUI.
+   *
+   * @defaultValue undefined
+   *
+   * @example
+   * ```tsx
+   * <PreferencesModal
+   *   DialogProps={{
+   *     maxWidth: 'md',
+   *     fullWidth: true,
+   *     TransitionComponent: Slide
+   *   }}
+   * />
+   * ```
+   */
   DialogProps?: Partial<DialogProps>
-  /** Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" no modal. Padrão: `false`. */
+
+  /**
+   * Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" no modal.
+   *
+   * @remarks
+   * A biblioteca é open-source e gratuita. O branding é uma forma de apoiar
+   * o projeto, mas pode ser removido se necessário para sua marca.
+   *
+   * @defaultValue false
+   */
   hideBranding?: boolean
-  /** Estado de abertura do modal passado pelo Provider. Quando fornecido via PreferencesModalComponent, substitui o valor do hook useConsent. */
+
+  /**
+   * Estado de abertura do modal passado pelo Provider.
+   *
+   * @remarks
+   * Quando fornecido via `PreferencesModalComponent` no ConsentProvider,
+   * substitui o valor do hook `useConsent`. Permite controle externo do estado.
+   *
+   * @defaultValue undefined (usa valor do contexto)
+   */
   isModalOpen?: boolean
-  /** Preferências de consentimento passadas pelo Provider. Quando fornecido via PreferencesModalComponent. */
+
+  /**
+   * Preferências de consentimento passadas pelo Provider.
+   *
+   * @remarks
+   * Quando fornecido via `PreferencesModalComponent`, permite sincronização
+   * externa do estado de preferências. Se omitido, usa o contexto interno.
+   *
+   * @defaultValue undefined (usa valor do contexto)
+   */
   preferences?: ConsentPreferences
-  /** Função para atualizar preferências passada pelo Provider. Quando fornecido via PreferencesModalComponent. */
+
+  /**
+   * Função para atualizar preferências passada pelo Provider.
+   *
+   * @remarks
+   * Permite override da função de atualização de preferências.
+   * Útil para integração com gerenciadores de estado externos.
+   *
+   * @param preferences - Novas preferências de consentimento a serem aplicadas
+   * @defaultValue undefined (usa função do contexto)
+   */
   setPreferences?: (preferences: ConsentPreferences) => void
-  /** Função para fechar o modal passada pelo Provider. Quando fornecido via PreferencesModalComponent. */
+
+  /**
+   * Função para fechar o modal passada pelo Provider.
+   *
+   * @remarks
+   * Callback invocado quando usuário cancela ou após salvar preferências.
+   * Se omitido, usa a função do contexto.
+   *
+   * @defaultValue undefined (usa função do contexto)
+   */
   closePreferences?: () => void
 }
 
 /**
- * O `PreferencesModal` é o componente de UI que permite ao usuário ajustar suas preferências de consentimento.
+ * Modal de preferências de consentimento LGPD que permite ao usuário ajustar suas escolhas.
+ *
  * @component
  * @category Components
+ * @public
  * @since 0.1.0
+ *
  * @remarks
- * Este modal é renderizado automaticamente pelo `ConsentProvider` quando o usuário clica para gerenciar as preferências.
- * Você pode substituí-lo passando seu próprio componente para a prop `PreferencesModalComponent`
- * no `ConsentProvider` para ter controle total sobre a aparência e o comportamento do modal.
- * @param {Readonly<PreferencesModalProps>} props As propriedades para customizar o modal.
- * @returns {JSX.Element} O componente do modal de preferências.
- * @example
+ * O `PreferencesModal` é o componente de UI que apresenta uma interface detalhada
+ * para o usuário gerenciar suas preferências de consentimento categoria por categoria.
+ *
+ * ### Funcionalidades Principais
+ * - **Toggles por categoria**: Switch para cada categoria não-essencial configurada
+ * - **Categoria necessária bloqueada**: Sempre marcada e desabilitada (required by LGPD)
+ * - **Detalhes de cookies**: Accordion expansível mostrando cookies por categoria
+ * - **Mudanças temporárias**: Edições salvas localmente até confirmar com botão "Salvar"
+ * - **Sincronização automática**: Recarrega estado ao abrir o modal
+ * - **Acessibilidade**: ARIA labels, keyboard navigation, screen reader support
+ *
+ * ### Renderização Automática
+ * Este modal é renderizado automaticamente pelo `ConsentProvider` quando o usuário
+ * clica para gerenciar preferências. Não é necessário renderizá-lo manualmente,
+ * a menos que deseje controle total sobre o comportamento.
+ *
+ * ### Customização
+ * Você pode substituir este componente passando seu próprio para a prop
+ * `PreferencesModalComponent` no `ConsentProvider`:
+ *
  * ```tsx
- * <PreferencesModal DialogProps={{ maxWidth: 'md' }} hideBranding={true} />
+ * function MyCustomModal() {
+ *   const { preferences, setPreferences, closePreferences } = useConsent()
+ *   return <div>Meu modal customizado</div>
+ * }
+ *
+ * <ConsentProvider
+ *   PreferencesModalComponent={MyCustomModal}
+ *   categories={{ enabledCategories: ['analytics'] }}
+ * >
+ *   <App />
+ * </ConsentProvider>
  * ```
+ *
+ * ### Informações de Cookies
+ * O modal exibe automaticamente:
+ * - **Nome do cookie**: Identificador único
+ * - **Finalidade**: Para que serve (Analytics, Marketing, etc.)
+ * - **Duração**: Tempo de vida (sessão, 1 ano, etc.)
+ * - **Fornecedor**: Quem criou/gerencia (Google, Facebook, próprio site)
+ *
+ * Estas informações vêm das integrações ativas (via `getCookiesInfoForCategory`)
+ * e das categorias configuradas no Provider.
+ *
+ * @param props - Propriedades para customizar o modal (tipado via PreferencesModalProps)
+ * @returns Elemento JSX do modal de preferências ou null se não deve ser exibido
+ *
+ * @throws {Error} Se usado fora do ConsentProvider (contexto não disponível)
+ *
+ * @example Uso básico (renderizado automaticamente)
+ * ```tsx
+ * // ConsentProvider já renderiza PreferencesModal automaticamente
+ * function App() {
+ *   return (
+ *     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+ *       <YourApp />
+ *     </ConsentProvider>
+ *   )
+ * }
+ * ```
+ *
+ * @example Customização via props
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics', 'marketing'] }}
+ *   preferencesModalProps={{
+ *     hideBranding: true,
+ *     DialogProps: {
+ *       maxWidth: 'md',
+ *       fullWidth: true
+ *     }
+ *   }}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Controle manual completo
+ * ```tsx
+ * function CustomApp() {
+ *   const [open, setOpen] = useState(false)
+ *   const { preferences, setPreferences } = useConsent()
+ *
+ *   return (
+ *     <>
+ *       <button onClick={() => setOpen(true)}>Abrir Preferências</button>
+ *       <PreferencesModal
+ *         isModalOpen={open}
+ *         preferences={preferences}
+ *         setPreferences={setPreferences}
+ *         closePreferences={() => setOpen(false)}
+ *         DialogProps={{ maxWidth: 'lg' }}
+ *       />
+ *     </>
+ *   )
+ * }
+ * ```
+ *
+ * @see {@link ConsentProvider} - Provider que renderiza este componente automaticamente
+ * @see {@link useConsent} - Hook para acessar funções de consentimento
+ * @see {@link PreferencesModalProps} - Interface completa de propriedades
+ * @see {@link getCookiesInfoForCategory} - Função que retorna informações de cookies
  */
 export function PreferencesModal({
   DialogProps,
@@ -73,14 +276,12 @@ export function PreferencesModal({
   setPreferences: setPreferencesProp,
   closePreferences: closePreferencesProp,
 }: Readonly<PreferencesModalProps>) {
-  // Quando usado via PreferencesModalComponent, usa as props passadas pelo Provider
-  // Quando usado standalone, usa os hooks do contexto
   const hookValue = useConsent()
   const preferences = preferencesProp ?? hookValue.preferences
   const setPreferences = setPreferencesProp ?? hookValue.setPreferences
   const closePreferences = closePreferencesProp ?? hookValue.closePreferences
   const isModalOpen = isModalOpenProp ?? hookValue.isModalOpen
-  
+
   const texts = useConsentTexts()
   const designTokens = useDesignTokens()
   const { toggleableCategories, allCategories } = useCategories() // Categorias que precisam de toggle + metadados

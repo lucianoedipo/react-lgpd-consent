@@ -9,6 +9,9 @@ import * as React from 'react'
 /**
  * Função utilitária para acessar propriedades de tema com fallbacks seguros.
  * Evita erros quando o ThemeProvider não está configurado corretamente.
+ * @category Utils
+ * @returns {Object} Objeto com propriedades de tema seguras, incluindo palette e transitions.
+ * @remarks Utiliza logger para compatibilidade de tema. Compatível com SSR.
  */
 function useThemeWithFallbacks() {
   const theme = useTheme()
@@ -33,46 +36,164 @@ function useThemeWithFallbacks() {
 }
 
 /**
- * Props para o componente FloatingPreferencesButton.
+ * Propriedades para customizar o comportamento e aparência do FloatingPreferencesButton.
  *
- * Permite configurar posição, ícone, tooltip, e comportamento de exibição do botão flutuante
- * para abrir o modal de preferências de cookies LGPD.
+ * @remarks
+ * Interface que permite controle completo sobre o botão flutuante de preferências LGPD.
+ * O botão aparece após o consentimento inicial para permitir que usuários revisitem
+ * suas escolhas a qualquer momento.
  *
- * Todos os campos são opcionais e possuem valores padrão.
+ * ### Posicionamento
+ * Suporta 4 posições fixas na tela:
+ * - `bottom-left`: Canto inferior esquerdo
+ * - `bottom-right`: Canto inferior direito (padrão)
+ * - `top-left`: Canto superior esquerdo
+ * - `top-right`: Canto superior direito
+ *
+ * ### Customização Visual
+ * - **Ícone**: Pode ser substituído por qualquer `ReactNode`
+ * - **Tooltip**: Texto exibido ao hover (padrão vem de `useConsentTexts`)
+ * - **Cores**: Respeita design tokens ou tema MUI
+ * - **Offset**: Distância da borda em pixels
+ *
+ * ### Comportamento
+ * - **Auto-hide**: Opcional via `hideWhenConsented` (padrão: `false`)
+ * - **Z-index**: 1200 (acima de conteúdo normal, abaixo de modais MUI)
+ * - **Transições**: Suaves via tema MUI
+ *
+ * @category Components
+ * @public
+ * @since 0.3.0
+ *
+ * @example Configuração básica
+ * ```tsx
+ * <FloatingPreferencesButton
+ *   position="bottom-left"
+ *   offset={16}
+ * />
+ * ```
+ *
+ * @example Customização avançada
+ * ```tsx
+ * import SettingsIcon from '@mui/icons-material/Settings'
+ *
+ * <FloatingPreferencesButton
+ *   position="top-right"
+ *   offset={32}
+ *   icon={<SettingsIcon />}
+ *   tooltip="Configurações de Privacidade"
+ *   hideWhenConsented={true}
+ *   FabProps={{
+ *     size: 'large',
+ *     color: 'secondary',
+ *     sx: { boxShadow: 3 }
+ *   }}
+ * />
+ * ```
  */
 export interface FloatingPreferencesButtonProps {
-  /** Posição do botão flutuante. Padrão: 'bottom-right' */
+  /**
+   * Posição do botão flutuante na tela.
+   *
+   * @remarks
+   * Define o canto da viewport onde o botão será fixado.
+   * Usa `position: fixed` e responde a scroll da página.
+   *
+   * @defaultValue 'bottom-right'
+   */
   position?: 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
-  /** Offset da borda em pixels. Padrão: 24 */
+
+  /**
+   * Offset (distância) da borda em pixels.
+   *
+   * @remarks
+   * Aplicado tanto horizontal quanto verticalmente dependendo da posição.
+   * Exemplo: `offset={24}` em `bottom-right` = 24px da direita e 24px do fundo.
+   *
+   * @defaultValue 24
+   */
   offset?: number
-  /** Ícone customizado. Padrão: CookieOutlined */
+
+  /**
+   * Ícone customizado para o botão.
+   *
+   * @remarks
+   * Pode ser qualquer ReactNode: ícone do MUI, SVG, imagem, texto, etc.
+   * Se omitido, usa `<CookieOutlined />` do Material-UI Icons.
+   *
+   * @defaultValue `<CookieOutlined />`
+   *
+   * @example
+   * ```tsx
+   * import SettingsIcon from '@mui/icons-material/Settings'
+   * <FloatingPreferencesButton icon={<SettingsIcon />} />
+   * ```
+   */
   icon?: React.ReactNode
-  /** Tooltip customizado exibido ao passar o mouse */
+
+  /**
+   * Tooltip customizado exibido ao passar o mouse.
+   *
+   * @remarks
+   * Se omitido, usa o valor de `texts.preferencesButton` do contexto,
+   * com fallback para "Gerenciar Preferências de Cookies".
+   *
+   * @defaultValue undefined (usa texto do contexto)
+   *
+   * @example
+   * ```tsx
+   * <FloatingPreferencesButton tooltip="Configurações de Privacidade" />
+   * ```
+   */
   tooltip?: string
-  /** Props adicionais para o Fab do MUI */
+
+  /**
+   * Props adicionais para o componente Fab do Material-UI.
+   *
+   * @remarks
+   * Permite customização completa do botão: tamanho, cor, elevação, sx, etc.
+   * Props passadas aqui sobrescrevem os defaults internos.
+   *
+   * @defaultValue undefined
+   *
+   * @example
+   * ```tsx
+   * <FloatingPreferencesButton
+   *   FabProps={{
+   *     size: 'large',
+   *     color: 'secondary',
+   *     variant: 'extended',
+   *     sx: { borderRadius: 2 }
+   *   }}
+   * />
+   * ```
+   */
   FabProps?: Partial<FabProps>
-  /** Se deve esconder quando consentimento já foi dado. Padrão: false */
+
+  /**
+   * Se deve esconder o botão quando consentimento já foi dado.
+   *
+   * @remarks
+   * Útil para reduzir poluição visual após decisão inicial.
+   * Quando `true`, botão só aparece se `consented === false`.
+   *
+   * **Importante**: Mesmo escondido, usuário pode reabrir preferências
+   * via outras formas (ex: link no footer, menu de configurações).
+   *
+   * @defaultValue false
+   */
   hideWhenConsented?: boolean
 }
 
 /**
- * @component
+ * Componente interno do botão flutuante de preferências.
+ * @internal
  * @category Components
- * @since 0.3.0
- * Botão flutuante para abrir o modal de preferências de cookies.
- *
- * @remarks
- * Este componente é renderizado automaticamente pelo `ConsentProvider` após o consentimento inicial.
- * Ele permite ao usuário acessar rapidamente as configurações de consentimento LGPD a qualquer momento.
- * Você pode substituí-lo passando seu próprio componente para a prop `FloatingPreferencesButtonComponent`
- * no `ConsentProvider`.
- *
- * Componente memoizado para otimizar performance - só re-renderiza quando props mudam.
- *
- * @param {Readonly<FloatingPreferencesButtonProps>} props As propriedades para customizar o botão.
- * @returns {JSX.Element | null} O componente do botão flutuante ou `null` se não for necessário exibi-lo.
+ * @param {FloatingPreferencesButtonProps} props - Propriedades do componente.
+ * @returns {JSX.Element | null} Elemento JSX do botão ou null se oculto.
+ * @remarks Memoiza estilos de posição para performance. Usa design tokens defensivamente.
  */
-export const FloatingPreferencesButton = React.memo(function FloatingPreferencesButton({
+function FloatingPreferencesButtonComponent({
   position = 'bottom-right',
   offset = 24,
   icon = <CookieOutlined />,
@@ -145,4 +266,116 @@ export const FloatingPreferencesButton = React.memo(function FloatingPreferences
       </Fab>
     </Tooltip>
   )
-})
+}
+
+/**
+ * Botão flutuante (FAB) para reabrir o modal de preferências de consentimento LGPD.
+ *
+ * @component
+ * @category Components
+ * @public
+ * @since 0.3.0
+ *
+ * @remarks
+ * Este componente fornece acesso rápido e sempre visível às preferências de consentimento,
+ * permitindo que usuários revisem e alterem suas escolhas a qualquer momento.
+ *
+ * ### Renderização Automática
+ * O botão é renderizado automaticamente pelo `ConsentProvider` após o consentimento inicial,
+ * a menos que desabilitado via `disableFloatingPreferencesButton={true}`.
+ *
+ * ### Funcionalidades
+ * - **Posição fixa**: Permanece visível durante scroll
+ * - **Z-index 1200**: Fica acima do conteúdo normal, abaixo de modais
+ * - **Tooltip acessível**: ARIA label e tooltip ao hover
+ * - **Responsivo**: Funciona em mobile e desktop
+ * - **Transições suaves**: Animação de cor ao hover via tema MUI
+ * - **Design tokens**: Respeita cores customizadas do contexto
+ *
+ * ### Customização
+ * Você pode:
+ * - Alterar posição e offset
+ * - Trocar o ícone padrão (cookie)
+ * - Modificar tooltip
+ * - Ocultar quando já consentido
+ * - Passar props customizadas para o Fab do MUI
+ *
+ * ### Substituição Completa
+ * Para controle total, passe seu próprio componente:
+ *
+ * ```tsx
+ * function MyCustomButton() {
+ *   const { openPreferences } = useConsent()
+ *   return <button onClick={openPreferences}>Preferências</button>
+ * }
+ *
+ * <ConsentProvider
+ *   FloatingPreferencesButtonComponent={MyCustomButton}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @param props - Propriedades para customizar o botão (tipado via FloatingPreferencesButtonProps)
+ * @returns Elemento JSX do botão flutuante ou null se oculto
+ *
+ * @throws {Error} Se usado fora do ConsentProvider (contexto não disponível)
+ *
+ * @example Uso básico (renderizado automaticamente)
+ * ```tsx
+ * // ConsentProvider já renderiza FloatingPreferencesButton automaticamente
+ * <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Customização via props no Provider
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics'] }}
+ *   floatingPreferencesButtonProps={{
+ *     position: 'bottom-left',
+ *     offset: 16,
+ *     hideWhenConsented: true
+ *   }}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Uso manual com ícone customizado
+ * ```tsx
+ * import SettingsIcon from '@mui/icons-material/Settings'
+ *
+ * function App() {
+ *   return (
+ *     <FloatingPreferencesButton
+ *       position="top-right"
+ *       icon={<SettingsIcon />}
+ *       tooltip="Configurações de Privacidade"
+ *       FabProps={{
+ *         size: 'large',
+ *         color: 'secondary'
+ *       }}
+ *     />
+ *   )
+ * }
+ * ```
+ *
+ * @example Desabilitar completamente
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics'] }}
+ *   disableFloatingPreferencesButton={true}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @see {@link ConsentProvider} - Provider que renderiza este componente automaticamente
+ * @see {@link useConsent} - Hook para acessar função openPreferences
+ * @see {@link FloatingPreferencesButtonProps} - Interface completa de propriedades
+ * @see {@link PreferencesModal} - Modal aberto ao clicar no botão
+ */
+export const FloatingPreferencesButton = React.memo(FloatingPreferencesButtonComponent)
+FloatingPreferencesButton.displayName = 'FloatingPreferencesButton'

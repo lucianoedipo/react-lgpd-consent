@@ -25,7 +25,7 @@ npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
 
 ## 🎯 Uso Básico (30 segundos)
 
-````tsx
+```tsx
 import React from 'react'
 import { ConsentProvider } from 'react-lgpd-consent'
 
@@ -42,6 +42,7 @@ function App() {
       </main>
     </ConsentProvider>
   )
+```
 
 ## 🧭 Storybook — quick note
 
@@ -51,7 +52,7 @@ This repository ships an interactive Storybook playground used for manual testin
 
 ```bash
 npm run storybook
-````
+```
 
 - Build static Storybook (for publishing to GitHub Pages):
 
@@ -63,11 +64,6 @@ Notes:
 
 - The Storybook preview (`.storybook/preview.tsx`) applies a clean environment between stories (removes consent cookie and performs defensive DOM cleanup). Check that file when creating stories that rely on a clean initial state.
 
-}
-
-export default App
-
-````
 
 ## ⚡ Quickstarts: Next.js (App Router) e Vite
 
@@ -402,8 +398,8 @@ function MyComponent() {
 
 ## 📋 Tabela Completa de Props do ConsentProvider
 
-| Prop                                 | Tipo                                                        | Obrigatória | Padrão              | Descrição                                      |
-| ------------------------------------ | ----------------------------------------------------------- | ----------- | ------------------- | ---------------------------------------------- |
+| Prop              | Tipo                                             | Obrigatória | Padrão         | Descrição                               |
+| ----------------- | ------------------------------------------------ | ----------- | -------------- | --------------------------------------- |
 | `categories`                         | `ProjectCategoriesConfig`                                   | ✅ **Sim**  | -                   | Define as categorias de cookies do projeto     |
 | `texts`                              | `Partial<ConsentTexts>`                                     | ❌ Não      | Textos padrão PT-BR | Customiza textos da interface                  |
 | `theme`                              | `any`                                                       | ❌ Não      | Tema padrão         | Tema Material-UI para os componentes           |
@@ -422,7 +418,89 @@ function MyComponent() {
 | `preferencesModalProps`              | `object`                                                    | ❌ Não      | `{}`                | Props adicionais para o modal                  |
 | `floatingPreferencesButtonProps`     | `object`                                                    | ❌ Não      | `{}`                | Props adicionais para o botão flutuante        |
 | `initialState`                       | `ConsentState`                                              | ❌ Não      | -                   | Estado inicial para hidratação SSR             |
-| `cookie`                             | `Partial<ConsentCookieOptions>`                             | ❌ Não      | Opções padrão       | Configurações do cookie de consentimento       |
+| `cookie`                             | `Partial<ConsentCookieOptions>`                             | ❌ Não      | Opções padrão       | Configurações do cookie (override fino de `name`, `domain`, `sameSite` etc.) |
+| `storage`                            | `ConsentStorageConfig`                                      | ❌ Não      | `{ namespace: 'lgpd-consent', version: '1' }` | Namespace, versão e domínio compartilhado da chave de consentimento |
+| `onConsentVersionChange`             | `(context: ConsentVersionChangeContext) => void`            | ❌ Não      | Reset automático    | Hook disparado após bump da chave; use para limpar caches adicionais |
+
+## 🔄 Versionamento de Consentimento (0.5.x)
+
+- **Resumo da solicitação**: namespace + versão para a chave de consentimento e estratégia de migração entre releases, garantindo compartilhamento entre subdomínios.
+- **Caso de uso — problema que resolve**: quando o escopo de dados muda (novas categorias, integrações etc.), usuários precisam reafirmar consentimento. Sem um identificador de versão, o estado antigo permanece ativo e quebra conformidade.
+
+### Solução proposta
+- `storage.namespace` e `storage.version` geram automaticamente o nome do cookie via `buildConsentStorageKey`, mantendo o schema `namespace__v<versão>` (`lgpd-consent__v1` por padrão).
+- `storage.domain` centraliza o domínio compartilhado (ex.: `.gov.br`) para que um único banner sirva múltiplos subdomínios.
+- `onConsentVersionChange` é chamado sempre que a chave muda. O reset do estado é automático, mas o hook permite limpar caches customizados (ex.: localStorage, indexedDB) antes de liberar a nova experiência.
+- Guia de migração: documente no seu changelog interno quando e por que o valor de `storage.version` mudou. O bump NÃO é breaking change porque a API pública permanece compatível—apenas força o fluxo de re-consent.
+- Breaking change? **Não** — quem não configurar `storage` continua usando `lgpd-consent__v1`; ao aumentar a versão apenas ocorre re-consentimento.
+
+### Critérios de aceitação
+- Trocar `storage.version` força o fluxo completo: cookie antigo removido, `ConsentProvider` volta ao estado sem consentimento e o usuário vê o banner novamente.
+- Subdomínios compartilham o mesmo consentimento quando `storage.domain` usa um domínio com ponto (`.example.com`).
+- `onConsentVersionChange` entrega `previousKey`, `nextKey` e `resetConsent` para coordenar invalidação de caches externos.
+
+## 🔒 Cookies necessários sempre ativos
+
+- **Resumo da solicitação**: implementar a política de “necessários sempre ativos” tanto na UI quanto na persistência.
+- **Caso de uso — problema resolvido**: atende ao requisito LGPD/ANPD de que cookies estritamente necessários não podem ser desativados; evita confusão na interface e garante consistência nos hooks.
+
+### Como a biblioteca reforça a regra
+- A categoria `necessary` é adicionada automaticamente pelo `ConsentProvider` e sempre persistida como `true`.
+- `setPreference('necessary', false)` e `setPreferences({ necessary: false, ... })` são ignorados com logs de aviso — o estado permanece com `necessary=true`.
+- O `PreferencesModal` padrão exibe a categoria com switch desabilitado e o texto `Cookies necessários (sempre ativos)`.
+- `writeConsentCookie` garante `necessary=true` mesmo que o estado enviado esteja corrompido.
+- Hooks (`useConsent`, `useCategoryStatus`) e integrações (`ConsentScriptLoader`, dataLayer) sempre recebem `necessary=true`.
+
+### Exemplo (apenas cookies necessários)
+
+```tsx
+import { ConsentProvider } from '@react-lgpd-consent/core'
+
+export function MinimalBoundary({ children }: { children: React.ReactNode }) {
+  return <ConsentProvider categories={{ enabledCategories: [] }}>{children}</ConsentProvider>
+}
+```
+
+### Critérios de aceitação
+- UI, hooks, persistência e dataLayer mantêm `necessary=true` em todos os caminhos.
+- Testes automatizados cobrem tentativas de toggle/programmatic override e serialização.
+- Breaking change? **Não** — o comportamento já era esperado; agora é reforçado pelo runtime com avisos para cenários indevidos.
+
+### Exemplo completo (namespace + versão + subdomínio)
+
+```tsx
+import { buildConsentStorageKey, ConsentProvider } from 'react-lgpd-consent'
+
+function ComplianceWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      storage={{
+        namespace: 'portal.gov.br',
+        version: '2025-Q4',
+        domain: '.gov.br',
+      }}
+      cookie={{
+        // Opcional: sobrescreva o nome explicitamente (útil para auditoria legada)
+        name: buildConsentStorageKey({ namespace: 'portal.gov.br', version: '2025-Q4' }),
+      }}
+      onConsentVersionChange={({ previousKey, nextKey, resetConsent }) => {
+        console.info('[consent] versão atualizada', { previousKey, nextKey })
+        window.dataLayer?.push({ event: 'consent_version_bumped', previousKey, nextKey })
+        localStorage.removeItem('marketing-optins')
+        resetConsent()
+      }}
+    >
+      {children}
+    </ConsentProvider>
+  )
+}
+```
+
+### Alternativas consideradas
+- **Invalidar sempre** (reset em toda visita) prejudica a UX e reduz taxas de aceitação.
+- **Nunca invalidar** mantém consentimentos fora de escopo e compromete a conformidade.
+  - A solução de namespace + versão expõe explicitamente quando o reconsentimento é necessário.
 
 ## 🎨 Componentes Customizados com TypeScript
 
@@ -488,13 +566,14 @@ A biblioteca `react-lgpd-consent` não injeta um `ThemeProvider` global por cont
 
 ```tsx
 import { ConsentProvider, createDefaultConsentTheme } from 'react-lgpd-consent'
-;<ConsentProvider
+<ConsentProvider
   theme={createDefaultConsentTheme()}
   categories={{ enabledCategories: ['analytics'] }}
 >
   <App />
 </ConsentProvider>
 ```
+
 
 Isso evita alterações indesejadas no contexto do MUI do seu app e problemas de SSR.
 

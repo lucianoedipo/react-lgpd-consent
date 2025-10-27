@@ -27,7 +27,7 @@ Esta versão introduz uma **arquitetura modular** que separa a lógica de consen
   - MUI opcional como peer dependency
   
 - **Workspace PNPM**: Monorepo organizado com builds independentes
-- **Guia de migração completo**: [MIGRATION.md](./MIGRATION.md) documentando todos os cenários
+- **Guia de migração completo**: [MIGRATION.md](../../MIGRATION.md) documentando todos os cenários
 - **Scripts de publicação**: Suporte para publicar pacotes independentemente
 
 ### ⚠️ Breaking Changes
@@ -36,7 +36,7 @@ Esta versão introduz uma **arquitetura modular** que separa a lógica de consen
   - **Antes**: `<ConsentProvider theme={createTheme({...})} />`
   - **Depois**: Use `<ThemeProvider>` do Material-UI diretamente
   - **Razão**: Separação de responsabilidades - tema do MUI gerenciado pelo MUI
-  - **Migração**: Ver [MIGRATION.md](./MIGRATION.md) seção "Breaking Changes"
+  - **Migração**: Ver [MIGRATION.md](../../MIGRATION.md) seção "Breaking Changes"
 
 ### 🔄 Changed
 
@@ -122,7 +122,7 @@ packages/
 
 ### 📚 Documentation
 
-- Novo [MIGRATION.md](./MIGRATION.md) com:
+- Novo [MIGRATION.md](../../MIGRATION.md) com:
   - 3 cenários de migração detalhados
   - Comparativo de bundles
   - Troubleshooting completo

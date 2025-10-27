@@ -3,10 +3,10 @@
  *
  * @description
  * Re-exporta todas as integrações de scripts de terceiros do pacote @react-lgpd-consent/core.
- * 
- * Este módulo fornece acesso conveniente às factories de integrações (Google Analytics, GTM, 
+ *
+ * Este módulo fornece acesso conveniente às factories de integrações (Google Analytics, GTM,
  * Facebook Pixel, etc.) sem precisar importar diretamente do pacote core.
- * 
+ *
  * @category Integrations
  * @since 0.5.0
  */

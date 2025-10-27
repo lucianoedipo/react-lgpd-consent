@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import * as React from 'react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { ConsentProvider } from '../context/ConsentContext'
 import {
@@ -87,7 +88,9 @@ describe('useOpenPreferencesModal', () => {
     const originalError = console.error
     console.error = jest.fn()
 
-    jest.spyOn(ConsentContext, 'useConsentActionsInternal').mockReturnValue(null as any)
+    const actionsSpy = jest
+      .spyOn(ConsentContext, 'useConsentActionsInternal')
+      .mockReturnValue(null as any)
 
     function TestComponent() {
       useOpenPreferencesModal()
@@ -101,6 +104,35 @@ describe('useOpenPreferencesModal', () => {
     )
 
     console.error = originalError
+    actionsSpy.mockRestore()
+  })
+
+  it('retorna a função openPreferences quando dentro do provider', async () => {
+    const recorder = jest.fn()
+
+    function Observer() {
+      const open = useOpenPreferencesModal()
+      const { isModalOpen } = useConsent()
+      React.useEffect(() => {
+        recorder(open)
+      }, [open])
+      return <div data-testid="modal-state">{isModalOpen ? 'open' : 'closed'}</div>
+    }
+
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+        <Observer />
+      </ConsentProvider>,
+    )
+
+    expect(recorder).toHaveBeenCalledWith(expect.any(Function))
+    const openFn = recorder.mock.calls[0][0] as () => void
+
+    await act(async () => {
+      openFn()
+    })
+
+    expect(screen.getByTestId('modal-state')).toHaveTextContent('open')
   })
 })
 

@@ -158,4 +158,66 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
     const maybe = screen.queryByLabelText('Configurar Cookies')
     expect(maybe).not.toBeInTheDocument()
   })
+
+  it('posiciona corretamente o botão em combinações diversas, incluindo fallback default', async () => {
+    const { rerender, findByLabelText } = render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(true)}
+        floatingPreferencesButtonProps={{ position: 'bottom-left', offset: 32 } as any}
+      >
+        <div>App</div>
+        <TestConsumer />
+      </ConsentProvider>,
+    )
+
+    const baseButton = await findByLabelText('Configurar Cookies')
+    const baseEl =
+      baseButton.tagName === 'BUTTON'
+        ? baseButton
+        : (baseButton.closest('button') as Element) || baseButton
+    let computed = window.getComputedStyle(baseEl as Element)
+    expect(computed.bottom).toMatch(/32/)
+    expect(computed.left).toMatch(/32/)
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(true)}
+        floatingPreferencesButtonProps={{ position: 'top-right', offset: 32 } as any}
+      >
+        <div>App</div>
+        <TestConsumer />
+      </ConsentProvider>,
+    )
+
+    const updatedButton = screen.getByLabelText('Configurar Cookies')
+    const updatedEl =
+      updatedButton.tagName === 'BUTTON'
+        ? updatedButton
+        : (updatedButton.closest('button') as Element) || updatedButton
+    computed = window.getComputedStyle(updatedEl as Element)
+    expect(computed.top).toMatch(/32/)
+    expect(computed.right).toMatch(/32/)
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(true)}
+        floatingPreferencesButtonProps={{ position: 'desconhecida', offset: 32 } as any}
+      >
+        <div>App</div>
+        <TestConsumer />
+      </ConsentProvider>,
+    )
+
+    const fallbackButton = screen.getByLabelText('Configurar Cookies')
+    const fallbackEl =
+      fallbackButton.tagName === 'BUTTON'
+        ? fallbackButton
+        : (fallbackButton.closest('button') as Element) || fallbackButton
+    computed = window.getComputedStyle(fallbackEl as Element)
+    expect(computed.bottom).toMatch(/32/)
+    expect(computed.right).toMatch(/32/)
+  })
 })

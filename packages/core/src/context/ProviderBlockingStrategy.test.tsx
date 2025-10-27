@@ -13,6 +13,7 @@ describe('ConsentProvider blockingStrategy overlay', () => {
   beforeEach(() => {
     // Limpa possível cookie persistente entre testes
     document.cookie = 'cookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    document.cookie = 'lgpd-consent__v1=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
   })
   it('renders provider overlay when blockingStrategy="provider" and not consented', async () => {
     const { queryByTestId } = render(

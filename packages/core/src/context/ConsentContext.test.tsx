@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import Cookies from 'js-cookie'
 import { ConsentProvider, useConsent, type Category } from '../index'
 import * as devGuidance from '../utils/developerGuidance'
+import { logger } from '../utils/logger'
 
 // Mock do js-cookie
 jest.mock('js-cookie')
@@ -45,6 +46,7 @@ const TestComponentExtended = () => {
     <div>
       <div data-testid="consented">{consented.toString()}</div>
       <div data-testid="isModalOpen">{isModalOpen?.toString() || 'false'}</div>
+      <div data-testid="necessary">{preferences.necessary?.toString() || 'false'}</div>
       <div data-testid="analytics">{preferences.analytics?.toString() || 'false'}</div>
       <div data-testid="marketing">{preferences.marketing?.toString() || 'false'}</div>
       <div data-testid="custom-category">{preferences.custom?.toString() || 'false'}</div>
@@ -58,6 +60,19 @@ const TestComponentExtended = () => {
       >
         Set Prefs
       </button>
+      <button onClick={() => setPreference('necessary' as Category, false)}>
+        Try Disable Necessary
+      </button>
+      <button
+        onClick={() =>
+          setPreferences({
+            ...preferences,
+            necessary: false,
+          })
+        }
+      >
+        Submit Without Necessary
+      </button>
       <button onClick={() => setPreference('custom' as Category, true)}>Set Custom True</button>
       <button onClick={openPreferences}>Open Modal</button>
       <button onClick={closePreferences}>Close Modal</button>
@@ -70,6 +85,7 @@ describe('ConsentProvider', () => {
   beforeEach(() => {
     ;(Cookies.get as jest.Mock).mockClear()
     ;(Cookies.set as jest.Mock).mockClear()
+    ;(Cookies.remove as jest.Mock).mockClear()
     logGuidanceSpy = jest.spyOn(devGuidance, 'logDeveloperGuidance')
     consoleGroupSpy = jest.spyOn(console, 'group').mockImplementation(() => {})
   })
@@ -77,6 +93,34 @@ describe('ConsentProvider', () => {
   afterEach(() => {
     logGuidanceSpy.mockRestore()
     consoleGroupSpy.mockRestore()
+  })
+
+  it('ignora alterações na categoria necessary e mantém o estado protegido', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation(() => {})
+
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    // Estado inicial mantém necessary como true
+    expect(screen.getByTestId('necessary').textContent).toBe('true')
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Try Disable Necessary'))
+    })
+
+    // Estado permanece true e warning é emitido
+    expect(screen.getByTestId('necessary').textContent).toBe('true')
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('necessary category ignored'),
+    )
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('React does not recognize'))
+
+    loggerWarnSpy.mockRestore()
+    warnSpy.mockRestore()
   })
 
   it('deve carregar o estado padrão (sem consentimento)', () => {
@@ -282,7 +326,10 @@ describe('ConsentProvider Additional Tests', () => {
 
     expect(screen.getByTestId('consented').textContent).toBe('false')
     expect(screen.getByTestId('analytics').textContent).toBe('false')
-    expect(removeCookieSpy).toHaveBeenCalledWith('cookieConsent', { path: '/' })
+    expect(removeCookieSpy).toHaveBeenCalledWith(
+      'lgpd-consent__v1',
+      expect.objectContaining({ path: '/' }),
+    )
     expect(setCookieSpy).not.toHaveBeenCalled() // Não deve setar um novo cookie após reset
   })
 
@@ -341,6 +388,26 @@ describe('ConsentProvider Additional Tests', () => {
     })
   })
 
+  it('mantém a categoria necessary sempre ativa em qualquer operação de atualização', async () => {
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    expect(screen.getByTestId('necessary').textContent).toBe('true')
+
+    fireEvent.click(screen.getByText('Try Disable Necessary'))
+    await waitFor(() => {
+      expect(screen.getByTestId('necessary').textContent).toBe('true')
+    })
+
+    fireEvent.click(screen.getByText('Submit Without Necessary'))
+    await waitFor(() => {
+      expect(screen.getByTestId('necessary').textContent).toBe('true')
+    })
+  })
+
   it('deve inicializar com o initialState fornecido', () => {
     const initialMockState = {
       version: '1.0',
@@ -365,6 +432,67 @@ describe('ConsentProvider Additional Tests', () => {
     expect(screen.getByTestId('analytics').textContent).toBe('true')
     expect(screen.getByTestId('marketing').textContent).toBe('false')
     expect(screen.getByTestId('isModalOpen').textContent).toBe('false') // isModalOpen deve ser false na hidratação
+  })
+
+  it('deve forçar re-consentimento ao alterar storage.version e notificar via onConsentVersionChange', async () => {
+    const onConsentVersionChange = jest.fn()
+
+    const { rerender } = render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        storage={{ namespace: 'Portal.GOV', version: '2025-Q3' }}
+        onConsentVersionChange={onConsentVersionChange}
+      >
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Accept All'))
+      await waitFor(() => expect(screen.getByTestId('consented').textContent).toBe('true'))
+    })
+    ;(Cookies.set as jest.Mock).mockClear()
+    ;(Cookies.remove as jest.Mock).mockClear()
+    onConsentVersionChange.mockClear()
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        storage={{ namespace: 'Portal.GOV', version: '2025-Q4' }}
+        onConsentVersionChange={onConsentVersionChange}
+      >
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    await waitFor(() => {
+      expect(onConsentVersionChange).toHaveBeenCalledTimes(1)
+    })
+
+    const [firstRemoveCall, secondRemoveCall] = (Cookies.remove as jest.Mock).mock.calls
+    expect(firstRemoveCall[0]).toBe('portal.gov__v2025-q3')
+    expect(secondRemoveCall[0]).toBe('portal.gov__v2025-q4')
+
+    expect(onConsentVersionChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        previousKey: 'portal.gov__v2025-q3',
+        nextKey: 'portal.gov__v2025-q4',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('consented').textContent).toBe('false')
+    })
+
+    // resetConsent helper permanece idempotente
+    const { resetConsent } = onConsentVersionChange.mock.calls[0][0]
+    act(() => {
+      resetConsent()
+    })
+    await waitFor(() => {
+      expect(screen.getByTestId('consented').textContent).toBe('false')
+    })
+    expect(Cookies.set).not.toHaveBeenCalled()
   })
 
   // Teste removido: Custom categories foram descontinuadas na v0.3.0+
@@ -433,6 +561,161 @@ describe('ConsentProvider Additional Tests', () => {
       const postResetAcceptEvent = mockDataLayer.find((e) => e.event === 'consent_updated')
       expect(postResetAcceptEvent).toBeDefined()
       expect(postResetAcceptEvent?.origin).toBe('banner')
+    })
+
+    it('em ambiente de desenvolvimento emite aviso quando nenhum componente de UI é fornecido', () => {
+      const originalEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'development'
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+      render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          disableDeveloperGuidance
+          disableFloatingPreferencesButton
+        >
+          <div>App</div>
+        </ConsentProvider>,
+      )
+
+      expect(
+        warnSpy.mock.calls.find(
+          (call) =>
+            typeof call[0] === 'string' &&
+            call[0].includes('[@react-lgpd-consent/core] Aviso: Nenhum componente UI fornecido'),
+        ),
+      ).toBeTruthy()
+
+      warnSpy.mockRestore()
+      process.env.NODE_ENV = originalEnv
+    })
+
+    it('limpa cookie antigo quando storage.domain muda (mesmo namespace/versão)', async () => {
+      const mockCookiesGet = Cookies.get as jest.Mock
+      const mockCookiesSet = Cookies.set as jest.Mock
+      const mockCookiesRemove = Cookies.remove as jest.Mock
+
+      // Simula cookie existente no domínio antigo
+      mockCookiesGet.mockReturnValue(
+        JSON.stringify({
+          version: '1.0',
+          consented: true,
+          preferences: { necessary: true, analytics: true },
+          consentDate: '2024-01-01T00:00:00.000Z',
+          lastUpdate: '2024-01-01T00:00:00.000Z',
+          source: 'banner',
+          projectConfig: { categories: ['necessary', 'analytics'], strictNecessary: true },
+        }),
+      )
+
+      const { rerender } = render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1', domain: '.example.com' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
+
+      // Limpar mocks
+      mockCookiesRemove.mockClear()
+      mockCookiesSet.mockClear()
+
+      // Mudança de domínio (mantendo namespace e versão)
+      rerender(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1', domain: '.subdomain.example.com' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        // Deve ter removido o cookie do domínio antigo
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/',
+          domain: '.example.com',
+        })
+
+        // Deve ter removido o cookie do novo domínio (reset)
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/',
+          domain: '.subdomain.example.com',
+        })
+
+        // Deve ter resetado o consentimento
+        expect(screen.getByTestId('consented').textContent).toBe('false')
+      })
+    })
+
+    it('limpa cookie antigo quando storage.path muda (mesmo namespace/versão)', async () => {
+      const mockCookiesGet = Cookies.get as jest.Mock
+      const mockCookiesSet = Cookies.set as jest.Mock
+      const mockCookiesRemove = Cookies.remove as jest.Mock
+
+      // Simula cookie existente no path antigo
+      mockCookiesGet.mockReturnValue(
+        JSON.stringify({
+          version: '1.0',
+          consented: true,
+          preferences: { necessary: true, analytics: true },
+          consentDate: '2024-01-01T00:00:00.000Z',
+          lastUpdate: '2024-01-01T00:00:00.000Z',
+          source: 'banner',
+          projectConfig: { categories: ['necessary', 'analytics'], strictNecessary: true },
+        }),
+      )
+
+      const { rerender } = render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1' }}
+          cookie={{ path: '/' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        expect(screen.getByTestId('consented').textContent).toBe('true')
+      })
+
+      // Limpar mocks
+      mockCookiesRemove.mockClear()
+      mockCookiesSet.mockClear()
+
+      // Mudança de path (mantendo namespace e versão)
+      rerender(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          storage={{ namespace: 'test-app', version: '1' }}
+          cookie={{ path: '/subpath' }}
+        >
+          <TestComponentBasic />
+        </ConsentProvider>,
+      )
+
+      await waitFor(() => {
+        // Deve ter removido o cookie do path antigo
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/',
+          domain: undefined,
+        })
+
+        // Deve ter removido o cookie do novo path (reset)
+        expect(mockCookiesRemove).toHaveBeenCalledWith('test-app__v1', {
+          path: '/subpath',
+          domain: undefined,
+        })
+
+        // Deve ter resetado o consentimento
+        expect(screen.getByTestId('consented').textContent).toBe('false')
+      })
     })
   })
 })

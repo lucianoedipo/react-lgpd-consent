@@ -2,6 +2,8 @@
 
 Interações em pt-BR, Date Format em BR: DD/MM/YYYY, Time Format em BR: HH:mm:ss 24h
 
+**REGRA CRÍTICA: NUNCA gerar código para exibir avisos, mensagens de status ou resumos visuais. O usuário NÃO quer ver código PowerShell/Bash para formatação de output. Apenas execute comandos diretos quando necessário.**
+
 Objetivo: permitir que um agente de codificação seja imediatamente produtivo neste repositório, entendendo arquitetura, fluxos de trabalho e padrões específicos.
 
 - Arquitetura em alto nível

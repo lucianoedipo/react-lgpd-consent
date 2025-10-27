@@ -1,6 +1,6 @@
 {
   "name": "react-lgpd-consent",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "Biblioteca de consentimento LGPD, integrações nativas e sistema extensível para React.",
   "keywords": [
     "lgpd",
@@ -59,6 +59,8 @@
   "files": [
     "dist",
     "README.md",
+    "API.md",
+    "package.json",
     "README.en.md",
     "QUICKSTART.md",
     "QUICKSTART.en.md",
@@ -85,7 +87,7 @@
     "mutation": "npx stryker run",
     "mutation:tests": "npx stryker run ../../stryker.tests.conf.json",
     "prepublishOnly": "pnpm run build",
-    "docs:generate": "typedoc --options ../../typedoc.json",
+    "docs:generate": "node ../../scripts/run-typedoc.mjs",
     "storybook": "storybook dev -p 6006 --config-dir ../../.storybook",
     "build-storybook": "storybook build --config-dir ../../.storybook --output-dir ../../storybook-static"
   },
@@ -112,8 +114,8 @@
     }
   },
   "dependencies": {
-    "@react-lgpd-consent/core": "workspace:^0.5.0",
-    "@react-lgpd-consent/mui": "workspace:^0.5.0"
+    "@react-lgpd-consent/core": "workspace:^0.5.1",
+    "@react-lgpd-consent/mui": "workspace:^0.5.1"
   },
   "size-limit": [
     {

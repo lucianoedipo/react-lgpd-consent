@@ -19,60 +19,200 @@ import { FloatingPreferencesButton } from './FloatingPreferencesButton'
 import { PreferencesModal } from './PreferencesModal'
 
 /**
- * Props do ConsentProvider com suporte a componentes MUI.
- * Estende as props do core com valores padrão para componentes UI.
+ * Propriedades do ConsentProvider com suporte a componentes Material-UI integrados.
  *
- * @category Types
+ * @remarks
+ * Estende as props do `ConsentProviderCore` com valores padrão para componentes UI.
+ * Este Provider é o ponto de entrada principal para uso da biblioteca com Material-UI,
+ * oferecendo uma experiência "batteries included" (tudo pronto para uso).
+ *
+ * ### Diferenças do Core
+ * - ✅ Injeção automática de `PreferencesModal`, `CookieBanner` e `FloatingPreferencesButton`
+ * - ✅ Suporte a tema Material-UI via `ThemeProvider`
+ * - ✅ Props dedicadas para desabilitar componentes padrão
+ * - ✅ Não requer configuração manual de componentes UI
+ *
+ * ### Quando Usar Este Provider
+ * - Você está usando Material-UI no seu projeto
+ * - Quer começar rápido com UI pronta
+ * - Prefere defaults sensatos com possibilidade de override
+ *
+ * ### Quando Usar o Core
+ * - Você quer controle total sobre a UI
+ * - Está usando outra biblioteca de UI (Chakra, Ant Design, etc.)
+ * - Prefere implementação headless
+ *
+ * @category Components
  * @public
  * @since 0.5.0
+ *
+ * @example Uso básico com defaults
+ * ```tsx
+ * import { ConsentProvider } from '@react-lgpd-consent/mui'
+ *
+ * <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Com tema customizado
+ * ```tsx
+ * import { createTheme } from '@mui/material/styles'
+ * import { ConsentProvider } from '@react-lgpd-consent/mui'
+ *
+ * const theme = createTheme({
+ *   palette: {
+ *     primary: { main: '#1976d2' }
+ *   }
+ * })
+ *
+ * <ConsentProvider
+ *   theme={theme}
+ *   categories={{ enabledCategories: ['analytics'] }}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Desabilitando componentes padrão
+ * ```tsx
+ * <ConsentProvider
+ *   categories={{ enabledCategories: ['analytics'] }}
+ *   disableDefaultModal={true}
+ *   disableDefaultBanner={true}
+ *   disableDefaultFloatingButton={true}
+ * >
+ *   <App />
+ * </ConsentProvider>
+ * ```
  */
 export interface ConsentProviderProps extends ConsentProviderCoreProps {
   /**
    * Se `true`, desabilita a injeção automática do PreferencesModal.
-   * Use isso se quiser passar seu próprio modal via `PreferencesModalComponent`.
-   *
-   * @default false
-   * @since 0.5.0
-   */
-  disableDefaultModal?: boolean
-  /**
-   * Se `true`, desabilita a injeção automática do CookieBanner padrão.
-   * Útil quando se deseja uma implementação própria, mantendo outras integrações.
-   *
-   * @default false
-   * @since 0.5.0
-   */
-  disableDefaultBanner?: boolean
-  /**
-   * Se `true`, desabilita a injeção automática do FloatingPreferencesButton.
-   * Normalmente não é necessário — `disableFloatingPreferencesButton` já oculta o botão.
-   *
-   * @default false
-   * @since 0.5.0
-   */
-  disableDefaultFloatingButton?: boolean
-  /**
-   * Tema Material-UI a ser aplicado ao redor dos componentes padrões.
    *
    * @remarks
-   * O tema é aplicado apenas nesta camada de apresentação. O core permanece agnóstico.
+   * Use isso quando quiser passar seu próprio modal via `PreferencesModalComponent`
+   * ou quando quiser implementação totalmente headless.
+   *
+   * Quando `false` (padrão), o modal padrão do MUI é renderizado automaticamente
+   * quando o usuário clica em "Preferências" ou "Gerenciar".
+   *
+   * @defaultValue false
+   * @since 0.5.0
    *
    * @example
    * ```tsx
-   * const theme = createTheme({ palette: { primary: { main: '#1976d2' } } })
-   * <ConsentProvider theme={theme} />
-   * ```
+   * function MyModal() {
+   *   const { closePreferences } = useConsent()
+   *   return <div>Meu modal customizado</div>
+   * }
    *
+   * <ConsentProvider
+   *   disableDefaultModal={true}
+   *   PreferencesModalComponent={MyModal}
+   * >
+   *   <App />
+   * </ConsentProvider>
+   * ```
+   */
+  disableDefaultModal?: boolean
+
+  /**
+   * Se `true`, desabilita a injeção automática do CookieBanner.
+   *
+   * @remarks
+   * Útil quando você quer uma implementação própria de banner,
+   * mantendo outras integrações (modal, botão flutuante).
+   *
+   * Quando `false` (padrão), o banner padrão do MUI é renderizado
+   * automaticamente quando o usuário ainda não consentiu.
+   *
+   * @defaultValue false
    * @since 0.5.0
+   *
+   * @example
+   * ```tsx
+   * function MyBanner() {
+   *   const { acceptAll, rejectAll } = useConsent()
+   *   return <div>Meu banner customizado</div>
+   * }
+   *
+   * <ConsentProvider
+   *   disableDefaultBanner={true}
+   *   CookieBannerComponent={MyBanner}
+   * >
+   *   <App />
+   * </ConsentProvider>
+   * ```
+   */
+  disableDefaultBanner?: boolean
+
+  /**
+   * Se `true`, desabilita a injeção automática do FloatingPreferencesButton.
+   *
+   * @remarks
+   * Útil quando você quer controlar completamente como usuários reacessam
+   * suas preferências (ex: link no footer, menu de configurações).
+   *
+   * **Nota**: `disableFloatingPreferencesButton` do core também oculta o botão,
+   * mas esta prop impede completamente a renderização do componente.
+   *
+   * @defaultValue false
+   * @since 0.5.0
+   *
+   * @example
+   * ```tsx
+   * <ConsentProvider
+   *   disableDefaultFloatingButton={true}
+   *   categories={{ enabledCategories: ['analytics'] }}
+   * >
+   *   <App />
+   * </ConsentProvider>
+   * ```
+   */
+  disableDefaultFloatingButton?: boolean
+
+  /**
+   * Tema Material-UI a ser aplicado ao redor dos componentes padrão.
+   *
+   * @remarks
+   * O tema é aplicado apenas nesta camada de apresentação via `ThemeProvider`.
+   * O core permanece agnóstico de UI.
+   *
+   * Se você já tem um `ThemeProvider` no seu app, os componentes
+   * herdarão automaticamente. Esta prop é opcional e útil quando você quer
+   * um tema específico apenas para os componentes de consentimento.
+   *
+   * @defaultValue undefined (herda tema do contexto pai)
+   * @since 0.5.0
+   *
+   * @example
+   * ```tsx
+   * import { createTheme } from '@mui/material/styles'
+   *
+   * const consentTheme = createTheme({
+   *   palette: {
+   *     primary: { main: '#2e7d32' },
+   *     background: { paper: '#fafafa' }
+   *   },
+   *   typography: {
+   *     fontFamily: 'Inter, sans-serif'
+   *   }
+   * })
+   *
+   * <ConsentProvider
+   *   theme={consentTheme}
+   *   categories={{ enabledCategories: ['analytics'] }}
+   * >
+   *   <App />
+   * </ConsentProvider>
+   * ```
    */
   theme?: Theme
 }
 
 /**
- * Provider de consentimento com componentes Material-UI integrados.
- *
- * Este componente é um wrapper sobre o `ConsentProvider` do core que automaticamente
- * fornece um `PreferencesModal` padrão, tornando o setup mais simples.
+ * Provider de consentimento com componentes Material-UI integrados ("batteries included").
  *
  * @component
  * @category Components
@@ -80,32 +220,97 @@ export interface ConsentProviderProps extends ConsentProviderCoreProps {
  * @since 0.5.0
  *
  * @remarks
- * **Diferenças do Core:**
- * - ✅ Automaticamente renderiza `PreferencesModal` quando o usuário clica em "Preferências"
- * - ✅ Não requer configuração de `PreferencesModalComponent` (mas permite override)
- * - ✅ Ideal para uso rápido com Material-UI
+ * Este componente é um wrapper sobre o `ConsentProvider` do core que automaticamente
+ * injeta `PreferencesModal`, `CookieBanner` e `FloatingPreferencesButton` com estilos MUI,
+ * tornando o setup extremamente simples e rápido.
  *
- * **Quando usar o Core diretamente:**
- * - ❌ Se você quiser controle total sobre qual modal renderizar
- * - ❌ Se você estiver usando uma biblioteca de UI diferente
- * - ❌ Se você quiser implementação headless
+ * ### Características Principais
+ * - ✅ **Injeção Automática**: Renderiza modal, banner e botão flutuante sem configuração
+ * - ✅ **Tema Material-UI**: Aceita `theme` prop para customização de cores e tipografia
+ * - ✅ **Override Flexível**: Permite substituir componentes padrão via props `*Component`
+ * - ✅ **Desabilitar Seletivo**: Props `disable*` para controle granular de UI
+ * - ✅ **SSR-Safe**: Compatível com NextJS e outros frameworks SSR
+ * - ✅ **Tree-shakeable**: Apenas o que você usa é incluído no bundle
  *
- * @example
- * **Uso Básico (Modal automático):**
+ * ### Diferenças do Core Provider
+ * | Recurso | MUI Provider | Core Provider |
+ * |---------|--------------|---------------|
+ * | Modal padrão | ✅ Automático | ❌ Manual |
+ * | Banner padrão | ✅ Automático | ❌ Manual |
+ * | Botão flutuante | ✅ Automático | ❌ Manual |
+ * | Suporte a tema MUI | ✅ Sim | ❌ Não |
+ * | Tamanho bundle | ~104KB | ~86KB |
+ * | Headless | Via `disable*` | ✅ Nativo |
+ *
+ * ### Quando Usar Este Provider
+ * - ✅ Você está usando Material-UI no projeto
+ * - ✅ Quer começar rápido sem configurar UI
+ * - ✅ Prefere defaults sensatos com possibilidade de override
+ * - ✅ Precisa de acessibilidade pronta (ARIA labels, keyboard nav)
+ *
+ * ### Quando Usar o Core Provider
+ * - ❌ Você quer controle total sobre a UI
+ * - ❌ Está usando outra biblioteca (Chakra, Ant Design, Tailwind)
+ * - ❌ Precisa de bundle mínimo (~18KB a menos)
+ * - ❌ Quer implementação 100% headless
+ *
+ * ### Estrutura de Renderização
+ * ```
+ * ConsentProviderCore
+ *   └─ ThemeProvider (se theme fornecido)
+ *      ├─ children (sua aplicação)
+ *      ├─ CookieBanner (se não desabilitado e sem consentimento)
+ *      ├─ PreferencesModal (se não desabilitado e preferências abertas)
+ *      └─ FloatingPreferencesButton (se não desabilitado)
+ * ```
+ *
+ * @param props - Propriedades do provider (estende ConsentProviderCoreProps)
+ * @returns Elemento React contendo o provider de contexto e componentes UI integrados
+ *
+ * @throws {Error} Se `categories.enabledCategories` não for fornecido (validação do core)
+ *
+ * @example Uso Básico (Modal + Banner + Botão Automáticos)
  * ```tsx
  * import { ConsentProvider } from '@react-lgpd-consent/mui'
  *
  * function App() {
  *   return (
- *     <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+ *     <ConsentProvider
+ *       categories={{
+ *         enabledCategories: ['analytics', 'marketing']
+ *       }}
+ *     >
  *       <YourApp />
  *     </ConsentProvider>
  *   )
  * }
  * ```
  *
- * @example
- * **Modal customizado:**
+ * @example Com Tema Customizado MUI
+ * ```tsx
+ * import { createTheme } from '@mui/material/styles'
+ * import { ConsentProvider } from '@react-lgpd-consent/mui'
+ *
+ * const theme = createTheme({
+ *   palette: {
+ *     primary: { main: '#2e7d32' },
+ *     background: { paper: '#fafafa' }
+ *   }
+ * })
+ *
+ * function App() {
+ *   return (
+ *     <ConsentProvider
+ *       theme={theme}
+ *       categories={{ enabledCategories: ['analytics'] }}
+ *     >
+ *       <YourApp />
+ *     </ConsentProvider>
+ *   )
+ * }
+ * ```
+ *
+ * @example Override de Componentes Padrão
  * ```tsx
  * import { ConsentProvider, PreferencesModal } from '@react-lgpd-consent/mui'
  *
@@ -116,6 +321,7 @@ export interface ConsentProviderProps extends ConsentProviderCoreProps {
  *       PreferencesModalComponent={(props) => (
  *         <PreferencesModal {...props} hideBranding={true} />
  *       )}
+ *       CookieBannerComponent={() => <div>Meu banner customizado</div>}
  *     >
  *       <YourApp />
  *     </ConsentProvider>
@@ -123,16 +329,43 @@ export interface ConsentProviderProps extends ConsentProviderCoreProps {
  * }
  * ```
  *
- * @example
- * **Desabilitar modal padrão (headless):**
+ * @example Modo Headless (Desabilitando UI Padrão)
  * ```tsx
  * import { ConsentProvider } from '@react-lgpd-consent/mui'
+ * import { useConsent } from '@react-lgpd-consent/core'
+ *
+ * function CustomUI() {
+ *   const { acceptAll, rejectAll } = useConsent()
+ *   return <div>Minha UI totalmente customizada</div>
+ * }
  *
  * function App() {
  *   return (
  *     <ConsentProvider
  *       categories={{ enabledCategories: ['analytics'] }}
  *       disableDefaultModal={true}
+ *       disableDefaultBanner={true}
+ *       disableDefaultFloatingButton={true}
+ *     >
+ *       <CustomUI />
+ *       <YourApp />
+ *     </ConsentProvider>
+ *   )
+ * }
+ * ```
+ *
+ * @example Com Callbacks de Eventos
+ * ```tsx
+ * function App() {
+ *   return (
+ *     <ConsentProvider
+ *       categories={{ enabledCategories: ['analytics', 'marketing'] }}
+ *       onConsentChange={(newState) => {
+ *         console.log('Novo estado:', newState)
+ *         // Enviar evento para analytics
+ *       }}
+ *       onPreferencesOpen={() => console.log('Modal aberto')}
+ *       onPreferencesClose={() => console.log('Modal fechado')}
  *     >
  *       <YourApp />
  *     </ConsentProvider>
@@ -140,11 +373,11 @@ export interface ConsentProviderProps extends ConsentProviderCoreProps {
  * }
  * ```
  *
- * @param props - Props do provider incluindo categorias, textos, callbacks, etc.
- * @returns Provider React com contexto de consentimento e UI integrada
- *
  * @see {@link ConsentProviderCore} Para a versão headless sem UI
  * @see {@link PreferencesModal} Para o componente de modal usado por padrão
+ * @see {@link CookieBanner} Para o componente de banner usado por padrão
+ * @see {@link FloatingPreferencesButton} Para o botão flutuante usado por padrão
+ * @see {@link https://mui.com/material-ui/customization/theming/ | MUI Theming Guide} Para customização de tema
  */
 export function ConsentProvider({
   disableDefaultModal = false,

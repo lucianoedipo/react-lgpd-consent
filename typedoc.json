@@ -2,13 +2,16 @@
   "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
     "packages/core/src/index.ts",
-    "packages/mui/src/index.ts"
+    "packages/mui/src/index.ts",
+    "packages/react-lgpd-consent/src/index.ts"
   ],
+  "entryPointStrategy": "expand",
   "out": "docs",
   "tsconfig": "tsconfig.typedoc.json",
 
   "name": "react-lgpd-consent",
   "includeVersion": true,
+  "treatWarningsAsErrors": false,
   "readme": "README.md",
 
   "navigation": {
@@ -82,8 +85,12 @@
   "hideGenerator": true,
   "projectDocuments": [
     "README.md",
-    "README.en.md",
+    "packages/core/README.md",
+    "packages/mui/README.md",
+    "packages/react-lgpd-consent/README.md",
+    "packages/react-lgpd-consent/README.en.md",
     "QUICKSTART.md",
+    "QUICKSTART.en.md",
     "MIGRATION.md",
     "ARCHITECTURE.md",
     "DEVELOPMENT.md",
@@ -91,5 +98,27 @@
     "packages/react-lgpd-consent/API.md",
     "packages/react-lgpd-consent/INTEGRACOES.md",
     "packages/react-lgpd-consent/CHANGELOG.md"
-  ]
+  ],
+  "highlightLanguages": [
+    "typescript",
+    "tsx",
+    "javascript",
+    "jsx",
+    "json",
+    "bash",
+    "shell",
+    "diff",
+    "yaml",
+    "markdown",
+    "html",
+    "css",
+    "powershell",
+    "sql",
+    "mermaid"
+  ],
+  "validation": {
+    "notExported": false,
+    "invalidLink": false,
+    "notDocumented": false
+  }
 }

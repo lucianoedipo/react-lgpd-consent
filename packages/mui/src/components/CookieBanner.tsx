@@ -475,6 +475,7 @@ export function CookieBanner({
             backgroundColor: resolveBackdropColor(theme),
             zIndex: 1299,
           })}
+          data-testid="lgpd-cookie-banner-overlay"
         />
         <Box sx={positionStyle}>{bannerContent}</Box>
       </>

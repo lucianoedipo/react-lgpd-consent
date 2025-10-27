@@ -20,9 +20,14 @@ import {
   type ConsentTexts,
   type ProjectCategoriesConfig,
 } from '../types/types'
-import { createProjectPreferences, validateProjectPreferences } from '../utils/categoryUtils'
+import {
+  createProjectPreferences,
+  ensureNecessaryAlwaysOn,
+  validateProjectPreferences,
+} from '../utils/categoryUtils'
 import {
   DEFAULT_COOKIE_OPTS,
+  buildConsentStorageKey,
   readConsentCookie,
   removeConsentCookie,
   writeConsentCookie,
@@ -68,11 +73,12 @@ function createFullConsentState(
   existingState?: ConsentState,
 ): ConsentState {
   const now = new Date().toISOString()
+  const enforcedPreferences = ensureNecessaryAlwaysOn(preferences)
 
   return {
     version: '1.0',
     consented,
-    preferences,
+    preferences: enforcedPreferences,
     consentDate: existingState?.consentDate || now,
     lastUpdate: now,
     source,
@@ -150,7 +156,12 @@ function reducer(state: ConsentState, action: Action): ConsentState {
       })
       return newState
     }
-    case 'SET_CATEGORY':
+    case 'SET_CATEGORY': {
+      if (action.category === 'necessary') {
+        logger.warn('Attempt to toggle necessary category ignored for compliance reasons.')
+        return state
+      }
+
       logger.debug('Category preference changed', {
         category: action.category,
         value: action.value,
@@ -163,9 +174,12 @@ function reducer(state: ConsentState, action: Action): ConsentState {
         },
         lastUpdate: new Date().toISOString(),
       }
-    case 'SET_PREFERENCES':
-      logger.info('Preferences saved', { preferences: action.preferences })
-      return createFullConsentState(true, action.preferences, 'modal', action.config, false, state)
+    }
+    case 'SET_PREFERENCES': {
+      const sanitized = ensureNecessaryAlwaysOn(action.preferences)
+      logger.info('Preferences saved', { preferences: sanitized })
+      return createFullConsentState(true, sanitized, 'modal', action.config, false, state)
+    }
     case 'OPEN_MODAL':
       return { ...state, isModalOpen: true }
     case 'CLOSE_MODAL':
@@ -265,16 +279,27 @@ export function ConsentProvider({
   onConsentGiven,
   onPreferencesSaved,
   cookie: cookieOpts,
+  storage,
+  onConsentVersionChange,
   disableDeveloperGuidance,
   guidanceConfig,
   children,
   disableDiscoveryLog,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
-  const cookie = React.useMemo(
-    () => ({ ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }),
-    [cookieOpts],
-  )
+  const cookie = React.useMemo(() => {
+    const base = { ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }
+    base.name =
+      cookieOpts?.name ??
+      buildConsentStorageKey({
+        namespace: storage?.namespace,
+        version: storage?.version,
+      })
+    if (!base.domain && storage?.domain) {
+      base.domain = storage.domain
+    }
+    return base
+  }, [cookieOpts, storage?.domain, storage?.namespace, storage?.version])
   // If a theme prop is provided, we explicitly apply it.
   // Otherwise we intentionally do NOT create or inject a theme provider and let the host app provide one.
   // This avoids altering the app's theme context and prevents SSR/context regressions.
@@ -330,6 +355,10 @@ export function ConsentProvider({
   }, [initialState, finalCategoriesConfig])
 
   const [state, dispatch] = React.useReducer(reducer, boot)
+  const previousCookieRef = React.useRef(cookie)
+  // Ref usado para evitar persistência do cookie imediatamente após detecção de mudança de versão.
+  // Isso é necessário para evitar gravar um estado antigo/obsoleto antes que o reset de consentimento seja concluído.
+  const skipCookiePersistRef = React.useRef(false)
   const [isHydrated, setIsHydrated] = React.useState(false)
 
   // Ref para rastrear estado anterior (para detectar mudanças de preferências)
@@ -352,6 +381,52 @@ export function ConsentProvider({
     setIsHydrated(true)
   }, [cookie.name, initialState, finalCategoriesConfig]) // Executa apenas uma vez após mount
 
+  React.useEffect(() => {
+    const previousCookie = previousCookieRef.current
+
+    // Compara nome, domínio e path para detectar qualquer mudança relevante
+    const isSameCookie =
+      previousCookie.name === cookie.name &&
+      previousCookie.domain === cookie.domain &&
+      previousCookie.path === cookie.path
+
+    if (isSameCookie) {
+      previousCookieRef.current = cookie
+      return
+    }
+
+    skipCookiePersistRef.current = true
+    // Remove cookie antigo (pode ter domínio diferente)
+    removeConsentCookie(previousCookie)
+
+    const reset = () => {
+      removeConsentCookie(cookie)
+      dispatch({ type: 'RESET', config: finalCategoriesConfig })
+    }
+
+    reset()
+
+    if (onConsentVersionChange) {
+      onConsentVersionChange({
+        previousKey: previousCookie.name,
+        nextKey: cookie.name,
+        resetConsent: reset,
+      })
+    }
+
+    previousCookieRef.current = cookie
+  }, [cookie, finalCategoriesConfig, onConsentVersionChange, dispatch])
+
+  // Reset skipCookiePersistRef when consent is revoked.
+  // This ensures that cookie persistence logic is re-enabled after consent is lost,
+  // preventing accidental skipping of persistence in future consent cycles.
+  function resetSkipCookiePersistOnConsentRevoked() {
+    if (skipCookiePersistRef.current && !state.consented) {
+      skipCookiePersistRef.current = false
+    }
+  }
+  React.useEffect(resetSkipCookiePersistOnConsentRevoked, [state.consented])
+
   // Evento consent_initialized: dispara após hidratação inicial
   React.useEffect(() => {
     if (isHydrated) {
@@ -365,7 +440,9 @@ export function ConsentProvider({
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
-    if (state.consented) writeConsentCookie(state, finalCategoriesConfig, cookie)
+    if (!state.consented) return
+    if (skipCookiePersistRef.current) return
+    writeConsentCookie(state, finalCategoriesConfig, cookie)
   }, [state, cookie, finalCategoriesConfig])
 
   // Callbacks externos (com pequeno delay para animações)
@@ -403,16 +480,22 @@ export function ConsentProvider({
   const api = React.useMemo<ConsentContextValue>(() => {
     const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
     const rejectAll = () => dispatch({ type: 'REJECT_ALL', config: finalCategoriesConfig })
-    const setPreference = (category: string, value: boolean) =>
+    const setPreference = (category: string, value: boolean) => {
+      if (category === 'necessary') {
+        logger.warn('setPreference: attempt to toggle necessary category ignored.')
+        return
+      }
       dispatch({ type: 'SET_CATEGORY', category, value })
+    }
     const setPreferences = (preferences: ConsentPreferences) => {
+      const sanitized = ensureNecessaryAlwaysOn(preferences)
       dispatch({
         type: 'SET_PREFERENCES',
-        preferences,
+        preferences: sanitized,
         config: finalCategoriesConfig,
       })
       if (onPreferencesSaved) {
-        setTimeout(() => onPreferencesSaved(preferences), 150)
+        setTimeout(() => onPreferencesSaved(sanitized), 150)
       }
     }
     const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })

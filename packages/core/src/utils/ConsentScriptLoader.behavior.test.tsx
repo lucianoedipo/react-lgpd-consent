@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react'
+import { act, render, waitFor } from '@testing-library/react'
 import * as React from 'react'
 import { ConsentProvider } from '../context/ConsentContext'
 import { useConsent } from '../hooks/useConsent'
@@ -170,5 +170,97 @@ describe('ConsentScriptLoader behavior', () => {
       setPreferenceRef2.current('analytics' as any, true)
     })
     expect(loadScript).toHaveBeenCalledTimes(2)
+  })
+
+  test('non-necessary scripts load only after consent and respect partial preferences', async () => {
+    document.cookie = 'cookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    document.cookie = 'lgpd-consent__v1=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/'
+    const necessaryIntegration: ScriptIntegration = {
+      id: 'essential-metrics',
+      category: 'necessary',
+      src: 'https://example.com/essential.js',
+    }
+
+    const analyticsIntegration = createGoogleAnalyticsIntegration({
+      measurementId: 'G-CONSENT',
+    })
+
+    const marketingIntegration: ScriptIntegration = {
+      id: 'marketing-suite',
+      category: 'marketing',
+      src: 'https://example.com/marketing.js',
+    }
+
+    const { loadScript } = require('./scriptLoader')
+    jest.clearAllMocks()
+
+    const controlsRef = {
+      current: null as null | {
+        setPreferences: ReturnType<typeof useConsent>['setPreferences']
+      },
+    }
+
+    const Controls = () => {
+      const { setPreferences } = useConsent()
+      React.useEffect(() => {
+        controlsRef.current = { setPreferences }
+      }, [setPreferences])
+      return null
+    }
+
+    await act(async () => {
+      render(
+        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+          <Controls />
+          <ConsentScriptLoader
+            integrations={[necessaryIntegration, analyticsIntegration, marketingIntegration]}
+          />
+        </ConsentProvider>,
+      )
+    })
+
+    // Inicialmente, nenhum script deve ser carregado
+    expect(loadScript).not.toHaveBeenCalled()
+
+    // Aguarda Controls registrar o ref
+    await waitFor(() => {
+      expect(controlsRef.current).not.toBeNull()
+    })
+
+    // Força consentimento parcial (analytics permitido, marketing negado)
+    await act(async () => {
+      controlsRef.current?.setPreferences({
+        necessary: true,
+        analytics: true,
+        marketing: false,
+      })
+    })
+
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalledTimes(2)
+    })
+
+    const firstWaveIds = (loadScript as jest.Mock).mock.calls.map((call) => call[0])
+    expect(firstWaveIds).toContain('essential-metrics')
+    expect(firstWaveIds).toContain('google-analytics')
+    expect(firstWaveIds).not.toContain('marketing-suite')
+
+    // Posteriormente, usuário habilita marketing -> deve carregar apenas o script pendente
+    await act(async () => {
+      controlsRef.current?.setPreferences({
+        necessary: true,
+        analytics: true,
+        marketing: true,
+      })
+    })
+
+    await waitFor(() => {
+      const ids = (loadScript as jest.Mock).mock.calls.map((call) => call[0])
+      expect(ids).toContain('marketing-suite')
+    })
+
+    const finalCalls = (loadScript as jest.Mock).mock.calls.map((call) => call[0])
+    expect(finalCalls.filter((id: string) => id === 'marketing-suite')).toHaveLength(1)
+    expect(finalCalls.filter((id: string) => id === 'google-analytics')).toHaveLength(1)
   })
 })

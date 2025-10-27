@@ -1,18 +1,15 @@
 /**
- * @module react-lgpd-consent
- * @description
- * Ponto de entrada público da biblioteca react-lgpd-consent.
- * Exporta componentes, hooks, utilitários e tipos para gerenciamento de consentimento de cookies conforme LGPD.
+ * Ponto de entrada público do pacote @react-lgpd-consent/core.
+ * Exporta componentes headless, hooks, utilitários e tipos para gerenciamento de consentimento de cookies conforme LGPD.
  *
- * - Componentes de UI baseados em Material-UI
- * - Context Provider para estado global de consentimento
+ * - Context Provider headless para estado global de consentimento
  * - Hooks customizados para acesso ao consentimento
  * - Utilitários para manipulação de cookies e scripts
  * - Tipos TypeScript para máxima segurança e clareza
+ * - Integrações prontas (Google Analytics, GTM, UserWay, etc.)
  *
- * @remarks
- * Consulte a documentação oficial para exemplos de uso e integração.
- * @category Main
+ * @packageDocumentation
+ * @category Packages
  */
 
 // Contexto + Hooks
@@ -81,6 +78,7 @@ export { DesignProvider, useDesignTokens } from './context/DesignContext'
  * @since 0.4.1
  */
 export { ConsentGate } from './utils/ConsentGate'
+export { buildConsentStorageKey } from './utils/cookieUtils'
 
 /**
  * Função utilitária para carregamento dinâmico de scripts externos.
@@ -115,7 +113,6 @@ export { ConsentScriptLoader, useConsentScriptLoader } from './utils/ConsentScri
  */
 export {
   COMMON_INTEGRATIONS,
-  INTEGRATION_TEMPLATES,
   createClarityIntegration,
   createCorporateIntegrations,
   createECommerceIntegrations,
@@ -128,6 +125,7 @@ export {
   createSaaSIntegrations,
   createUserWayIntegration,
   createZendeskChatIntegration,
+  INTEGRATION_TEMPLATES,
   suggestCategoryForScript,
   type ClarityConfig,
   type CorporateConfig,
@@ -176,7 +174,9 @@ export type {
    */
   ConsentProviderProps,
   ConsentState,
+  ConsentStorageConfig,
   ConsentTexts,
+  ConsentVersionChangeContext,
   CookieDescriptor,
   /**
    * Props esperadas por um componente customizado de CookieBanner.
@@ -206,7 +206,7 @@ export type { AdvancedConsentTexts } from './types/advancedTexts'
  * @since 0.4.1
  * @category Utils
  */
-export { EXPANDED_DEFAULT_TEXTS, TEXT_TEMPLATES, resolveTexts } from './types/advancedTexts'
+export { EXPANDED_DEFAULT_TEXTS, resolveTexts, TEXT_TEMPLATES } from './types/advancedTexts'
 
 /**
  * Tipos para o sistema de auto-configuração de categorias.
@@ -242,9 +242,9 @@ export type { CategoriesContextValue } from './context/CategoriesContext'
  * @since 0.4.1
  */
 export {
+  analyzeDeveloperConfiguration,
   DEFAULT_PROJECT_CATEGORIES,
   GUIDANCE_PRESETS,
-  analyzeDeveloperConfiguration,
   logDeveloperGuidance,
   useDeveloperGuidance,
 } from './utils/developerGuidance'
@@ -254,7 +254,7 @@ export {
  * @category Utils
  * @since 0.4.1
  */
-export { LogLevel, logger, setDebugLogging } from './utils/logger'
+export { logger, LogLevel, setDebugLogging } from './utils/logger'
 
 // Cookie registry APIs (overrides + lookup)
 export {
@@ -287,6 +287,7 @@ export { defaultTexts } from './context/ConsentContext'
  */
 export {
   createProjectPreferences,
+  ensureNecessaryAlwaysOn,
   getAllProjectCategories,
   validateProjectPreferences,
 } from './utils/categoryUtils'
@@ -313,3 +314,4 @@ export type {
   ConsentInitializedEvent,
   ConsentUpdatedEvent,
 } from './types/types'
+

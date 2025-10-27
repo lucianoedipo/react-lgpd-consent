@@ -18,6 +18,7 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `openPreferencesModal`              | Função     | Versão da função acima para ser usada fora do contexto React.                   |
 | `ConsentGate`                       | Componente | Renderiza componentes filhos apenas se uma categoria de cookie for consentida.  |
 | `ConsentScriptLoader`               | Componente | Carrega scripts de terceiros (como Google Analytics) com base no consentimento. |
+| `buildConsentStorageKey`            | Função     | (v0.5.2) Gera nomes de cookies `namespace__vX` a partir de namespace/versão.     |
 | `createGoogleAnalyticsIntegration`  | Função     | Factory para integração nativa com o Google Analytics.                           |
 | `createGoogleTagManagerIntegration` | Função     | Factory para integração nativa com o Google Tag Manager.                         |
 | `createUserWayIntegration`          | Função     | Factory para integração nativa com o UserWay.                                    |
@@ -67,22 +68,73 @@ function App() {
 
 **Todas as Props:**
 
-| Prop                               | Tipo                                               | Descrição                                                                                                          |
-| ---------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `categories`                       | `ProjectCategoriesConfig`                          | Define as categorias de cookies ativas no seu projeto. Fonte única de verdade lida por UI, hooks e integrações.    |
-| `texts`                            | `Partial<ConsentTexts>`                            | Objeto com textos customizados para a UI (banner, modal, etc.).                                                    |
-| `onConsentGiven`                   | `(state: ConsentState) => void`                    | Callback executado na primeira vez que o usuário dá o consentimento.                                               |
-| `onPreferencesSaved`               | `(prefs: ConsentPreferences) => void`              | Callback executado sempre que o usuário salva novas preferências no modal.                                         |
-| `blocking`                         | `boolean`                                          | Se `true`, exibe um overlay que impede a interação com o site até que o usuário tome uma decisão. Padrão: `false`. |
-| `blockingStrategy`                 | `'auto'                                            | 'provider'                                                                                                         | 'component'` | Estratégia de bloqueio quando `blocking` estiver ativo. `'auto'` (padrão) mantém o comportamento atual (banner padrão bloqueia; custom decide). `'provider'` cria overlay de bloqueio no Provider (opt‑in). `'component'` delega bloqueio ao banner. Veja a seção "Bloqueio (opt-in) e integração com dark-filter" no `README.md` para exemplos e recomendações de A11y. |
-| `disableDeveloperGuidance`         | `boolean`                                          | Se `true`, desativa as mensagens de orientação no console, mesmo em ambiente de desenvolvimento.                   |
-| `disableFloatingPreferencesButton` | `boolean`                                          | Se `true`, desabilita o botão flutuante que permite ao usuário reabrir o modal de preferências. Padrão: `false`.   |
-| `hideBranding`                     | `boolean`                                          | Se `true`, oculta a marca "fornecido por LÉdipO.eti.br" dos componentes.                                           |
-| `cookie`                           | `Partial<ConsentCookieOptions>`                    | Permite customizar as opções do cookie (nome, tempo de expiração, etc.).                                           |
-| `CookieBannerComponent`            | `React.ComponentType<CustomCookieBannerProps>`     | Permite substituir o banner padrão por um componente React customizado.                                            |
-| `PreferencesModalComponent`        | `React.ComponentType<CustomPreferencesModalProps>` | Permite substituir o modal de preferências padrão por um componente React customizado.                             |
-| `theme`                            | `any` (Tema MUI)                                   | Permite passar um tema customizado do Material-UI para os componentes da biblioteca.                               |
-| `initialState`                     | `ConsentState`                                     | Estado inicial para hidratação em cenários de Server-Side Rendering (SSR) para evitar o "flash" do banner.         |
+| Prop | Tipo | Descrição |
+| --- | --- | --- |
+| `categories` | `ProjectCategoriesConfig` | **Obrigatório.** Fonte única de verdade sobre as categorias habilitadas; usada por UI, hooks e integrações. |
+| `texts` | `Partial<ConsentTexts>` | Customiza todos os textos exibidos (banner, modal, botão). |
+| `designTokens` | `DesignTokens` | Ajuste visual granular (cores, spacing, tipografia, overlays). |
+| `blocking` | `boolean` | Ativa overlay bloqueante até o usuário decidir. Padrão: `false`. |
+| `blockingStrategy` | `'auto' \| 'provider' \| 'component'` | Controla quem desenha o overlay quando `blocking` está ativo. |
+| `hideBranding` | `boolean` | Oculta o selo “fornecido por”. |
+| `disableDeveloperGuidance` | `boolean` | Suprime avisos/sugestões no console em desenvolvimento. |
+| `disableFloatingPreferencesButton` | `boolean` | Remove o botão flutuante padrão. |
+| `onConsentGiven` | `(state: ConsentState) => void` | Dispara na primeira vez que o usuário aceita/rejeita. Útil para inicializar analytics. |
+| `onPreferencesSaved` | `(prefs: ConsentPreferences) => void` | Executa toda vez que o usuário salva preferências no modal. |
+| `cookie` | `Partial<ConsentCookieOptions>` | Override fino das opções de cookie (nome, expiração, sameSite, secure, path, domain). Se `name` não for informado, o valor deriva de `storage`. |
+| `storage` | `ConsentStorageConfig` | Define namespace, versão e domínio compartilhado. Gera automaticamente o nome da chave (`namespace__vX`). Alterar `version` força re-consentimento. |
+| `onConsentVersionChange` | `(context: ConsentVersionChangeContext) => void` | Notificado após mudança da chave de storage. O reset já é automático; use o hook para limpar caches externos ou registrar eventos. |
+| `CookieBannerComponent` | `React.ComponentType<CustomCookieBannerProps>` | Substitui o banner padrão. |
+| `PreferencesModalComponent` | `React.ComponentType<CustomPreferencesModalProps>` | Substitui o modal padrão. |
+| `FloatingPreferencesButtonComponent` | `React.ComponentType<CustomFloatingPreferencesButtonProps>` | Substitui o botão flutuante padrão. |
+| `cookieBannerProps` | `Record<string, unknown>` | Props adicionais repassadas ao banner (padrão `{}`). |
+| `preferencesModalProps` | `Record<string, unknown>` | Props adicionais repassadas ao modal (padrão `{}`). |
+| `floatingPreferencesButtonProps` | `Record<string, unknown>` | Props adicionais para o botão flutuante (padrão `{}`). |
+| `theme` | `any` (Tema MUI) | Aplica um `ThemeProvider` local aos componentes padrão (apenas no pacote MUI). |
+| `initialState` | `ConsentState` | Hidratação SSR para evitar flash do banner. |
+
+#### Versionamento de consentimento (namespace + versão)
+
+- `storage.namespace` e `storage.version` utilizam `buildConsentStorageKey` para gerar o nome do cookie no formato `namespace__v<versão>`. Os valores padrão são `lgpd-consent` e `1`.
+- Alterar `storage.version` (ou `storage.namespace`) remove o cookie anterior, reseta o estado do provider e dispara `onConsentVersionChange`.
+- `storage.domain` injeta o domínio do cookie (ex.: `.example.com`) sem precisar duplicar o valor em `cookie.domain`.
+- `onConsentVersionChange` recebe `{ previousKey, nextKey, resetConsent }`. O `resetConsent` já é executado internamente, mas é exposto para cenários onde você precisa repetir a operação após limpar caches externos.
+- Breaking change? **Não** — projetos que não configurarem `storage` continuam usando `lgpd-consent__v1`; alterar a versão apenas força um novo consentimento.
+
+```tsx
+import {
+  ConsentProvider,
+  buildConsentStorageKey,
+  type ConsentVersionChangeContext,
+} from 'react-lgpd-consent'
+
+function ConsentBoundary({ children }: { children: React.ReactNode }) {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      storage={{ namespace: 'acme-suite', version: '2025-Q4', domain: '.acme.com' }}
+      cookie={{
+        // Opcional: persistir um nome de auditoria específico
+        name: buildConsentStorageKey({ namespace: 'acme-suite', version: '2025-Q4' }),
+      }}
+      onConsentVersionChange={({ previousKey, nextKey, resetConsent }: ConsentVersionChangeContext) => {
+        audit.log('consent:bump', { previousKey, nextKey })
+        localStorage.removeItem('marketingOverrides')
+        resetConsent()
+      }}
+    >
+      {children}
+    </ConsentProvider>
+  )
+}
+```
+
+#### Cookies necessários sempre ativos
+
+- A categoria `necessary` é adicionada automaticamente pelo `ConsentProvider` e é sempre persistida como `true`.
+- Chamadas a `setPreference('necessary', false)` ou `setPreferences({ necessary: false, ... })` são ignoradas com log de aviso — a biblioteca garante que o estado interno continue válido.
+- O `PreferencesModal` padrão mostra o switch desabilitado com a legenda `Cookies necessários (sempre ativos)`.
+- `writeConsentCookie` força `necessary=true` antes de serializar; mesmo que o estado seja adulterado, a persistência permanece conforme a LGPD.
+- Hooks (`useConsent`, `useCategoryStatus`) e integrações (`ConsentScriptLoader`, eventos do dataLayer) sempre retornam `necessary=true`, assegurando consistência entre UI, lógica e auditoria.
 
 ### `designTokens.layout.backdrop`
 
@@ -496,6 +548,9 @@ Para customizações avançadas e tipagem, você pode importar os seguintes tipo
 - `DesignTokens`: Objeto para customização profunda da aparência, com mais de 200 tokens para cores, fontes, etc.
 - `AdvancedConsentTexts`: Objeto para internacionalização e textos contextuais, com suporte a múltiplos idiomas e variações.
 - `CookieDescriptor`: Interface que descreve a estrutura de um cookie descoberto.
+- `ConsentCookieOptions`: Estrutura com todas as opções suportadas pelo cookie de consentimento.
+- `ConsentStorageConfig`: Define namespace, versão e domínio compartilhado da chave de armazenamento.
+- `ConsentVersionChangeContext`: Payload recebido em `onConsentVersionChange`.
 - `CustomCookieBannerProps`: Props passadas para um componente de banner customizado.
 - `CustomPreferencesModalProps`: Props passadas para um modal de preferências customizado.
 - `ConsentState`: Objeto que representa o estado completo do consentimento do usuário.
