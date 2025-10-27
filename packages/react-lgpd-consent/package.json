@@ -87,7 +87,7 @@
     "mutation": "npx stryker run",
     "mutation:tests": "npx stryker run ../../stryker.tests.conf.json",
     "prepublishOnly": "pnpm run build",
-    "docs:generate": "typedoc --options ../../typedoc.json",
+    "docs:generate": "node ../../scripts/run-typedoc.mjs",
     "storybook": "storybook dev -p 6006 --config-dir ../../.storybook",
     "build-storybook": "storybook build --config-dir ../../.storybook --output-dir ../../storybook-static"
   },

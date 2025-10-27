@@ -146,9 +146,9 @@ import { ConsentProvider, PreferencesModal } from '@react-lgpd-consent/mui'
 ## 📖 Documentação
 
 - [Guia de Início Rápido](../QUICKSTART.md)
-- [API Completa](../API.md)
+- [API Completa](../packages/react-lgpd-consent/API.md)
 - [Guia de Migração](../MIGRATION.md)
-- [Integrações](../INTEGRACOES.md)
+- [Integrações](../packages/react-lgpd-consent/INTEGRACOES.md)
 
 ## 🐛 Troubleshooting
 

@@ -2,6 +2,7 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import Cookies from 'js-cookie'
 import { ConsentProvider, useConsent, type Category } from '../index'
 import * as devGuidance from '../utils/developerGuidance'
+import { logger } from '../utils/logger'
 
 // Mock do js-cookie
 jest.mock('js-cookie')
@@ -92,6 +93,34 @@ describe('ConsentProvider', () => {
   afterEach(() => {
     logGuidanceSpy.mockRestore()
     consoleGroupSpy.mockRestore()
+  })
+
+  it('ignora alterações na categoria necessary e mantém o estado protegido', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    const loggerWarnSpy = jest.spyOn(logger, 'warn').mockImplementation(() => {})
+
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    // Estado inicial mantém necessary como true
+    expect(screen.getByTestId('necessary').textContent).toBe('true')
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Try Disable Necessary'))
+    })
+
+    // Estado permanece true e warning é emitido
+    expect(screen.getByTestId('necessary').textContent).toBe('true')
+    expect(loggerWarnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('necessary category ignored'),
+    )
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining('React does not recognize'))
+
+    loggerWarnSpy.mockRestore()
+    warnSpy.mockRestore()
   })
 
   it('deve carregar o estado padrão (sem consentimento)', () => {
@@ -532,6 +561,33 @@ describe('ConsentProvider Additional Tests', () => {
       const postResetAcceptEvent = mockDataLayer.find((e) => e.event === 'consent_updated')
       expect(postResetAcceptEvent).toBeDefined()
       expect(postResetAcceptEvent?.origin).toBe('banner')
+    })
+
+    it('em ambiente de desenvolvimento emite aviso quando nenhum componente de UI é fornecido', () => {
+      const originalEnv = process.env.NODE_ENV
+      process.env.NODE_ENV = 'development'
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {})
+
+      render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          disableDeveloperGuidance
+          disableFloatingPreferencesButton
+        >
+          <div>App</div>
+        </ConsentProvider>,
+      )
+
+      expect(
+        warnSpy.mock.calls.find(
+          (call) =>
+            typeof call[0] === 'string' &&
+            call[0].includes('[@react-lgpd-consent/core] Aviso: Nenhum componente UI fornecido'),
+        ),
+      ).toBeTruthy()
+
+      warnSpy.mockRestore()
+      process.env.NODE_ENV = originalEnv
     })
   })
 })

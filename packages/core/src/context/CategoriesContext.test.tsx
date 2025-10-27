@@ -85,6 +85,22 @@ describe('CategoriesContext', () => {
     )
   })
 
+  test('não quebra quando addEventListener não está disponível (fallback SSR)', () => {
+    const originalAdd = window.addEventListener
+    // @ts-ignore - simular ambiente sem addEventListener
+    delete window.addEventListener
+
+    expect(() =>
+      render(
+        <CategoriesProvider>
+          <CategoriesConsumer />
+        </CategoriesProvider>,
+      ),
+    ).not.toThrow()
+
+    window.addEventListener = originalAdd
+  })
+
   test('logs cookie discovery in development', () => {
     const discoverRuntimeCookiesSpy = jest
       .spyOn(cookieDiscovery, 'discoverRuntimeCookies')
@@ -132,6 +148,18 @@ describe('CategoriesContext', () => {
     expect(consoleLogSpy).toHaveBeenCalled()
 
     console.table = originalConsoleTable
+  })
+
+  test('quando disableDiscoveryLog=true não tenta descobrir cookies', () => {
+    const discoverRuntimeCookiesSpy = jest.spyOn(cookieDiscovery, 'discoverRuntimeCookies')
+
+    render(
+      <CategoriesProvider disableDiscoveryLog>
+        <CategoriesConsumer />
+      </CategoriesProvider>,
+    )
+
+    expect(discoverRuntimeCookiesSpy).not.toHaveBeenCalled()
   })
 })
 

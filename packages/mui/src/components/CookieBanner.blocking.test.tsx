@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Cookies from 'js-cookie'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 jest.mock('js-cookie')
 
@@ -90,5 +91,55 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     const prefsBtn = await screen.findByRole('button', { name: /Preferências/i })
     await userEvent.click(prefsBtn)
     expect(await screen.findByRole('dialog')).toBeInTheDocument()
+  })
+
+  it('não aplica overlay quando a rota atual é segura (policyLinkUrl/termsLinkUrl)', async () => {
+    const originalHref = window.location.href
+    window.history.replaceState(null, '', '/politica')
+
+    try {
+      render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          initialState={makeInitialState(false)}
+          cookieBannerProps={{
+            blocking: true,
+            policyLinkUrl: '/politica',
+            SnackbarProps: { 'data-testid': 'cookie-snackbar' } as any,
+          }}
+        >
+          <div />
+        </ConsentProvider>,
+      )
+
+      expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+      expect(screen.getByTestId('cookie-snackbar')).toBeInTheDocument()
+      expect(screen.queryByTestId('lgpd-cookie-banner-overlay')).toBeNull()
+    } finally {
+      window.history.replaceState(null, '', originalHref)
+    }
+  })
+
+  it("usa backdrop 'auto' com tema dark aplicando cor clara", async () => {
+    const theme = createTheme({ palette: { mode: 'dark' } })
+
+    render(
+      <ThemeProvider theme={theme}>
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          initialState={makeInitialState(false)}
+          designTokens={{ layout: { backdrop: 'auto' } } as any}
+          cookieBannerProps={{ blocking: true } as any}
+        >
+          <div />
+        </ConsentProvider>
+      </ThemeProvider>,
+    )
+
+    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+
+    const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
+    const overlayStyles = window.getComputedStyle(overlay)
+    expect(overlayStyles.backgroundColor).toBe('rgba(255, 255, 255, 0.12)')
   })
 })
