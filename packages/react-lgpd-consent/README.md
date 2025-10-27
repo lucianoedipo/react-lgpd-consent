@@ -7,6 +7,7 @@ Gerenciamento de consentimento de cookies em conformidade com a LGPD — pacote 
 [![NPM Version](https://img.shields.io/npm/v/react-lgpd-consent?style=for-the-badge&logo=npm&color=cb3837&logoColor=white)](https://www.npmjs.com/package/react-lgpd-consent)
 [![Downloads](https://img.shields.io/npm/dm/react-lgpd-consent?style=for-the-badge&logo=npm&color=ff6b35&logoColor=white)](https://www.npmjs.com/package/react-lgpd-consent)
 [![License](https://img.shields.io/npm/l/react-lgpd-consent?style=for-the-badge&color=green&logoColor=white)](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/LICENSE)
+[![Coverage](https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/lucianoedipo/react-lgpd-consent)
 
 ---
 
