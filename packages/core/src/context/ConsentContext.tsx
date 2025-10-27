@@ -417,11 +417,15 @@ export function ConsentProvider({
     previousCookieRef.current = cookie
   }, [cookie, finalCategoriesConfig, onConsentVersionChange, dispatch])
 
-  React.useEffect(() => {
+  // Reset skipCookiePersistRef when consent is revoked.
+  // This ensures that cookie persistence logic is re-enabled after consent is lost,
+  // preventing accidental skipping of persistence in future consent cycles.
+  function resetSkipCookiePersistOnConsentRevoked() {
     if (skipCookiePersistRef.current && !state.consented) {
       skipCookiePersistRef.current = false
     }
-  }, [state.consented])
+  }
+  React.useEffect(resetSkipCookiePersistOnConsentRevoked, [state.consented])
 
   // Evento consent_initialized: dispara após hidratação inicial
   React.useEffect(() => {
