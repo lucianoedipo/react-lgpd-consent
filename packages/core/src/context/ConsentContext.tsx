@@ -356,6 +356,8 @@ export function ConsentProvider({
 
   const [state, dispatch] = React.useReducer(reducer, boot)
   const previousCookieRef = React.useRef(cookie)
+  // Ref usado para evitar persistência do cookie imediatamente após detecção de mudança de versão.
+  // Isso é necessário para evitar gravar um estado antigo/obsoleto antes que o reset de consentimento seja concluído.
   const skipCookiePersistRef = React.useRef(false)
   const [isHydrated, setIsHydrated] = React.useState(false)
 
