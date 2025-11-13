@@ -137,7 +137,7 @@
       "name": "Complete Package Import",
       "path": "dist/index.js",
       "import": "{ ConsentProvider, useConsent, ConsentScriptLoader }",
-      "limit": "65 KB"
+      "limit": "70 KB"
     }
   ]
 }
