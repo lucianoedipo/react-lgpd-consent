@@ -1,6 +1,6 @@
 {
   "name": "@react-lgpd-consent/mui",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Componentes Material-UI prontos para gerenciamento de consentimento LGPD/ANPD",
   "keywords": [
     "lgpd",
@@ -68,6 +68,6 @@
     }
   },
   "dependencies": {
-    "@react-lgpd-consent/core": "workspace:^0.6.0"
+    "@react-lgpd-consent/core": "workspace:^0.6.1"
   }
 }

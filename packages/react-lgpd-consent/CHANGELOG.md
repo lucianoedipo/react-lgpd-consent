@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.6.1
+
+### Patch Changes
+
+- [#105](https://github.com/lucianoedipo/react-lgpd-consent/pull/105) [`1deb3bb`](https://github.com/lucianoedipo/react-lgpd-consent/commit/1deb3bb56853165f7ec231e73d7b1d271e51b8f1) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - chore: sincronizar pnpm-lock.yaml com versões bumpeadas
+
+- Updated dependencies [[`1deb3bb`](https://github.com/lucianoedipo/react-lgpd-consent/commit/1deb3bb56853165f7ec231e73d7b1d271e51b8f1)]:
+  - @react-lgpd-consent/core@0.6.1
+  - @react-lgpd-consent/mui@0.6.1
+
 ## 0.6.0
 
 ### Minor Changes
