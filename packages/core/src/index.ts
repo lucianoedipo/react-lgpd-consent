@@ -322,4 +322,3 @@ export type {
   ConsentInitializedEvent,
   ConsentUpdatedEvent,
 } from './types/types'
-
