@@ -11,6 +11,11 @@
       "dependsOn": ["build"],
       "cache": false
     },
+    "test:coverage": {
+      "dependsOn": ["build"],
+      "outputs": ["coverage/**"],
+      "cache": false
+    },
     "lint": {
       "dependsOn": ["^build"],
       "outputs": [".eslintcache"]
