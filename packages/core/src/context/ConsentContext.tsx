@@ -41,6 +41,7 @@ import {
 } from '../hooks/useConsent'
 import { DEFAULT_PROJECT_CATEGORIES, useDeveloperGuidance } from '../utils/developerGuidance'
 import { logger } from '../utils/logger'
+import { runPeerDepsCheck } from '../utils/peerDepsCheck'
 import { validateConsentProviderProps } from '../utils/validation'
 import { CategoriesProvider } from './CategoriesContext'
 import { DesignProvider } from './DesignContext'
@@ -330,6 +331,16 @@ export function ConsentProvider({
 
   // 🚨 Sistema de orientações para desenvolvedores (v0.2.3 fix)
   useDeveloperGuidance(finalCategoriesConfig, disableDeveloperGuidance, guidanceConfig)
+
+  // 🔍 Diagnóstico de peer dependencies (v0.5.4)
+  // Executa apenas uma vez no mount e apenas em desenvolvimento
+  React.useEffect(() => {
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (!isProd && !disableDeveloperGuidance) {
+      runPeerDepsCheck()
+    }
+  }, [disableDeveloperGuidance])
+
   // Logging adicional quando Modal customizado é usado (dev only)
   React.useEffect(() => {
     const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'

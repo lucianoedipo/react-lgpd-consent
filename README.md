@@ -108,6 +108,8 @@ function App() {
 ## 📚 Documentação
 
 - **[Quickstart](./QUICKSTART.md)**: Tutorial passo-a-passo
+- **[Troubleshooting](./TROUBLESHOOTING.md)**: Soluções para problemas comuns
+- **[Versionamento e Release](./VERSIONING.md)**: Guia de Changesets e Turborepo
 - **[API Reference](./packages/react-lgpd-consent/API.md)**: Referência completa
 - **[Conformidade LGPD](./CONFORMIDADE.md)**: Compliance e auditoria
 - **[Integrações](./packages/react-lgpd-consent/INTEGRACOES.md)**: GA4, GTM, Facebook Pixel

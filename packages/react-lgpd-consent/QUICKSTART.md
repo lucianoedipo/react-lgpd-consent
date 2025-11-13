@@ -1238,7 +1238,31 @@ function App() {
 
 ## 🆘 Solução de Problemas Comuns
 
-### "ConsentProvider must be used within ConsentProvider"
+> 💡 **Diagnósticos automáticos**: A partir da v0.5.4, o react-lgpd-consent detecta automaticamente problemas comuns (múltiplas instâncias de React, versões incompatíveis) e exibe mensagens detalhadas no console em modo desenvolvimento.
+
+Para problemas mais complexos, consulte o **[Guia Completo de Troubleshooting](../../TROUBLESHOOTING.md)**.
+
+### Erros mais comuns
+
+#### "Invalid hook call" / Múltiplas instâncias de React
+
+Se você vê este erro, provavelmente tem múltiplas versões de React carregadas. O diagnóstico automático exibirá instruções específicas para o seu gerenciador de pacotes.
+
+**Solução rápida (pnpm)**:
+```json
+{
+  "pnpm": {
+    "overrides": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
+  }
+}
+```
+
+**Mais detalhes**: [TROUBLESHOOTING.md - Invalid hook call](../../TROUBLESHOOTING.md#erro-invalid-hook-call)
+
+#### "ConsentProvider must be used within ConsentProvider"
 
 ```tsx
 // ❌ Errado - hook usado fora do provider
@@ -1298,9 +1322,10 @@ document.cookie = 'cookieConsent=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/
 ## 📚 Próximos Passos
 
 - 📖 [Documentação Completa da API](./API.md)
-- 🏗️ [Guia de Conformidade LGPD](./CONFORMIDADE.md)
+- 🔧 [Guia de Troubleshooting](../../TROUBLESHOOTING.md)
+- 🏗️ [Guia de Conformidade LGPD](../../CONFORMIDADE.md)
 - 🔌 [Integrações Nativas](./INTEGRACOES.md)
-- 🧪 [Executar o Exemplo](./example/)
+- 🧪 [Executar o Exemplo](../../example/)
 
 ---
 

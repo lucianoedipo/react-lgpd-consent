@@ -256,6 +256,14 @@ export {
  */
 export { logger, LogLevel, setDebugLogging } from './utils/logger'
 
+/**
+ * Diagnósticos de peer dependencies e compatibilidade.
+ * Detecta problemas comuns como múltiplas instâncias de React e versões fora do range suportado.
+ * @category Utils
+ * @since 0.5.4
+ */
+export { checkPeerDeps, runPeerDepsCheck, type PeerDepsCheckResult } from './utils/peerDepsCheck'
+
 // Cookie registry APIs (overrides + lookup)
 export {
   getCookiesInfoForCategory,

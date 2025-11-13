@@ -27,3 +27,4 @@ GEMINI.md
 .DS_Store
 .vscode/
 *.log
+.turbo
