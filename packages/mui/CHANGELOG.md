@@ -1,4 +1,4 @@
-# Changelog - @react-lgpd-consent/core
+# @react-lgpd-consent/mui
 
 ## 0.6.0
 
@@ -13,5 +13,7 @@
   - 🚀 Configuração de Turborepo para builds otimizados
   - 📦 Configuração de Changesets para versionamento automatizado
 
-As notas de versão completas são mantidas no arquivo `CHANGELOG.md` da raiz do repositório.  
-Este pacote segue a numeração conjunta da biblioteca `react-lgpd-consent`.
+### Patch Changes
+
+- Updated dependencies [[`4c9ebf2`](https://github.com/lucianoedipo/react-lgpd-consent/commit/4c9ebf231ff58168294f2fde405298b7087016ca)]:
+  - @react-lgpd-consent/core@0.6.0
