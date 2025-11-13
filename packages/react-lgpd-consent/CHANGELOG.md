@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.0
+
+### Minor Changes
+
+- [#103](https://github.com/lucianoedipo/react-lgpd-consent/pull/103) [`4c9ebf2`](https://github.com/lucianoedipo/react-lgpd-consent/commit/4c9ebf231ff58168294f2fde405298b7087016ca) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - feat: adicionar diagnósticos de peer dependencies e sistema de troubleshooting
+  - ✨ Novo sistema de diagnóstico automático para peer deps
+  - 🔍 Detecta múltiplas instâncias de React (causa "Invalid hook call")
+  - 📋 Verifica versões de React (18-19) e MUI (5-7)
+  - 📖 Nova página TROUBLESHOOTING.md com soluções detalhadas
+  - 🔧 Mensagens acionáveis no console em modo desenvolvimento
+  - 🚀 Configuração de Turborepo para builds otimizados
+  - 📦 Configuração de Changesets para versionamento automatizado
+
+### Patch Changes
+
+- Updated dependencies [[`4c9ebf2`](https://github.com/lucianoedipo/react-lgpd-consent/commit/4c9ebf231ff58168294f2fde405298b7087016ca)]:
+  - @react-lgpd-consent/core@0.6.0
+  - @react-lgpd-consent/mui@0.6.0
+
 Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 
 # Changelog
@@ -25,7 +44,6 @@ Esta versão introduz uma **arquitetura modular** que separa a lógica de consen
 - **Tree-shaking eficiente**: Instale apenas o que você precisa
   - Core isolado permite uso com qualquer biblioteca de UI
   - MUI opcional como peer dependency
-  
 - **Workspace PNPM**: Monorepo organizado com builds independentes
 - **Guia de migração completo**: [MIGRATION.md](../../MIGRATION.md) documentando todos os cenários
 - **Scripts de publicação**: Suporte para publicar pacotes independentemente
@@ -70,26 +88,28 @@ packages/
 
 ### 📊 Bundle Sizes
 
-| Pacote | ESM | CJS | DTS | Dependências |
-|--------|-----|-----|-----|--------------|
-| `@react-lgpd-consent/core` | 86.04 KB | 89.12 KB | 125.82 KB | React, js-cookie, zod |
-| `@react-lgpd-consent/mui` | 17.69 KB | 20.95 KB | 11.78 KB | core + @mui/material (peer) |
-| `react-lgpd-consent` | 104 KB* | 110 KB* | 138 KB* | mui (workspace) |
+| Pacote                     | ESM      | CJS      | DTS       | Dependências                |
+| -------------------------- | -------- | -------- | --------- | --------------------------- |
+| `@react-lgpd-consent/core` | 86.04 KB | 89.12 KB | 125.82 KB | React, js-cookie, zod       |
+| `@react-lgpd-consent/mui`  | 17.69 KB | 20.95 KB | 11.78 KB  | core + @mui/material (peer) |
+| `react-lgpd-consent`       | 104 KB\* | 110 KB\* | 138 KB\*  | mui (workspace)             |
 
 \* Bundle final = core + mui (~104 KB total)
 
 ### 🎯 Migration Paths
 
 1. **Uso de componentes UI** (maioria dos usuários):
+
    ```bash
    # Opção A: Pacote agregador (zero mudanças)
    npm install react-lgpd-consent@0.5.0
-   
+
    # Opção B: Pacote MUI direto (recomendado)
    npm install @react-lgpd-consent/mui
    ```
 
 2. **Headless/UI customizada**:
+
    ```bash
    npm uninstall react-lgpd-consent @mui/material
    npm install @react-lgpd-consent/core
@@ -152,7 +172,6 @@ packages/
   - `consent_initialized`: Disparado após hidratação inicial do `ConsentProvider`
   - `consent_updated`: Disparado quando usuário altera preferências via banner, modal ou API
   - Payload inclui: `event`, `consent_version`, `timestamp` (ISO 8601), `categories`, `origin`, `changed_categories`
-  
 - **Rastreamento de Origem**: Campo `origin` identifica fonte da mudança de consentimento
   - `'banner'`: Decisão feita no CookieBanner
   - `'modal'`: Ajuste feito no PreferencesModal
@@ -1015,17 +1034,21 @@ A v0.2.1 introduz um **sistema inteligente de orientações** que guia desenvolv
 ### 🧩 Sem breaking changes
 
 - Alterações são compatíveis; padrões seguros preservados.
+
 ## [0.5.0] - 25/10/2025 — Modularização inicial do workspace
 
 ### 🧱 Estrutura modular
+
 - Repositório convertido em workspace PNPM com três pacotes: `@react-lgpd-consent/core`, `@react-lgpd-consent/mui` e `react-lgpd-consent`.
 - Pacote agregador passa a construir entradas adicionais (`core` e `mui`) expondo subpath exports oficiais.
 
 ### 🎨 Camada MUI dedicada
+
 - Publicação inicial de `@react-lgpd-consent/mui` como _proxy_ dos componentes padrão.
 - Metadados de peer dependencies ajustados para reforçar que Material-UI é opcional (requerido apenas para a camada visual).
 
 ### 🧰 Ferramentas & DX
+
 - Scripts de lint/test/build convertidos para `pnpm --filter react-lgpd-consent <comando>`.
 - Jest e TypeDoc atualizados para apontar para `packages/core` e `packages/react-lgpd-consent`.
 - Documentação (README, QUICKSTART, DEVELOPMENT) revisada para explicar a nova arquitetura e o processo de migração gradual.
