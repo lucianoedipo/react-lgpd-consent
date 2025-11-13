@@ -1,9 +1,9 @@
 # .github/workflows/docs.yml
-name: Docs & Storybook → GitHub Pages
+# Este workflow agora é executado APENAS manualmente via workflow_dispatch
+# Deploy automático de docs acontece no release.yml após publicação no NPM
+name: Docs & Storybook → GitHub Pages (Manual)
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
