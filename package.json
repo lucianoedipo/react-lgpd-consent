@@ -41,7 +41,7 @@
     "@chromatic-com/storybook": "4.1.2",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
-    "@eslint/compat": "1.4.1",
+    "@eslint/compat": "2.0.0",
     "@eslint/js": "^9.39.1",
     "@mui/icons-material": "7.3.5",
     "@mui/material": "7.3.5",
