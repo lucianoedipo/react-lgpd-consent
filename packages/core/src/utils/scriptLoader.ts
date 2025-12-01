@@ -78,8 +78,8 @@ export function loadScript(
 
         // Se categoria específica, verifica permissão
         if (category && !consent.preferences[category]) {
-          LOADING_SCRIPTS.delete(id) // Remove do registro ao falhar
-          reject(new Error(`Consent not given for ${category} scripts`))
+          // Aguarda até que a preferência seja habilitada
+          setTimeout(checkConsent, 100)
           return
         }
 

@@ -129,7 +129,10 @@ describe('ConsentScriptLoader behavior', () => {
         </ConsentProvider>,
       )
     })
-    expect(loadScript).toHaveBeenCalledTimes(1)
+    
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalledTimes(1)
+    })
 
     await act(async () => {
       setPreferenceRef1.current('analytics' as any, false)
@@ -137,7 +140,10 @@ describe('ConsentScriptLoader behavior', () => {
     await act(async () => {
       setPreferenceRef1.current('analytics' as any, true)
     })
-    expect(loadScript).toHaveBeenCalledTimes(1)
+
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalledTimes(1)
+    })
 
     // Case 2: reloadOnChange=true => loads again when re-enabled
     jest.clearAllMocks()
