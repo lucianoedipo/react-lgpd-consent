@@ -14,6 +14,8 @@ jobs:
   ci:
     name: Lint, Type-check, Test & Build
     runs-on: ubuntu-latest
+    outputs:
+      build-sha: ${{ github.sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -68,6 +70,16 @@ jobs:
       
       - name: Bundle size check
         run: pnpm run size-check
+      
+      - name: Upload build artifacts
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ github.sha }}
+          path: |
+            packages/*/dist
+            packages/*/package.json
+          retention-days: 1
       
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

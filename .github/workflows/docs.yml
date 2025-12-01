@@ -7,9 +7,14 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to deploy docs from (e.g., v0.6.2)'
+        description: 'Tag to deploy docs from (e.g., v0.6.4) or leave empty for current branch'
         required: false
         type: string
+      skip_ci_check:
+        description: 'Skip waiting for CI (use with caution)'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -31,8 +36,13 @@ jobs:
       - name: Extract version
         id: version
         run: |
-          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
-            TAG="${{ inputs.tag }}"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ -n "${{ inputs.tag }}" ]; then
+              TAG="${{ inputs.tag }}"
+            else
+              # Usa branch atual se nenhuma tag fornecida
+              TAG="${{ github.ref_name }}"
+            fi
           elif [ "${{ github.event_name }}" == "push" ]; then
             TAG="${{ github.ref_name }}"
           else
@@ -77,10 +87,31 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-typescript-
 
+      - name: Wait for CI to complete
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_ci_check != true
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+          check-name: 'Lint, Type-check, Test & Build'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Download build artifacts from CI
+        if: github.event_name != 'workflow_dispatch' || inputs.skip_ci_check != true
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ci.yml
+          commit: ${{ github.sha }}
+          name: build-artifacts-${{ github.sha }}
+          path: .
+          if_no_artifact_found: ignore
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages
+      - name: Build packages (if no artifacts)
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_ci_check == true
         run: pnpm run build
 
       - name: Set TypeDoc version

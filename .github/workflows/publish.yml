@@ -61,7 +61,25 @@ jobs:
             ${{ runner.os }}-turbo-publish-
             ${{ runner.os }}-turbo-
 
-      - name: Install dependencies
+      - name: Wait for CI to complete
+        uses: lewagon/wait-on-check-action@v1.3.4
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+          check-name: 'Lint, Type-check, Test & Build'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      - name: Download build artifacts from CI
+        uses: dawidd6/action-download-artifact@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          workflow: ci.yml
+          commit: ${{ github.sha }}
+          name: build-artifacts-${{ github.sha }}
+          path: .
+          if_no_artifact_found: fail
+
+      - name: Install dependencies (for publish only)
         run: pnpm install --frozen-lockfile
 
       - name: Verify package versions match tag
@@ -81,13 +99,7 @@ jobs:
             exit 1
           fi
           
-          echo "✅ Version verification passed"
-
-      - name: Build packages
-        run: pnpm run build
-
-      - name: Run tests
-        run: pnpm run test
+          echo "✅ Version verification passed (using CI artifacts)"
 
       - name: Publish to NPM
         run: pnpm run changeset:publish
