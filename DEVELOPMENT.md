@@ -49,6 +49,18 @@ A stack continua baseada em:
 
 - ✅ **Aplicações Client-Side**: React SPA, CRA, Vite, etc.
 - ✅ **SSR (Server-Side Rendering)**: Compatível com Next.js, com hidratação através da prop `initialState` para evitar "flash" de conteúdo.
+- ✅ **React 19 StrictMode**: Totalmente compatível com double-invoking de efeitos em desenvolvimento (ver [REACT19-STRICTMODE.md](./docs/REACT19-STRICTMODE.md))
+
+### Princípios de Design para Efeitos
+
+**Todos os efeitos nesta biblioteca seguem estes princípios:**
+
+1. **Idempotência**: Executar um efeito múltiplas vezes produz o mesmo resultado
+2. **Cleanup Adequado**: Todo efeito com side-effects tem função de cleanup
+3. **SSR-Safe**: Verificação de `typeof window/document !== 'undefined'`
+4. **StrictMode-Safe**: Proteção contra double-invoking em desenvolvimento
+
+Consulte [REACT19-STRICTMODE.md](./docs/REACT19-STRICTMODE.md) para detalhes da implementação.
 
 ## 📁 Estrutura do Projeto
 

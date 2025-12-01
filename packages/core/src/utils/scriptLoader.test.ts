@@ -49,7 +49,7 @@ describe('loadScript', () => {
     expect(script.src).toContain('https://example.com/script.js')
   })
 
-  test('rejects when category not consented', async () => {
+  test('waits for consent when category not initially consented', async () => {
     const consent = {
       consented: true,
       isModalOpen: false,
@@ -58,9 +58,35 @@ describe('loadScript', () => {
 
     document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
 
-    await expect(
-      loadScript('test-script-2', 'https://example.com/script.js', 'analytics'),
-    ).rejects.toThrow('Consent not given for analytics scripts')
+    const scriptPromise = loadScript('test-script-2', 'https://example.com/script.js', 'analytics')
+
+    // Aguardar um pouco para garantir que está em polling
+    await new Promise((resolve) => setTimeout(resolve, 250))
+
+    // Verificar que o script ainda não foi adicionado
+    expect(document.getElementById('test-script-2')).toBeNull()
+
+    // Simular mudança de preferência
+    const updatedConsent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(updatedConsent))}`
+
+    // Aguardar mais um pouco para o polling detectar a mudança
+    await new Promise((resolve) => setTimeout(resolve, 250))
+
+    // Agora o script deve estar no DOM
+    const script = document.getElementById('test-script-2') as HTMLScriptElement
+    expect(script).toBeTruthy()
+    expect(script.src).toBe('https://example.com/script.js')
+
+    // Simular carregamento bem-sucedido
+    script.dispatchEvent(new Event('load'))
+
+    // A Promise deve resolver
+    await expect(scriptPromise).resolves.toBeUndefined()
   })
 
   test('rejects when script load errors', async () => {

@@ -64,7 +64,7 @@
   },
   "dependencies": {
     "js-cookie": "^3.0.5",
-    "zod": "^4.1.12"
+    "zod": "^4.1.13"
   },
   "repository": {
     "type": "git",

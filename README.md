@@ -5,6 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![React 19 Ready](https://img.shields.io/badge/React%2019-StrictMode%20Ready-61dafb.svg)](./docs/REACT19-STRICTMODE.md)
 [![Coverage](https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/lucianoedipo/react-lgpd-consent)
 
 **Documentação**: https://lucianoedipo.github.io/react-lgpd-consent  
@@ -109,6 +110,7 @@ function App() {
 
 - **[Quickstart](./QUICKSTART.md)**: Tutorial passo-a-passo
 - **[Troubleshooting](./TROUBLESHOOTING.md)**: Soluções para problemas comuns
+- **[React 19 StrictMode](./docs/REACT19-STRICTMODE.md)**: Compatibilidade e idempotência de efeitos
 - **[Versionamento e Release](./VERSIONING.md)**: Guia de Changesets e Turborepo
 - **[API Reference](./packages/react-lgpd-consent/API.md)**: Referência completa
 - **[Conformidade LGPD](./CONFORMIDADE.md)**: Compliance e auditoria

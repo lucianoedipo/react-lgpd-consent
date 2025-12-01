@@ -1,0 +1,27 @@
+# Registry
+registry=https://registry.npmjs.org/
+
+# Peer Dependencies
+auto-install-peers=true
+strict-peer-dependencies=false
+
+# Hoisting
+shamefully-hoist=true
+public-hoist-pattern[]=*eslint*
+public-hoist-pattern[]=*prettier*
+public-hoist-pattern[]=*typescript*
+
+# Lockfile
+prefer-frozen-lockfile=false
+
+# SSL/TLS
+strict-ssl=false
+
+# Performance
+package-import-method=auto
+side-effects-cache=true
+modules-cache-max-age=10080
+
+# Workspace
+link-workspace-packages=true
+prefer-workspace-packages=true
