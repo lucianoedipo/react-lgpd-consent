@@ -114,7 +114,7 @@
     }
   },
   "dependencies": {
-    "@react-lgpd-consent/core": "workspace:^0.6.1",
+    "@react-lgpd-consent/core": "workspace:^0.6.2",
     "@react-lgpd-consent/mui": "workspace:^0.6.1"
   },
   "size-limit": [

@@ -2,6 +2,8 @@
 
 Este guia fornece tudo o que você precisa para integrar rapidamente a biblioteca `react-lgpd-consent` em seu projeto React.
 
+> 💡 **Procurando por receitas práticas?** Veja [RECIPES.md](./RECIPES.md) para casos de uso específicos como Next.js App Router, CSP/nonce, Consent Mode v2 e subdomínios.
+
 ## 📦 Instalação
 
 ```bash

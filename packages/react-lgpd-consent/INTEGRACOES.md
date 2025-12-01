@@ -6,11 +6,9 @@ A biblioteca oferece integrações nativas para as ferramentas mais comuns, elim
 
 O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automaticamente, disparando-os apenas quando o usuário concede consentimento para a categoria correspondente.
 
+> 💡 **Procurando exemplos práticos?** Veja [RECIPES.md](../../RECIPES.md) para receitas passo a passo de Google Consent Mode v2, Next.js App Router e CSP/nonce.
+
 ## 🎯 Integrações Nativas Disponíveis
-
-A biblioteca oferece integrações nativas para as ferramentas mais comuns, eliminando a necessidade de código manual para o carregamento condicional de scripts de terceiros.
-
-O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automaticamente, disparando-os apenas quando o usuário concede consentimento para a categoria correspondente.
 
 ### 1. Google Analytics 4 (GA4)
 
