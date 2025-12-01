@@ -77,7 +77,7 @@ jobs:
           HOMEPAGE=$(node -p "require('./packages/react-lgpd-consent/package.json').homepage")
           KEYWORDS=$(node -p "(require('./packages/react-lgpd-consent/package.json').keywords||[]).join(', ')")
 
-          cat > integrated-docs/index.html <<EOF
+          cat > integrated-docs/index.html <<'EOF'
           <!DOCTYPE html>
           <html lang="pt-BR">
           <head>
@@ -110,7 +110,7 @@ jobs:
               "description": "Biblioteca React para gerenciamento de consentimento LGPD",
               "url": "https://lucianoedipo.github.io/react-lgpd-consent",
               "applicationCategory": "DeveloperTool",
-              "softwareVersion": "${VERSION}",
+              "softwareVersion": "VERSION_PLACEHOLDER",
               "author": {
                 "@type": "Person",
                 "name": "Luciano Édipo",
@@ -138,7 +138,7 @@ jobs:
               <h1>react-lgpd-consent</h1>
               <div class="subtitle">
                 <div>Biblioteca React para gerenciamento de consentimento LGPD</div>
-                <div class="version">v${VERSION}</div>
+                <div class="version">vVERSION_PLACEHOLDER</div>
               </div>
 
               <div class="actions">
@@ -171,9 +171,9 @@ jobs:
               <a href="https://www.npmjs.com/package/react-lgpd-consent" class="nav-card" aria-label="View on npm">
                 <div class="nav-title">📦 Pacotes no NPM</div>
                 <div class="nav-desc">
-                  <strong>react-lgpd-consent</strong> v${VERSION_MAIN} (agregador)<br>
-                  <strong>@react-lgpd-consent/mui</strong> v${VERSION_MUI} (componentes MUI)<br>
-                  <strong>@react-lgpd-consent/core</strong> v${VERSION_CORE} (headless)
+                  <strong>react-lgpd-consent</strong> vVERSION_MAIN_PLACEHOLDER (agregador)<br>
+                  <strong>@react-lgpd-consent/mui</strong> vVERSION_MUI_PLACEHOLDER (componentes MUI)<br>
+                  <strong>@react-lgpd-consent/core</strong> vVERSION_CORE_PLACEHOLDER (headless)
                 </div>
               </a>
 
@@ -181,6 +181,12 @@ jobs:
           </body>
           </html>
           EOF
+
+          # Substituir placeholders com as versões reais usando sed
+          sed -i "s/VERSION_PLACEHOLDER/${VERSION}/g" integrated-docs/index.html
+          sed -i "s/VERSION_MAIN_PLACEHOLDER/${VERSION_MAIN}/g" integrated-docs/index.html
+          sed -i "s/VERSION_MUI_PLACEHOLDER/${VERSION_MUI}/g" integrated-docs/index.html
+          sed -i "s/VERSION_CORE_PLACEHOLDER/${VERSION_CORE}/g" integrated-docs/index.html
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
