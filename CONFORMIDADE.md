@@ -2,6 +2,8 @@
 
 Este documento descreve as medidas de conformidade da biblioteca **react-lgpd-consent** com a Lei Geral de Proteção de Dados (LGPD) e as diretrizes da ANPD, detalhando as ferramentas que auxiliam os desenvolvedores a manter a conformidade.
 
+> 💡 **Implementando conformidade?** Veja [RECIPES.md](./RECIPES.md#4-bump-de-versão-de-consentimento) para receita de bump de versão quando sua política de privacidade mudar.
+
 **Referências Oficiais:**
 
 - [Lei Geral de Proteção de Dados (Lei Nº 13.709/2018)](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)

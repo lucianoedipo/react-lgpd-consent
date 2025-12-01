@@ -1,0 +1,300 @@
+name: Deploy Docs to GitHub Pages
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to deploy docs from (e.g., v0.6.2)'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy Documentation
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ] && [ -n "${{ inputs.tag }}" ]; then
+            TAG="${{ inputs.tag }}"
+          elif [ "${{ github.event_name }}" == "push" ]; then
+            TAG="${{ github.ref_name }}"
+          else
+            TAG="main"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "📖 Building docs for: ${TAG} (${VERSION})"
+
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-docs-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-docs-
+            ${{ runner.os }}-turbo-
+
+      - name: Cache TypeScript builds
+        uses: actions/cache@v4
+        with:
+          path: |
+            .tsbuildinfo
+            node_modules/.cache
+          key: ${{ runner.os }}-typescript-${{ hashFiles('**/tsconfig.json', '**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-typescript-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build packages
+        run: pnpm run build
+
+      - name: Set TypeDoc version
+        run: |
+          VERSION=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
+          echo "TYPEDOC_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "📚 TypeDoc será gerado para versão: ${VERSION}"
+
+      - name: Generate TypeDoc
+        run: pnpm run docs:generate
+
+      - name: Build Storybook
+        run: pnpm run build-storybook
+
+      - name: Create integrated docs structure
+        run: |
+          mkdir -p integrated-docs
+          cp -r docs/* integrated-docs/
+          mkdir -p integrated-docs/storybook
+          cp -r storybook-static/* integrated-docs/storybook/
+
+          # Extrair versões dos pacotes
+          VERSION_CORE=$(node -p "require('./packages/core/package.json').version")
+          VERSION_MUI=$(node -p "require('./packages/mui/package.json').version")
+          VERSION_MAIN=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
+          VERSION="${VERSION_MAIN}"
+          NAME=$(node -p "require('./packages/react-lgpd-consent/package.json').name")
+          DESC=$(node -p "require('./packages/react-lgpd-consent/package.json').description")
+          HOMEPAGE=$(node -p "require('./packages/react-lgpd-consent/package.json').homepage")
+          KEYWORDS=$(node -p "(require('./packages/react-lgpd-consent/package.json').keywords||[]).join(', ')")
+
+          cat > integrated-docs/index.html <<EOF
+          <!DOCTYPE html>
+          <html lang="pt-BR">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${NAME} v${VERSION} - Documentação</title>
+            <meta name="description" content="${DESC}">
+            <meta name="keywords" content="${KEYWORDS}">
+            <meta name="author" content="Luciano Édipo">
+            <link rel="canonical" href="${HOMEPAGE}">
+            
+            <!-- Open Graph / Facebook -->
+            <meta property="og:type" content="website">
+            <meta property="og:url" content="${HOMEPAGE}">
+            <meta property="og:title" content="${NAME} v${VERSION}">
+            <meta property="og:description" content="${DESC}">
+            
+            <!-- Twitter -->
+            <meta property="twitter:card" content="summary_large_image">
+            <meta property="twitter:url" content="${HOMEPAGE}">
+            <meta property="twitter:title" content="${NAME} v${VERSION}">
+            <meta property="twitter:description" content="${DESC}">
+            
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+              }
+              .container {
+                background: white;
+                border-radius: 16px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+                padding: 3rem;
+                max-width: 800px;
+                width: 100%;
+              }
+              h1 {
+                color: #667eea;
+                margin-bottom: 0.5rem;
+                font-size: 2.5rem;
+              }
+              .version {
+                color: #764ba2;
+                font-size: 1.2rem;
+                margin-bottom: 2rem;
+                font-weight: 600;
+              }
+              .package-versions {
+                background: #f8f9fa;
+                border-left: 4px solid #667eea;
+                padding: 1rem;
+                margin: 2rem 0;
+                border-radius: 4px;
+              }
+              .package-versions h3 {
+                margin-bottom: 0.5rem;
+                color: #667eea;
+              }
+              .package-versions ul {
+                list-style: none;
+                padding-left: 0;
+              }
+              .package-versions li {
+                padding: 0.3rem 0;
+                font-family: 'Courier New', monospace;
+              }
+              .links {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+                margin-top: 2rem;
+              }
+              .link-card {
+                display: block;
+                padding: 1.5rem;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                text-decoration: none;
+                border-radius: 12px;
+                text-align: center;
+                transition: transform 0.2s, box-shadow 0.2s;
+              }
+              .link-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 24px rgba(102, 126, 234, 0.4);
+              }
+              .link-card h3 {
+                margin-bottom: 0.5rem;
+                font-size: 1.3rem;
+              }
+              .link-card p {
+                font-size: 0.9rem;
+                opacity: 0.9;
+              }
+              footer {
+                margin-top: 3rem;
+                padding-top: 2rem;
+                border-top: 1px solid #e9ecef;
+                text-align: center;
+                color: #6c757d;
+              }
+              .badge {
+                display: inline-block;
+                padding: 0.25rem 0.75rem;
+                background: #667eea;
+                color: white;
+                border-radius: 12px;
+                font-size: 0.85rem;
+                margin: 0.25rem;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="container">
+              <h1>🍪 ${NAME}</h1>
+              <div class="version">Versão ${VERSION}</div>
+              <p>${DESC}</p>
+              
+              <div class="package-versions">
+                <h3>📦 Pacotes no NPM</h3>
+                <ul>
+                  <li><span class="badge">react-lgpd-consent</span> v${VERSION_MAIN} (agregador)</li>
+                  <li><span class="badge">@react-lgpd-consent/mui</span> v${VERSION_MUI} (componentes MUI)</li>
+                  <li><span class="badge">@react-lgpd-consent/core</span> v${VERSION_CORE} (headless)</li>
+                </ul>
+              </div>
+
+              <div class="links">
+                <a href="./modules.html" class="link-card">
+                  <h3>📚 API Reference</h3>
+                  <p>TypeDoc completo</p>
+                </a>
+                <a href="./storybook/" class="link-card">
+                  <h3>🎨 Storybook</h3>
+                  <p>Componentes interativos</p>
+                </a>
+                <a href="https://github.com/lucianoedipo/react-lgpd-consent" class="link-card">
+                  <h3>💻 GitHub</h3>
+                  <p>Código-fonte</p>
+                </a>
+                <a href="https://www.npmjs.com/package/react-lgpd-consent" class="link-card">
+                  <h3>📦 NPM</h3>
+                  <p>Pacote principal</p>
+                </a>
+              </div>
+
+              <footer>
+                <p>MIT © <a href="https://github.com/lucianoedipo" target="_blank">Luciano Édipo</a></p>
+                <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+                  Gerado em $(date '+%d/%m/%Y às %H:%M:%S') UTC
+                </p>
+              </footer>
+            </div>
+          </body>
+          </html>
+          EOF
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'integrated-docs'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Summary
+        run: |
+          echo "## 🎉 Documentação publicada com sucesso!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Versão:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **TypeDoc:** ${{ steps.deployment.outputs.page_url }}modules.html" >> $GITHUB_STEP_SUMMARY
+          echo "- **Storybook:** ${{ steps.deployment.outputs.page_url }}storybook/" >> $GITHUB_STEP_SUMMARY
