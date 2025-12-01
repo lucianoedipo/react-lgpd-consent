@@ -73,8 +73,10 @@ Este documento explica a estrutura otimizada e resiliente dos workflows de CI/CD
 
 // IMPORTANTE: Compara com git HEAD para detectar mudanças
 function detectBumps() {
-  const coreBump = compareWithGit('packages/core/package.json')
-  const muiBump = compareWithGit('packages/mui/package.json')
+  const coreOldVersion = getGitVersion('packages/core/package.json')
+  const muiOldVersion = getGitVersion('packages/mui/package.json')
+  const coreBump = getBumpType(coreOldVersion, coreVersion)
+  const muiBump = getBumpType(muiOldVersion, muiVersion)
 
   // Aplicar o maior tipo de bump ao agregador
   if (coreBump === 'major' || muiBump === 'major') return 'major'

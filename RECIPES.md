@@ -201,8 +201,6 @@ Crie um componente para inicializar gtag **antes** de carregar scripts:
 ```tsx
 'use client'
 
-import { useEffect } from 'react'
-
 export function GtagConsentBootstrap() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -437,9 +435,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="pt-BR">
-      <head>
-        <meta httpEquiv="Content-Security-Policy" content={`script-src 'self' 'nonce-${nonce}'`} />
-      </head>
       <body>
         <ClientConsent nonce={nonce}>
           {children}

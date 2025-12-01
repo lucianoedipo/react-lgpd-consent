@@ -48,17 +48,23 @@ function getGitVersion(filePath) {
 }
 
 function parseVersion(version) {
-  const [major, minor, patch] = version.split('.').map(Number)
+  // Aceita apenas formato x.y.z onde x, y, z são inteiros
+  // Rejeita pre-release/build tags (ex: 1.0.0-beta, 1.0.0+build)
+  if (typeof version !== 'string') {
+    throw new TypeError(`Formato de versão inválido: ${version}. Esperado string no formato x.y.z`)
+  }
+  // Regex: três grupos de dígitos separados por ponto, sem extras
+  const match = version.match(/^(\d+)\.(\d+)\.(\d+)$/)
+  if (!match) {
+    throw new Error(`Formato de versão inválido: ${version}. Esperado x.y.z (sem pre-release ou build)`)
+  }
+  const major = Number(match[1])
+  const minor = Number(match[2])
+  const patch = Number(match[3])
+  if ([major, minor, patch].some(n => Number.isNaN(n))) {
+    throw new Error(`Formato de versão inválido: ${version}. Partes devem ser numéricas.`)
+  }
   return { major, minor, patch }
-}
-
-function compareVersions(v1, v2) {
-  const parsed1 = parseVersion(v1)
-  const parsed2 = parseVersion(v2)
-
-  if (parsed1.major !== parsed2.major) return parsed1.major - parsed2.major
-  if (parsed1.minor !== parsed2.minor) return parsed1.minor - parsed2.minor
-  return parsed1.patch - parsed2.patch
 }
 
 function getBumpType(oldVersion, newVersion) {

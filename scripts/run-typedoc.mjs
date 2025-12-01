@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, unlinkSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -32,8 +32,7 @@ const result = spawnSync(pnpmCommand, ['exec', 'typedoc', '--options', tempConfi
 
 // Limpar arquivo temporário
 try {
-  const fs = await import('node:fs/promises')
-  await fs.unlink(tempConfig)
+  unlinkSync(tempConfig)
 } catch {
   // Ignorar erro se não conseguir deletar
 }
