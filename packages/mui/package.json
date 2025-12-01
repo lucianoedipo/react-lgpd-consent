@@ -68,6 +68,6 @@
     }
   },
   "dependencies": {
-    "@react-lgpd-consent/core": "workspace:^0.6.1"
+    "@react-lgpd-consent/core": "workspace:^0.6.2"
   }
 }

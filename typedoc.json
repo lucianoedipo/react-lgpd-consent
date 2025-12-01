@@ -10,7 +10,7 @@
   "tsconfig": "tsconfig.typedoc.json",
 
   "name": "react-lgpd-consent",
-  "includeVersion": true,
+  "includeVersion": false,
   "treatWarningsAsErrors": false,
   "readme": "README.md",
 

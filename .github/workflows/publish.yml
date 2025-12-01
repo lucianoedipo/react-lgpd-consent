@@ -1,0 +1,119 @@
+name: Publish to NPM
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to publish (e.g., v0.6.2)'
+        required: true
+        type: string
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish packages to NPM
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Extract version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            TAG="${{ inputs.tag }}"
+          else
+            TAG="${{ github.ref_name }}"
+          fi
+          VERSION="${TAG#v}"
+          echo "tag=${TAG}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "📦 Publishing version: ${VERSION}"
+
+      - name: Checkout tag
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.version.outputs.tag }}
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Setup Turbo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-publish-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-publish-
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify package versions match tag
+        run: |
+          EXPECTED="${{ steps.version.outputs.version }}"
+          CORE_VERSION=$(node -p "require('./packages/core/package.json').version")
+          MUI_VERSION=$(node -p "require('./packages/mui/package.json').version")
+          MAIN_VERSION=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
+          
+          echo "Expected: ${EXPECTED}"
+          echo "Core: ${CORE_VERSION}"
+          echo "MUI: ${MUI_VERSION}"
+          echo "Main: ${MAIN_VERSION}"
+          
+          if [ "${MAIN_VERSION}" != "${EXPECTED}" ]; then
+            echo "❌ Version mismatch! Main package is ${MAIN_VERSION} but tag is ${EXPECTED}"
+            exit 1
+          fi
+          
+          echo "✅ Version verification passed"
+
+      - name: Build packages
+        run: pnpm run build
+
+      - name: Run tests
+        run: pnpm run test
+
+      - name: Publish to NPM
+        run: pnpm run changeset:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
+          body: |
+            ## 📦 Pacotes Publicados
+
+            - `react-lgpd-consent@${{ steps.version.outputs.version }}`
+            - `@react-lgpd-consent/mui@${{ steps.version.outputs.version }}`
+            - `@react-lgpd-consent/core@${{ steps.version.outputs.version }}`
+
+            ### 📖 Documentação
+
+            - [TypeDoc](https://lucianoedipo.github.io/react-lgpd-consent/)
+            - [Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)
+            
+            Veja o [CHANGELOG](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/packages/react-lgpd-consent/CHANGELOG.md) para detalhes das mudanças.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

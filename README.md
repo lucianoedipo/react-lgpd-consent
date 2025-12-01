@@ -111,6 +111,7 @@ function App() {
 - **[🚀 Quickstart](./QUICKSTART.md)**: Tutorial passo-a-passo
 - **[📖 Receitas](./RECIPES.md)**: Guia prático com casos de uso comuns (Next.js, CSP, Consent Mode v2)
 - **[🔧 Troubleshooting](./TROUBLESHOOTING.md)**: Soluções para problemas comuns
+- **[⚙️ Workflows CI/CD](./WORKFLOWS.md)**: Documentação dos workflows de release e deploy
 - **[React 19 StrictMode](./docs/REACT19-STRICTMODE.md)**: Compatibilidade e idempotência de efeitos
 - **[Versionamento e Release](./VERSIONING.md)**: Guia de Changesets e Turborepo
 - **[API Reference](./packages/react-lgpd-consent/API.md)**: Referência completa

@@ -1,0 +1,87 @@
+name: Version Bump & Tag
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: version-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  version:
+    name: Create Version PR or Tag Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      has-changesets: ${{ steps.changesets.outputs.hasChangesets }}
+      published: ${{ steps.changesets.outputs.published }}
+      published-packages: ${{ steps.changesets.outputs.publishedPackages }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create Version PR or Tag
+        id: changesets
+        uses: changesets/action@v1
+        with:
+          version: pnpm run changeset:version
+          commit: 'chore(release): version packages'
+          title: 'chore(release): version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if version PR was merged
+        id: check-merge
+        run: |
+          # Verifica se estamos na main após merge de PR de version
+          if git log -1 --pretty=%B | grep -q "chore(release): version packages"; then
+            echo "merged=true" >> $GITHUB_OUTPUT
+            echo "✅ PR de version foi mergeado, criando tag..."
+          else
+            echo "merged=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  Aguardando merge do PR de version"
+          fi
+
+      - name: Extract version from main package
+        if: steps.check-merge.outputs.merged == 'true'
+        id: extract-version
+        run: |
+          VERSION=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "📦 Versão detectada: v${VERSION}"
+
+      - name: Create Git Tag
+        if: steps.check-merge.outputs.merged == 'true'
+        run: |
+          VERSION="${{ steps.extract-version.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Verificar se tag já existe
+          if git rev-parse "v${VERSION}" >/dev/null 2>&1; then
+            echo "⚠️  Tag v${VERSION} já existe, pulando criação"
+          else
+            git tag -a "v${VERSION}" -m "Release v${VERSION}"
+            git push origin "v${VERSION}"
+            echo "✅ Tag v${VERSION} criada e enviada!"
+          fi

@@ -28,3 +28,4 @@ GEMINI.md
 .vscode/
 *.log
 .turbo
+typedoc.temp.json
