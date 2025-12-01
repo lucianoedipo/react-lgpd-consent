@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/raineorshine/npm-check-updates/main/src/types/RunOptions.json",
+  "upgrade": true,
+  "interactive": true,
+  "workspaces": true,
+  "target": "latest",
+  "reject": ["@types/node"],
+  "peer": true,
+  "cache": true,
+  "cacheClear": false,
+  "registry": "https://registry.npmjs.org/"
+}
