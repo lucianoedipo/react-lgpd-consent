@@ -36,7 +36,7 @@ Isso permite que tags `v*` façam deploy no GitHub Pages.
 
 ### Skip waiting for CI
 
-- **❌ Desmarcado** (padrão): 
+- **❌ Desmarcado** (padrão):
   - Espera CI completar
   - Baixa artefatos do CI
   - Mais rápido (~3min)
@@ -119,7 +119,8 @@ Após workflow completar:
 
 ### Erro: "GitHub Pages not enabled"
 
-**Solução**: 
+**Solução**:
+
 1. Settings → Pages
 2. Source: Deploy from a branch
 3. Branch: `gh-pages` / `/(root)`
