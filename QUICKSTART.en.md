@@ -2,6 +2,8 @@
 
 This quickstart gives everything you need to integrate `react-lgpd-consent` into a React project fast.
 
+> 💡 **Looking for practical recipes?** See [RECIPES.md](./RECIPES.md) for specific use cases like Next.js App Router, CSP/nonce, Consent Mode v2, and subdomains.
+
 ## 📦 Installation
 
 ```bash

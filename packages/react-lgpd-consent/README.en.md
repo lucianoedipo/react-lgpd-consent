@@ -96,11 +96,13 @@ function Analytics() {
 
 ## Documentation & Examples
 
-- Quickstart: `QUICKSTART.en.md` (recommended)
-- API Reference: `API.md`
-- Integrations: `INTEGRACOES.md`
-- Storybook: https://lucianoedipo.github.io/react-lgpd-consent/storybook/
-- TypeDoc: https://lucianoedipo.github.io/react-lgpd-consent/docs/
+- **[🚀 Quickstart](../../QUICKSTART.en.md)** - Step-by-step tutorial
+- **[📖 Recipes](../../RECIPES.md)** - Practical guide with common use cases (Next.js, CSP, Consent Mode v2)
+- **[⚙️ Workflows](../../WORKFLOWS.md)** - CI/CD workflows documentation
+- **[API Reference](./API.md)** - Complete API reference
+- **[Integrations](./INTEGRACOES.md)** - GA4, GTM, Facebook Pixel
+- **[Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)** - Interactive components
+- **[TypeDoc](https://lucianoedipo.github.io/react-lgpd-consent/docs/)** - Generated API docs
 
 ---
 
