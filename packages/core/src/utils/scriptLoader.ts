@@ -8,6 +8,9 @@
  * garantindo compatibilidade SSR e verificações de permissões por categoria.
  */
 
+// Global registry para prevenir injeções duplicadas (React 19 StrictMode)
+const LOADING_SCRIPTS = new Map<string, Promise<void>>()
+
 /**
  * @function
  * @category Utils
@@ -18,6 +21,9 @@
  * Esta função é utilizada internamente pela biblioteca para carregar scripts de integração
  * após o consentimento do usuário. Ela garante que o script só seja inserido na página
  * se o consentimento for dado e o contexto estiver disponível.
+ *
+ * **React 19 StrictMode**: A função é idempotente e mantém um registro global de scripts
+ * em carregamento para evitar duplicações durante double-invoking de efeitos em desenvolvimento.
  *
  * @param {string} id Um identificador único para o elemento `<script>` a ser criado.
  * @param {string} src A URL do script externo a ser carregado.
@@ -39,9 +45,16 @@ export function loadScript(
   attrs: Record<string, string> = {},
 ) {
   if (typeof document === 'undefined') return Promise.resolve()
+
+  // Se script já existe no DOM, resolve imediatamente
   if (document.getElementById(id)) return Promise.resolve()
 
-  return new Promise<void>((resolve, reject) => {
+  // Se já está sendo carregado, retorna a Promise existente (previne duplicação)
+  const existingPromise = LOADING_SCRIPTS.get(id)
+  if (existingPromise) return existingPromise
+
+  // Cria nova Promise e registra imediatamente
+  const promise = new Promise<void>((resolve, reject) => {
     const checkConsent = () => {
       // Aguarda o contexto estar disponível
       const consentCookie = document.cookie
@@ -65,6 +78,7 @@ export function loadScript(
 
         // Se categoria específica, verifica permissão
         if (category && !consent.preferences[category]) {
+          LOADING_SCRIPTS.delete(id) // Remove do registro ao falhar
           reject(new Error(`Consent not given for ${category} scripts`))
           return
         }
@@ -76,8 +90,14 @@ export function loadScript(
         s.async = true
         for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v)
 
-        s.onload = () => resolve()
-        s.onerror = () => reject(new Error(`Failed to load script: ${src}`))
+        s.onload = () => {
+          LOADING_SCRIPTS.delete(id) // Limpa do registro ao completar
+          resolve()
+        }
+        s.onerror = () => {
+          LOADING_SCRIPTS.delete(id) // Limpa do registro ao falhar
+          reject(new Error(`Failed to load script: ${src}`))
+        }
 
         document.body.appendChild(s)
       } catch {
@@ -87,4 +107,7 @@ export function loadScript(
 
     checkConsent()
   })
+
+  LOADING_SCRIPTS.set(id, promise)
+  return promise
 }

@@ -729,7 +729,8 @@ type BackdropConfig =
  *
  * @category Types
  * @since 0.1.3
- * @version 0.4.1 - Expandido substancialmente com novos tokens
+ * @remarks
+ * **Histórico**: v0.4.1 - Expandido substancialmente com novos tokens
  * @public
  *
  * @example Configuração básica
@@ -1430,8 +1431,8 @@ export interface ConsentContextValue {
    * @param cat - ID da categoria (predefinida ou customizada)
    * @param value - Valor do consentimento para a categoria
    *
-   * @breakingChange
-   * **v0.4.1**: Parâmetro `cat` mudou de `Category` para `string` para suportar
+   * @remarks
+   * **Breaking Change (v0.4.1)**: Parâmetro `cat` mudou de `Category` para `string` para suportar
    * categorias customizadas. O uso com strings literais continua funcionando.
    *
    * @example

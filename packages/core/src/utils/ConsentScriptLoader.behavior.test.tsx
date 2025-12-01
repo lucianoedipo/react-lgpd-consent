@@ -161,7 +161,10 @@ describe('ConsentScriptLoader behavior', () => {
         </ConsentProvider>,
       )
     })
-    expect(loadScript).toHaveBeenCalledTimes(1)
+    
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalledTimes(1)
+    })
 
     await act(async () => {
       setPreferenceRef2.current('analytics' as any, false)
@@ -169,7 +172,10 @@ describe('ConsentScriptLoader behavior', () => {
     await act(async () => {
       setPreferenceRef2.current('analytics' as any, true)
     })
-    expect(loadScript).toHaveBeenCalledTimes(2)
+
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalledTimes(2)
+    })
   })
 
   test('non-necessary scripts load only after consent and respect partial preferences', async () => {

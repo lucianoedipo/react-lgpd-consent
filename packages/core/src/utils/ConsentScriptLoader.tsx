@@ -138,25 +138,37 @@ export function ConsentScriptLoader({
   React.useEffect(() => {
     if (!consented) return
 
-    integrations.forEach(async (integration) => {
-      const shouldLoad = preferences[integration.category]
-      const alreadyLoaded = loadedScripts.current.has(integration.id)
+    // Prevenir race conditions: aguardar um tick antes de carregar scripts
+    // Isso garante que o estado está estável mesmo em StrictMode
+    const timeoutId = setTimeout(async () => {
+      for (const integration of integrations) {
+        const shouldLoad = preferences[integration.category]
+        const alreadyLoaded = loadedScripts.current.has(integration.id)
 
-      if (shouldLoad && (!alreadyLoaded || reloadOnChange)) {
-        try {
-          await loadScript(integration.id, integration.src, integration.category, integration.attrs)
+        if (shouldLoad && (!alreadyLoaded || reloadOnChange)) {
+          try {
+            await loadScript(
+              integration.id,
+              integration.src,
+              integration.category,
+              integration.attrs,
+            )
 
-          // Executa função de inicialização se disponível
-          if (integration.init) {
-            integration.init()
+            // Executa função de inicialização se disponível
+            if (integration.init) {
+              integration.init()
+            }
+
+            loadedScripts.current.add(integration.id)
+          } catch (error) {
+            logger.error(`❌ Failed to load script: ${integration.id}`, error)
           }
-
-          loadedScripts.current.add(integration.id)
-        } catch (error) {
-          logger.error(`❌ Failed to load script: ${integration.id}`, error)
         }
       }
-    })
+    }, 0)
+
+    // Cleanup: cancela o timeout se o componente desmontar antes da execução
+    return () => clearTimeout(timeoutId)
   }, [preferences, consented, integrations, reloadOnChange])
 
   // Este componente não renderiza nada

@@ -43,7 +43,8 @@ type LanguageTexts = Partial<Omit<ConsentTexts, 'i18n' | 'variants' | 'contexts'
  *
  * @category Types
  * @since 0.4.1
- * @version 0.4.1 - Nova interface com suporte avançado a i18n e contextos
+ * @remarks
+ * **Histórico**: v0.4.1 - Nova interface com suporte avançado a i18n e contextos
  *
  * @example Configuração multilíngue
  * ```typescript

@@ -1,9 +1,8 @@
-import * as React from 'react'
 import { act, render, waitFor } from '@testing-library/react'
 import { ConsentProvider } from '../context/ConsentContext'
+import * as autoConfig from './autoConfigureCategories'
 import { ConsentScriptLoader } from './ConsentScriptLoader'
 import { createGoogleAnalyticsIntegration } from './scriptIntegrations'
-import * as autoConfig from './autoConfigureCategories'
 
 jest.mock('./scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
@@ -40,7 +39,11 @@ describe('ConsentScriptLoader component', () => {
     })
 
     const { loadScript } = require('./scriptLoader')
-    expect(loadScript).toHaveBeenCalled()
+
+    // Aguardar o setTimeout(0) do ConsentScriptLoader
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalled()
+    })
   })
 })
 
