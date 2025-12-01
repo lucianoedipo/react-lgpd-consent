@@ -1,5 +1,22 @@
 # Como Rodar Deploy de Docs Manualmente
 
+## ⚠️ Configuração Inicial Necessária
+
+Antes de rodar pela primeira vez, configure o ambiente GitHub Pages:
+
+1. Vá em: https://github.com/lucianoedipo/react-lgpd-consent/settings/environments
+2. Clique em **github-pages**
+3. Em **Deployment branches and tags**:
+   - Clique em **Add deployment branch or tag rule**
+   - **Ref type**: `Tag`
+   - **Name pattern**: `v*`
+   - Clique em **Add rule**
+4. **Salve** as mudanças
+
+Isso permite que tags `v*` façam deploy no GitHub Pages.
+
+---
+
 ## 🚀 Método 1: Via GitHub UI (Recomendado)
 
 1. Vá em: https://github.com/lucianoedipo/react-lgpd-consent/actions/workflows/docs.yml

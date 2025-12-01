@@ -26,12 +26,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
-    name: Build and Deploy Documentation
+  build:
+    name: Build Documentation
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Extract version
         id: version
@@ -317,6 +314,17 @@ jobs:
         with:
           path: 'integrated-docs'
 
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
@@ -325,7 +333,6 @@ jobs:
         run: |
           echo "## 🎉 Documentação publicada com sucesso!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- **Versão:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **URL:** ${{ steps.deployment.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
           echo "- **TypeDoc:** ${{ steps.deployment.outputs.page_url }}modules.html" >> $GITHUB_STEP_SUMMARY
           echo "- **Storybook:** ${{ steps.deployment.outputs.page_url }}storybook/" >> $GITHUB_STEP_SUMMARY
