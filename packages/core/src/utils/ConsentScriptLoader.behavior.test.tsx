@@ -161,7 +161,7 @@ describe('ConsentScriptLoader behavior', () => {
         </ConsentProvider>,
       )
     })
-    
+
     await waitFor(() => {
       expect(loadScript).toHaveBeenCalledTimes(1)
     })
