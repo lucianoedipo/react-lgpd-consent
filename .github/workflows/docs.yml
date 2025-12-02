@@ -95,7 +95,7 @@ jobs:
 
       - name: Download build artifacts from CI
         if: github.event_name != 'workflow_dispatch' || inputs.skip_ci_check != true
-        uses: dawidd6/action-download-artifact@v3
+        uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           workflow: ci.yml
