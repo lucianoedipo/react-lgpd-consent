@@ -616,12 +616,13 @@ export function ConsentProvider({
   }, [designTokens])
 
   const cookieBannerPropsWithDefaults = React.useMemo(() => {
-    const incoming: CookieBannerProps = cookieBannerProps ?? {}
+    const incoming: Record<string, unknown> = cookieBannerProps ?? {}
 
     return {
       ...incoming,
-      blocking: incoming.blocking !== undefined ? incoming.blocking : blocking,
-      hideBranding: incoming.hideBranding !== undefined ? incoming.hideBranding : _hideBranding,
+      blocking: incoming.blocking === undefined ? blocking : Boolean(incoming.blocking),
+      hideBranding:
+        incoming.hideBranding === undefined ? _hideBranding : Boolean(incoming.hideBranding),
     }
   }, [cookieBannerProps, blocking, _hideBranding])
 
