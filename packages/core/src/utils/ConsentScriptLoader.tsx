@@ -21,6 +21,8 @@ export interface ConsentScriptLoaderProps {
   integrations: ScriptIntegration[]
   /** Se true, força recarregamento se consentimento mudar */
   reloadOnChange?: boolean
+  /** Nonce CSP aplicado às tags <script> geradas automaticamente (sobrescrevível por integração). */
+  nonce?: string
 }
 
 /**
@@ -47,6 +49,7 @@ export interface ConsentScriptLoaderProps {
 export function ConsentScriptLoader({
   integrations,
   reloadOnChange = false,
+  nonce,
 }: Readonly<ConsentScriptLoaderProps>) {
   const { preferences, consented } = useConsent()
   const categories = useCategories()
@@ -147,11 +150,15 @@ export function ConsentScriptLoader({
 
         if (shouldLoad && (!alreadyLoaded || reloadOnChange)) {
           try {
+            const mergedAttrs = { ...(integration.attrs ?? {}) }
+            const scriptNonce = integration.nonce ?? nonce
+            if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
             await loadScript(
               integration.id,
               integration.src,
               integration.category,
-              integration.attrs,
+              mergedAttrs,
+              scriptNonce,
             )
 
             // Executa função de inicialização se disponível
@@ -206,7 +213,7 @@ export function useConsentScriptLoader() {
   const { preferences, consented } = useConsent()
 
   return React.useCallback(
-    async (integration: ScriptIntegration) => {
+    async (integration: ScriptIntegration, nonce?: string) => {
       if (!consented) {
         logger.warn(`⚠️ Cannot load script ${integration.id}: No consent given`)
         return false
@@ -221,7 +228,17 @@ export function useConsentScriptLoader() {
       }
 
       try {
-        await loadScript(integration.id, integration.src, integration.category, integration.attrs)
+        const mergedAttrs = { ...(integration.attrs ?? {}) }
+        const scriptNonce = integration.nonce ?? nonce
+        if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
+
+        await loadScript(
+          integration.id,
+          integration.src,
+          integration.category,
+          mergedAttrs,
+          scriptNonce,
+        )
 
         if (integration.init) {
           integration.init()

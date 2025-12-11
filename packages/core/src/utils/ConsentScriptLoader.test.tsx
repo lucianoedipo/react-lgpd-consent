@@ -45,6 +45,44 @@ describe('ConsentScriptLoader component', () => {
       expect(loadScript).toHaveBeenCalled()
     })
   })
+
+  test('applies nonce prop to scripts', async () => {
+    const integration = createGoogleAnalyticsIntegration({ measurementId: 'G-NONCE' })
+
+    const initialState = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+      version: '1.0',
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'programmatic',
+      projectConfig: { enabledCategories: ['analytics'] },
+    }
+
+    await act(async () => {
+      render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          initialState={initialState as any}
+        >
+          <ConsentScriptLoader integrations={[integration]} nonce="nonce-abc" />
+        </ConsentProvider>,
+      )
+    })
+
+    const { loadScript } = require('./scriptLoader')
+
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalledWith(
+        integration.id,
+        integration.src,
+        integration.category,
+        expect.objectContaining({ nonce: 'nonce-abc' }),
+        'nonce-abc',
+      )
+    })
+  })
 })
 
 describe('ConsentScriptLoader developer validation', () => {

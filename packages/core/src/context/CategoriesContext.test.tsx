@@ -171,7 +171,9 @@ describe('useCategories', () => {
 
     expect(() => {
       render(<CategoriesConsumer />)
-    }).toThrow('useCategories deve ser usado dentro de CategoriesProvider.')
+    }).toThrow(
+      '[react-lgpd-consent] useCategories deve ser usado dentro de <ConsentProvider>. Adicione o provider ao redor da sua árvore antes de chamar o hook.',
+    )
 
     console.error = originalError
   })

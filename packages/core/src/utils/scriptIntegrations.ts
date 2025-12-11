@@ -53,8 +53,10 @@ export interface ScriptIntegration {
   config?: Record<string, unknown>
   /** Função de inicialização executada após carregamento do script */
   init?: () => void
-  /** Atributos HTML adicionais para a tag script */
+ /** Atributos HTML adicionais para a tag script */
   attrs?: Record<string, string>
+  /** Nonce CSP opcional aplicado à tag script */
+  nonce?: string
   /** Lista de cookies que o script pode definir */
   cookies?: string[]
   /** Informações detalhadas dos cookies (nome, finalidade, duração, fornecedor) */

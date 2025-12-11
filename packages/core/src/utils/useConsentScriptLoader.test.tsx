@@ -140,4 +140,48 @@ describe('useConsentScriptLoader', () => {
 
     expect(result).toBe(false)
   })
+
+  test('aplica nonce quando fornecido como argumento', async () => {
+    const { loadScript } = require('./scriptLoader')
+    ;(loadScript as jest.Mock).mockClear()
+
+    const integration: ScriptIntegration = { id: 'n1', category: 'analytics', src: 'ok' }
+    const initialState = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+      version: '1.0',
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'programmatic',
+      projectConfig: { enabledCategories: ['analytics'] },
+    }
+
+    function Runner() {
+      const load = useConsentScriptLoader()
+      React.useEffect(() => {
+        void load(integration, 'nonce-xyz')
+      }, [load])
+      return null
+    }
+
+    await act(async () => {
+      render(
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          initialState={initialState as any}
+        >
+          <Runner />
+        </ConsentProvider>,
+      )
+    })
+
+    expect(loadScript).toHaveBeenCalledWith(
+      'n1',
+      'ok',
+      'analytics',
+      expect.objectContaining({ nonce: 'nonce-xyz' }),
+      'nonce-xyz',
+    )
+  })
 })

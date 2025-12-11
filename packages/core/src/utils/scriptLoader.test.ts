@@ -245,6 +245,34 @@ describe('loadScript', () => {
     await expect(promise).resolves.toBeUndefined()
   })
 
+  test('applies nonce when provided', async () => {
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    const promise = loadScript(
+      'test-nonce',
+      'https://example.com/script.js',
+      'analytics',
+      {},
+      'nonce-123',
+    )
+
+    const script = document.getElementById('test-nonce') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (!script) throw new Error('script not found')
+
+    expect(script.nonce).toBe('nonce-123')
+    expect(script.getAttribute('nonce')).toBe('nonce-123')
+
+    script.dispatchEvent(new Event('load'))
+    await expect(promise).resolves.toBeUndefined()
+  })
+
   test('loads when category is null (no category gating)', async () => {
     const consent = {
       consented: true,
