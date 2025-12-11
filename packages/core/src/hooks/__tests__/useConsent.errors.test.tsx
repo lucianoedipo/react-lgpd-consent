@@ -1,10 +1,9 @@
 import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import React from 'react'
 
-import { ConsentProvider } from '../context/ConsentContext'
-import { useCategories } from '../context/CategoriesContext'
-import { useConsent } from './useConsent'
+import { useCategories } from '../../context/CategoriesContext'
+import { ConsentProvider } from '../../context/ConsentContext'
+import { useConsent } from '../useConsent'
 
 describe('DX errors para hooks fora do provider', () => {
   it('useConsent lança erro claro em pt-BR quando usado fora do provider', () => {

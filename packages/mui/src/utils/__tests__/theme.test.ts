@@ -1,4 +1,4 @@
-import { createDefaultConsentTheme } from './theme'
+import { createDefaultConsentTheme } from '../theme'
 
 describe('createDefaultConsentTheme', () => {
   test('has expected primary main color and typography', () => {

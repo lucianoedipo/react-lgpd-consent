@@ -1,9 +1,9 @@
+import { logger } from '../../utils/logger'
 import {
-  openPreferencesModal,
   _registerGlobalOpenPreferences,
   _unregisterGlobalOpenPreferences,
+  openPreferencesModal,
 } from '../useConsent'
-import { logger } from '../../utils/logger'
 
 describe('openPreferencesModal global registration', () => {
   afterEach(() => {

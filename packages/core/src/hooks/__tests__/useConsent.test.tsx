@@ -1,15 +1,15 @@
-import * as React from 'react'
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { ConsentProvider } from '../context/ConsentContext'
+import * as React from 'react'
+import * as ConsentContext from '../../context/ConsentContext'
+import { ConsentProvider } from '../../context/ConsentContext'
 import {
-  useConsent,
-  useOpenPreferencesModal,
   _registerGlobalOpenPreferences,
   _unregisterGlobalOpenPreferences,
   openPreferencesModal,
-} from './useConsent'
-import * as ConsentContext from '../context/ConsentContext'
+  useConsent,
+  useOpenPreferencesModal,
+} from '../useConsent'
 
 function TestConsumer() {
   const { preferences, acceptAll, rejectAll, setPreference } = useConsent()
