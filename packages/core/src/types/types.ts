@@ -1364,6 +1364,8 @@ export interface CustomCookieBannerProps {
   rejectAll: () => void
   openPreferences: () => void
   texts: ConsentTexts
+  /** Indica se o branding padrão deve ser ocultado. */
+  hideBranding?: boolean
   /**
    * Indica se o modo bloqueante está ativo no contexto.
    * Esta prop é apenas informativa para banners customizados ajustarem sua UI.

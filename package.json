@@ -8,6 +8,12 @@
     "node": ">=20.0.0"
   },
   "packageManager": "pnpm@10.25.0",
+  "pnpm": {
+    "overrides": {
+      "react": "19.2.1",
+      "react-dom": "19.2.1"
+    }
+  },
   "scripts": {
     "clean": "turbo run clean",
     "build": "turbo run build",

@@ -543,6 +543,18 @@ export function ConsentProvider({
     return 'rgba(0, 0, 0, 0.4)'
   }, [designTokens])
 
+  const cookieBannerPropsWithDefaults = React.useMemo(() => {
+    const incoming = cookieBannerProps ?? {}
+    const hasBlocking = Object.prototype.hasOwnProperty.call(incoming, 'blocking')
+    const hasHideBranding = Object.prototype.hasOwnProperty.call(incoming, 'hideBranding')
+
+    return {
+      ...incoming,
+      blocking: hasBlocking ? (incoming as { blocking?: boolean }).blocking : blocking,
+      hideBranding: hasHideBranding ? (incoming as { hideBranding?: boolean }).hideBranding : _hideBranding,
+    }
+  }, [cookieBannerProps, blocking, _hideBranding])
+
   const content = (
     <StateCtx.Provider value={state}>
       <ActionsCtx.Provider value={api}>
@@ -628,8 +640,7 @@ export function ConsentProvider({
                     rejectAll={api.rejectAll}
                     openPreferences={api.openPreferences}
                     texts={texts}
-                    blocking={blocking}
-                    {...cookieBannerProps}
+                    {...cookieBannerPropsWithDefaults}
                   />
                 )}
 

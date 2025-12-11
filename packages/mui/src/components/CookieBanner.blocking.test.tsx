@@ -142,4 +142,39 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     const overlayStyles = window.getComputedStyle(overlay)
     expect(overlayStyles.backgroundColor).toBe('rgba(255, 255, 255, 0.12)')
   })
+
+  it('propaga hideBranding do provider para o CookieBanner padrão', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        hideBranding
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(screen.queryByText(/fornecido por|LÉdipO\.eti\.br/i)).toBeNull()
+  })
+
+  it('permite sobrescrever hideBranding via cookieBannerProps', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        hideBranding
+        cookieBannerProps={{ hideBranding: false } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', {
+        name: /LÉdipO\.eti\.br/i,
+      }),
+    ).toBeInTheDocument()
+  })
 })
