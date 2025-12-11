@@ -4,8 +4,8 @@ const config = {
   testEnvironment: 'jsdom',
   // Otimização de memória para evitar crashes em testes grandes
   maxWorkers: '50%',
-  workerIdleMemoryLimit: '1GB',
-  testTimeout: 30000,
+  workerIdleMemoryLimit: '2GB',
+  testTimeout: 10000,
   roots: ['<rootDir>/packages/core/src', '<rootDir>/packages/mui/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transform: {

@@ -82,8 +82,23 @@ const TestComponentExtended = () => {
   )
 }
 
+// Componente auxiliar para testes de callbacks
+function TriggerSetPreferences() {
+  const { setPreferences } = useConsent()
+  const hasRun = React.useRef(false)
+  
+  React.useEffect(() => {
+    if (!hasRun.current) {
+      hasRun.current = true
+      setPreferences({ necessary: true, analytics: true })
+    }
+  }, [setPreferences])
+  return null
+}
+
 describe('ConsentProvider', () => {
   beforeEach(() => {
+    ;(Cookies.get as jest.Mock).mockReturnValue(undefined)
     ;(Cookies.get as jest.Mock).mockClear()
     ;(Cookies.set as jest.Mock).mockClear()
     ;(Cookies.remove as jest.Mock).mockClear()
@@ -94,6 +109,8 @@ describe('ConsentProvider', () => {
   afterEach(() => {
     logGuidanceSpy.mockRestore()
     consoleGroupSpy.mockRestore()
+    jest.clearAllMocks()
+    jest.restoreAllMocks()
   })
 
   it('ignora alterações na categoria necessary e mantém o estado protegido', async () => {
@@ -125,13 +142,11 @@ describe('ConsentProvider', () => {
   })
 
   it('deve carregar o estado padrão (sem consentimento)', () => {
-    act(() => {
-      render(
-        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
-          <TestComponentBasic />
-        </ConsentProvider>,
-      )
-    })
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentBasic />
+      </ConsentProvider>,
+    )
 
     expect(screen.getByTestId('consented').textContent).toBe('false')
     expect(screen.getByTestId('analytics').textContent).toBe('false')
@@ -139,35 +154,31 @@ describe('ConsentProvider', () => {
   })
 
   it('deve aceitar todas as categorias ao clicar em "Accept All"', async () => {
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentBasic />
+      </ConsentProvider>,
+    )
+
     act(() => {
-      render(
-        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
-          <TestComponentBasic />
-        </ConsentProvider>,
-      )
-    })
-
-    await act(async () => {
       fireEvent.click(screen.getByText('Accept All'))
-      await waitFor(() => {
-        expect(screen.getByTestId('consented').textContent).toBe('true')
-      })
     })
 
-    expect(screen.getByTestId('consented').textContent).toBe('true')
-    expect(screen.getByTestId('analytics').textContent).toBe('true')
-    expect(screen.getByTestId('marketing').textContent).toBe('true')
+    await waitFor(() => {
+      expect(screen.getByTestId('consented').textContent).toBe('true')
+      expect(screen.getByTestId('analytics').textContent).toBe('true')
+      expect(screen.getByTestId('marketing').textContent).toBe('true')
+    })
+
     expect(Cookies.set).toHaveBeenCalled()
   })
 
   it('deve rejeitar categorias não essenciais ao clicar em "Reject All"', () => {
-    act(() => {
-      render(
-        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
-          <TestComponentBasic />
-        </ConsentProvider>,
-      )
-    })
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentBasic />
+      </ConsentProvider>,
+    )
 
     act(() => {
       fireEvent.click(screen.getByText('Reject All'))
@@ -180,13 +191,11 @@ describe('ConsentProvider', () => {
   })
 
   it('deve definir preferências específicas', () => {
-    act(() => {
-      render(
-        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
-          <TestComponentBasic />
-        </ConsentProvider>,
-      )
-    })
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentBasic />
+      </ConsentProvider>,
+    )
 
     act(() => {
       fireEvent.click(screen.getByText('Set Prefs'))
@@ -210,13 +219,11 @@ describe('ConsentProvider', () => {
     }
     ;(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify(mockCookie))
 
-    act(() => {
-      render(
-        <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
-          <TestComponentBasic />
-        </ConsentProvider>,
-      )
-    })
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+        <TestComponentBasic />
+      </ConsentProvider>,
+    )
 
     expect(screen.getByTestId('consented').textContent).toBe('true')
     expect(screen.getByTestId('analytics').textContent).toBe('true')
@@ -251,6 +258,7 @@ describe('ConsentProvider Additional Tests', () => {
   let removeCookieSpy: jest.SpyInstance
 
   beforeEach(() => {
+    ;(Cookies.get as jest.Mock).mockReturnValue(undefined)
     ;(Cookies.get as jest.Mock).mockClear()
     setCookieSpy = jest.spyOn(Cookies, 'set')
     removeCookieSpy = jest.spyOn(Cookies, 'remove')
@@ -359,6 +367,8 @@ describe('ConsentProvider Additional Tests', () => {
 
   it('deve chamar onConsentInit após hidratação inicial', async () => {
     const onConsentInit = jest.fn()
+    // Garantir que não há cookie salvo
+    ;(Cookies.get as jest.Mock).mockReturnValue(undefined)
 
     render(
       <ConsentProvider
@@ -392,21 +402,13 @@ describe('ConsentProvider Additional Tests', () => {
       projectConfig: { enabledCategories: ['analytics'] },
     }
 
-    function Trigger() {
-      const { setPreferences } = useConsent()
-      React.useEffect(() => {
-        setPreferences({ necessary: true, analytics: true })
-      }, [setPreferences])
-      return null
-    }
-
     render(
       <ConsentProvider
         categories={{ enabledCategories: ['analytics'] }}
         initialState={initialState as any}
         onConsentChange={onConsentChange}
       >
-        <Trigger />
+        <TriggerSetPreferences />
       </ConsentProvider>,
     )
 
@@ -603,7 +605,7 @@ describe('ConsentProvider Additional Tests', () => {
       // Mock do window.dataLayer
       const mockDataLayer: Array<Record<string, unknown>> = []
       // @ts-ignore - test mock
-      global.window.dataLayer = mockDataLayer
+      globalThis.window.dataLayer = mockDataLayer
 
       render(
         <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>

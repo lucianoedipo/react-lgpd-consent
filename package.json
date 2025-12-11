@@ -25,7 +25,7 @@
     "lint:ci": "turbo run lint:ci",
     "format": "pnpm -r run format",
     "type-check": "turbo run type-check",
-    "test": "turbo run test",
+    "test": "NODE_OPTIONS='--max-old-space-size=4096' turbo run test",
     "test:a11y": "turbo run test:a11y --filter=react-lgpd-consent",
     "test:coverage": "turbo run test:coverage --filter=react-lgpd-consent",
     "coverage-check": "pnpm --filter react-lgpd-consent coverage-check",
