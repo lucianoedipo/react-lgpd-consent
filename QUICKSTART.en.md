@@ -4,6 +4,17 @@ This quickstart gives everything you need to integrate `react-lgpd-consent` into
 
 > 💡 **Looking for practical recipes?** See [RECIPES.md](./RECIPES.md) for specific use cases like Next.js App Router, CSP/nonce, Consent Mode v2, and subdomains.
 
+## 🆕 What's New in v0.7.0
+
+- ✅ **Lifecycle Callbacks** - Monitor consent events with `onConsentInit`, `onConsentChange`, `onAuditLog`
+- ✅ **ANPD Presets** - Pre-validated category configurations with `createAnpdCategories()`
+- ✅ **Audit Logging** - Compliance tracking with `createConsentAuditEntry()`
+- ✅ **Improved Error Messages** - Clear error messages in pt-BR when hooks are used outside Provider
+
+📖 **Full details:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | [API.md](./packages/react-lgpd-consent/API.md)
+
+---
+
 ## 📦 Installation
 
 ```bash

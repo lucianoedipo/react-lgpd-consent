@@ -106,6 +106,61 @@ function App() {
 
 ---
 
+## 🆕 Novidades v0.7.0
+
+### Callbacks de Lifecycle
+
+Monitore eventos de consentimento para auditoria e compliance:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  onConsentInit={(state) => console.log('Inicializado:', state)}
+  onConsentChange={(current, previous) => {
+    console.log('Mudança detectada:', { current, previous })
+  }}
+  onAuditLog={(entry) => {
+    // Enviar para backend de compliance
+    fetch('/api/audit', { method: 'POST', body: JSON.stringify(entry) })
+  }}
+>
+  <YourApp />
+</ConsentProvider>
+```
+
+### Presets ANPD de Categorias
+
+Configurações pré-validadas conforme diretrizes da ANPD:
+
+```tsx
+import { createAnpdCategories } from 'react-lgpd-consent'
+
+const categories = createAnpdCategories({
+  include: ['analytics', 'marketing', 'functional']
+})
+
+<ConsentProvider categories={categories}>
+  <YourApp />
+</ConsentProvider>
+```
+
+### Auditoria de Consentimento
+
+Crie entradas de auditoria para compliance:
+
+```tsx
+import { createConsentAuditEntry } from 'react-lgpd-consent'
+
+const audit = createConsentAuditEntry(
+  { consented: true, preferences: { analytics: true } },
+  { action: 'update', consentVersion: '1' }
+)
+```
+
+📖 **Veja mais:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | [API.md](./packages/react-lgpd-consent/API.md)
+
+---
+
 ## 📚 Documentação
 
 - **[🚀 Quickstart](./QUICKSTART.md)**: Tutorial passo-a-passo

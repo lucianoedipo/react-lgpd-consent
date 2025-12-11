@@ -2,6 +2,17 @@
 
 This quickstart gives everything you need to integrate `react-lgpd-consent` into a React project fast.
 
+## 🆕 What's New in v0.7.0
+
+- ✅ **Lifecycle Callbacks** - `onConsentInit`, `onConsentChange`, `onAuditLog` for monitoring
+- ✅ **ANPD Presets** - `createAnpdCategories()` for quick LGPD-compliant setup
+- ✅ **Audit Logging** - `createConsentAuditEntry()` for compliance tracking
+- ✅ **Better DX** - Clear error messages when hooks are used incorrectly
+
+📖 **Documentation:** [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) | [API.md](./API.md)
+
+---
+
 ## 📦 Installation
 
 ```bash

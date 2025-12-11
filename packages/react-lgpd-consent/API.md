@@ -33,6 +33,9 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `categorizeDiscoveredCookies`       | Função     | (v0.4.1) Categoriza cookies descobertos usando padrões LGPD.                     |
 | `getCookiesInfoForCategory`         | Função     | Retorna informações detalhadas dos cookies de uma categoria específica.          |
 | `resolveTexts`                      | Função     | (v0.4.1) Resolve textos baseados em templates e contexto.                        |
+| `createConsentAuditEntry`           | Função     | **(v0.7.0)** Cria entrada de auditoria de consentimento para logs.                |
+| `ANPD_CATEGORY_PRESETS`             | Constante  | **(v0.7.0)** Presets de categorias conforme diretrizes LGPD/ANPD.                 |
+| `createAnpdCategories`              | Função     | **(v0.7.0)** Helper para gerar configurações tipadas com presets ANPD.            |
 | `TEXT_TEMPLATES`                    | Constante  | (v0.4.1) Templates pré-configurados (ecommerce, saas, governo).                  |
 | `AdvancedConsentTexts`              | Tipo       | (v0.4.1) Interface expandida com i18n e contextos.                               |
 | `DesignTokens`                      | Tipo       | (v0.4.1) Sistema completo com 200+ pontos de customização.                       |
@@ -80,6 +83,9 @@ function App() {
 | `disableFloatingPreferencesButton` | `boolean` | Remove o botão flutuante padrão. |
 | `onConsentGiven` | `(state: ConsentState) => void` | Dispara na primeira vez que o usuário aceita/rejeita. Útil para inicializar analytics. |
 | `onPreferencesSaved` | `(prefs: ConsentPreferences) => void` | Executa toda vez que o usuário salva preferências no modal. |
+| `onConsentInit` | `(state: ConsentState) => void` | **(v0.7.0)** Callback executado após hidratação inicial do consentimento. |
+| `onConsentChange` | `(state: ConsentState, previous: ConsentState) => void` | **(v0.7.0)** Callback executado sempre que o estado de consentimento muda. |
+| `onAuditLog` | `(entry: ConsentAuditEntry) => void` | **(v0.7.0)** Callback para registrar eventos de auditoria (init, update, reset). |
 | `cookie` | `Partial<ConsentCookieOptions>` | Override fino das opções de cookie (nome, expiração, sameSite, secure, path, domain). Se `name` não for informado, o valor deriva de `storage`. |
 | `storage` | `ConsentStorageConfig` | Define namespace, versão e domínio compartilhado. Gera automaticamente o nome da chave (`namespace__vX`). Alterar `version` força re-consentimento. |
 | `onConsentVersionChange` | `(context: ConsentVersionChangeContext) => void` | Notificado após mudança da chave de storage. O reset já é automático; use o hook para limpar caches externos ou registrar eventos. |
@@ -574,3 +580,141 @@ Conjunto completo (site com analytics/marketing):
   <App />
 </ConsentProvider>
 ```
+
+---
+
+## 🆕 Novidades v0.7.0
+
+### Callbacks de Lifecycle (#68)
+
+Monitore eventos de consentimento para integração com sistemas de auditoria:
+
+```tsx
+import { ConsentProvider, createConsentAuditEntry } from 'react-lgpd-consent'
+
+function App() {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      onConsentInit={(state) => {
+        console.log('Consentimento inicializado:', state)
+        // Útil para analytics iniciais
+      }}
+      onConsentChange={(current, previous) => {
+        console.log('Consentimento alterado:', { current, previous })
+        // Dispara em toda mudança de preferências
+      }}
+      onAuditLog={(entry) => {
+        // Registrar no backend para compliance
+        fetch('/api/consent-audit', {
+          method: 'POST',
+          body: JSON.stringify(entry),
+        })
+      }}
+    >
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+**Tipos disponíveis:**
+
+```typescript
+interface ConsentAuditEntry {
+  timestamp: string // ISO 8601
+  action: 'init' | 'update' | 'reset'
+  state: ConsentState
+  metadata?: {
+    storageKey?: string
+    consentVersion?: string
+    userAgent?: string
+  }
+}
+```
+
+### Presets de Categorias ANPD (#70)
+
+Use presets conformes com diretrizes da ANPD:
+
+```tsx
+import { ConsentProvider, createAnpdCategories, ANPD_CATEGORY_PRESETS } from 'react-lgpd-consent'
+
+// Preset BÁSICO (necessary + analytics)
+const basicConfig = createAnpdCategories({ include: ['analytics'] })
+
+// Preset COMPLETO (todas as categorias)
+const fullConfig = createAnpdCategories({
+  include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
+})
+
+// Preset MÍNIMO (apenas necessary)
+const minimalConfig = createAnpdCategories({ include: [] })
+
+// Com customizações
+const customConfig = createAnpdCategories({
+  include: ['analytics', 'marketing'],
+  names: { analytics: 'Análises' },
+  descriptions: { marketing: 'Anúncios personalizados baseados no seu perfil.' }
+})
+
+function App() {
+  return (
+    <ConsentProvider categories={fullConfig}>
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+**Preset disponível:**
+
+```typescript
+export const ANPD_CATEGORY_PRESETS: Record<Category, CategoryDefinition> = {
+  necessary: { /* ... */ },
+  analytics: { /* ... */ },
+  functional: { /* ... */ },
+  marketing: { /* ... */ },
+  social: { /* ... */ },
+  personalization: { /* ... */ }
+}
+```
+
+### Mensagens de Erro Melhoradas (#71)
+
+Hooks agora lançam erros claros em pt-BR quando usados fora do `<ConsentProvider>`:
+
+```tsx
+import { useConsent } from 'react-lgpd-consent'
+
+function MyComponent() {
+  const consent = useConsent() // ❌ Erro claro!
+  // Error: [react-lgpd-consent] useConsent deve ser usado dentro de <ConsentProvider>.
+  // Envolva seu componente com o provider ou use o wrapper @react-lgpd-consent/mui.
+}
+```
+
+### Auditoria e Compliance (#60)
+
+Crie entradas de auditoria manualmente:
+
+```typescript
+import { createConsentAuditEntry } from 'react-lgpd-consent'
+
+const auditEntry = createConsentAuditEntry(
+  { consented: true, preferences: { analytics: true } },
+  {
+    action: 'update',
+    storageKey: 'lgpd-consent__v1',
+    consentVersion: '1'
+  }
+)
+
+// Enviar para backend
+await fetch('/api/audit', {
+  method: 'POST',
+  body: JSON.stringify(auditEntry)
+})
+```
+
+Consulte [TROUBLESHOOTING.md - Auditoria e log de consentimento](../../TROUBLESHOOTING.md#auditoria-e-log-de-consentimento) para exemplos completos de integração com backend.
