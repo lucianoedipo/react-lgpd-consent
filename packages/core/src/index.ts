@@ -154,6 +154,12 @@ export {
   validateIntegrationCategories,
   validateNecessaryClassification,
 } from './utils/autoConfigureCategories'
+export {
+  ANPD_CATEGORY_PRESETS,
+  createAnpdCategoriesConfig,
+  type AnpdPresetCategory,
+  type CreateAnpdCategoriesOptions,
+} from './utils/categoryPresets'
 
 // Tipos
 
