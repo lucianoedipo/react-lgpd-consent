@@ -143,6 +143,25 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     expect(overlayStyles.backgroundColor).toBe('rgba(255, 255, 255, 0.12)')
   })
 
+  it('aplica z-index customizado vindo de designTokens no banner e overlay', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { zIndex: { banner: 2500, backdrop: 2400 } } } as any}
+        cookieBannerProps={{ blocking: true } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
+    expect(window.getComputedStyle(overlay).zIndex).toBe('2400')
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    expect(window.getComputedStyle(bannerWrapper as HTMLElement).zIndex).toBe('2500')
+  })
+
   it('propaga hideBranding do provider para o CookieBanner padrão', async () => {
     render(
       <ConsentProvider
@@ -176,5 +195,24 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
         name: /LÉdipO\.eti\.br/i,
       }),
     ).toBeInTheDocument()
+  })
+
+  it('aplica z-index customizado vindo de designTokens no banner e overlay', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { zIndex: { banner: 2500, backdrop: 2400 } } } as any}
+        cookieBannerProps={{ blocking: true } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
+    expect(window.getComputedStyle(overlay).zIndex).toBe('2400')
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    expect(window.getComputedStyle(bannerWrapper as HTMLElement).zIndex).toBe('2500')
   })
 })

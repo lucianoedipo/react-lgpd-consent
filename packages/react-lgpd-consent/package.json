@@ -84,7 +84,7 @@
     "test:coverage": "jest --config ../../jest.config.mjs --coverage",
     "coverage-check": "node ../../scripts/coverage-check.cjs",
     "size-check": "size-limit",
-    "mutation": "npx stryker run",
+    "mutation": "npx stryker run stryker.conf.json",
     "mutation:tests": "npx stryker run ../../stryker.tests.conf.json",
     "prepublishOnly": "pnpm run build",
     "docs:generate": "node ../../scripts/run-typedoc.mjs",

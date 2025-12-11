@@ -100,4 +100,37 @@ describe('PreferencesModal - Acessibilidade', () => {
     const results = await axe(container)
     expect(results).toHaveNoViolations()
   })
+
+  test('respeita z-index customizado via designTokens.layout.zIndex.modal', async () => {
+    const { getByText } = render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={{
+          version: '1.0',
+          consented: true,
+          preferences: { necessary: true },
+          consentDate: new Date().toISOString(),
+          lastUpdate: new Date().toISOString(),
+          source: 'programmatic',
+          projectConfig: { enabledCategories: [] },
+          isModalOpen: false,
+        }}
+        designTokens={{ layout: { zIndex: { modal: 2600 } } } as any}
+      >
+        <TestComponent />
+      </ConsentProvider>,
+    )
+
+    const button = getByText('Abrir Preferências')
+    await userEvent.click(button)
+
+    await waitFor(() => {
+      const dialog = document.querySelector('[role=\"dialog\"]')
+      expect(dialog).toBeTruthy()
+    })
+
+    const root = document.querySelector('[data-testid=\"lgpd-preferences-modal-root\"]') as HTMLElement
+    expect(root).not.toBeNull()
+    expect(root.style.zIndex).toBe('2600')
+  })
 })

@@ -2,34 +2,49 @@
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
 
   "mutate": [
-    "src/index.ts",
-    "src/components/**/*.tsx",
-    "src/context/**/*.tsx",
-    "src/hooks/**/*.ts",
-    "src/utils/**/*.ts",
-    "src/utils/**/*.tsx",
-    "src/types/**/*.ts"
+    "packages/core/src/**/*.ts",
+    "packages/core/src/**/*.tsx",
+    "packages/mui/src/**/*.ts",
+    "packages/mui/src/**/*.tsx",
+    "packages/react-lgpd-consent/src/**/*.ts",
+    "packages/react-lgpd-consent/src/**/*.tsx",
+    "!packages/**/src/**/*.test.ts",
+    "!packages/**/src/**/*.test.tsx",
+    "!packages/**/src/**/*.spec.ts",
+    "!packages/**/src/**/*.spec.tsx",
+    "!packages/**/src/**/*.stories.ts",
+    "!packages/**/src/**/*.stories.tsx",
+    "!packages/**/src/**/__snapshots__/**",
+    "!packages/**/src/@types/**"
   ],
 
-  "testRunner": "jest",
-  "jest": {
-    "projectType": "custom",
-    "configFile": "jest.config.mjs"
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "pnpm test"
   },
 
-  "buildCommand": "tsc --noEmit",
-  "tsconfigFile": "tsconfig.json",
+  "buildCommand": "pnpm run type-check",
+  "tsconfigFile": "tsconfig.base.json",
   "reporters": ["progress", "clear-text", "html"],
   "coverageAnalysis": "perTest",
-  "concurrency": 16,
+  "concurrency": 8,
 
   "ignorePatterns": [
     "example/**",
+    "examples/**",
     "storybook-static/**",
-    "dist/**",
+    "packages/**/dist/**",
     "docs/**",
-    "src/**/*.stories.*",
-    "src/**/__snapshots__/**",
-    "node_modules/**"
-  ]
+    "packages/**/src/**/*.stories.*",
+    "packages/**/src/**/__snapshots__/**",
+    "node_modules/**",
+    "scripts/**",
+    "rfcs/**"
+  ],
+
+  "tempDirName": ".stryker-tmp",
+  "cleanTempDir": true,
+
+  "timeoutMS": 30000,
+  "timeoutFactor": 2
 }

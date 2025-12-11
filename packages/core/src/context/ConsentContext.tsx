@@ -558,7 +558,9 @@ export function ConsentProvider({
     return {
       ...incoming,
       blocking: hasBlocking ? (incoming as { blocking?: boolean }).blocking : blocking,
-      hideBranding: hasHideBranding ? (incoming as { hideBranding?: boolean }).hideBranding : _hideBranding,
+      hideBranding: hasHideBranding
+        ? (incoming as { hideBranding?: boolean }).hideBranding
+        : _hideBranding,
     }
   }, [cookieBannerProps, blocking, _hideBranding])
 
