@@ -2,17 +2,12 @@
 /**
  * Script de Sincronização de Versões
  *
- * Lógica: Se qualquer pacote interno (core ou mui) recebeu bump do changeset,
- * o agregador (react-lgpd-consent) DEVE receber o mesmo tipo de bump.
- *
- * Cenários:
- * - core: 0.6.2 → 0.6.3 (patch) → main: 0.6.1 → 0.6.2 (patch também)
- * - mui: 0.6.1 → 0.7.0 (minor) → main: 0.6.8 → 0.7.0 (minor também)
- * - core: 0.6.8, mui: 0.6.2 → 0.6.3 (patch) → main: 0.6.7 → 0.6.8 (patch)
+ * Lógica: Garante que react-lgpd-consent tenha a mesma versão que o maior
+ * entre core e mui (já bumpeados pelo changeset).
  *
  * IMPORTANTE: Este script é executado APÓS o changeset version, então
  * se houve mudança em core/mui, suas versões já foram bumpeadas.
- * Precisamos comparar com estado anterior (via git) para detectar bumps.
+ * O agregador deve apenas sincronizar com a maior versão entre eles.
  */
 
 import { execFileSync } from 'node:child_process'
@@ -69,6 +64,15 @@ function parseVersion(version) {
     throw new Error(`Formato de versão inválido: ${version}. Partes devem ser numéricas.`)
   }
   return { major, minor, patch }
+}
+
+function compareVersions(v1, v2) {
+  const parsed1 = parseVersion(v1)
+  const parsed2 = parseVersion(v2)
+
+  if (parsed1.major !== parsed2.major) return parsed1.major - parsed2.major
+  if (parsed1.minor !== parsed2.minor) return parsed1.minor - parsed2.minor
+  return parsed1.patch - parsed2.patch
 }
 
 function getBumpType(oldVersion, newVersion) {
@@ -132,28 +136,19 @@ async function main() {
     console.log(`   core: ${coreBump || 'nenhum'}`)
     console.log(`   mui:  ${muiBump || 'nenhum'}`)
 
-    // Determinar o bump necessário para main
-    let requiredBump = null
-    if (coreBump === 'major' || muiBump === 'major') {
-      requiredBump = 'major'
-    } else if (coreBump === 'minor' || muiBump === 'minor') {
-      requiredBump = 'minor'
-    } else if (coreBump === 'patch' || muiBump === 'patch') {
-      requiredBump = 'patch'
-    }
+    // O agregador deve ter a maior versão entre core e mui
+    const targetVersion = compareVersions(coreVersion, muiVersion) >= 0 ? coreVersion : muiVersion
 
-    if (requiredBump) {
-      const newMainVersion = applyBump(mainVersion, requiredBump)
+    if (mainVersion === targetVersion) {
+      console.log(`\n✅ Agregador já está sincronizado (${mainVersion})`)
+    } else {
+      console.log(`\n✨ Sincronizando agregador com versão dos pacotes internos...`)
+      console.log(`   ${mainVersion} → ${targetVersion}`)
 
-      console.log(`\n✨ Aplicando bump ${requiredBump} ao agregador...`)
-      console.log(`   ${mainVersion} → ${newMainVersion}`)
-
-      mainPkg.version = newMainVersion
+      mainPkg.version = targetVersion
       await writePackageJson(MAIN_PKG, mainPkg)
 
       console.log(`\n✅ react-lgpd-consent atualizado!`)
-    } else {
-      console.log(`\n✅ Nenhum bump necessário no agregador`)
     }
 
     // Atualizar dependência de core em mui
