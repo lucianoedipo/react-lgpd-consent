@@ -1258,6 +1258,15 @@ export interface ConsentProviderProps {
    */
   onConsentGiven?: (state: ConsentState) => void
 
+  /** Callback disparado após hidratação inicial (consentimento existente ou não). */
+  onConsentInit?: (state: ConsentState) => void
+
+  /** Callback disparado sempre que o consentimento muda (banner, modal ou programático/reset). */
+  onConsentChange?: (
+    state: ConsentState,
+    context: { origin: ConsentState['source'] | 'reset' },
+  ) => void
+
   /**
    * Callback executado quando usuário modifica preferências.
    * Executado após salvar as mudanças.

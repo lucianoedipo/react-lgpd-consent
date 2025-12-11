@@ -1,4 +1,5 @@
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import React from 'react'
 import Cookies from 'js-cookie'
 import { ConsentProvider, useConsent, type Category } from '../index'
 import * as devGuidance from '../utils/developerGuidance'
@@ -354,6 +355,66 @@ describe('ConsentProvider Additional Tests', () => {
         }),
       )
     })
+  })
+
+  it('deve chamar onConsentInit após hidratação inicial', async () => {
+    const onConsentInit = jest.fn()
+
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }} onConsentInit={onConsentInit}>
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    await waitFor(() => {
+      expect(onConsentInit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          consented: false,
+          preferences: expect.objectContaining({ necessary: true }),
+        }),
+      )
+    })
+  })
+
+  it('deve chamar onConsentChange quando preferências mudam', async () => {
+    const onConsentChange = jest.fn()
+    const initialState = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { necessary: true, analytics: false },
+      version: '1.0',
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'programmatic',
+      projectConfig: { enabledCategories: ['analytics'] },
+    }
+
+    function Trigger() {
+      const { setPreferences } = useConsent()
+      React.useEffect(() => {
+        setPreferences({ necessary: true, analytics: true })
+      }, [setPreferences])
+      return null
+    }
+
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={initialState as any}
+        onConsentChange={onConsentChange}
+      >
+        <Trigger />
+      </ConsentProvider>,
+    )
+
+    await waitFor(() =>
+      expect(onConsentChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          preferences: expect.objectContaining({ analytics: true }),
+        }),
+        { origin: 'modal' },
+      ),
+    )
   })
 
   it('deve chamar onPreferencesSaved quando as preferências são salvas', async () => {

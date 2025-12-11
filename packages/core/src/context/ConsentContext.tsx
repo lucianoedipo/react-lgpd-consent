@@ -293,6 +293,8 @@ export function ConsentProvider({
   guidanceConfig,
   children,
   disableDiscoveryLog,
+  onConsentInit,
+  onConsentChange,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(() => {
@@ -452,6 +454,7 @@ export function ConsentProvider({
       logger.info('DataLayer: consent_initialized event dispatched', {
         preferences: state.preferences,
       })
+      if (onConsentInit) onConsentInit(state)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- state.preferences intencionalmente rastreado via isHydrated
   }, [isHydrated]) // Dispara apenas uma vez após hidratação
@@ -484,13 +487,17 @@ export function ConsentProvider({
     )
 
     if (hasChanged) {
-      const origin = state.source === 'programmatic' ? 'reset' : state.source
+      const origin: 'banner' | 'modal' | 'programmatic' | 'reset' =
+        state.source === 'programmatic' ? 'reset' : state.source
       pushConsentUpdatedEvent(state.preferences, origin, previousPreferencesRef.current)
       logger.info('DataLayer: consent_updated event dispatched', {
         origin,
         preferences: state.preferences,
         consented: state.consented,
       })
+      if (onConsentChange) {
+        onConsentChange(state, { origin })
+      }
       previousPreferencesRef.current = state.preferences
     }
   }, [state.preferences, state.consented, state.source, isHydrated])
