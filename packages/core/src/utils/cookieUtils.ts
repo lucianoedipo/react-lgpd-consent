@@ -13,7 +13,6 @@ import type {
   ConsentAuditEntry,
   ConsentCookieOptions,
   ConsentEventOrigin,
-  ConsentPreferences,
   ConsentState,
   ProjectCategoriesConfig,
 } from '../types/types'

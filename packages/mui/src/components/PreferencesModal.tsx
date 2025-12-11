@@ -359,7 +359,7 @@ export function PreferencesModal({
     'data-testid':
       (dialogRest?.slotProps?.root as { ['data-testid']?: string })?.['data-testid'] ??
       'lgpd-preferences-modal-root',
-  } as Record<string, unknown>
+  }
 
   const mergedDialogProps: DialogProps = {
     open,
@@ -368,8 +368,7 @@ export function PreferencesModal({
     ...dialogRest,
     slotProps: {
       ...dialogRest?.slotProps,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      root: rootSlotProps as any,
+      root: rootSlotProps,
     },
   }
 

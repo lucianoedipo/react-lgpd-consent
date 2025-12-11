@@ -197,7 +197,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     ).toBeInTheDocument()
   })
 
-  it('aplica z-index customizado vindo de designTokens no banner e overlay', async () => {
+  it('aplica z-index customizado vindo de designTokens no banner e overlay (blocking mode)', async () => {
     render(
       <ConsentProvider
         categories={{ enabledCategories: ['analytics'] }}

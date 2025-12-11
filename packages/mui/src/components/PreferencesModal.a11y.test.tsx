@@ -125,12 +125,12 @@ describe('PreferencesModal - Acessibilidade', () => {
     await userEvent.click(button)
 
     await waitFor(() => {
-      const dialog = document.querySelector('[role=\"dialog\"]')
+      const dialog = document.querySelector('[role="dialog"]')
       expect(dialog).toBeTruthy()
     })
 
     const root = document.querySelector(
-      '[data-testid=\"lgpd-preferences-modal-root\"]',
+      '[data-testid="lgpd-preferences-modal-root"]',
     ) as HTMLElement
     expect(root).not.toBeNull()
     expect(root.style.zIndex).toBe('2600')
