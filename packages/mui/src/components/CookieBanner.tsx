@@ -447,8 +447,8 @@ export function CookieBanner({
   // Rota segura: se a URL atual corresponder à política/termos, não aplicar overlay (SSR-safe)
   const isSafeRoute = (() => {
     try {
-      if (typeof window === 'undefined') return false
-      const current = new URL(window.location.href)
+      if (globalThis?.window === undefined) return false
+      const current = new URL(globalThis.window.location.href)
       const safeUrls = [policyLinkUrl, termsLinkUrl].filter(Boolean) as string[]
       return safeUrls.some((u) => {
         try {

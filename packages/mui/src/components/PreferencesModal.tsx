@@ -353,7 +353,7 @@ export function PreferencesModal({
   ].filter(Boolean) as SxProps<Theme> | undefined
 
   const rootSlotProps = {
-    ...(dialogRest?.slotProps?.root ?? {}),
+    ...dialogRest?.slotProps?.root,
     sx: rootSx,
     ...(modalZIndexToken ? { style: { zIndex: modalZIndexToken } } : {}),
     'data-testid':
@@ -425,7 +425,7 @@ export function PreferencesModal({
             const merged = [
               ...enrichedDescriptors,
               ...namesFromGuidance
-                .filter((n) => !enrichedDescriptors.find((d) => d.name === n))
+                .filter((n) => !enrichedDescriptors.some((d) => d.name === n))
                 .map((n) => ({ name: n, purpose: '-', duration: '-', provider: '-' })),
             ]
 
