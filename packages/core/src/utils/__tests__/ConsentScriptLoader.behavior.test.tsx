@@ -7,7 +7,7 @@ import { logger } from '../logger'
 import type { ScriptIntegration } from '../scriptIntegrations'
 import { createGoogleAnalyticsIntegration } from '../scriptIntegrations'
 
-jest.mock('./scriptLoader', () => ({
+jest.mock('../scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
 }))
 
@@ -25,7 +25,7 @@ describe('ConsentScriptLoader behavior', () => {
       )
     })
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     expect(loadScript).not.toHaveBeenCalled()
   })
 
@@ -57,12 +57,12 @@ describe('ConsentScriptLoader behavior', () => {
       )
     })
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     expect(loadScript).not.toHaveBeenCalled()
   })
 
   test('logs error when loadScript rejects', async () => {
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     ;(loadScript as jest.Mock).mockRejectedValueOnce(new Error('network'))
     const errorSpy = jest.spyOn(logger, 'error').mockImplementation(() => {})
 
@@ -105,7 +105,7 @@ describe('ConsentScriptLoader behavior', () => {
     }
 
     const integration = createGoogleAnalyticsIntegration({ measurementId: 'G-RELOAD' })
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
 
     // Case 1: reloadOnChange=false (default) => only initial load
     jest.clearAllMocks()
@@ -203,7 +203,7 @@ describe('ConsentScriptLoader behavior', () => {
       src: 'https://example.com/marketing.js',
     }
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     jest.clearAllMocks()
 
     const controlsRef = {

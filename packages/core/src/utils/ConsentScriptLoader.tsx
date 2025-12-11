@@ -102,11 +102,12 @@ export function ConsentScriptLoader({
   }, [integrations])
 
   // Validação inteligente das categorias em modo DEV
-  React.useEffect(() => {
+  React.useEffect(;() => {
     const isDev = process.env.NODE_ENV !== 'production'
     if (!isDev || integrations.length === 0) return
 
-    const enabledCategories = categories.allCategories.map((cat) => cat.id) as Category[]
+    // Usar apenas categorias HABILITADAS, não todas as definidas
+    const enabledCategories = categories.config.enabledCategories as Category[]
     const isValid = validateIntegrationCategories(integrations, enabledCategories)
 
     if (!isValid) {

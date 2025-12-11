@@ -10,12 +10,12 @@ import { ConsentScriptLoader } from '../ConsentScriptLoader'
 import type { ScriptIntegration } from '../scriptIntegrations'
 import { createGoogleAnalyticsIntegration } from '../scriptIntegrations'
 
-jest.mock('./scriptLoader', () => ({
+jest.mock('../scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
 }))
 
 describe('ConsentScriptLoader - React 19 StrictMode', () => {
-  const { loadScript } = require('./scriptLoader')
+  const { loadScript } = require('../scriptLoader')
 
   beforeEach(() => {
     jest.clearAllMocks()

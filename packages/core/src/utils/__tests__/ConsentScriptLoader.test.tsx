@@ -4,7 +4,7 @@ import * as autoConfig from '../autoConfigureCategories'
 import { ConsentScriptLoader } from '../ConsentScriptLoader'
 import { createGoogleAnalyticsIntegration } from '../scriptIntegrations'
 
-jest.mock('./scriptLoader', () => ({
+jest.mock('../scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
 }))
 
@@ -38,7 +38,7 @@ describe('ConsentScriptLoader component', () => {
       )
     })
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
 
     // Aguardar o setTimeout(0) do ConsentScriptLoader
     await waitFor(() => {
@@ -71,7 +71,7 @@ describe('ConsentScriptLoader component', () => {
       )
     })
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
 
     await waitFor(() => {
       expect(loadScript).toHaveBeenCalledWith(
@@ -113,7 +113,7 @@ describe('ConsentScriptLoader developer validation', () => {
     const autoSpy = jest.spyOn(autoConfig, 'autoConfigureCategories')
 
     render(
-      <ConsentProvider categories={{ enabledCategories: [] }}>
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
         <ConsentScriptLoader integrations={[integration]} />
       </ConsentProvider>,
     )
@@ -121,7 +121,7 @@ describe('ConsentScriptLoader developer validation', () => {
     await waitFor(() => {
       expect(autoSpy).toHaveBeenCalledWith(
         expect.objectContaining({
-          enabledCategories: expect.arrayContaining(['analytics']),
+          enabledCategories: ['analytics'],
         }),
         expect.arrayContaining([expect.objectContaining({ id: 'ads-script' })]),
         expect.objectContaining({ warningOnly: true, silent: false }),

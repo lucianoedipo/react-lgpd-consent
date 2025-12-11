@@ -5,7 +5,7 @@ import { useConsentScriptLoader } from '../ConsentScriptLoader'
 import type { ScriptIntegration } from '../scriptIntegrations'
 
 // mock loadScript
-jest.mock('./scriptLoader', () => ({
+jest.mock('../scriptLoader', () => ({
   loadScript: jest.fn().mockResolvedValue(undefined),
 }))
 
@@ -33,7 +33,7 @@ describe('useConsentScriptLoader', () => {
     })
 
     // since default state is not consented, mocked loadScript should not have been called
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     expect(loadScript).not.toHaveBeenCalled()
   })
 
@@ -63,7 +63,7 @@ describe('useConsentScriptLoader', () => {
       )
     })
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     expect(loadScript).toHaveBeenCalled()
   })
 
@@ -93,12 +93,12 @@ describe('useConsentScriptLoader', () => {
       )
     })
 
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     expect(loadScript).not.toHaveBeenCalled()
   })
 
   test('returns false on loadScript failure', async () => {
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     ;(loadScript as jest.Mock).mockRejectedValueOnce(new Error('fail'))
 
     const integration: ScriptIntegration = { id: 'z', category: 'analytics', src: 'bad' }
@@ -142,7 +142,7 @@ describe('useConsentScriptLoader', () => {
   })
 
   test('aplica nonce quando fornecido como argumento', async () => {
-    const { loadScript } = require('./scriptLoader')
+    const { loadScript } = require('../scriptLoader')
     ;(loadScript as jest.Mock).mockClear()
 
     const integration: ScriptIntegration = { id: 'n1', category: 'analytics', src: 'ok' }
