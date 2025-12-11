@@ -78,7 +78,7 @@ export { DesignProvider, useDesignTokens } from './context/DesignContext'
  * @since 0.4.1
  */
 export { ConsentGate } from './utils/ConsentGate'
-export { buildConsentStorageKey } from './utils/cookieUtils'
+export { buildConsentStorageKey, createConsentAuditEntry } from './utils/cookieUtils'
 
 /**
  * Função utilitária para carregamento dinâmico de scripts externos.
@@ -323,6 +323,8 @@ export {
  * @since 0.4.5
  */
 export type {
+  ConsentAuditAction,
+  ConsentAuditEntry,
   ConsentEvent,
   ConsentEventOrigin,
   ConsentInitializedEvent,

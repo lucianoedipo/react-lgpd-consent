@@ -5,6 +5,7 @@ import {
   removeConsentCookie,
   createInitialConsentState,
   buildConsentStorageKey,
+  createConsentAuditEntry,
 } from './cookieUtils'
 import type { ConsentState } from '../types/types'
 
@@ -167,6 +168,38 @@ describe('cookieUtils', () => {
       'portal.gov__v2025-q4',
     )
     expect(buildConsentStorageKey()).toBe('lgpd-consent__v1')
+  })
+
+  it('createConsentAuditEntry gera payload completo com consentVersion', () => {
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true, analytics: true },
+      consentDate: '2024-01-15T10:30:00.000Z',
+      lastUpdate: '2024-01-16T08:00:00.000Z',
+      source: 'modal',
+      projectConfig: { enabledCategories: ['analytics'] },
+      isModalOpen: false,
+    }
+
+    const audit = createConsentAuditEntry(state, {
+      storageKey: 'portal__v2',
+      action: 'update',
+      consentVersion: '2025-Q4',
+      origin: 'modal',
+    })
+
+    expect(audit).toMatchObject({
+      action: 'update',
+      storageKey: 'portal__v2',
+      consentVersion: '2025-Q4',
+      consented: true,
+      source: 'modal',
+      version: '1.0',
+      projectConfig: { enabledCategories: ['analytics'] },
+    })
+    expect(audit.timestamp).toBeTruthy()
+    expect(audit.preferences).toHaveProperty('necessary', true)
   })
 
   // SSR-specific branches are environment-dependent and flaky under jsdom

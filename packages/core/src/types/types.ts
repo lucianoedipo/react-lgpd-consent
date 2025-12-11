@@ -394,6 +394,46 @@ export interface ConsentCookieData {
 }
 
 /**
+ * Ações possíveis registradas no log de auditoria de consentimento.
+ * @category Types
+ * @since 0.7.0
+ * @public
+ */
+export type ConsentAuditAction = 'init' | 'update' | 'reset'
+
+/**
+ * Entrada de auditoria contendo os dados essenciais para comprovar consentimento.
+ * Inclui timestamps, versão configurada e snapshot das preferências.
+ * @category Types
+ * @since 0.7.0
+ * @public
+ */
+export interface ConsentAuditEntry {
+  /** Ação que originou o registro (inicialização, atualização ou reset). */
+  action: ConsentAuditAction
+  /** Chave de armazenamento (cookie/localStorage) aplicada, incluindo namespace/versão. */
+  storageKey: string
+  /** Versão lógica de consentimento configurada via `storage.version` (política/termo). */
+  consentVersion: string
+  /** Timestamp ISO do registro de auditoria. */
+  timestamp: string
+  /** Timestamp ISO da primeira decisão de consentimento. */
+  consentDate: string
+  /** Timestamp ISO da última alteração de preferências. */
+  lastUpdate: string
+  /** Estado atual de consentimento agregado. */
+  consented: boolean
+  /** Preferências por categoria no momento do registro. */
+  preferences: ConsentPreferences
+  /** Versão do schema do cookie. */
+  version: string
+  /** Origem da decisão (banner, modal, reset, programmatic). */
+  source: ConsentEventOrigin
+  /** Snapshot da configuração de categorias utilizada. */
+  projectConfig?: ProjectCategoriesConfig
+}
+
+/**
  * Estado interno completo do sistema de consentimento.
  * @category Types
  * @since 0.1.0
@@ -1266,6 +1306,21 @@ export interface ConsentProviderProps {
     state: ConsentState,
     context: { origin: ConsentState['source'] | 'reset' },
   ) => void
+
+  /**
+   * Callback de auditoria executado sempre que o consentimento é registrado, atualizado ou resetado.
+   * Útil para persistir logs externos (ex.: backend, data lake) com carimbo de tempo e versão do termo.
+   * @since 0.7.0
+   *
+   * @example
+   * ```tsx
+   * <ConsentProvider
+   *   storage={{ namespace: 'portal.gov', version: '2025-Q4' }}
+   *   onAuditLog={(audit) => api.auditConsent(audit)}
+   * />
+   * ```
+   */
+  onAuditLog?: (entry: ConsentAuditEntry) => void
 
   /**
    * Callback executado quando usuário modifica preferências.

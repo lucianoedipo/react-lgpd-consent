@@ -28,6 +28,7 @@ import {
 import {
   DEFAULT_COOKIE_OPTS,
   buildConsentStorageKey,
+  createConsentAuditEntry,
   readConsentCookie,
   removeConsentCookie,
   writeConsentCookie,
@@ -295,6 +296,7 @@ export function ConsentProvider({
   disableDiscoveryLog,
   onConsentInit,
   onConsentChange,
+  onAuditLog,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(() => {
@@ -310,6 +312,7 @@ export function ConsentProvider({
     }
     return base
   }, [cookieOpts, storage?.domain, storage?.namespace, storage?.version])
+  const consentVersion = storage?.version?.trim() || '1'
   // If a theme prop is provided, we explicitly apply it.
   // Otherwise we intentionally do NOT create or inject a theme provider and let the host app provide one.
   // This avoids altering the app's theme context and prevents SSR/context regressions.
@@ -383,6 +386,8 @@ export function ConsentProvider({
 
   // Ref para rastrear estado anterior (para detectar mudanças de preferências)
   const previousPreferencesRef = React.useRef<ConsentPreferences>(state.preferences)
+  const auditInitEmittedRef = React.useRef(false)
+  const previousConsentedAuditRef = React.useRef(state.consented)
 
   // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
@@ -459,12 +464,45 @@ export function ConsentProvider({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- state.preferences intencionalmente rastreado via isHydrated
   }, [isHydrated]) // Dispara apenas uma vez após hidratação
 
+  React.useEffect(() => {
+    if (!isHydrated) return
+    if (!onAuditLog) return
+    if (auditInitEmittedRef.current) return
+
+    onAuditLog(
+      createConsentAuditEntry(state, {
+        action: 'init',
+        storageKey: cookie.name,
+        consentVersion,
+      }),
+    )
+    auditInitEmittedRef.current = true
+  }, [isHydrated, onAuditLog, state, cookie.name, consentVersion])
+
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
     if (!state.consented) return
     if (skipCookiePersistRef.current) return
     writeConsentCookie(state, finalCategoriesConfig, cookie)
   }, [state, cookie, finalCategoriesConfig])
+
+  React.useEffect(() => {
+    if (!onAuditLog) {
+      previousConsentedAuditRef.current = state.consented
+      return
+    }
+    if (previousConsentedAuditRef.current && !state.consented) {
+      onAuditLog(
+        createConsentAuditEntry(state, {
+          action: 'reset',
+          storageKey: cookie.name,
+          consentVersion,
+          origin: 'reset',
+        }),
+      )
+    }
+    previousConsentedAuditRef.current = state.consented
+  }, [state, onAuditLog, cookie.name, consentVersion])
 
   // Callbacks externos (com pequeno delay para animações)
   const prevConsented = React.useRef(state.consented)
@@ -498,9 +536,28 @@ export function ConsentProvider({
       if (onConsentChange) {
         onConsentChange(state, { origin })
       }
+      if (onAuditLog) {
+        onAuditLog(
+          createConsentAuditEntry(state, {
+            action: 'update',
+            storageKey: cookie.name,
+            consentVersion,
+            origin,
+          }),
+        )
+      }
       previousPreferencesRef.current = state.preferences
     }
-  }, [state.preferences, state.consented, state.source, isHydrated])
+  }, [
+    state.preferences,
+    state.consented,
+    state.source,
+    isHydrated,
+    onConsentChange,
+    onAuditLog,
+    cookie.name,
+    consentVersion,
+  ])
 
   const api = React.useMemo<ConsentContextValue>(() => {
     const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })

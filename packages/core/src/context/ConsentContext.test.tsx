@@ -361,7 +361,10 @@ describe('ConsentProvider Additional Tests', () => {
     const onConsentInit = jest.fn()
 
     render(
-      <ConsentProvider categories={{ enabledCategories: ['analytics'] }} onConsentInit={onConsentInit}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        onConsentInit={onConsentInit}
+      >
         <TestComponentExtended />
       </ConsentProvider>,
     )
@@ -413,6 +416,40 @@ describe('ConsentProvider Additional Tests', () => {
           preferences: expect.objectContaining({ analytics: true }),
         }),
         { origin: 'modal' },
+      ),
+    )
+  })
+
+  it('deve disparar onAuditLog na inicialização e nas mudanças', async () => {
+    const onAuditLog = jest.fn()
+
+    render(
+      <ConsentProvider categories={{ enabledCategories: ['analytics'] }} onAuditLog={onAuditLog}>
+        <TestComponentExtended />
+      </ConsentProvider>,
+    )
+
+    await waitFor(() =>
+      expect(onAuditLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'init',
+          storageKey: 'lgpd-consent__v1',
+          consentVersion: '1',
+        }),
+      ),
+    )
+
+    act(() => {
+      fireEvent.click(screen.getByText('Accept All'))
+    })
+
+    await waitFor(() =>
+      expect(onAuditLog).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'update',
+          consented: true,
+          preferences: expect.objectContaining({ analytics: true }),
+        }),
       ),
     )
   })
