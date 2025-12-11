@@ -399,11 +399,9 @@ describe('dataLayerEvents', () => {
       // @ts-ignore - test mock window object
       globalThis.window.dataLayer = []
 
-      pushConsentUpdatedEvent(
-        { necessary: true, analytics: true },
-        'banner',
-        { necessary: false } as ConsentPreferences,
-      )
+      pushConsentUpdatedEvent({ necessary: true, analytics: true }, 'banner', {
+        necessary: false,
+      } as ConsentPreferences)
 
       // @ts-ignore - test mock window object
       const event = globalThis.window.dataLayer[0] as Record<string, unknown>

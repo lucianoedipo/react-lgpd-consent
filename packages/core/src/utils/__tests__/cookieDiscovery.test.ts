@@ -105,8 +105,9 @@ describe('categorizeDiscoveredCookies', () => {
   it('should use global discovered cookies when not provided', () => {
     const globalCookies = [{ name: '_ga' }]
     // @ts-ignore - Simular cookies descobertos globalmente
-    ;(globalThis as unknown as { __LGPD_DISCOVERED_COOKIES__?: unknown[] })
-      .__LGPD_DISCOVERED_COOKIES__ = globalCookies
+    ;(
+      globalThis as unknown as { __LGPD_DISCOVERED_COOKIES__?: unknown[] }
+    ).__LGPD_DISCOVERED_COOKIES__ = globalCookies
 
     const categorized = categorizeDiscoveredCookies()
 
