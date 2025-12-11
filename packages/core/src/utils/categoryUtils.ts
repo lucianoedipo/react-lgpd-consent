@@ -17,15 +17,16 @@ import type {
 
 /**
  * Categorias padrão disponíveis (exceto necessary que é sempre incluída).
+ * Armazenado como Set para checagens de existência eficientes.
  * @internal
  */
-const DEFAULT_CATEGORIES: Category[] = [
+const DEFAULT_CATEGORIES: Set<Category> = new Set([
   'analytics',
   'functional',
   'marketing',
   'social',
   'personalization',
-]
+])
 
 /**
  * Cria um objeto de preferências de consentimento inicial baseado na configuração de categorias do projeto.
@@ -277,7 +278,7 @@ export function validateCategoriesConfig(config?: ProjectCategoriesConfig): stri
 
   if (config.enabledCategories) {
     config.enabledCategories.forEach((category) => {
-      if (!DEFAULT_CATEGORIES.includes(category) && category !== 'necessary') {
+      if (!DEFAULT_CATEGORIES.has(category) && category !== 'necessary') {
         errors.push(`Categoria padrão inválida: ${category}`)
       }
     })

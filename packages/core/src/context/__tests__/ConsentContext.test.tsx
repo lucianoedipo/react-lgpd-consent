@@ -86,7 +86,7 @@ const TestComponentExtended = () => {
 function TriggerSetPreferences() {
   const { setPreferences } = useConsent()
   const hasRun = React.useRef(false)
-  
+
   React.useEffect(() => {
     if (!hasRun.current) {
       hasRun.current = true
