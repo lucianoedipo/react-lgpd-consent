@@ -8,7 +8,14 @@ import Cookies from 'js-cookie'
  * Veja `src/types/types.ts` para a definição da estrutura `ConsentCookieData`.
  */
 
-import type { ConsentCookieOptions, ConsentState, ProjectCategoriesConfig } from '../types/types'
+import type {
+  ConsentAuditAction,
+  ConsentAuditEntry,
+  ConsentCookieOptions,
+  ConsentEventOrigin,
+  ConsentState,
+  ProjectCategoriesConfig,
+} from '../types/types'
 import { ensureNecessaryAlwaysOn } from './categoryUtils'
 import { logger } from './logger'
 
@@ -27,8 +34,8 @@ export function buildConsentStorageKey(options?: {
   const namespaceRaw = options?.namespace?.trim() || DEFAULT_STORAGE_NAMESPACE
   const versionRaw = options?.version?.trim() || DEFAULT_STORAGE_VERSION
 
-  const sanitizedNamespace = namespaceRaw.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()
-  const sanitizedVersion = versionRaw.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()
+  const sanitizedNamespace = namespaceRaw.replaceAll(/[^a-z0-9._-]+/gi, '-').toLowerCase()
+  const sanitizedVersion = versionRaw.replaceAll(/[^a-z0-9._-]+/gi, '-').toLowerCase()
 
   return `${sanitizedNamespace}__v${sanitizedVersion}`
 }
@@ -47,7 +54,8 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
   maxAgeDays: 365,
   sameSite: 'Lax',
-  secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : false,
+  secure:
+    globalThis.window === undefined ? false : globalThis.window.location.protocol === 'https:',
   path: '/',
   domain: undefined,
 }
@@ -119,11 +127,10 @@ function migrateLegacyCookie(legacyData: Record<string, unknown>): ConsentState 
 
     return {
       version: COOKIE_SCHEMA_VERSION,
-      consented: Boolean((legacyData as Record<string, unknown>).consented) || false,
+      consented: Boolean(legacyData.consented) || false,
       preferences:
-        (legacyData as Record<string, unknown>).preferences &&
-        typeof (legacyData as Record<string, unknown>).preferences === 'object'
-          ? ((legacyData as Record<string, unknown>).preferences as ConsentState['preferences'])
+        legacyData.preferences && typeof legacyData.preferences === 'object'
+          ? (legacyData.preferences as ConsentState['preferences'])
           : { necessary: true },
       consentDate: now,
       lastUpdate: now,
@@ -191,6 +198,44 @@ export function writeConsentCookie(
     source: cookieData.source,
     preferencesCount: Object.keys(cookieData.preferences).length,
   })
+}
+
+/**
+ * Cria um registro de auditoria com carimbo de tempo, versão e snapshot das preferências.
+ * @category Utils
+ * @since 0.7.0
+ *
+ * @param state Estado atual de consentimento.
+ * @param params.storageKey Chave de armazenamento (cookie/localStorage) aplicada.
+ * @param params.action Ação que disparou o registro.
+ * @param params.consentVersion Versão lógica do consentimento (ex.: bump de política/termo).
+ * @param params.origin Origem explícita da decisão (opcional).
+ */
+export function createConsentAuditEntry(
+  state: ConsentState,
+  params: {
+    storageKey: string
+    action: ConsentAuditAction
+    consentVersion?: string | null
+    origin?: ConsentEventOrigin
+  },
+): ConsentAuditEntry {
+  const preferences = ensureNecessaryAlwaysOn(state.preferences)
+  const now = new Date().toISOString()
+
+  return {
+    action: params.action,
+    storageKey: params.storageKey,
+    consentVersion: params.consentVersion?.trim() || '1',
+    timestamp: now,
+    consentDate: state.consentDate,
+    lastUpdate: state.lastUpdate,
+    consented: state.consented,
+    preferences,
+    version: state.version,
+    source: params.origin ?? state.source,
+    projectConfig: state.projectConfig,
+  }
 }
 
 /**

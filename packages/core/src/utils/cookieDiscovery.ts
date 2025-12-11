@@ -90,6 +90,15 @@ export function detectConsentCookieName(): string | null {
 }
 
 /**
+ * Função auxiliar para match de padrões
+ * @internal
+ */
+function matchPattern(name: string, pattern: string): boolean {
+  if (pattern.endsWith('*')) return name.startsWith(pattern.slice(0, -1))
+  return name === pattern
+}
+
+/**
  * Heurística simples para atribuir cookies descobertos a categorias LGPD (experimental).
  *
  * - Usa padrões conhecidos por categoria
@@ -114,11 +123,6 @@ export function categorizeDiscoveredCookies(
 
   const out: Record<string, CookieDescriptor[]> = {}
 
-  function matchPattern(name: string, pattern: string) {
-    if (pattern.endsWith('*')) return name.startsWith(pattern.slice(0, -1))
-    return name === pattern
-  }
-
   list
     .filter((d) => d.name && d.name !== 'cookieConsent')
     .forEach((d) => {
@@ -128,9 +132,9 @@ export function categorizeDiscoveredCookies(
         const patterns = COOKIE_PATTERNS_BY_CATEGORY[cat] || []
         if (patterns.some((p) => matchPattern(d.name, p))) assigned = cat
       })
-      const cat: Category = (assigned || 'analytics') as Category
+      const cat: Category = (assigned ?? 'analytics') as Category
       out[cat] = out[cat] || []
-      if (!out[cat].find((x) => x.name === d.name)) out[cat].push(d)
+      if (!out[cat].some((x) => x.name === d.name)) out[cat].push(d)
     })
 
   if (registerOverrides) {

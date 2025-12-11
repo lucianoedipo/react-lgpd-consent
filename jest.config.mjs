@@ -2,10 +2,10 @@
 const config = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
-  // Reduz paralelismo e consumo para evitar travamentos em ambientes limitados (ex.: WSL)
+  // Otimização de memória para evitar crashes em testes grandes
   maxWorkers: '50%',
-  testTimeout: 30000,
-  workerIdleMemoryLimit: '512MB',
+  workerIdleMemoryLimit: '2GB',
+  testTimeout: 10000,
   roots: ['<rootDir>/packages/core/src', '<rootDir>/packages/mui/src'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   transform: {

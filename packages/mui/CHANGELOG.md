@@ -35,3 +35,18 @@
 
 - Updated dependencies [[`4c9ebf2`](https://github.com/lucianoedipo/react-lgpd-consent/commit/4c9ebf231ff58168294f2fde405298b7087016ca)]:
   - @react-lgpd-consent/core@0.6.0
+
+---
+
+## Versões Anteriores (< 0.6.0)
+
+Para histórico completo de versões 0.5.x e anteriores, consulte:
+- [CHANGELOG.md do pacote principal](../react-lgpd-consent/CHANGELOG.md)
+- [Releases no GitHub](https://github.com/lucianoedipo/react-lgpd-consent/releases)
+
+**Resumo de marcos importantes:**
+- **v0.5.0** (25/10/2025): Criação do pacote `@react-lgpd-consent/mui` separando componentes UI
+- **v0.4.3** (06/10/2025): Otimizações de performance (React.memo, useMemo, lazy loading)
+- **v0.4.1** (21/09/2025): Sistema completo de design tokens (200+ pontos de customização)
+- **v0.3.6** (28/08/2025): Correção de herança de ThemeProvider
+- **v0.3.0-v0.3.7**: Componentes CookieBanner, PreferencesModal, FloatingPreferencesButton com testes de acessibilidade

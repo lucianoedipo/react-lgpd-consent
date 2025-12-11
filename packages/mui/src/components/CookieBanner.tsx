@@ -406,15 +406,18 @@ export function CookieBanner({
    * // Uso típico com um componente que aceita objeto de estilos/sx:
    * // <Box sx={positionStyle}>...</Box>
    */
-  const positionStyle = {
+  const resolveBannerZIndex = (theme: Theme) =>
+    designTokens?.layout?.zIndex?.banner ?? theme?.zIndex?.snackbar ?? 1400
+
+  const positionStyle: SxProps<Theme> = (theme) => ({
     position: 'fixed',
-    zIndex: 1300,
+    zIndex: resolveBannerZIndex(theme),
     ...(designTokens?.layout?.position === 'top' ? { top: 0 } : { bottom: 0 }),
     left: 0,
     right: 0,
     width: designTokens?.layout?.width?.desktop ?? '100%',
     p: 2,
-  }
+  })
 
   /**
    * Cor do backdrop usado quando o banner está em modo bloqueante.
@@ -444,8 +447,8 @@ export function CookieBanner({
   // Rota segura: se a URL atual corresponder à política/termos, não aplicar overlay (SSR-safe)
   const isSafeRoute = (() => {
     try {
-      if (typeof window === 'undefined') return false
-      const current = new URL(window.location.href)
+      if (globalThis?.window === undefined) return false
+      const current = new URL(globalThis.window.location.href)
       const safeUrls = [policyLinkUrl, termsLinkUrl].filter(Boolean) as string[]
       return safeUrls.some((u) => {
         try {
@@ -473,11 +476,15 @@ export function CookieBanner({
             right: 0,
             bottom: 0,
             backgroundColor: resolveBackdropColor(theme),
-            zIndex: 1299,
+            zIndex:
+              designTokens?.layout?.zIndex?.backdrop ??
+              (resolveBannerZIndex(theme) ? resolveBannerZIndex(theme) - 1 : 1299),
           })}
           data-testid="lgpd-cookie-banner-overlay"
         />
-        <Box sx={positionStyle}>{bannerContent}</Box>
+        <Box sx={positionStyle} data-testid="lgpd-cookie-banner-wrapper">
+          {bannerContent}
+        </Box>
       </>
     )
   }

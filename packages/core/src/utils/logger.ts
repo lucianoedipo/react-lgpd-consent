@@ -147,15 +147,9 @@ class ConsentLogger {
     const isRecord = (v: unknown): v is Record<string, unknown> =>
       typeof v === 'object' && v !== null
     const theme = isRecord(themeInfo) ? themeInfo : undefined
-    const palette =
-      theme && isRecord(theme['palette'])
-        ? (theme['palette'] as Record<string, unknown>)
-        : undefined
+    const palette = theme && isRecord(theme['palette']) ? theme['palette'] : undefined
     const primary = palette && isRecord(palette['primary'])
-    const transitions =
-      theme && isRecord(theme['transitions'])
-        ? (theme['transitions'] as Record<string, unknown>)
-        : undefined
+    const transitions = theme && isRecord(theme['transitions']) ? theme['transitions'] : undefined
     const duration = transitions && isRecord(transitions['duration'])
 
     this.debug('Theme compatibility check:', {

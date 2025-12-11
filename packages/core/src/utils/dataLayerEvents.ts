@@ -37,14 +37,12 @@ declare global {
 }
 
 /**
- * Garante que o dataLayer existe no window.
+ * Garante que o dataLayer existe no globalThis.window.
  * @internal
  */
 function ensureDataLayer(): void {
-  if (typeof window === 'undefined') return
-  if (!window.dataLayer) {
-    window.dataLayer = []
-  }
+  if (globalThis.window === undefined) return
+  globalThis.window.dataLayer ??= []
 }
 
 /**
@@ -78,7 +76,7 @@ function ensureDataLayer(): void {
  * @public
  */
 export function pushConsentInitializedEvent(categories: ConsentPreferences): void {
-  if (typeof window === 'undefined') return
+  if (globalThis.window === undefined) return
 
   ensureDataLayer()
 
@@ -89,7 +87,7 @@ export function pushConsentInitializedEvent(categories: ConsentPreferences): voi
     categories,
   }
 
-  window.dataLayer?.push(event)
+  globalThis.window.dataLayer?.push(event)
 }
 
 /**
@@ -141,7 +139,7 @@ export function pushConsentUpdatedEvent(
   origin: ConsentEventOrigin,
   previousCategories?: ConsentPreferences,
 ): void {
-  if (typeof window === 'undefined') return
+  if (globalThis.window === undefined) return
 
   ensureDataLayer()
 
@@ -158,7 +156,7 @@ export function pushConsentUpdatedEvent(
     changed_categories: changedCategories,
   }
 
-  window.dataLayer?.push(event)
+  globalThis.window.dataLayer?.push(event)
 }
 
 /**

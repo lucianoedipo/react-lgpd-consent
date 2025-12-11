@@ -2,6 +2,19 @@
 
 Projetos **prontos para copiar e usar** em sua aplicação.
 
+## 🆕 Novidades v0.7.0
+
+Todos os exemplos foram atualizados com:
+
+- ✅ **Callbacks de Lifecycle** - `onConsentInit`, `onConsentChange`, `onAuditLog`
+- ✅ **Presets ANPD** - `createAnpdCategories()` para configuração rápida
+- ✅ **Auditoria** - `createConsentAuditEntry()` para compliance
+- ✅ **Mensagens de erro claras** - Hooks com erros em pt-BR
+
+📖 **Documentação:** [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) | [API.md](../packages/react-lgpd-consent/API.md)
+
+---
+
 ## 📁 Projetos Disponíveis
 
 ### 🔷 [next-app-router/](./next-app-router/)
@@ -122,7 +135,6 @@ Ambos os exemplos incluem:
 
 ```tsx
 import { COMMON_INTEGRATIONS } from '@react-lgpd-consent/core'
-
 ;<ConsentScriptLoader
   integrations={[
     COMMON_INTEGRATIONS.googleAnalytics({ measurementId: GA_ID }),

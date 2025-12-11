@@ -15,7 +15,7 @@
  * Precisamos comparar com estado anterior (via git) para detectar bumps.
  */
 
-import { execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -39,7 +39,11 @@ async function writePackageJson(filePath, pkg) {
 function getGitVersion(filePath) {
   try {
     const relativePath = path.relative(rootDir, filePath)
-    const content = execSync(`git show HEAD:${relativePath}`, { encoding: 'utf-8' })
+    // Usar execFileSync para evitar shell injection - executa git diretamente sem shell
+    const content = execFileSync('git', ['show', `HEAD:${relativePath}`], { 
+      encoding: 'utf-8',
+      cwd: rootDir 
+    })
     return JSON.parse(content).version
   } catch {
     // Se não houver versão anterior (novo pacote), retorna 0.0.0

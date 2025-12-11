@@ -29,6 +29,7 @@ const LOADING_SCRIPTS = new Map<string, Promise<void>>()
  * @param {string} src A URL do script externo a ser carregado.
  * @param {string | null} [category=null] A categoria de consentimento exigida para o script. Suporta tanto categorias predefinidas quanto customizadas. Se o consentimento para esta categoria não for dado, o script não será carregado.
  * @param {Record<string, string>} [attrs={}] Atributos adicionais a serem aplicados ao elemento `<script>` (ex: `{ async: 'true' }`).
+ * @param {string | undefined} [nonce] Nonce CSP opcional aplicado ao script.
  * @returns {Promise<void>} Uma Promise que resolve quando o script é carregado com sucesso, ou rejeita se o consentimento não for dado ou ocorrer um erro de carregamento.
  * @example
  * ```ts
@@ -43,6 +44,7 @@ export function loadScript(
   src: string,
   category: string | null = null,
   attrs: Record<string, string> = {},
+  nonce?: string,
 ) {
   if (typeof document === 'undefined') return Promise.resolve()
 
@@ -88,7 +90,13 @@ export function loadScript(
         s.id = id
         s.src = src
         s.async = true
-        for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v)
+        const mergedAttrs = { ...attrs }
+        const scriptNonce = mergedAttrs.nonce || nonce
+        if (scriptNonce) {
+          s.nonce = scriptNonce
+          mergedAttrs.nonce = scriptNonce
+        }
+        for (const [k, v] of Object.entries(mergedAttrs)) s.setAttribute(k, v)
 
         s.onload = () => {
           LOADING_SCRIPTS.delete(id) // Limpa do registro ao completar

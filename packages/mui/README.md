@@ -70,6 +70,40 @@ function App() {
 }
 ```
 
+## 🆕 Novidades v0.7.0
+
+### Callbacks de Lifecycle
+
+Monitore eventos para auditoria:
+
+```tsx
+import { ConsentProvider } from '@react-lgpd-consent/mui'
+
+<ConsentProvider
+  onConsentInit={(state) => console.log('Inicializado:', state)}
+  onConsentChange={(current, prev) => console.log('Mudou:', current)}
+  onAuditLog={(entry) => {
+    fetch('/api/audit', { method: 'POST', body: JSON.stringify(entry) })
+  }}
+>
+```
+
+### Presets ANPD
+
+```tsx
+import { createAnpdCategories } from '@react-lgpd-consent/mui'
+
+const categories = createAnpdCategories({
+  include: ['analytics', 'marketing']
+})
+
+<ConsentProvider categories={categories}>
+```
+
+📖 **Documentação completa:** [API.md](../react-lgpd-consent/API.md) | [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+
+---
+
 ### Uso Headless (Avançado)
 
 Se você quiser controle total sobre a UI:

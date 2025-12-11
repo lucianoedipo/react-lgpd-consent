@@ -33,7 +33,7 @@
     },
     "docs:generate": {
       "dependsOn": ["build"],
-      "outputs": ["docs/**"]
+      "outputs": ["../../docs/**", "../../.turbo/docs-review-summary.md"]
     },
     "storybook": {
       "cache": false,
@@ -41,7 +41,7 @@
     },
     "build-storybook": {
       "dependsOn": ["build"],
-      "outputs": ["storybook-static/**"]
+      "outputs": ["../../storybook-static/**"]
     }
   },
   "globalDependencies": [

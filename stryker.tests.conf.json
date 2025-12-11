@@ -1,16 +1,34 @@
 {
   "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
-  "mutate": ["src/**/*.test.ts", "src/**/*.test.tsx"],
-  "files": ["src/**/*.ts", "src/**/*.tsx", "jest.config.mjs"],
-  "testRunner": "jest",
-  "jest": {
-    "projectType": "custom",
-    "configFile": "jest.config.mjs"
+  "mutate": [
+    "packages/core/src/**/*.test.ts",
+    "packages/core/src/**/*.test.tsx",
+    "packages/mui/src/**/*.test.ts",
+    "packages/mui/src/**/*.test.tsx",
+    "packages/react-lgpd-consent/src/**/*.test.ts",
+    "packages/react-lgpd-consent/src/**/*.test.tsx"
+  ],
+  "testRunner": "command",
+  "commandRunner": {
+    "command": "pnpm test"
   },
-  "buildCommand": "tsc --noEmit",
-  "tsconfigFile": "tsconfig.json",
+  "buildCommand": "pnpm run type-check",
+  "tsconfigFile": "tsconfig.base.json",
   "reporters": ["progress", "clear-text", "html"],
   "coverageAnalysis": "perTest",
   "concurrency": 4,
-  "ignorePatterns": ["node_modules/**", "dist/**", "example/**", "storybook-static/**"]
+  "ignorePatterns": [
+    "node_modules/**",
+    "packages/**/dist/**",
+    "example/**",
+    "examples/**",
+    "storybook-static/**",
+    "docs/**",
+    "scripts/**",
+    "rfcs/**"
+  ],
+  "tempDirName": ".stryker-tmp",
+  "cleanTempDir": true,
+  "timeoutMS": 30000,
+  "timeoutFactor": 2
 }

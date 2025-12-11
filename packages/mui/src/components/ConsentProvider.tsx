@@ -393,7 +393,7 @@ export function ConsentProvider({
   floatingPreferencesButtonProps,
   children,
   ...coreProps
-}: ConsentProviderProps) {
+}: Readonly<ConsentProviderProps>) {
   // Se já tem um modal customizado OU desabilitou o padrão, usa o que foi passado
   // Caso contrário, injeta o PreferencesModal padrão
   const modalComponent = disableDefaultModal

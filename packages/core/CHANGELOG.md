@@ -42,5 +42,17 @@
   - 🚀 Configuração de Turborepo para builds otimizados
   - 📦 Configuração de Changesets para versionamento automatizado
 
-As notas de versão completas são mantidas no arquivo `CHANGELOG.md` da raiz do repositório.  
-Este pacote segue a numeração conjunta da biblioteca `react-lgpd-consent`.
+---
+
+## Versões Anteriores (< 0.6.0)
+
+Para histórico completo de versões 0.5.x e anteriores, consulte:
+- [CHANGELOG.md do pacote principal](../react-lgpd-consent/CHANGELOG.md)
+- [Releases no GitHub](https://github.com/lucianoedipo/react-lgpd-consent/releases)
+
+**Resumo de marcos importantes:**
+- **v0.5.0** (25/10/2025): Arquitetura modular - criação dos pacotes `@react-lgpd-consent/core` e `@react-lgpd-consent/mui`
+- **v0.4.5** (25/10/2025): DataLayer events para Google Tag Manager
+- **v0.4.1** (21/09/2025): Expansão de integrações nativas (Hotjar, Mixpanel, Clarity, Intercom, Zendesk)
+- **v0.3.0-v0.4.0**: Sistema de design tokens, categorias customizadas, testes de acessibilidade
+- **v0.1.0-v0.2.x**: Implementação inicial com ConsentProvider, CookieBanner, PreferencesModal

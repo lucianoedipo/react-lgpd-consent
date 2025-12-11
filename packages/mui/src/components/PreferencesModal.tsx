@@ -314,7 +314,8 @@ export function PreferencesModal({
   }, [isModalOpen, getInitialPreferences])
 
   // Se DialogProps.open for fornecido, usa ele. Senão, usa o estado do contexto
-  const open = DialogProps?.open ?? isModalOpen ?? false
+  const { open: dialogOpenProp, ...dialogRest } = DialogProps ?? {}
+  const open = dialogOpenProp ?? isModalOpen ?? false
 
   const handleSave = () => {
     // Aplica as mudanças temporárias ao contexto definitivo
@@ -339,8 +340,40 @@ export function PreferencesModal({
     color: designTokens?.colors?.text ?? theme.palette.text.primary,
   })
 
+  const resolveModalZIndex = React.useCallback(
+    (theme: Theme) => designTokens?.layout?.zIndex?.modal ?? (theme?.zIndex?.modal ?? 1300) + 10,
+    [designTokens?.layout?.zIndex?.modal],
+  )
+
+  const modalZIndexToken = designTokens?.layout?.zIndex?.modal
+
+  const rootSx = [
+    DialogProps?.slotProps?.root && (DialogProps.slotProps.root as { sx?: SxProps<Theme> }).sx,
+    (theme: Theme) => ({ zIndex: resolveModalZIndex(theme) }),
+  ].filter(Boolean) as SxProps<Theme> | undefined
+
+  const rootSlotProps = {
+    ...dialogRest?.slotProps?.root,
+    sx: rootSx,
+    ...(modalZIndexToken ? { style: { zIndex: modalZIndexToken } } : {}),
+    'data-testid':
+      (dialogRest?.slotProps?.root as { ['data-testid']?: string })?.['data-testid'] ??
+      'lgpd-preferences-modal-root',
+  }
+
+  const mergedDialogProps: DialogProps = {
+    open,
+    fullWidth: true,
+    maxWidth: 'sm',
+    ...dialogRest,
+    slotProps: {
+      ...dialogRest?.slotProps,
+      root: rootSlotProps,
+    },
+  }
+
   return (
-    <Dialog aria-labelledby="cookie-pref-title" open={open} onClose={handleCancel} {...DialogProps}>
+    <Dialog aria-labelledby="cookie-pref-title" onClose={handleCancel} {...mergedDialogProps}>
       <DialogTitle id="cookie-pref-title" sx={modalTitleSx}>
         {texts.modalTitle}
       </DialogTitle>
@@ -392,7 +425,7 @@ export function PreferencesModal({
             const merged = [
               ...enrichedDescriptors,
               ...namesFromGuidance
-                .filter((n) => !enrichedDescriptors.find((d) => d.name === n))
+                .filter((n) => !enrichedDescriptors.some((d) => d.name === n))
                 .map((n) => ({ name: n, purpose: '-', duration: '-', provider: '-' })),
             ]
 

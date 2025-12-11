@@ -62,6 +62,52 @@ function MyCustomBanner() {
 - **Integrações:** Google Analytics, GTM, UserWay, Facebook Pixel, Hotjar, etc.
 - **Tipos TypeScript:** Tipagem completa para toda a API
 
+## 🆕 Novidades v0.7.0
+
+### Callbacks de Lifecycle
+
+```tsx
+import { ConsentProvider } from '@react-lgpd-consent/core'
+
+<ConsentProvider
+  onConsentInit={(state) => console.log('Init:', state)}
+  onConsentChange={(current, previous) => {
+    console.log('Mudou:', { current, previous })
+  }}
+  onAuditLog={(entry) => {
+    // Enviar para backend
+    fetch('/api/audit', { method: 'POST', body: JSON.stringify(entry) })
+  }}
+>
+```
+
+### Presets ANPD
+
+```tsx
+import { createAnpdCategories, ANPD_CATEGORY_PRESETS } from '@react-lgpd-consent/core'
+
+// Preset BÁSICO
+const basic = createAnpdCategories({ include: ['analytics'] })
+
+// Preset COMPLETO
+const full = createAnpdCategories({
+  include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
+})
+```
+
+### Auditoria de Consentimento
+
+```tsx
+import { createConsentAuditEntry } from '@react-lgpd-consent/core'
+
+const audit = createConsentAuditEntry(
+  { consented: true, preferences: { analytics: true } },
+  { action: 'update', storageKey: 'lgpd-consent__v1' }
+)
+```
+
+📖 **Saiba mais:** [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+
 ## 📚 Documentação
 
 Para documentação completa, exemplos e API reference:

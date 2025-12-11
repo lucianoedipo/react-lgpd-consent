@@ -389,3 +389,89 @@ interface ConsentUpdatedEvent {
 | Live Chat          | `functional`          | Funcionalidade de suporte        |
 | YouTube/Vimeo      | `social`              | Conteúdo de redes sociais        |
 
+
+---
+
+## 🆕 Recursos Avançados v0.7.0
+
+### Monitoramento com Callbacks de Lifecycle
+
+Integre sistemas de auditoria monitorando eventos de consentimento:
+
+```tsx
+import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'
+import { googleAnalytics4Integration } from './integrations'
+
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics', 'marketing'] }}
+  onConsentInit={(state) => {
+    // Disparado na inicialização (útil para analytics)
+    console.log('Consentimento inicial:', state)
+  }}
+  onConsentChange={(current, previous) => {
+    // Disparado em toda mudança de preferências
+    console.log('Mudança:', { current, previous })
+    
+    // Exemplo: disparar evento no dataLayer
+    window.dataLayer?.push({
+      event: 'consent_preferences_updated',
+      consent_analytics: current.preferences.analytics,
+      consent_marketing: current.preferences.marketing
+    })
+  }}
+  onAuditLog={(entry) => {
+    // Enviar para backend de compliance
+    fetch('/api/consent-audit', {
+      method: 'POST',
+      body: JSON.stringify(entry)
+    })
+  }}
+>
+  <ConsentScriptLoader integrations={[googleAnalytics4Integration]} />
+  <YourApp />
+</ConsentProvider>
+```
+
+### Presets de Categorias ANPD
+
+Use configurações pré-validadas pela ANPD:
+
+```tsx
+import { ConsentProvider, createAnpdCategories } from 'react-lgpd-consent'
+
+// Preset BÁSICO (necessary + analytics)
+const basicConfig = createAnpdCategories({ include: ['analytics'] })
+
+// Preset COMPLETO (todas as 6 categorias)
+const fullConfig = createAnpdCategories({
+  include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
+})
+
+// Com customizações
+const customConfig = createAnpdCategories({
+  include: ['analytics', 'marketing'],
+  names: { analytics: 'Análises' },
+  descriptions: { marketing: 'Anúncios personalizados' }
+})
+
+<ConsentProvider categories={fullConfig}>
+  <ConsentScriptLoader integrations={myIntegrations} />
+</ConsentProvider>
+```
+
+**Vantagens dos presets:**
+- ✅ Conformidade com diretrizes ANPD
+- ✅ Nomes e descrições em pt-BR revisadas
+- ✅ Tipagem forte para evitar erros
+- ✅ Reduz código boilerplate em 60%
+
+---
+
+## 📚 Recursos Adicionais
+
+- [API.md](./API.md) – Documentação completa da API pública
+- [RECIPES.md](../../RECIPES.md) – Receitas práticas com Next.js, CSP, Google Consent Mode v2
+- [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) – Solução de problemas comuns
+- [CONFORMIDADE.md](../../CONFORMIDADE.md) – Conformidade LGPD e ANPD
+
+**Problemas de integração?** Consulte [TROUBLESHOOTING.md - Seção de Integrations](../../TROUBLESHOOTING.md#integrações-de-terceiros).

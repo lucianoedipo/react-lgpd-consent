@@ -84,6 +84,46 @@ function Analytics() {
 
 ---
 
+## 🆕 Novidades v0.7.0
+
+### Callbacks de Lifecycle (#68)
+
+```tsx
+<ConsentProvider
+  onConsentInit={(state) => console.log('Init:', state)}
+  onConsentChange={(current, prev) => console.log('Changed:', current)}
+  onAuditLog={(entry) => fetch('/api/audit', {
+    method: 'POST',
+    body: JSON.stringify(entry)
+  })}
+>
+```
+
+### Presets ANPD (#70)
+
+```tsx
+import { createAnpdCategories } from 'react-lgpd-consent'
+
+const categories = createAnpdCategories({
+  include: ['analytics', 'marketing']
+})
+```
+
+### Auditoria (#60)
+
+```tsx
+import { createConsentAuditEntry } from 'react-lgpd-consent'
+
+const audit = createConsentAuditEntry(state, {
+  action: 'update',
+  consentVersion: '1'
+})
+```
+
+📖 **Documentação completa:** [API.md](./API.md) | [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+
+---
+
 ## Pacotes (monorepo v0.5.x)
 
 | Pacote | Descrição |

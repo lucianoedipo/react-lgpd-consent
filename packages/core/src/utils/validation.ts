@@ -32,7 +32,7 @@ export function validateConsentProviderProps(
   if (!isDev()) {
     if (props.categories) {
       // Sanitização leve em produção: remover 'necessary' se vier por engano
-      const enabled = Array.from(new Set([...(props.categories.enabledCategories ?? [])]))
+      const enabled = [...new Set(props.categories.enabledCategories ?? [])]
       const sanitizedEnabled = enabled.filter((c) => c !== 'necessary')
       sanitized.categories = {
         enabledCategories: sanitizedEnabled as ProjectCategoriesConfig['enabledCategories'],
@@ -82,11 +82,11 @@ export function validateConsentProviderProps(
   // Validação de categories (+sanitização) — independente de zod
   if (!props.categories) {
     warnings.push(
-      "Prop 'categories' não fornecida. A lib aplicará um padrão seguro, mas recomenda-se definir 'categories.enabledCategories' explicitamente para clareza e auditoria.",
+      "Prop 'categories' não fornecida — o ConsentProvider requer configuração de categorias.",
     )
   } else {
     const cat = props.categories
-    const enabled = Array.from(new Set([...(cat.enabledCategories ?? [])]))
+    const enabled = [...new Set(cat.enabledCategories ?? [])]
     if (enabled.includes('necessary')) {
       warnings.push("'necessary' é sempre incluída automaticamente — remova de enabledCategories.")
     }
@@ -95,7 +95,7 @@ export function validateConsentProviderProps(
     if (invalidEnabled.length > 0) {
       warnings.push(
         `enabledCategories contém valores inválidos: ${invalidEnabled
-          .map((v) => String(v))
+          .map(String)
           .join(', ')} — remova ou corrija os IDs de categoria`,
       )
     }

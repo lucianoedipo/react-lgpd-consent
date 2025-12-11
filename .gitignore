@@ -13,6 +13,8 @@ docs/
 # ---- Test outputs, mutation reports and temporary sandboxes ----
 reports/
 .stryker-tmp/
+.stryker-summary.md
+mutation.log
 test-app/
 coverage/
 .eslintcache

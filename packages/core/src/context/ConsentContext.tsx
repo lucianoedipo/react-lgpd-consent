@@ -28,6 +28,7 @@ import {
 import {
   DEFAULT_COOKIE_OPTS,
   buildConsentStorageKey,
+  createConsentAuditEntry,
   readConsentCookie,
   removeConsentCookie,
   writeConsentCookie,
@@ -215,6 +216,13 @@ const ActionsCtx = React.createContext<ConsentContextValue | null>(null)
 const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
 const HydrationCtx = React.createContext<boolean>(false)
 
+function buildProviderError(hookName: string) {
+  return new Error(
+    `[react-lgpd-consent] ${hookName} deve ser usado dentro de <ConsentProvider>. ` +
+      'Envolva seu componente com o provider ou use o wrapper @react-lgpd-consent/mui.',
+  )
+}
+
 /**
  * @component
  * @category Context
@@ -286,6 +294,9 @@ export function ConsentProvider({
   guidanceConfig,
   children,
   disableDiscoveryLog,
+  onConsentInit,
+  onConsentChange,
+  onAuditLog,
 }: Readonly<ConsentProviderProps>) {
   const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(() => {
@@ -301,6 +312,7 @@ export function ConsentProvider({
     }
     return base
   }, [cookieOpts, storage?.domain, storage?.namespace, storage?.version])
+  const consentVersion = storage?.version?.trim() || '1'
   // If a theme prop is provided, we explicitly apply it.
   // Otherwise we intentionally do NOT create or inject a theme provider and let the host app provide one.
   // This avoids altering the app's theme context and prevents SSR/context regressions.
@@ -374,6 +386,8 @@ export function ConsentProvider({
 
   // Ref para rastrear estado anterior (para detectar mudanças de preferências)
   const previousPreferencesRef = React.useRef<ConsentPreferences>(state.preferences)
+  const auditInitEmittedRef = React.useRef(false)
+  const previousConsentedAuditRef = React.useRef(state.consented)
 
   // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
@@ -445,9 +459,25 @@ export function ConsentProvider({
       logger.info('DataLayer: consent_initialized event dispatched', {
         preferences: state.preferences,
       })
+      if (onConsentInit) onConsentInit(state)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- state.preferences intencionalmente rastreado via isHydrated
   }, [isHydrated]) // Dispara apenas uma vez após hidratação
+
+  React.useEffect(() => {
+    if (!isHydrated) return
+    if (!onAuditLog) return
+    if (auditInitEmittedRef.current) return
+
+    onAuditLog(
+      createConsentAuditEntry(state, {
+        action: 'init',
+        storageKey: cookie.name,
+        consentVersion,
+      }),
+    )
+    auditInitEmittedRef.current = true
+  }, [isHydrated, onAuditLog, state, cookie.name, consentVersion])
 
   // Persiste somente após decisão (consented)
   React.useEffect(() => {
@@ -455,6 +485,24 @@ export function ConsentProvider({
     if (skipCookiePersistRef.current) return
     writeConsentCookie(state, finalCategoriesConfig, cookie)
   }, [state, cookie, finalCategoriesConfig])
+
+  React.useEffect(() => {
+    if (!onAuditLog) {
+      previousConsentedAuditRef.current = state.consented
+      return
+    }
+    if (previousConsentedAuditRef.current && !state.consented) {
+      onAuditLog(
+        createConsentAuditEntry(state, {
+          action: 'reset',
+          storageKey: cookie.name,
+          consentVersion,
+          origin: 'reset',
+        }),
+      )
+    }
+    previousConsentedAuditRef.current = state.consented
+  }, [state, onAuditLog, cookie.name, consentVersion])
 
   // Callbacks externos (com pequeno delay para animações)
   const prevConsented = React.useRef(state.consented)
@@ -477,16 +525,40 @@ export function ConsentProvider({
     )
 
     if (hasChanged) {
-      const origin = state.source === 'programmatic' ? 'reset' : state.source
+      const origin: 'banner' | 'modal' | 'programmatic' | 'reset' =
+        state.source === 'programmatic' ? 'reset' : state.source
       pushConsentUpdatedEvent(state.preferences, origin, previousPreferencesRef.current)
       logger.info('DataLayer: consent_updated event dispatched', {
         origin,
         preferences: state.preferences,
         consented: state.consented,
       })
+      if (onConsentChange) {
+        onConsentChange(state, { origin })
+      }
+      if (onAuditLog) {
+        onAuditLog(
+          createConsentAuditEntry(state, {
+            action: 'update',
+            storageKey: cookie.name,
+            consentVersion,
+            origin,
+          }),
+        )
+      }
       previousPreferencesRef.current = state.preferences
     }
-  }, [state.preferences, state.consented, state.source, isHydrated])
+  }, [
+    state,
+    state.preferences,
+    state.consented,
+    state.source,
+    isHydrated,
+    onConsentChange,
+    onAuditLog,
+    cookie.name,
+    consentVersion,
+  ])
 
   const api = React.useMemo<ConsentContextValue>(() => {
     const acceptAll = () => dispatch({ type: 'ACCEPT_ALL', config: finalCategoriesConfig })
@@ -543,6 +615,17 @@ export function ConsentProvider({
     return 'rgba(0, 0, 0, 0.4)'
   }, [designTokens])
 
+  const cookieBannerPropsWithDefaults = React.useMemo(() => {
+    const incoming: Record<string, unknown> = cookieBannerProps ?? {}
+
+    return {
+      ...incoming,
+      blocking: incoming.blocking === undefined ? blocking : Boolean(incoming.blocking),
+      hideBranding:
+        incoming.hideBranding === undefined ? _hideBranding : Boolean(incoming.hideBranding),
+    }
+  }, [cookieBannerProps, blocking, _hideBranding])
+
   const content = (
     <StateCtx.Provider value={state}>
       <ActionsCtx.Provider value={api}>
@@ -568,7 +651,7 @@ export function ConsentProvider({
                 ) : (
                   // Aviso de desenvolvimento: usuário pode estar esquecendo de fornecer componentes UI
                   process.env.NODE_ENV === 'development' &&
-                  typeof window !== 'undefined' &&
+                  globalThis.window !== undefined &&
                   !didWarnAboutMissingUI.current &&
                   !CookieBannerComponent &&
                   !FloatingPreferencesButtonComponent &&
@@ -628,8 +711,7 @@ export function ConsentProvider({
                     rejectAll={api.rejectAll}
                     openPreferences={api.openPreferences}
                     texts={texts}
-                    blocking={blocking}
-                    {...cookieBannerProps}
+                    {...cookieBannerPropsWithDefaults}
                   />
                 )}
 
@@ -662,7 +744,7 @@ export function ConsentProvider({
  */
 export function useConsentStateInternal() {
   const ctx = React.useContext(StateCtx)
-  if (!ctx) throw new Error('useConsentState must be used within ConsentProvider')
+  if (!ctx) throw buildProviderError('useConsentState')
   return ctx
 }
 /**
@@ -672,7 +754,7 @@ export function useConsentStateInternal() {
  */
 export function useConsentActionsInternal() {
   const ctx = React.useContext(ActionsCtx)
-  if (!ctx) throw new Error('useConsentActions must be used within ConsentProvider')
+  if (!ctx) throw buildProviderError('useConsentActions')
   return ctx
 }
 /**

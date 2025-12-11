@@ -162,6 +162,25 @@ Os testes são escritos com Jest e React Testing Library e estão localizados ju
 4.  **Ações dos botões**: As ações de aceitar/rejeitar/salvar funcionam e persistem o estado.
 5.  **Modal**: O modal abre, permite a configuração e salva as preferências corretamente.
 
+### Cobertura de Testes
+
+O projeto mantém uma cobertura de testes abrangente:
+
+| Módulo | Statements | Branches | Functions | Lines |
+|--------|------------|----------|-----------|-------|
+| **Total** | 95%+ | 84%+ | 80%+ | 97%+ |
+| core/context | 97% | 92% | 96% | 98% |
+| core/hooks | 100% | 100% | 100% | 100% |
+| core/utils | 94% | 83% | 98% | 97% |
+| mui/components | 92% | 77% | 88% | 94% |
+| mui/utils | 100% | 100% | 100% | 100% |
+
+Para rodar os testes com cobertura:
+
+```bash
+pnpm test:coverage
+```
+
 ## 🤝 Contribuindo
 
 ### Setup Rápido
