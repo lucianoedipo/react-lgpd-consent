@@ -1,9 +1,9 @@
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { ConsentProvider } from '@react-lgpd-consent/mui'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Cookies from 'js-cookie'
-import { ThemeProvider, createTheme } from '@mui/material/styles'
 
 jest.mock('js-cookie')
 
