@@ -130,7 +130,7 @@ export function categorizeDiscoveredCookies(
       })
       const cat: Category = (assigned ?? 'analytics') as Category
       out[cat] = out[cat] || []
-      if (!out[cat].find((x) => x.name === d.name)) out[cat].push(d)
+      if (!out[cat].some((x) => x.name === d.name)) out[cat].push(d)
     })
 
   if (registerOverrides) {

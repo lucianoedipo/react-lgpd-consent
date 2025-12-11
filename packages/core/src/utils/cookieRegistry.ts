@@ -161,10 +161,10 @@ let COOKIE_CATEGORY_OVERRIDES: CookieCategoryOverrides = {}
 
 export function setCookieCatalogOverrides(overrides: CookieCatalogOverrides) {
   COOKIE_CATALOG_OVERRIDES = {
-    byCategory: { ...(COOKIE_CATALOG_OVERRIDES.byCategory || {}), ...(overrides.byCategory || {}) },
+    byCategory: { ...COOKIE_CATALOG_OVERRIDES.byCategory, ...overrides.byCategory },
     byIntegration: {
-      ...(COOKIE_CATALOG_OVERRIDES.byIntegration || {}),
-      ...(overrides.byIntegration || {}),
+      ...COOKIE_CATALOG_OVERRIDES.byIntegration,
+      ...overrides.byIntegration,
     },
   }
 }
@@ -186,17 +186,14 @@ export function getCookiesInfoForCategory(
 
   usedIntegrations.forEach((id) => {
     const defaultCat = INTEGRATION_DEFAULT_CATEGORY[id]
-    const defaults =
-      (COOKIE_INFO_BY_INTEGRATION as Record<string, import('../types/types').CookieDescriptor[]>)[
-        id
-      ] || []
+    const defaults = COOKIE_INFO_BY_INTEGRATION[id] || []
     const list = COOKIE_CATALOG_OVERRIDES.byIntegration?.[id] || defaults
     list.forEach((desc) => {
       const overrideCat = Object.entries(COOKIE_CATEGORY_OVERRIDES).find(([pattern]) =>
         matchPattern(desc.name, pattern),
       )?.[1]
       const finalCat = overrideCat ?? defaultCat
-      if (finalCat === categoryId && !result.find((d) => d.name === desc.name)) result.push(desc)
+      if (finalCat === categoryId && !result.some((d) => d.name === desc.name)) result.push(desc)
     })
   })
 
@@ -211,7 +208,7 @@ export function getCookiesInfoForCategory(
 
   // Garante que a categoria necessária liste o cookie de consentimento
   if (categoryId === 'necessary') {
-    if (!result.find((d) => d.name === 'cookieConsent')) {
+    if (!result.some((d) => d.name === 'cookieConsent')) {
       result.push({
         name: 'cookieConsent',
         purpose: 'Armazena suas preferências de consentimento',

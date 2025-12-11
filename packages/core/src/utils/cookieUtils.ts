@@ -126,11 +126,10 @@ function migrateLegacyCookie(legacyData: Record<string, unknown>): ConsentState 
 
     return {
       version: COOKIE_SCHEMA_VERSION,
-      consented: Boolean((legacyData as Record<string, unknown>).consented) || false,
+      consented: Boolean(legacyData.consented) || false,
       preferences:
-        (legacyData as Record<string, unknown>).preferences &&
-        typeof (legacyData as Record<string, unknown>).preferences === 'object'
-          ? ((legacyData as Record<string, unknown>).preferences as ConsentState['preferences'])
+        legacyData.preferences && typeof legacyData.preferences === 'object'
+          ? (legacyData.preferences as ConsentState['preferences'])
           : { necessary: true },
       consentDate: now,
       lastUpdate: now,
