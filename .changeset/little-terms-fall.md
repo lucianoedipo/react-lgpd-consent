@@ -23,6 +23,9 @@ Esta release é parte do trabalho nas issues: [#60](https://github.com/lucianoed
 - Adicionado `ES2022.Object` ao lib do tsconfig para suportar `Object.hasOwn()`
 - Mantida compatibilidade com target `ES2020`
 
+> **ℹ️ Atenção à Compatibilidade com Browsers**
+>  
+> Esta versão faz uso de recursos ES2021/ES2022 (`String.replaceAll()`, `Object.hasOwn()`, etc.), que não estão disponíveis em todos os navegadores (especialmente versões antigas do Safari, Edge ou Firefox). Se você utiliza este pacote em aplicações web que precisam suportar navegadores legados, é recomendado configurar um transpiler (como Babel) e/ou polyfills apropriados para garantir compatibilidade.
 ### Melhorias de Código
 
 - **cookieDiscovery.ts**: Função `matchPattern` movida para outer scope (evita recriação)
