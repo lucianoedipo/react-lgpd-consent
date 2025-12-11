@@ -157,8 +157,8 @@ export function useCategories(): CategoriesContextValue {
   const context = React.useContext(CategoriesContext)
   if (!context) {
     throw new Error(
-      'useCategories deve ser usado dentro de CategoriesProvider. ' +
-        'Certifique-se de que o ConsentProvider está envolvendo seu componente.',
+      '[react-lgpd-consent] useCategories deve ser usado dentro de <ConsentProvider>. ' +
+        'Adicione o provider ao redor da sua árvore antes de chamar o hook.',
     )
   }
   return context

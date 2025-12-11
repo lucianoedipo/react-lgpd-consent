@@ -215,6 +215,13 @@ const ActionsCtx = React.createContext<ConsentContextValue | null>(null)
 const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
 const HydrationCtx = React.createContext<boolean>(false)
 
+function buildProviderError(hookName: string) {
+  return new Error(
+    `[react-lgpd-consent] ${hookName} deve ser usado dentro de <ConsentProvider>. ` +
+      'Envolva seu componente com o provider ou use o wrapper @react-lgpd-consent/mui.',
+  )
+}
+
 /**
  * @component
  * @category Context
@@ -673,7 +680,7 @@ export function ConsentProvider({
  */
 export function useConsentStateInternal() {
   const ctx = React.useContext(StateCtx)
-  if (!ctx) throw new Error('useConsentState must be used within ConsentProvider')
+  if (!ctx) throw buildProviderError('useConsentState')
   return ctx
 }
 /**
@@ -683,7 +690,7 @@ export function useConsentStateInternal() {
  */
 export function useConsentActionsInternal() {
   const ctx = React.useContext(ActionsCtx)
-  if (!ctx) throw new Error('useConsentActions must be used within ConsentProvider')
+  if (!ctx) throw buildProviderError('useConsentActions')
   return ctx
 }
 /**

@@ -1,29 +1,47 @@
-import React from 'react'
+import '@testing-library/jest-dom'
 import { render } from '@testing-library/react'
-import { useConsent, useOpenPreferencesModal } from './useConsent'
+import React from 'react'
 
-// These tests ensure the hooks throw informative errors when used outside the ConsentProvider
-describe('useConsent error paths (outside provider)', () => {
-  test('useConsent throws when used outside ConsentProvider', () => {
-    function Consumer() {
+import { ConsentProvider } from '../context/ConsentContext'
+import { useCategories } from '../context/CategoriesContext'
+import { useConsent } from './useConsent'
+
+describe('DX errors para hooks fora do provider', () => {
+  it('useConsent lança erro claro em pt-BR quando usado fora do provider', () => {
+    function Broken() {
       useConsent()
       return null
     }
 
-    // Rendering the component should throw a clear error from the internal hook
-    expect(() => render(<Consumer />)).toThrow(
-      /useConsentState must be used within ConsentProvider/,
+    expect(() => render(<Broken />)).toThrow(
+      /\[react-lgpd-consent\] useConsentState deve ser usado dentro de <ConsentProvider>/i,
     )
   })
 
-  test('useOpenPreferencesModal (hook) throws when used outside ConsentProvider', () => {
-    function Consumer() {
-      useOpenPreferencesModal()
+  it('useCategories lança erro claro em pt-BR quando usado fora do provider', () => {
+    function Broken() {
+      useCategories()
       return null
     }
 
-    // The internal hooks can throw slightly different messages depending on which
-    // context is accessed first; just assert it complains about being outside the provider.
-    expect(() => render(<Consumer />)).toThrow(/must be used within ConsentProvider/)
+    expect(() => render(<Broken />)).toThrow(
+      /\[react-lgpd-consent\] useCategories deve ser usado dentro de <ConsentProvider>/i,
+    )
+  })
+
+  it('não lança quando provider está presente', () => {
+    function Safe() {
+      useConsent()
+      useCategories()
+      return <div>ok</div>
+    }
+
+    expect(() =>
+      render(
+        <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+          <Safe />
+        </ConsentProvider>,
+      ),
+    ).not.toThrow()
   })
 })
