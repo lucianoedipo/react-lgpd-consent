@@ -8,15 +8,6 @@
     "packages/react-lgpd-consent/src/**/*.test.ts",
     "packages/react-lgpd-consent/src/**/*.test.tsx"
   ],
-  "files": [
-    "packages/core/src/**/*.ts",
-    "packages/core/src/**/*.tsx",
-    "packages/mui/src/**/*.ts",
-    "packages/mui/src/**/*.tsx",
-    "packages/react-lgpd-consent/src/**/*.ts",
-    "packages/react-lgpd-consent/src/**/*.tsx",
-    "jest.config.mjs"
-  ],
   "testRunner": "command",
   "commandRunner": {
     "command": "pnpm test"
