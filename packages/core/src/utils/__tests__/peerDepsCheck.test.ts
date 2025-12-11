@@ -9,25 +9,25 @@
 import { checkPeerDeps, runPeerDepsCheck } from '../peerDepsCheck'
 
 describe('peerDepsCheck', () => {
-  const originalWindow = global.window
-  const originalProcess = global.process
+  const originalWindow = globalThis.window
+  const originalProcess = globalThis.process
 
   beforeEach(() => {
     // Reset window
-    if (typeof window !== 'undefined') {
-      delete (window as Window & { React?: unknown }).React
+    if (typeof globalThis.window !== 'undefined') {
+      delete (globalThis.window as Window & { React?: unknown }).React
     }
   })
 
   afterEach(() => {
-    global.window = originalWindow
-    global.process = originalProcess
+    globalThis.window = originalWindow
+    globalThis.process = originalProcess
   })
 
   describe('checkPeerDeps', () => {
     it('deve retornar ok:true em ambiente SSR', () => {
       // @ts-expect-error - Simulando SSR
-      global.window = undefined
+      globalThis.window = undefined
 
       const result = checkPeerDeps()
 
@@ -61,7 +61,7 @@ describe('peerDepsCheck', () => {
 
       // Simular React com versão antiga
       // @ts-expect-error - Teste
-      global.window.React = { version: '17.0.0' }
+      globalThis.window.React = { version: '17.0.0' }
 
       const result = checkPeerDeps({ skipInProduction: false })
 
@@ -73,7 +73,7 @@ describe('peerDepsCheck', () => {
 
     it('deve detectar versão de React fora do range', () => {
       // @ts-expect-error - Teste
-      global.window.React = { version: '17.0.0' }
+      globalThis.window.React = { version: '17.0.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -83,7 +83,7 @@ describe('peerDepsCheck', () => {
 
     it('deve aceitar React 18.x', () => {
       // @ts-expect-error - Teste
-      global.window.React = { version: '18.2.0' }
+      globalThis.window.React = { version: '18.2.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -92,7 +92,7 @@ describe('peerDepsCheck', () => {
 
     it('deve aceitar React 19.x', () => {
       // @ts-expect-error - Teste
-      global.window.React = { version: '19.0.0' }
+      globalThis.window.React = { version: '19.0.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -101,7 +101,7 @@ describe('peerDepsCheck', () => {
 
     it('deve avisar sobre versão de MUI fora do range', () => {
       // @ts-expect-error - Teste
-      global.window['@mui/material'] = { version: '4.12.0' }
+      globalThis.window['@mui/material'] = { version: '4.12.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -111,7 +111,7 @@ describe('peerDepsCheck', () => {
 
     it('deve aceitar MUI 5.x', () => {
       // @ts-expect-error - Teste
-      global.window['@mui/material'] = { version: '5.15.0' }
+      globalThis.window['@mui/material'] = { version: '5.15.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -120,7 +120,7 @@ describe('peerDepsCheck', () => {
 
     it('deve aceitar MUI 6.x', () => {
       // @ts-expect-error - Teste
-      global.window['@mui/material'] = { version: '6.0.0' }
+      globalThis.window['@mui/material'] = { version: '6.0.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -129,7 +129,7 @@ describe('peerDepsCheck', () => {
 
     it('deve aceitar MUI 7.x', () => {
       // @ts-expect-error - Teste
-      global.window['@mui/material'] = { version: '7.0.0' }
+      globalThis.window['@mui/material'] = { version: '7.0.0' }
 
       const result = checkPeerDeps({ logWarnings: false })
 
@@ -141,7 +141,7 @@ describe('peerDepsCheck', () => {
       const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation()
 
       // @ts-expect-error - Teste
-      global.window.React = { version: '17.0.0' }
+      globalThis.window.React = { version: '17.0.0' }
 
       checkPeerDeps({ logWarnings: false })
 
@@ -160,7 +160,7 @@ describe('peerDepsCheck', () => {
 
     it('deve funcionar em ambiente SSR', () => {
       // @ts-expect-error - Simulando SSR
-      global.window = undefined
+      globalThis.window = undefined
 
       expect(() => runPeerDepsCheck()).not.toThrow()
     })

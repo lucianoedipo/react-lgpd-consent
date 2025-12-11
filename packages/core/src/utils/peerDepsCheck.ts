@@ -40,12 +40,12 @@ export interface PeerDepsCheckResult {
  * @internal
  */
 function detectMultipleReactInstances(): boolean {
-  if (typeof window === 'undefined') return false
+  if (globalThis.window === undefined) return false
 
   try {
     // Técnica 1: Verificar se há múltiplos símbolos React
-    const reactSymbols = Object.getOwnPropertySymbols(window)
-      .map((sym) => String(sym))
+    const reactSymbols = Object.getOwnPropertySymbols(globalThis.window)
+      .map(String)
       .filter((name) => name.includes('react'))
 
     if (reactSymbols.length > 1) {
@@ -79,7 +79,7 @@ function detectMultipleReactInstances(): boolean {
  * @internal
  */
 function getPackageVersion(packageName: string): string | null {
-  if (typeof window === 'undefined') return null
+  if (globalThis.window === undefined) return null
 
   try {
     // Tentar pegar do módulo carregado (se disponível globalmente para debug)
@@ -110,7 +110,7 @@ function getPackageVersion(packageName: string): string | null {
  * @internal
  */
 function isVersionInRange(version: string, minMajor: number, maxMajor: number): boolean {
-  const major = parseInt(version.split('.')[0], 10)
+  const major = Number.parseInt(version.split('.')[0], 10)
   return major >= minMajor && major <= maxMajor
 }
 
@@ -171,7 +171,7 @@ export function checkPeerDeps(
   }
 
   // Apenas executar no browser
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return result
   }
 

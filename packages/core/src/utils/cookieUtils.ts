@@ -34,8 +34,8 @@ export function buildConsentStorageKey(options?: {
   const namespaceRaw = options?.namespace?.trim() || DEFAULT_STORAGE_NAMESPACE
   const versionRaw = options?.version?.trim() || DEFAULT_STORAGE_VERSION
 
-  const sanitizedNamespace = namespaceRaw.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()
-  const sanitizedVersion = versionRaw.replace(/[^a-z0-9._-]+/gi, '-').toLowerCase()
+  const sanitizedNamespace = namespaceRaw.replaceAll(/[^a-z0-9._-]+/gi, '-').toLowerCase()
+  const sanitizedVersion = versionRaw.replaceAll(/[^a-z0-9._-]+/gi, '-').toLowerCase()
 
   return `${sanitizedNamespace}__v${sanitizedVersion}`
 }
@@ -54,7 +54,8 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
   maxAgeDays: 365,
   sameSite: 'Lax',
-  secure: typeof window !== 'undefined' ? window.location.protocol === 'https:' : false,
+  secure:
+    globalThis.window === undefined ? false : globalThis.window.location.protocol === 'https:',
   path: '/',
   domain: undefined,
 }

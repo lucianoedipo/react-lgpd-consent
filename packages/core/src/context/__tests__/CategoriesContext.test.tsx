@@ -29,15 +29,15 @@ describe('CategoriesContext', () => {
 
   beforeEach(() => {
     // @ts-ignore - Sobrescrever NODE_ENV para simular ambiente de desenvolvimento
-    global.process.env.NODE_ENV = 'development'
+    globalThis.process.env.NODE_ENV = 'development'
     // @ts-ignore - Limpar flag global de descoberta de cookies para testes isolados
-    delete global.__LGPD_DISCOVERY_LOGGED__
+    delete globalThis.__LGPD_DISCOVERY_LOGGED__
   })
 
   afterEach(() => {
     jest.clearAllMocks()
     // @ts-ignore - Restaurar NODE_ENV original após teste
-    global.process.env.NODE_ENV = originalNodeEnv
+    globalThis.process.env.NODE_ENV = originalNodeEnv
   })
 
   test('provides categories shape', () => {

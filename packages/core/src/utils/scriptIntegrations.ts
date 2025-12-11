@@ -185,7 +185,7 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
       },
     ],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         type Gtag = (...args: unknown[]) => void
         const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
         w.dataLayer = w.dataLayer ?? []
@@ -233,12 +233,12 @@ export function createGoogleTagManagerIntegration(
     src,
     cookies: ['_gcl_au'],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         const dataLayerName = config.dataLayerName || 'dataLayer'
         const w = window as unknown as Record<string, unknown>
         const layer = (w[dataLayerName] as unknown[]) ?? []
         w[dataLayerName] = layer
-        layer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' })
+        layer.push({ 'gtm.start': Date.now(), event: 'gtm.js' })
       }
     },
   }
@@ -273,7 +273,7 @@ export function createUserWayIntegration(config: UserWayConfig): ScriptIntegrati
     src,
     cookies: ['_userway_*'],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         const w = window as Window & { UserWayWidgetApp?: { accountId?: string } }
         w.UserWayWidgetApp = w.UserWayWidgetApp || {}
         w.UserWayWidgetApp.accountId = config.accountId
@@ -472,7 +472,7 @@ export function createFacebookPixelIntegration(config: FacebookPixelConfig): Scr
     src,
     cookies: ['_fbp', 'fr'],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         type FbqFn = ((...args: unknown[]) => void) & {
           queue?: unknown[]
           loaded?: boolean
@@ -567,7 +567,7 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
       },
     ],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         type HjFn = ((...args: unknown[]) => void) & { q?: unknown[] }
         const w = window as unknown as { hj?: HjFn; _hjSettings?: { hjid: string; hjsv: number } }
         w._hjSettings = { hjid: config.siteId, hjsv: v }
@@ -625,7 +625,7 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
       },
     ],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         const w = window as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
         w.mixpanel = w.mixpanel || { init: () => undefined }
         if (w.mixpanel && typeof w.mixpanel.init === 'function') {
@@ -673,7 +673,7 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
     src,
     cookies: ['_clck', '_clsk', 'CLID', 'ANONCHK', 'MR', 'MUID', 'SM'],
     init: () => {
-      if (typeof window !== 'undefined' && typeof config.upload !== 'undefined') {
+      if (globalThis.window !== undefined && typeof config.upload !== 'undefined') {
         const w = window as unknown as { clarity?: (...args: unknown[]) => void }
         if (typeof w.clarity === 'function') {
           try {
@@ -719,7 +719,7 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
     src,
     cookies: ['intercom-id-*', 'intercom-session-*'],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         const w = window as unknown as { Intercom?: (...args: unknown[]) => void }
         if (typeof w.Intercom === 'function') {
           try {
@@ -765,7 +765,7 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
     src,
     cookies: ['__zlcmid', '_zendesk_shared_session'],
     init: () => {
-      if (typeof window !== 'undefined') {
+      if (globalThis.window !== undefined) {
         const w = window as unknown as { zE?: (...args: unknown[]) => void }
         if (typeof w.zE === 'function') {
           try {

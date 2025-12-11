@@ -298,9 +298,9 @@ export function ConsentProvider({
   onConsentChange,
   onAuditLog,
 }: Readonly<ConsentProviderProps>) {
-  const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
+  const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...textsProp }), [textsProp])
   const cookie = React.useMemo(() => {
-    const base = { ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }
+    const base = { ...DEFAULT_COOKIE_OPTS, ...cookieOpts }
     base.name =
       cookieOpts?.name ??
       buildConsentStorageKey({
@@ -549,6 +549,7 @@ export function ConsentProvider({
       previousPreferencesRef.current = state.preferences
     }
   }, [
+    state,
     state.preferences,
     state.consented,
     state.source,
@@ -616,8 +617,8 @@ export function ConsentProvider({
 
   const cookieBannerPropsWithDefaults = React.useMemo(() => {
     const incoming = cookieBannerProps ?? {}
-    const hasBlocking = Object.prototype.hasOwnProperty.call(incoming, 'blocking')
-    const hasHideBranding = Object.prototype.hasOwnProperty.call(incoming, 'hideBranding')
+    const hasBlocking = Object.hasOwn(incoming, 'blocking')
+    const hasHideBranding = Object.hasOwn(incoming, 'hideBranding')
 
     return {
       ...incoming,
@@ -653,7 +654,7 @@ export function ConsentProvider({
                 ) : (
                   // Aviso de desenvolvimento: usuário pode estar esquecendo de fornecer componentes UI
                   process.env.NODE_ENV === 'development' &&
-                  typeof window !== 'undefined' &&
+                  globalThis.window !== undefined &&
                   !didWarnAboutMissingUI.current &&
                   !CookieBannerComponent &&
                   !FloatingPreferencesButtonComponent &&
