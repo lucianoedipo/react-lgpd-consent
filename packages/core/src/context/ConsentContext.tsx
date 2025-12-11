@@ -298,7 +298,7 @@ export function ConsentProvider({
   onConsentChange,
   onAuditLog,
 }: Readonly<ConsentProviderProps>) {
-  const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...textsProp }), [textsProp])
+  const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const cookie = React.useMemo(() => {
     const base = { ...DEFAULT_COOKIE_OPTS, ...cookieOpts }
     base.name =
