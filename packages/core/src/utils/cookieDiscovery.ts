@@ -128,7 +128,7 @@ export function categorizeDiscoveredCookies(
         const patterns = COOKIE_PATTERNS_BY_CATEGORY[cat] || []
         if (patterns.some((p) => matchPattern(d.name, p))) assigned = cat
       })
-      const cat: Category = (assigned || 'analytics') as Category
+      const cat: Category = (assigned ?? 'analytics') as Category
       out[cat] = out[cat] || []
       if (!out[cat].find((x) => x.name === d.name)) out[cat].push(d)
     })

@@ -6,7 +6,6 @@
 import * as React from 'react'
 import { useCategories } from '../context/CategoriesContext'
 import { useConsent } from '../hooks/useConsent'
-import type { Category } from '../types/types'
 import {
   autoConfigureCategories,
   validateIntegrationCategories,
@@ -63,7 +62,7 @@ export function ConsentScriptLoader({
       const current = Array.isArray(gt.__LGPD_USED_INTEGRATIONS__)
         ? gt.__LGPD_USED_INTEGRATIONS__
         : []
-      const merged = Array.from(new Set([...(current as string[]), ...ids]))
+      const merged = Array.from(new Set([...current, ...ids]))
       gt.__LGPD_USED_INTEGRATIONS__ = merged
 
       // Mapear id -> categoria para uso na UI (experimental)
@@ -91,10 +90,13 @@ export function ConsentScriptLoader({
       const current = Array.isArray(gt.__LGPD_REQUIRED_CATEGORIES__)
         ? gt.__LGPD_REQUIRED_CATEGORIES__
         : []
-      const merged = Array.from(new Set([...(current as string[]), ...(required as string[])]))
+      const merged = Array.from(new Set([...current, ...required]))
       gt.__LGPD_REQUIRED_CATEGORIES__ = merged
-      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
-        window.dispatchEvent(new CustomEvent('lgpd:requiredCategories'))
+      if (
+        globalThis.window !== undefined &&
+        typeof globalThis.window.dispatchEvent === 'function'
+      ) {
+        globalThis.window.dispatchEvent(new CustomEvent('lgpd:requiredCategories'))
       }
     } catch {
       // Ignora erros de globalThis em ambientes sem suporte
@@ -102,12 +104,12 @@ export function ConsentScriptLoader({
   }, [integrations])
 
   // Validação inteligente das categorias em modo DEV
-  React.useEffect(;() => {
+  React.useEffect(() => {
     const isDev = process.env.NODE_ENV !== 'production'
     if (!isDev || integrations.length === 0) return
 
     // Usar apenas categorias HABILITADAS, não todas as definidas
-    const enabledCategories = categories.config.enabledCategories as Category[]
+    const enabledCategories = categories.config.enabledCategories ?? []
     const isValid = validateIntegrationCategories(integrations, enabledCategories)
 
     if (!isValid) {
@@ -151,7 +153,7 @@ export function ConsentScriptLoader({
 
         if (shouldLoad && (!alreadyLoaded || reloadOnChange)) {
           try {
-            const mergedAttrs = { ...(integration.attrs ?? {}) }
+            const mergedAttrs = integration.attrs ?? {}
             const scriptNonce = integration.nonce ?? nonce
             if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
             await loadScript(
@@ -177,7 +179,7 @@ export function ConsentScriptLoader({
 
     // Cleanup: cancela o timeout se o componente desmontar antes da execução
     return () => clearTimeout(timeoutId)
-  }, [preferences, consented, integrations, reloadOnChange])
+  }, [preferences, consented, integrations, reloadOnChange, nonce])
 
   // Este componente não renderiza nada
   return null
@@ -229,7 +231,7 @@ export function useConsentScriptLoader() {
       }
 
       try {
-        const mergedAttrs = { ...(integration.attrs ?? {}) }
+        const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
         const scriptNonce = integration.nonce ?? nonce
         if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
 
