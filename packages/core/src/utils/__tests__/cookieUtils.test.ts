@@ -1,13 +1,13 @@
 import Cookies from 'js-cookie'
+import type { ConsentState } from '../../types/types'
 import {
-  readConsentCookie,
-  writeConsentCookie,
-  removeConsentCookie,
-  createInitialConsentState,
   buildConsentStorageKey,
   createConsentAuditEntry,
+  createInitialConsentState,
+  readConsentCookie,
+  removeConsentCookie,
+  writeConsentCookie,
 } from '../cookieUtils'
-import type { ConsentState } from '../../types/types'
 
 jest.mock('js-cookie')
 
@@ -205,4 +205,73 @@ describe('cookieUtils', () => {
   // SSR-specific branches are environment-dependent and flaky under jsdom
   // so they are intentionally not asserted here. The important logic
   // (migration, parsing, version) is covered above.
+
+  describe('edge cases', () => {
+    it('readConsentCookie handles malformed JSON gracefully', () => {
+      ;(Cookies.get as jest.Mock).mockReturnValue('{invalid-json')
+      const out = readConsentCookie('cookieConsent')
+      expect(out).toBeNull()
+    })
+
+    it('readConsentCookie handles empty object cookie with migration', () => {
+      ;(Cookies.get as jest.Mock).mockReturnValue('{}')
+      const out = readConsentCookie('cookieConsent')
+      // Migração cria um objeto válido mesmo de {}
+      expect(out).toBeTruthy()
+      expect(out?.version).toBe('1.0')
+    })
+
+    it('buildConsentStorageKey handles special characters', () => {
+      const key = buildConsentStorageKey({ namespace: 'Test App!', version: '1.0.0' })
+      expect(key).toBe('test-app-__v1.0.0')
+    })
+
+    it('createConsentAuditEntry handles minimal state', () => {
+      const state: ConsentState = {
+        version: '1.0',
+        consented: false,
+        preferences: { necessary: true },
+        consentDate: '',
+        lastUpdate: '',
+        source: 'banner',
+        isModalOpen: false,
+      }
+
+      const audit = createConsentAuditEntry(state, {
+        storageKey: 'test',
+        action: 'init',
+        origin: 'banner',
+      })
+
+      expect(audit.action).toBe('init')
+      expect(audit.consented).toBe(false)
+    })
+
+    it('writeConsentCookie uses default options when not provided', () => {
+      const state: ConsentState = {
+        version: '1.0',
+        consented: true,
+        preferences: { necessary: true },
+        consentDate: new Date().toISOString(),
+        lastUpdate: new Date().toISOString(),
+        source: 'banner',
+        isModalOpen: false,
+      }
+
+      writeConsentCookie(state, { enabledCategories: [] } as any)
+
+      expect(Cookies.set).toHaveBeenCalled()
+      const [name] = (Cookies.set as jest.Mock).mock.calls.pop()
+      expect(name).toBe('cookieConsent')
+    })
+
+    it('removeConsentCookie uses custom name when provided', () => {
+      ;(Cookies.remove as jest.Mock).mockClear()
+      removeConsentCookie({ name: 'custom-consent' })
+      expect(Cookies.remove).toHaveBeenCalledWith(
+        'custom-consent',
+        expect.objectContaining({ path: '/' }),
+      )
+    })
+  })
 })
