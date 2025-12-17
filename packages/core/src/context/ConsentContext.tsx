@@ -1,6 +1,6 @@
 /**
  * @fileoverview
- * Contexto principal do sistema de consentimento LGPD/ANPD para React.
+ * Contexto principal do sistema de consentimento LGPD para React.
  *
  * Este arquivo implementa o contexto global que gerencia o estado de consentimento,
  * coordena componentes de UI (banner, modal, botão flutuante) e fornece integração

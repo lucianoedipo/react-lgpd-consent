@@ -2,7 +2,7 @@ import type { GuidanceConfig } from '../utils/developerGuidance'
 
 /**
  * @fileoverview
- * Definições de tipos TypeScript para o sistema de consentimento LGPD/ANPD.
+ * Definições de tipos TypeScript para o sistema de consentimento LGPD.
  *
  * Este arquivo contém todas as interfaces, tipos e estruturas de dados utilizadas
  * pela biblioteca react-lgpd-consent, incluindo definições de categorias,
@@ -304,7 +304,7 @@ export interface ConsentPreferences {
 }
 
 /**
- * Estrutura do cookie de consentimento em conformidade com LGPD/ANPD.
+ * Estrutura do cookie de consentimento em conformidade com LGPD.
  * @category Types
  * @since 0.2.1
  *

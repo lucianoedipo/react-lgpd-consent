@@ -1,6 +1,6 @@
 /**
  * @fileoverview
- * Componente CookieBanner - Banner principal de consentimento LGPD/ANPD.
+ * Componente CookieBanner - Banner principal de consentimento LGPD.
  *
  * Este arquivo implementa o banner de cookies que aparece para usuários que ainda não
  * deram consentimento explícito. O componente é totalmente customizável via props
