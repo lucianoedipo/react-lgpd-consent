@@ -6,6 +6,7 @@
 import * as React from 'react'
 import { useCategories } from '../context/CategoriesContext'
 import { useConsent, useConsentHydration } from '../hooks/useConsent'
+import type { ConsentPreferences } from '../types/types'
 import {
   autoConfigureCategories,
   validateIntegrationCategories,
@@ -14,7 +15,6 @@ import {
 import { logger } from './logger'
 import type { ScriptIntegration } from './scriptIntegrations'
 import { loadScript } from './scriptLoader'
-import type { ConsentPreferences } from '../types/types'
 
 type ScriptStatus = 'pending' | 'running' | 'executed'
 
@@ -299,46 +299,90 @@ export function ConsentScriptLoader({
     }
   }, [integrations, categories])
 
+  // Previne reexecução de integrações quando apenas a referência do array muda
+  // Usa hash estrutural para detectar mudanças reais de configuração
+  const processedIntegrationsRef = React.useRef<Map<string, string>>(new Map())
+
   React.useEffect(() => {
     const cleanups: Array<() => void> = []
+    const currentIds = new Set<string>()
 
     integrations.forEach((integration) => {
-      if (integration.bootstrap) {
-        cleanups.push(
-          registerScript({
-            id: `${integration.id}__bootstrap`,
-            category: 'necessary',
-            priority: (integration.priority ?? 0) + 1000,
-            execute: integration.bootstrap,
-          }),
-        )
+      currentIds.add(integration.id)
+
+      // Criar hash estrutural da integração para detectar mudanças reais
+      const structuralHash = JSON.stringify({
+        category: integration.category,
+        src: integration.src,
+        priority: integration.priority,
+        hasBootstrap: Boolean(integration.bootstrap),
+        hasInit: Boolean(integration.init),
+        hasOnConsentUpdate: Boolean(integration.onConsentUpdate),
+      })
+
+      const existingHash = processedIntegrationsRef.current.get(integration.id)
+
+      // Se já está registrado E não mudou estruturalmente, pular registro
+      // Isso permite primeiro registro mas previne re-registro em renders subsequentes
+      if (existingHash === structuralHash && scriptRegistry.has(integration.id)) {
+        return
       }
 
-      cleanups.push(
-        registerScript({
-          id: integration.id,
-          category: integration.category,
-          priority: integration.priority,
-          allowReload: reloadOnChange,
-          onConsentUpdate: integration.onConsentUpdate,
-          execute: async () => {
-            const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
-            const scriptNonce = integration.nonce ?? nonce
-            if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
-            await loadScript(
-              integration.id,
-              integration.src,
-              integration.category,
-              mergedAttrs,
-              scriptNonce,
-              { skipConsentCheck: true },
-            )
-            if (integration.init) {
-              integration.init()
-            }
-          },
-        }),
-      )
+      // Atualizar hash processado
+      processedIntegrationsRef.current.set(integration.id, structuralHash)
+
+        if (integration.bootstrap) {
+          cleanups.push(
+            registerScript({
+              id: `${integration.id}__bootstrap`,
+              category: 'necessary',
+              priority: (integration.priority ?? 0) + 1000,
+              execute: integration.bootstrap,
+            }),
+          )
+        }
+
+        cleanups.push(
+          registerScript({
+            id: integration.id,
+            category: integration.category,
+            priority: integration.priority,
+            allowReload: reloadOnChange,
+            onConsentUpdate: integration.onConsentUpdate,
+            execute: async () => {
+              const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
+              const scriptNonce = integration.nonce ?? nonce
+              if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
+              await loadScript(
+                integration.id,
+                integration.src,
+                integration.category,
+                mergedAttrs,
+                scriptNonce,
+                { skipConsentCheck: true },
+              )
+              if (integration.init) {
+                integration.init()
+              }
+            },
+          }),
+        )
+      })
+
+    // Remover integrações que não estão mais presentes
+    processedIntegrationsRef.current.forEach((_, id) => {
+      if (!currentIds.has(id)) {
+        processedIntegrationsRef.current.delete(id)
+        // Limpar do registry também
+        const script = scriptRegistry.get(id)
+        if (script) {
+          scriptRegistry.delete(id)
+        }
+        const bootstrapScript = scriptRegistry.get(`${id}__bootstrap`)
+        if (bootstrapScript) {
+          scriptRegistry.delete(`${id}__bootstrap`)
+        }
+      }
     })
 
     return () => cleanups.forEach((fn) => fn())

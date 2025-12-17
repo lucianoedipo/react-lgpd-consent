@@ -83,6 +83,7 @@ registerScript({
 - ✅ Scripts de outras categorias aguardam **consentimento explícito**
 - ✅ Suporte a `onConsentUpdate` para reconfiguração dinâmica
 - ✅ Snapshot de consentimento para scripts que precisam do estado atual
+- ✅ **Otimização anti-duplicação**: integrações não são reexecutadas a cada render quando criadas inline (ex.: `integrations={[createGoogleAnalyticsIntegration(...)]}`). Sistema mantém hash estrutural para detectar mudanças reais e prevenir múltiplas inicializações do mesmo script.
 
 **Observabilidade em DEV:**
 
@@ -213,3 +214,4 @@ Sistema básico de internacionalização para mensagens de peer dependencies:
 - ✅ Separação de concerns (lógica vs conteúdo)
 - ✅ Type safety aprimorado em toda API
 - ✅ Performance otimizada (sem logs em produção)
+- ✅ **Fix crítico**: Prevenção de reexecução de integrações a cada render quando `integrations` prop muda referência (inline array). Sistema agora usa hash estrutural para detectar mudanças reais e manter scripts já registrados estáveis.
