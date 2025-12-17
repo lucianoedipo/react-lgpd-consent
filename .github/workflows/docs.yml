@@ -85,7 +85,9 @@ jobs:
             ${{ runner.os }}-typescript-
 
       - name: Wait for CI to complete
-        if: github.event_name != 'workflow_dispatch' || inputs.skip_ci_check != true
+        # Só espera CI em workflow_dispatch manual E quando skip_ci_check=false
+        # Push de tags NÃO precisa esperar CI (CI não roda em tags)
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_ci_check != true
         uses: lewagon/wait-on-check-action@v1.3.4
         with:
           ref: ${{ steps.version.outputs.tag }}
@@ -94,7 +96,9 @@ jobs:
           wait-interval: 10
 
       - name: Download build artifacts from CI
-        if: github.event_name != 'workflow_dispatch' || inputs.skip_ci_check != true
+        # Só tenta baixar artifacts em workflow_dispatch manual E quando skip_ci_check=false
+        # Push de tags builda localmente (próximo step)
+        if: github.event_name == 'workflow_dispatch' && inputs.skip_ci_check != true
         uses: dawidd6/action-download-artifact@v6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -108,7 +112,8 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build packages (if no artifacts)
-        if: github.event_name == 'workflow_dispatch' && inputs.skip_ci_check == true
+        # Builda em push de tags OU quando workflow_dispatch com skip_ci_check=true
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.skip_ci_check == true)
         run: pnpm run build
 
       - name: Set TypeDoc version
