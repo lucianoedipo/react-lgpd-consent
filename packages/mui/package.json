@@ -32,6 +32,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./ui": {
+      "types": "./dist/ui.d.ts",
+      "import": "./dist/ui.js",
+      "require": "./dist/ui.cjs"
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -48,8 +53,8 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "build": "cross-env NODE_ENV=production tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "cross-env NODE_ENV=development tsup src/index.ts --format esm,cjs --dts --watch",
+    "build": "cross-env NODE_ENV=production tsup --config tsup.config.ts",
+    "dev": "cross-env NODE_ENV=development tsup --config tsup.config.ts --watch",
     "lint": "eslint \"src/**/*.{ts,tsx}\" --cache",
     "lint:ci": "eslint \"src/**/*.{ts,tsx}\" --cache --max-warnings=0",
     "format": "prettier --write \"src/**/*.{ts,tsx,json,md}\"",

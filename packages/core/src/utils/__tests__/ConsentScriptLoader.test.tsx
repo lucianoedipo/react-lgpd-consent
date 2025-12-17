@@ -80,6 +80,7 @@ describe('ConsentScriptLoader component', () => {
         integration.category,
         expect.objectContaining({ nonce: 'nonce-abc' }),
         'nonce-abc',
+        expect.objectContaining({ skipConsentCheck: true }),
       )
     })
   })

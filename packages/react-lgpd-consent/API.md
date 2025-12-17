@@ -17,7 +17,9 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `useOpenPreferencesModal`           | Hook       | Retorna uma função para abrir o modal de preferências de forma programática.    |
 | `openPreferencesModal`              | Função     | Versão da função acima para ser usada fora do contexto React.                   |
 | `ConsentGate`                       | Componente | Renderiza componentes filhos apenas se uma categoria de cookie for consentida.  |
-| `ConsentScriptLoader`               | Componente | Carrega scripts de terceiros (como Google Analytics) com base no consentimento. |
+| `ConsentScriptLoader`               | Componente | Carrega scripts de terceiros (como Google Analytics) com base no consentimento. Suporta Consent Mode v2 automático. |
+| `registerScript()`                  | Função     | Registra um script na fila global para execução condicional ao consentimento. Retorna função de cleanup. |
+| `RegisteredScript`                  | Tipo       | Interface para scripts registrados programaticamente (id, category, execute, priority, onConsentUpdate). |
 | `buildConsentStorageKey`            | Função     | (v0.5.2) Gera nomes de cookies `namespace__vX` a partir de namespace/versão.     |
 | `createGoogleAnalyticsIntegration`  | Função     | Factory para integração nativa com o Google Analytics.                           |
 | `createGoogleTagManagerIntegration` | Função     | Factory para integração nativa com o Google Tag Manager.                         |
@@ -175,12 +177,35 @@ function MyComponent() {
 
 Gerencia o carregamento de scripts de terceiros (ex: Google Analytics) com base no consentimento do usuário. Veja o guia `INTEGRACOES.md` para mais detalhes.
 
+**Novidades v0.7.1:**
+- ✨ **Google Consent Mode v2 automático**: GA4 e GTM agora enviam `consent('default', 'denied')` no bootstrap e `consent('update', 'granted')` após consentimento
+- 🎯 **Sistema de fila com prioridade**: Scripts são executados ordenadamente (necessary → categoria → prioridade → timestamp)
+- 🔄 **Callbacks de atualização**: `onConsentUpdate` dispara quando preferências mudam
+
 ```tsx
-import { ConsentScriptLoader, createGoogleAnalyticsIntegration } from 'react-lgpd-consent'
+import { ConsentScriptLoader, createGoogleAnalyticsIntegration, registerScript } from 'react-lgpd-consent'
 
+// Uso padrão (Consent Mode v2 automático)
 const integrations = [createGoogleAnalyticsIntegration({ measurementId: 'G-XXXXXXXXXX' })]
+<ConsentScriptLoader integrations={integrations} />
 
-;<ConsentScriptLoader integrations={integrations} />
+// Uso avançado: registro programático com prioridade
+const cleanup = registerScript({
+  id: 'custom-analytics',
+  category: 'analytics',
+  priority: 10, // Maior = executa primeiro
+  execute: async () => {
+    console.log('Script carregado!')
+  },
+  onConsentUpdate: ({ consented, preferences }) => {
+    if (preferences.analytics) {
+      console.log('Analytics habilitado via update!')
+    }
+  }
+})
+
+// ℹ️ Estados da fila: pending → running → executed.
+// Scripts só reexecutam se allowReload=true; sempre use o cleanup ao desmontar.
 ```
 
 ---

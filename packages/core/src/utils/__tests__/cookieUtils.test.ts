@@ -1,6 +1,7 @@
 import Cookies from 'js-cookie'
 import type { ConsentState } from '../../types/types'
 import {
+  __resolveCookieOptionsForTests,
   buildConsentStorageKey,
   createConsentAuditEntry,
   createInitialConsentState,
@@ -48,6 +49,7 @@ describe('cookieUtils', () => {
     expect(out).toBeTruthy()
     expect(out?.consented).toBe(true)
     expect(out?.preferences.analytics).toBe(true)
+    expect(out?.preferences.necessary).toBe(true)
   })
 
   it('writeConsentCookie calls Cookies.set with proper args', () => {
@@ -62,7 +64,9 @@ describe('cookieUtils', () => {
     }
     const config = { enabledCategories: ['analytics'] } as any
 
-    writeConsentCookie(state, config, { name: 'cookieConsent', maxAgeDays: 7 }, 'modal')
+    jest.useFakeTimers().setSystemTime(new Date('2024-01-01T00:00:00.000Z'))
+
+    writeConsentCookie(state, config, { name: 'cookieConsent', maxAge: 60 }, 'modal')
 
     expect(Cookies.set).toHaveBeenCalled()
     const [name, value, opts] = (Cookies.set as jest.Mock).mock.calls[0]
@@ -70,7 +74,9 @@ describe('cookieUtils', () => {
     expect(typeof value).toBe('string')
     const parsed = JSON.parse(value)
     expect(parsed.consentDate).toBeDefined()
-    expect(opts).toHaveProperty('expires', 7)
+    expect(opts.expires).toBeInstanceOf(Date)
+    expect((opts.expires as Date).toISOString()).toBe('2024-01-01T00:01:00.000Z')
+    jest.useRealTimers()
   })
 
   it('removeConsentCookie calls Cookies.remove with default path', () => {
@@ -157,10 +163,31 @@ describe('cookieUtils', () => {
     }
     const config = { enabledCategories: ['analytics'] } as any
 
-    writeConsentCookie(state, config, { name: 'foo', domain: '.example.com' })
+    writeConsentCookie(state, config, { name: 'foo', domain: '.example.com', maxAge: 120 })
 
     const [, , opts] = (Cookies.set as jest.Mock).mock.calls.pop()
     expect(opts).toMatchObject({ domain: '.example.com', path: '/' })
+  })
+
+  it('writeConsentCookie respeita SameSite customizado', () => {
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true, analytics: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+
+    writeConsentCookie(state, { enabledCategories: ['analytics'] } as any, {
+      sameSite: 'None',
+      secure: true,
+    })
+
+    const [, , opts] = (Cookies.set as jest.Mock).mock.calls.pop()
+    expect(opts.sameSite).toBe('None')
+    expect(opts.secure).toBe(true)
   })
 
   it('buildConsentStorageKey normaliza namespace e versão', () => {
@@ -206,6 +233,134 @@ describe('cookieUtils', () => {
   // so they are intentionally not asserted here. The important logic
   // (migration, parsing, version) is covered above.
 
+  it('writeConsentCookie uses default options when not provided', () => {
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+
+    writeConsentCookie(state, { enabledCategories: [] } as any)
+
+    expect(Cookies.set).toHaveBeenCalled()
+    const [name] = (Cookies.set as jest.Mock).mock.calls.pop()
+    expect(name).toBe('cookieConsent')
+  })
+
+  it('writeConsentCookie aplica secure true automaticamente em HTTPS', () => {
+    const originalForce = (globalThis as any).__LGPD_FORCE_HTTPS__
+    ;(globalThis as any).__LGPD_FORCE_HTTPS__ = true
+
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+
+    writeConsentCookie(state, { enabledCategories: [] } as any)
+
+    const [, , opts] = (Cookies.set as jest.Mock).mock.calls.pop()
+    expect(opts.secure).toBe(true)
+    ;(globalThis as any).__LGPD_FORCE_HTTPS__ = originalForce
+  })
+
+  it('writeConsentCookie respeita secure=false mesmo com force HTTPS', () => {
+    const originalForce = (globalThis as any).__LGPD_FORCE_HTTPS__
+    ;(globalThis as any).__LGPD_FORCE_HTTPS__ = true
+
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true, analytics: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+
+    writeConsentCookie(state, { enabledCategories: ['analytics'] } as any, { secure: false })
+    const [, , opts] = (Cookies.set as jest.Mock).mock.calls.pop()
+    expect(opts.secure).toBe(false)
+    ;(globalThis as any).__LGPD_FORCE_HTTPS__ = originalForce
+  })
+
+  it('writeConsentCookie converte maxAgeDays para expires em segundos', () => {
+    jest.useFakeTimers().setSystemTime(new Date('2024-01-01T00:00:00.000Z'))
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+
+    writeConsentCookie(state, { enabledCategories: [] } as any, { maxAgeDays: 1 })
+
+    const [, , opts] = (Cookies.set as jest.Mock).mock.calls.pop()
+    expect(opts.expires).toBeInstanceOf(Date)
+    expect((opts.expires as Date).toISOString()).toBe('2024-01-02T00:00:00.000Z')
+    jest.useRealTimers()
+  })
+
+  it('writeConsentCookie não escreve em SSR', () => {
+    const originalDocument = globalThis.document
+    const originalWindow = globalThis.window
+    const originalSsrFlag = (globalThis as any).__LGPD_SSR__
+    ;(globalThis as any).__LGPD_SSR__ = true
+    const state: ConsentState = {
+      version: '1.0',
+      consented: true,
+      preferences: { necessary: true },
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'banner',
+      isModalOpen: false,
+    }
+
+    writeConsentCookie(state, { enabledCategories: [] } as any)
+    expect(Cookies.set).not.toHaveBeenCalled()
+    ;(globalThis as any).__LGPD_SSR__ = originalSsrFlag
+    globalThis.window = originalWindow
+    globalThis.document = originalDocument
+  })
+
+  describe('resolveCookieOptions (interno)', () => {
+    it('normaliza valores negativos de expiração e mantém name customizado', () => {
+      const resolved = __resolveCookieOptionsForTests({
+        maxAge: -10,
+        maxAgeDays: -2,
+        name: 'custom',
+      })
+      expect(resolved.name).toBe('custom')
+      expect(resolved.maxAge).toBe(0)
+      expect(resolved.path).toBe('/')
+    })
+
+    it('usa defaults seguros quando não há protocolo disponível', () => {
+      const originalWindow = globalThis.window
+      const originalLocation = globalThis.location
+      ;(globalThis as any).window = { location: undefined }
+      ;(globalThis as any).location = undefined
+
+      const resolved = __resolveCookieOptionsForTests({})
+      expect(resolved.secure).toBe(false)
+      expect(resolved.sameSite).toBe('Lax')
+      expect(resolved.domain).toBeUndefined()
+      ;(globalThis as any).window = originalWindow
+      ;(globalThis as any).location = originalLocation
+    })
+  })
+
   describe('edge cases', () => {
     it('readConsentCookie handles malformed JSON gracefully', () => {
       ;(Cookies.get as jest.Mock).mockReturnValue('{invalid-json')
@@ -247,24 +402,6 @@ describe('cookieUtils', () => {
       expect(audit.consented).toBe(false)
     })
 
-    it('writeConsentCookie uses default options when not provided', () => {
-      const state: ConsentState = {
-        version: '1.0',
-        consented: true,
-        preferences: { necessary: true },
-        consentDate: new Date().toISOString(),
-        lastUpdate: new Date().toISOString(),
-        source: 'banner',
-        isModalOpen: false,
-      }
-
-      writeConsentCookie(state, { enabledCategories: [] } as any)
-
-      expect(Cookies.set).toHaveBeenCalled()
-      const [name] = (Cookies.set as jest.Mock).mock.calls.pop()
-      expect(name).toBe('cookieConsent')
-    })
-
     it('removeConsentCookie uses custom name when provided', () => {
       ;(Cookies.remove as jest.Mock).mockClear()
       removeConsentCookie({ name: 'custom-consent' })
@@ -272,6 +409,47 @@ describe('cookieUtils', () => {
         'custom-consent',
         expect.objectContaining({ path: '/' }),
       )
+    })
+
+    it('readConsentCookie retorna null para cookie vazio', () => {
+      ;(Cookies.get as jest.Mock).mockReturnValue('')
+      const out = readConsentCookie('cookieConsent')
+      expect(out).toBeNull()
+    })
+
+    it('readConsentCookie retorna null quando payload não é objeto', () => {
+      ;(Cookies.get as jest.Mock).mockReturnValue('42')
+      const out = readConsentCookie('cookieConsent')
+      expect(out).toBeNull()
+    })
+
+    it('readConsentCookie aplica fallback de preferences quando ausente', () => {
+      const payload = {
+        version: '1.0',
+        consented: true,
+        consentDate: new Date().toISOString(),
+        lastUpdate: new Date().toISOString(),
+        source: 'banner',
+        isModalOpen: false,
+      }
+      ;(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify(payload))
+      const out = readConsentCookie('cookieConsent')
+      expect(out?.preferences.necessary).toBe(true)
+    })
+
+    it('readConsentCookie força necessary=true mesmo se salvo como false', () => {
+      const payload = {
+        version: '1.0',
+        consented: true,
+        preferences: { necessary: false, analytics: true },
+        consentDate: new Date().toISOString(),
+        lastUpdate: new Date().toISOString(),
+        source: 'banner',
+        isModalOpen: false,
+      }
+      ;(Cookies.get as jest.Mock).mockReturnValue(JSON.stringify(payload))
+      const out = readConsentCookie('cookieConsent')
+      expect(out?.preferences.necessary).toBe(true)
     })
   })
 })

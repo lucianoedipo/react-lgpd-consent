@@ -85,6 +85,7 @@ export function pushConsentInitializedEvent(categories: ConsentPreferences): voi
     consent_version: LIBRARY_VERSION,
     timestamp: new Date().toISOString(),
     categories,
+    preferences: categories,
   }
 
   globalThis.window.dataLayer?.push(event)
@@ -153,6 +154,7 @@ export function pushConsentUpdatedEvent(
     timestamp: new Date().toISOString(),
     origin,
     categories,
+    preferences: categories,
     changed_categories: changedCategories,
   }
 

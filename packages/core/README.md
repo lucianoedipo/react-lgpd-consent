@@ -62,6 +62,22 @@ function MyCustomBanner() {
 - **Integrações:** Google Analytics, GTM, UserWay, Facebook Pixel, Hotjar, etc.
 - **Tipos TypeScript:** Tipagem completa para toda a API
 
+## 🧩 Scripts, Fila e Consent Mode v2
+
+- **ConsentScriptLoader** agora mantém uma fila interna por categoria e prioridade. Scripts `necessary` rodam imediatamente; os demais só executam após consentimento explícito.
+- **API programática `registerScript`**: registre callbacks inline ou integrações que não usam `<script src>` e deixe a fila disparar no momento correto. Estados da fila: `pending` → `running` → `executed` (recarrega apenas se `allowReload=true`).
+  ```ts
+  const cleanup = registerScript({
+    id: 'ga-consent-mode',
+    category: 'analytics',
+    priority: 10, // maior roda antes dentro da categoria
+    execute: bootstrapConsentMode,
+    onConsentUpdate: ({ preferences }) => pushConsentSignals(preferences),
+  })
+  ```
+- **Consent Mode v2 nativo**: `createGoogleAnalyticsIntegration` e `createGoogleTagManagerIntegration` inicializam `consent=default` (denied) e enviam `consent=update` conforme as preferências do usuário, sem snippet manual.
+- **Observabilidade dev-only**: logs ordenados de execução para depurar a fila (silenciados em produção).
+
 ## 🆕 Novidades v0.7.0
 
 ### Callbacks de Lifecycle
@@ -123,4 +139,3 @@ Para documentação completa, exemplos e API reference:
 ## 📄 Licença
 
 MIT © [Luciano Édipo](https://github.com/lucianoedipo)
-

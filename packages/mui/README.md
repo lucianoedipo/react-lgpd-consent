@@ -28,6 +28,12 @@ pnpm add @react-lgpd-consent/mui @mui/material @mui/icons-material
 - `@mui/icons-material@^7.0.0 || ^6.0.0 || ^5.15.0` (opcional)
 - `react@^18.2.0 || ^19.0.0`, `react-dom@^18.2.0 || ^19.0.0`
 
+### Entradas de importação (evite ambiguidades)
+
+- `@react-lgpd-consent/mui/ui`: **apenas UI** (ConsentProvider MUI + componentes). Ideal para bundles menores e sem re-export do core.
+- `@react-lgpd-consent/mui`: compatibilidade total (re-exporta o core); use `headless` ou `ConsentProviderHeadless` daqui se precisar da lógica.
+- `@react-lgpd-consent/core`: headless puro, recomendado para hooks/utils na sua própria UI.
+
 ## 🚀 Uso Básico
 
 ```tsx
@@ -169,4 +175,3 @@ function CustomUI() {
 ## 📄 Licença
 
 MIT © [Luciano Édipo](https://github.com/lucianoedipo)
-

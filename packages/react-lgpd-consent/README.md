@@ -13,7 +13,7 @@ Gerenciamento de consentimento de cookies em conformidade com a LGPD — pacote 
 
 ## Descrição
 
-`react-lgpd-consent` é o pacote agregador compatível com versões anteriores (v0.4.x → v0.5.x). Ele re-exporta os componentes prontos em MUI e facilita a migração. Para projetos mais otimizados, considere importar diretamente `@react-lgpd-consent/core` (headless) ou `@react-lgpd-consent/mui` (componentes MUI).
+`react-lgpd-consent` é o pacote agregador compatível com versões anteriores (v0.4.x → v0.5.x). Ele re-exporta os componentes prontos em MUI e facilita a migração. Para projetos mais otimizados, considere importar diretamente `@react-lgpd-consent/core` (headless) ou `@react-lgpd-consent/mui/ui` (apenas UI, sem re-export do core).
 
 Principais características:
 

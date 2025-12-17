@@ -14,9 +14,6 @@
   "eslint.workingDirectories": ["."],
   "files.exclude": {
     "**/node_modules": true,
-    "**/dist": true,
-    "**/coverage": true,
-    "**/storybook-static": true,
     "**/.git": true,
     "**/.DS_Store": true,
     "**/Thumbs.db": true

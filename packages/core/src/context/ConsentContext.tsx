@@ -313,6 +313,15 @@ export function ConsentProvider({
     return base
   }, [cookieOpts, storage?.domain, storage?.namespace, storage?.version])
   const consentVersion = storage?.version?.trim() || '1'
+
+  React.useEffect(() => {
+    try {
+      ;(globalThis as unknown as { __LGPD_CONSENT_COOKIE__?: string }).__LGPD_CONSENT_COOKIE__ =
+        cookie.name
+    } catch {
+      // Ignora falhas ao atribuir em ambientes restritos
+    }
+  }, [cookie.name])
   // If a theme prop is provided, we explicitly apply it.
   // Otherwise we intentionally do NOT create or inject a theme provider and let the host app provide one.
   // This avoids altering the app's theme context and prevents SSR/context regressions.

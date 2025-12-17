@@ -17,29 +17,66 @@ afterAll(() => jest.restoreAllMocks())
 describe('scriptIntegrations factories', () => {
   beforeEach(() => {
     // reset global window properties used by integrations
-    delete (global as any).window
-    ;(global as any).window = {}
+    ;(global as any).window = { dataLayer: [] }
+    delete (global as any).gtag
   })
 
-  test('google analytics integration sets window.gtag and dataLayer', () => {
+  test('google analytics integration seta consent mode default e gtag', () => {
     const ga = createGoogleAnalyticsIntegration({ measurementId: 'G-TEST' })
     expect(ga.id).toBe('google-analytics')
     expect(ga.category).toBe('analytics')
+    expect(typeof ga.bootstrap).toBe('function')
+    expect(typeof ga.onConsentUpdate).toBe('function')
 
-    // call init and assert side effects
-    ga.init?.()
+    ga.bootstrap?.()
     expect((global as any).window.dataLayer).toBeDefined()
+    const firstPush = (global as any).window.dataLayer[0]
+    expect(firstPush[0]).toBe('consent')
+    expect(firstPush[1]).toBe('default')
+
+    ga.init?.()
     expect(typeof (global as any).window.gtag).toBe('function')
+
+    ga.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, analytics: true, marketing: true } as any,
+    })
+    const lastPush = (global as any).window.dataLayer.pop()
+    expect(lastPush[0]).toBe('consent')
+    expect(lastPush[1]).toBe('update')
+    expect(lastPush[2]).toMatchObject({
+      analytics_storage: 'granted',
+      ad_storage: 'granted',
+    })
   })
 
-  test('google tag manager integration pushes to dataLayer', () => {
-    const gtm = createGoogleTagManagerIntegration({ containerId: 'GTM-ABC' })
+  test('google tag manager integration respeita dataLayer custom e consent mode', () => {
+    const gtm = createGoogleTagManagerIntegration({
+      containerId: 'GTM-ABC',
+      dataLayerName: 'customLayer',
+    })
     expect(gtm.id).toBe('google-tag-manager')
     expect(gtm.category).toBe('analytics')
+    expect(typeof gtm.bootstrap).toBe('function')
+    expect(typeof gtm.onConsentUpdate).toBe('function')
 
+    gtm.bootstrap?.()
+    expect((global as any).window.customLayer).toBeDefined()
+    const firstPush = (global as any).window.customLayer[0]
+    expect(firstPush[0]).toBe('consent')
+    expect(firstPush[1]).toBe('default')
+
+    // init mantém dataLayer e adiciona evento de bootstrap do GTM
     gtm.init?.()
-    expect((global as any).window.dataLayer).toBeDefined()
-    expect((global as any).window.dataLayer.length).toBeGreaterThanOrEqual(1)
+    expect((global as any).window.customLayer.length).toBeGreaterThanOrEqual(2)
+
+    gtm.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, analytics: true, marketing: false } as any,
+    })
+    const lastPush = (global as any).window.customLayer.pop()
+    expect(lastPush[1]).toBe('update')
+    expect(lastPush[2]).toMatchObject({ analytics_storage: 'granted', ad_storage: 'denied' })
   })
 
   test('userway integration sets UserWayWidgetApp and attrs', () => {

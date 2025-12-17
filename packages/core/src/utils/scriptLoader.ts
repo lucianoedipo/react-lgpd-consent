@@ -8,8 +8,65 @@
  * garantindo compatibilidade SSR e verificações de permissões por categoria.
  */
 
+import type { ConsentPreferences } from '../types/types'
+
 // Global registry para prevenir injeções duplicadas (React 19 StrictMode)
 const LOADING_SCRIPTS = new Map<string, Promise<void>>()
+
+type ConsentSnapshot = {
+  consented: boolean
+  preferences: ConsentPreferences
+  isModalOpen?: boolean
+}
+
+export interface LoadScriptOptions {
+  consentSnapshot?: ConsentSnapshot
+  cookieName?: string
+  pollIntervalMs?: number
+  skipConsentCheck?: boolean
+}
+
+const DEFAULT_POLL_INTERVAL = 100
+
+function resolveCookieNames(preferred?: string): string[] {
+  const inferred =
+    (globalThis as unknown as { __LGPD_CONSENT_COOKIE__?: string }).__LGPD_CONSENT_COOKIE__ ?? null
+  const names = [preferred, inferred, 'cookieConsent', 'lgpd-consent__v1'].filter(
+    Boolean,
+  ) as string[]
+  return Array.from(new Set(names))
+}
+
+function parseConsentFromCookie(names: string[]): ConsentSnapshot | null {
+  const raw = document.cookie
+  if (!raw) return null
+
+  const cookies = raw.split('; ').reduce<Record<string, string>>((acc, part) => {
+    const [k, ...rest] = part.split('=')
+    acc[k] = rest.join('=')
+    return acc
+  }, {})
+
+  for (const name of names) {
+    const value = cookies[name]
+    if (!value) continue
+    try {
+      const parsed = JSON.parse(decodeURIComponent(value)) as ConsentSnapshot
+      if (!parsed.consented || parsed.isModalOpen) continue
+      return parsed
+    } catch {
+      continue
+    }
+  }
+
+  return null
+}
+
+function hasCategoryConsent(snapshot: ConsentSnapshot, category: string | null): boolean {
+  if (!snapshot.consented || snapshot.isModalOpen) return false
+  if (category === null) return true
+  return Boolean(snapshot.preferences?.[category])
+}
 
 /**
  * @function
@@ -30,6 +87,7 @@ const LOADING_SCRIPTS = new Map<string, Promise<void>>()
  * @param {string | null} [category=null] A categoria de consentimento exigida para o script. Suporta tanto categorias predefinidas quanto customizadas. Se o consentimento para esta categoria não for dado, o script não será carregado.
  * @param {Record<string, string>} [attrs={}] Atributos adicionais a serem aplicados ao elemento `<script>` (ex: `{ async: 'true' }`).
  * @param {string | undefined} [nonce] Nonce CSP opcional aplicado ao script.
+ * @param {LoadScriptOptions} [options] Configurações avançadas (consentSnapshot, cookieName, pollIntervalMs, skipConsentCheck).
  * @returns {Promise<void>} Uma Promise que resolve quando o script é carregado com sucesso, ou rejeita se o consentimento não for dado ou ocorrer um erro de carregamento.
  * @example
  * ```ts
@@ -45,6 +103,7 @@ export function loadScript(
   category: string | null = null,
   attrs: Record<string, string> = {},
   nonce?: string,
+  options?: LoadScriptOptions,
 ) {
   if (typeof document === 'undefined') return Promise.resolve()
 
@@ -55,62 +114,69 @@ export function loadScript(
   const existingPromise = LOADING_SCRIPTS.get(id)
   if (existingPromise) return existingPromise
 
-  // Cria nova Promise e registra imediatamente
-  const promise = new Promise<void>((resolve, reject) => {
-    const checkConsent = () => {
-      // Aguarda o contexto estar disponível
-      const consentCookie = document.cookie
-        .split('; ')
-        .find((row) => row.startsWith('cookieConsent='))
-        ?.split('=')[1]
+  const pollInterval = options?.pollIntervalMs ?? DEFAULT_POLL_INTERVAL
+  const names = resolveCookieNames(options?.cookieName)
+  const mergedAttrs = { ...attrs }
 
-      if (!consentCookie) {
-        setTimeout(checkConsent, 100)
+  const promise = new Promise<void>((resolve, reject) => {
+    const inject = () => {
+      const s = document.createElement('script')
+      s.id = id
+      s.src = src
+      s.async = mergedAttrs.async !== 'false'
+      const scriptNonce = mergedAttrs.nonce || nonce
+      if (scriptNonce) {
+        s.nonce = scriptNonce
+        mergedAttrs.nonce = scriptNonce
+      }
+      for (const [k, v] of Object.entries(mergedAttrs)) s.setAttribute(k, v)
+
+      s.onload = () => {
+        LOADING_SCRIPTS.delete(id)
+        resolve()
+      }
+      s.onerror = () => {
+        LOADING_SCRIPTS.delete(id)
+        reject(new Error(`Failed to load script: ${src}`))
+      }
+
+      document.body.appendChild(s)
+    }
+
+    const snapshot = options?.consentSnapshot
+    const skipChecks = options?.skipConsentCheck === true
+
+    if (skipChecks) {
+      inject()
+      return
+    }
+
+    if (snapshot) {
+      if (!hasCategoryConsent(snapshot, category)) {
+        reject(
+          new Error(
+            `Consent not granted for category '${category ?? 'none'}' when attempting to load ${id}`,
+          ),
+        )
+        return
+      }
+      inject()
+      return
+    }
+
+    const checkConsent = () => {
+      const consent = parseConsentFromCookie(names)
+      if (!consent) {
+        setTimeout(checkConsent, pollInterval)
         return
       }
 
-      try {
-        const consent = JSON.parse(decodeURIComponent(consentCookie))
-
-        // Verifica se o consentimento foi finalizado E não há modal aberto
-        if (!consent.consented || consent.isModalOpen) {
-          setTimeout(checkConsent, 100)
-          return
-        }
-
-        // Se categoria específica, verifica permissão
-        if (category && !consent.preferences[category]) {
-          // Aguarda até que a preferência seja habilitada
-          setTimeout(checkConsent, 100)
-          return
-        }
-
-        // Carrega o script
-        const s = document.createElement('script')
-        s.id = id
-        s.src = src
-        s.async = true
-        const mergedAttrs = { ...attrs }
-        const scriptNonce = mergedAttrs.nonce || nonce
-        if (scriptNonce) {
-          s.nonce = scriptNonce
-          mergedAttrs.nonce = scriptNonce
-        }
-        for (const [k, v] of Object.entries(mergedAttrs)) s.setAttribute(k, v)
-
-        s.onload = () => {
-          LOADING_SCRIPTS.delete(id) // Limpa do registro ao completar
-          resolve()
-        }
-        s.onerror = () => {
-          LOADING_SCRIPTS.delete(id) // Limpa do registro ao falhar
-          reject(new Error(`Failed to load script: ${src}`))
-        }
-
-        document.body.appendChild(s)
-      } catch {
-        setTimeout(checkConsent, 100)
+      if (!hasCategoryConsent(consent, category)) {
+        setTimeout(checkConsent, pollInterval)
+        return
       }
+
+      inject()
     }
 
     checkConsent()
