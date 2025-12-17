@@ -2,7 +2,7 @@ import type { GuidanceConfig } from '../utils/developerGuidance'
 
 /**
  * @fileoverview
- * Definições de tipos TypeScript para o sistema de consentimento LGPD/ANPD.
+ * Definições de tipos TypeScript para o sistema de consentimento LGPD.
  *
  * Este arquivo contém todas as interfaces, tipos e estruturas de dados utilizadas
  * pela biblioteca react-lgpd-consent, incluindo definições de categorias,
@@ -304,7 +304,7 @@ export interface ConsentPreferences {
 }
 
 /**
- * Estrutura do cookie de consentimento em conformidade com LGPD/ANPD.
+ * Estrutura do cookie de consentimento em conformidade com LGPD.
  * @category Types
  * @since 0.2.1
  *
@@ -631,14 +631,22 @@ export interface ConsentTexts {
 export interface ConsentCookieOptions {
   /** Nome do cookie. Padrão: 'cookieConsent' */
   name: string
-  /** Tempo de expiração em dias. Padrão: 365 */
-  maxAgeDays: number
+  /**
+   * Tempo de expiração em segundos.
+   * @defaultValue 31536000 (365 dias)
+   */
+  maxAge?: number
+  /**
+   * Tempo de expiração em dias (legado).
+   * @deprecated Prefira `maxAge` em segundos.
+   */
+  maxAgeDays?: number
   /** Política SameSite do cookie. */
-  sameSite: 'Lax' | 'Strict'
-  /** Se o cookie deve ser seguro (HTTPS). Padrão: true */
-  secure: boolean
+  sameSite?: 'Lax' | 'Strict' | 'None'
+  /** Se o cookie deve ser seguro (HTTPS). Padrão: true em HTTPS. */
+  secure?: boolean
   /** Caminho do cookie. Padrão: '/' */
-  path: string
+  path?: string
   /**
    * Domínio do cookie (ex.: `.example.com` para compartilhar entre subdomínios).
    * Se não definido, o navegador usa o domínio atual.
@@ -1344,8 +1352,9 @@ export interface ConsentProviderProps {
    * ```tsx
    * cookie={{
    *   name: 'meuAppConsent',
-   *   maxAgeDays: 180,
-   *   sameSite: 'Strict'
+   *   maxAge: 60 * 60 * 24 * 180, // 180 dias
+   *   sameSite: 'Strict',
+   *   secure: true,
    * }}
    * ```
    */
@@ -1579,6 +1588,8 @@ export interface ConsentInitializedEvent {
   timestamp: string
   /** Estado inicial das categorias de consentimento */
   categories: Record<string, boolean>
+  /** Snapshot das preferências (alias para categories para Consent Mode v2) */
+  preferences?: Record<string, boolean>
 }
 
 /**
@@ -1621,6 +1632,8 @@ export interface ConsentUpdatedEvent {
   origin: ConsentEventOrigin
   /** Estado atualizado das categorias de consentimento */
   categories: Record<string, boolean>
+  /** Snapshot das preferências (alias para categories para Consent Mode v2) */
+  preferences?: Record<string, boolean>
   /** Lista de categorias que foram modificadas nesta atualização */
   changed_categories: string[]
 }

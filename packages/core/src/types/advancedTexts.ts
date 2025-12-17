@@ -39,7 +39,7 @@ type LanguageTexts = Partial<Omit<ConsentTexts, 'i18n' | 'variants' | 'contexts'
  *
  * Interface expandida que permite personalização granular de todas as mensagens da biblioteca.
  * Suporta múltiplos idiomas, contextos específicos (e-commerce, SaaS, governo), variações
- * de tom, e compliance completo com LGPD/ANPD.
+ * de tom, e compliance completo com LGPD.
  *
  * @category Types
  * @since 0.4.1

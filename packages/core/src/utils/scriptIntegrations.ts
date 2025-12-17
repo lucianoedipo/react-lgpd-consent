@@ -10,6 +10,7 @@
  * - SSR-safe: toda execução que toca `window` é protegida
  */
 // Removed import of Category as it's no longer used - ScriptIntegration now uses string
+import type { ConsentPreferences } from '../types/types'
 
 /**
  * Integração de script de terceiros condicionada a consentimento.
@@ -57,6 +58,12 @@ export interface ScriptIntegration {
   attrs?: Record<string, string>
   /** Nonce CSP opcional aplicado à tag script */
   nonce?: string
+  /** Prioridade para ordenação na fila do loader (maior = executa primeiro dentro da categoria) */
+  priority?: number
+  /** Rotina opcional executada antes do carregamento principal (ex.: bootstrap de Consent Mode) */
+  bootstrap?: () => void | Promise<void>
+  /** Callback disparado quando o consentimento é atualizado */
+  onConsentUpdate?: (consent: { consented: boolean; preferences: ConsentPreferences }) => void
   /** Lista de cookies que o script pode definir */
   cookies?: string[]
   /** Informações detalhadas dos cookies (nome, finalidade, duração, fornecedor) */
@@ -66,6 +73,65 @@ export interface ScriptIntegration {
     duration: string
     provider: string
   }>
+}
+
+function buildConsentModeSignals(preferences: ConsentPreferences) {
+  const analytics = preferences.analytics ? 'granted' : 'denied'
+  const marketing = preferences.marketing ? 'granted' : 'denied'
+
+  return {
+    ad_storage: marketing,
+    ad_user_data: marketing,
+    ad_personalization: marketing,
+    analytics_storage: analytics,
+  }
+}
+
+function pushToLayer(entry: unknown[], dataLayerName?: string) {
+  if (typeof globalThis.window === 'undefined') return
+  const registry = globalThis.window as unknown as Record<string, unknown>
+  const name = dataLayerName ?? 'dataLayer'
+  const layer = (registry[name] as unknown[]) ?? []
+  registry[name] = layer
+  layer.push(entry)
+}
+
+function ensureGtag(dataLayerName: string = 'dataLayer') {
+  if (typeof globalThis.window === 'undefined') return null
+  type Gtag = (...args: unknown[]) => void
+  const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
+  const registry = w as unknown as Record<string, unknown>
+  const layer = (registry[dataLayerName] as unknown[]) ?? []
+  registry[dataLayerName] = layer
+  if (typeof w.gtag !== 'function') {
+    const gtag: Gtag = (...args: unknown[]) => {
+      layer.push(args)
+    }
+    w.gtag = gtag
+  }
+  return w.gtag
+}
+
+function applyDefaultConsentMode(dataLayerName?: string) {
+  const payload = buildConsentModeSignals({
+    necessary: true,
+    analytics: false,
+    marketing: false,
+  })
+  const gtag = ensureGtag(dataLayerName)
+  if (gtag) {
+    gtag('consent', 'default', payload)
+  }
+  pushToLayer(['consent', 'default', payload], dataLayerName)
+}
+
+function applyConsentModeUpdate(preferences: ConsentPreferences, dataLayerName?: string) {
+  const payload = buildConsentModeSignals(preferences)
+  const gtag = ensureGtag(dataLayerName)
+  if (gtag) {
+    gtag('consent', 'update', payload)
+  }
+  pushToLayer(['consent', 'update', payload], dataLayerName)
 }
 
 /**
@@ -184,18 +250,17 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
         provider: 'Google Analytics',
       },
     ],
+    bootstrap: () => {
+      applyDefaultConsentMode()
+    },
+    onConsentUpdate: ({ preferences }) => {
+      applyConsentModeUpdate(preferences)
+    },
     init: () => {
-      if (globalThis.window !== undefined) {
-        type Gtag = (...args: unknown[]) => void
-        const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
-        w.dataLayer = w.dataLayer ?? []
-        const gtag: Gtag = (...args: unknown[]) => {
-          w.dataLayer!.push(...args)
-        }
-        w.gtag = gtag
-        gtag('js', new Date())
-        gtag('config', config.measurementId, config.config ?? {})
-      }
+      const gtag = ensureGtag()
+      if (!gtag) return
+      gtag('js', new Date())
+      gtag('config', config.measurementId, config.config ?? {})
     },
     attrs: { async: 'true' },
   }
@@ -232,6 +297,12 @@ export function createGoogleTagManagerIntegration(
     category: 'analytics',
     src,
     cookies: ['_gcl_au'],
+    bootstrap: () => {
+      applyDefaultConsentMode(config.dataLayerName)
+    },
+    onConsentUpdate: ({ preferences }) => {
+      applyConsentModeUpdate(preferences, config.dataLayerName)
+    },
     init: () => {
       if (globalThis.window !== undefined) {
         const dataLayerName = config.dataLayerName || 'dataLayer'

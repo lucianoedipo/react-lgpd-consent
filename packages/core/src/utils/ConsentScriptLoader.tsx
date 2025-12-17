@@ -5,7 +5,8 @@
 
 import * as React from 'react'
 import { useCategories } from '../context/CategoriesContext'
-import { useConsent } from '../hooks/useConsent'
+import { useConsent, useConsentHydration } from '../hooks/useConsent'
+import type { ConsentPreferences } from '../types/types'
 import {
   autoConfigureCategories,
   validateIntegrationCategories,
@@ -14,6 +15,157 @@ import {
 import { logger } from './logger'
 import type { ScriptIntegration } from './scriptIntegrations'
 import { loadScript } from './scriptLoader'
+
+type ScriptStatus = 'pending' | 'running' | 'executed'
+
+export interface RegisteredScript {
+  id: string
+  category: string
+  execute: () => void | Promise<void>
+  priority?: number
+  allowReload?: boolean
+  onConsentUpdate?: (consent: { consented: boolean; preferences: ConsentPreferences }) => void
+}
+
+type InternalScript = RegisteredScript & {
+  status: ScriptStatus
+  lastAllowed: boolean
+  registeredAt: number
+  token: number
+}
+
+type QueueListener = () => void
+
+const scriptRegistry = new Map<string, InternalScript>()
+const queueListeners = new Set<QueueListener>()
+
+function notifyQueue() {
+  queueListeners.forEach((listener) => {
+    try {
+      listener()
+    } catch {
+      // ignore listener errors to avoid breaking queue
+    }
+  })
+}
+
+function subscribeQueue(listener: QueueListener) {
+  queueListeners.add(listener)
+  return () => {
+    queueListeners.delete(listener)
+  }
+}
+
+function createInternalScript(def: RegisteredScript): InternalScript {
+  return {
+    ...def,
+    status: 'pending',
+    lastAllowed: false,
+    registeredAt: Date.now(),
+    token: Date.now() + Math.random(),
+    priority: def.priority ?? 0,
+    allowReload: def.allowReload ?? false,
+    onConsentUpdate: def.onConsentUpdate,
+  }
+}
+
+/**
+ * Registra um script (inline ou externo) na fila controlada por consentimento.
+ *
+ * @remarks
+ * - Scripts `necessary` rodam imediatamente; demais aguardam consentimento da categoria.
+ * - Fluxo de estados: `pending` → `running` → `executed` (respeitando `allowReload` e `onConsentUpdate`).
+ * - A fila é ordenada por categoria, `priority` (maior primeiro) e ordem de registro.
+ * - `allowReload` permite reexecutar scripts quando o usuário muda preferências.
+ * - Use `onConsentUpdate` para reenviar sinais (ex.: Consent Mode) após novas decisões.
+ * - Sempre chame o cleanup retornado em efeitos React para evitar múltiplos registros do mesmo `id`.
+ *
+ * @param def Definição do script a ser registrado.
+ * @returns Função de cleanup para remover o script da fila.
+ */
+export function registerScript(def: RegisteredScript): () => void {
+  const entry = createInternalScript(def)
+  scriptRegistry.set(def.id, entry)
+  notifyQueue()
+
+  return () => {
+    const current = scriptRegistry.get(def.id)
+    if (current && current.token === entry.token) {
+      scriptRegistry.delete(def.id)
+      notifyQueue()
+    }
+  }
+}
+
+/** @internal - usado apenas em testes para limpar a fila */
+export function __resetScriptRegistryForTests() {
+  scriptRegistry.clear()
+}
+
+function getExecutableScripts(consent: {
+  consented: boolean
+  preferences: ConsentPreferences
+}): InternalScript[] {
+  const allowedScripts: InternalScript[] = []
+
+  scriptRegistry.forEach((script) => {
+    const categoryAllowed =
+      script.category === 'necessary' ||
+      (consent.consented && Boolean(consent.preferences?.[script.category]))
+
+    if (!categoryAllowed) {
+      script.lastAllowed = false
+      return
+    }
+
+    if (script.status === 'running') return
+    if (script.status === 'executed' && !script.allowReload) return
+    if (script.status === 'executed' && script.allowReload && script.lastAllowed) return
+
+    script.lastAllowed = true
+    allowedScripts.push(script)
+  })
+
+  return allowedScripts.sort((a, b) => {
+    if (a.category === 'necessary' && b.category !== 'necessary') return -1
+    if (b.category === 'necessary' && a.category !== 'necessary') return 1
+    if (a.category !== b.category) return a.category.localeCompare(b.category)
+    if (a.priority !== b.priority) return (b.priority ?? 0) - (a.priority ?? 0)
+    return a.registeredAt - b.registeredAt
+  })
+}
+
+async function processQueue(
+  consent: { consented: boolean; preferences: ConsentPreferences },
+  devLogging: boolean,
+) {
+  const scripts = getExecutableScripts(consent)
+  let order = 0
+
+  for (const script of scripts) {
+    order += 1
+    script.status = 'running'
+    if (devLogging) {
+      logger.info('[ConsentScriptLoader] executando script', {
+        id: script.id,
+        category: script.category,
+        priority: script.priority ?? 0,
+        order,
+      })
+    }
+
+    try {
+      await Promise.resolve(script.execute())
+    } catch (error) {
+      logger.error(`❌ Failed to execute script ${script.id}`, error)
+    } finally {
+      script.status = 'executed'
+      if (script.onConsentUpdate) {
+        script.onConsentUpdate(consent)
+      }
+    }
+  }
+}
 
 export interface ConsentScriptLoaderProps {
   /** Lista de integrações de scripts para carregar baseado no consentimento */
@@ -51,8 +203,14 @@ export function ConsentScriptLoader({
   nonce,
 }: Readonly<ConsentScriptLoaderProps>) {
   const { preferences, consented } = useConsent()
+  const isHydrated = useConsentHydration()
   const categories = useCategories()
-  const loadedScripts = React.useRef<Set<string>>(new Set())
+  const [queueVersion, bumpQueueVersion] = React.useState(0)
+
+  React.useEffect(() => {
+    const unsubscribe = subscribeQueue(() => bumpQueueVersion((v) => v + 1))
+    return unsubscribe
+  }, [])
 
   // Registrar integrações usadas (para catálogo de cookies e guidance)
   React.useEffect(() => {
@@ -141,45 +299,108 @@ export function ConsentScriptLoader({
     }
   }, [integrations, categories])
 
+  // Previne reexecução de integrações quando apenas a referência do array muda
+  // Usa hash estrutural para detectar mudanças reais de configuração
+  const processedIntegrationsRef = React.useRef<Map<string, string>>(new Map())
+
   React.useEffect(() => {
-    if (!consented) return
+    const cleanups: Array<() => void> = []
+    const currentIds = new Set<string>()
 
-    // Prevenir race conditions: aguardar um tick antes de carregar scripts
-    // Isso garante que o estado está estável mesmo em StrictMode
-    const timeoutId = setTimeout(async () => {
-      for (const integration of integrations) {
-        const shouldLoad = preferences[integration.category]
-        const alreadyLoaded = loadedScripts.current.has(integration.id)
+    integrations.forEach((integration) => {
+      currentIds.add(integration.id)
 
-        if (shouldLoad && (!alreadyLoaded || reloadOnChange)) {
-          try {
-            const mergedAttrs = integration.attrs ?? {}
-            const scriptNonce = integration.nonce ?? nonce
-            if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
-            await loadScript(
-              integration.id,
-              integration.src,
-              integration.category,
-              mergedAttrs,
-              scriptNonce,
-            )
+      // Criar hash estrutural da integração para detectar mudanças reais
+      const structuralHash = JSON.stringify({
+        category: integration.category,
+        src: integration.src,
+        priority: integration.priority,
+        hasBootstrap: Boolean(integration.bootstrap),
+        hasInit: Boolean(integration.init),
+        hasOnConsentUpdate: Boolean(integration.onConsentUpdate),
+      })
 
-            // Executa função de inicialização se disponível
-            if (integration.init) {
-              integration.init()
-            }
+      const existingHash = processedIntegrationsRef.current.get(integration.id)
 
-            loadedScripts.current.add(integration.id)
-          } catch (error) {
-            logger.error(`❌ Failed to load script: ${integration.id}`, error)
-          }
+      // Se já está registrado E não mudou estruturalmente, pular registro
+      // Isso permite primeiro registro mas previne re-registro em renders subsequentes
+      if (existingHash === structuralHash && scriptRegistry.has(integration.id)) {
+        return
+      }
+
+      // Atualizar hash processado
+      processedIntegrationsRef.current.set(integration.id, structuralHash)
+
+        if (integration.bootstrap) {
+          cleanups.push(
+            registerScript({
+              id: `${integration.id}__bootstrap`,
+              category: 'necessary',
+              priority: (integration.priority ?? 0) + 1000,
+              execute: integration.bootstrap,
+            }),
+          )
+        }
+
+        cleanups.push(
+          registerScript({
+            id: integration.id,
+            category: integration.category,
+            priority: integration.priority,
+            allowReload: reloadOnChange,
+            onConsentUpdate: integration.onConsentUpdate,
+            execute: async () => {
+              const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
+              const scriptNonce = integration.nonce ?? nonce
+              if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
+              await loadScript(
+                integration.id,
+                integration.src,
+                integration.category,
+                mergedAttrs,
+                scriptNonce,
+                { skipConsentCheck: true },
+              )
+              if (integration.init) {
+                integration.init()
+              }
+            },
+          }),
+        )
+      })
+
+    // Remover integrações que não estão mais presentes
+    processedIntegrationsRef.current.forEach((_, id) => {
+      if (!currentIds.has(id)) {
+        processedIntegrationsRef.current.delete(id)
+        // Limpar do registry também
+        const script = scriptRegistry.get(id)
+        if (script) {
+          scriptRegistry.delete(id)
+        }
+        const bootstrapScript = scriptRegistry.get(`${id}__bootstrap`)
+        if (bootstrapScript) {
+          scriptRegistry.delete(`${id}__bootstrap`)
         }
       }
-    }, 0)
+    })
 
-    // Cleanup: cancela o timeout se o componente desmontar antes da execução
-    return () => clearTimeout(timeoutId)
-  }, [preferences, consented, integrations, reloadOnChange, nonce])
+    return () => cleanups.forEach((fn) => fn())
+  }, [integrations, reloadOnChange, nonce])
+
+  React.useEffect(() => {
+    if (!isHydrated) return
+    void processQueue({ consented, preferences }, process.env.NODE_ENV !== 'production')
+  }, [consented, preferences, isHydrated, queueVersion])
+
+  React.useEffect(() => {
+    if (!isHydrated) return
+    scriptRegistry.forEach((script) => {
+      if (script.status !== 'executed') return
+      if (typeof script.onConsentUpdate !== 'function') return
+      script.onConsentUpdate({ consented, preferences })
+    })
+  }, [consented, preferences, isHydrated])
 
   // Este componente não renderiza nada
   return null
@@ -214,9 +435,14 @@ export function ConsentScriptLoader({
  */
 export function useConsentScriptLoader() {
   const { preferences, consented } = useConsent()
+  const isHydrated = useConsentHydration()
 
   return React.useCallback(
     async (integration: ScriptIntegration, nonce?: string) => {
+      if (!isHydrated) {
+        logger.warn(`⚠️ Cannot load script ${integration.id}: Consent not hydrated yet`)
+        return false
+      }
       if (!consented) {
         logger.warn(`⚠️ Cannot load script ${integration.id}: No consent given`)
         return false
@@ -241,6 +467,10 @@ export function useConsentScriptLoader() {
           integration.category,
           mergedAttrs,
           scriptNonce,
+          {
+            consentSnapshot: { consented, preferences },
+            skipConsentCheck: true,
+          },
         )
 
         if (integration.init) {
@@ -253,6 +483,6 @@ export function useConsentScriptLoader() {
         return false
       }
     },
-    [preferences, consented],
+    [preferences, consented, isHydrated],
   )
 }

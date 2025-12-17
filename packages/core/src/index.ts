@@ -103,7 +103,11 @@ export {
  * @category Utils
  * @since 0.4.1
  */
-export { ConsentScriptLoader, useConsentScriptLoader } from './utils/ConsentScriptLoader'
+export {
+  ConsentScriptLoader,
+  registerScript,
+  useConsentScriptLoader,
+} from './utils/ConsentScriptLoader'
 
 /**
  * Integrações prontas para Google Analytics, Google Tag Manager e UserWay.
@@ -268,7 +272,17 @@ export { logger, LogLevel, setDebugLogging } from './utils/logger'
  * @category Utils
  * @since 0.5.4
  */
-export { checkPeerDeps, runPeerDepsCheck, type PeerDepsCheckResult } from './utils/peerDepsCheck'
+export {
+  checkPeerDeps,
+  getPeerDepsLocale,
+  resetPeerDepsMessages,
+  runPeerDepsCheck,
+  setPeerDepsLocale,
+  setPeerDepsMessages,
+  type PeerDepsCheckResult,
+  type PeerDepsLocale,
+  type PeerDepsMessages,
+} from './utils/peerDepsCheck'
 
 // Cookie registry APIs (overrides + lookup)
 export {
@@ -282,7 +296,7 @@ export {
  * @category Types
  * @since 0.4.1
  */
-export type { ConsentScriptLoaderProps } from './utils/ConsentScriptLoader'
+export type { ConsentScriptLoaderProps, RegisteredScript } from './utils/ConsentScriptLoader'
 
 // Utilitários e constantes (para customização avançada)
 

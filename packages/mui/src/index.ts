@@ -10,10 +10,12 @@
  * @category Packages
  */
 
-// Re-exporta tudo do core
+// Re-exporta tudo do core para compatibilidade com a API anterior.
+// IMPORTANTE: o `ConsentProvider` exposto neste pacote é o da camada MUI (UI pronta).
+// Use `ConsentProviderHeadless` ou o namespace `headless` para acessar o provider puro.
+// Para reduzir bundle e evitar ambiguidade, prefira importar apenas a UI via `@react-lgpd-consent/mui/ui`.
 export * from '@react-lgpd-consent/core'
-
-// Exporta o Provider do core como ConsentProviderHeadless (para uso avançado)
+export * as headless from '@react-lgpd-consent/core'
 export { ConsentProvider as ConsentProviderHeadless } from '@react-lgpd-consent/core'
 
 // Componentes MUI

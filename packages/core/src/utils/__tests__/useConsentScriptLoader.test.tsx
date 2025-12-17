@@ -182,6 +182,7 @@ describe('useConsentScriptLoader', () => {
       'analytics',
       expect.objectContaining({ nonce: 'nonce-xyz' }),
       'nonce-xyz',
+      expect.objectContaining({ skipConsentCheck: true }),
     )
   })
 })

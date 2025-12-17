@@ -21,6 +21,7 @@ import { logger } from './logger'
 
 const DEFAULT_STORAGE_NAMESPACE = 'lgpd-consent'
 const DEFAULT_STORAGE_VERSION = '1'
+const DEFAULT_MAX_AGE_SECONDS = 365 * 24 * 60 * 60
 
 /**
  * Gera o nome da chave de armazenamento (cookie/localStorage) combinando namespace e versão.
@@ -45,13 +46,14 @@ export function buildConsentStorageKey(options?: {
  *
  * @remarks
  * - `name`: Nome do cookie.
- * - `maxAgeDays`: Dias de validade.
+ * - `maxAge`: Validade em segundos (padrão: 365 dias).
  * - `sameSite`: Política SameSite.
  * - `secure`: Apenas HTTPS.
  * - `path`: Caminho do cookie.
  */
 export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
+  maxAge: DEFAULT_MAX_AGE_SECONDS,
   maxAgeDays: 365,
   sameSite: 'Lax',
   secure:
@@ -59,6 +61,49 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   path: '/',
   domain: undefined,
 }
+
+type ResolvedCookieOptions = {
+  name: string
+  maxAge: number
+  sameSite: 'Lax' | 'Strict' | 'None'
+  secure: boolean
+  path: string
+  domain?: string
+}
+
+function resolveCookieOptions(opts?: Partial<ConsentCookieOptions>): ResolvedCookieOptions {
+  const protocols = [
+    typeof globalThis.window !== 'undefined' ? globalThis.window?.location?.protocol : undefined,
+    typeof globalThis.location !== 'undefined' ? globalThis.location?.protocol : undefined,
+  ].filter(Boolean) as string[]
+  const forceHttps =
+    (globalThis as unknown as { __LGPD_FORCE_HTTPS__?: boolean }).__LGPD_FORCE_HTTPS__ === true
+  const isHttps = forceHttps || protocols.includes('https:')
+
+  const maxAgeSecondsFromDays =
+    typeof opts?.maxAgeDays === 'number' ? Math.max(0, opts.maxAgeDays * 24 * 60 * 60) : null
+  const maxAgeSeconds =
+    typeof opts?.maxAge === 'number'
+      ? Math.max(0, opts.maxAge)
+      : (maxAgeSecondsFromDays ?? DEFAULT_MAX_AGE_SECONDS)
+
+  return {
+    name: opts?.name ?? DEFAULT_COOKIE_OPTS.name,
+    maxAge: maxAgeSeconds,
+    sameSite: opts?.sameSite ?? DEFAULT_COOKIE_OPTS.sameSite ?? 'Lax',
+    secure:
+      typeof opts?.secure === 'boolean'
+        ? opts.secure
+        : isHttps
+          ? true
+          : (DEFAULT_COOKIE_OPTS.secure ?? false),
+    path: opts?.path ?? DEFAULT_COOKIE_OPTS.path ?? '/',
+    domain: opts?.domain ?? DEFAULT_COOKIE_OPTS.domain ?? undefined,
+  }
+}
+
+/** @internal - exposto apenas para testes unitários */
+export const __resolveCookieOptionsForTests = resolveCookieOptions
 
 /**
  * Versão atual do esquema do cookie para controle de migração.
@@ -97,6 +142,11 @@ export function readConsentCookie(name: string = DEFAULT_COOKIE_OPTS.name): Cons
     const data = JSON.parse(raw)
     logger.cookieOperation('read', name, data)
 
+    if (!data || typeof data !== 'object') {
+      logger.warn('Consent cookie malformed: payload is not an object')
+      return null
+    }
+
     if (!data.version) {
       logger.debug('Migrating legacy cookie format')
       return migrateLegacyCookie(data)
@@ -107,7 +157,15 @@ export function readConsentCookie(name: string = DEFAULT_COOKIE_OPTS.name): Cons
       return null
     }
 
-    return data as ConsentState
+    const preferences =
+      data && typeof (data as ConsentState).preferences === 'object'
+        ? (data as ConsentState).preferences
+        : { necessary: true }
+
+    return {
+      ...(data as ConsentState),
+      preferences: ensureNecessaryAlwaysOn(preferences),
+    }
   } catch (error) {
     logger.error('Error parsing consent cookie', error)
     return null
@@ -150,7 +208,7 @@ function migrateLegacyCookie(legacyData: Record<string, unknown>): ConsentState 
  *
  * @param {ConsentState} state O estado de consentimento a ser salvo.
  * @param {ProjectCategoriesConfig} config A configuração de categorias do projeto associada a este consentimento.
- * @param {Partial<ConsentCookieOptions>} [opts] Opções adicionais para o cookie (ex: `maxAgeDays`, `sameSite`).
+ * @param {Partial<ConsentCookieOptions>} [opts] Opções adicionais para o cookie (ex: `maxAge`, `sameSite`).
  * @param {'banner' | 'modal' | 'programmatic'} [source='banner'] A origem da decisão de consentimento.
  *
  * @remarks
@@ -164,13 +222,17 @@ export function writeConsentCookie(
   opts?: Partial<ConsentCookieOptions>,
   source: 'banner' | 'modal' | 'programmatic' = 'banner',
 ) {
-  if (typeof document === 'undefined') {
+  if (
+    typeof document === 'undefined' ||
+    typeof window === 'undefined' ||
+    (globalThis as unknown as { __LGPD_SSR__?: boolean }).__LGPD_SSR__ === true
+  ) {
     logger.debug('Cookie write skipped: server-side environment')
     return
   }
 
   const now = new Date().toISOString()
-  const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
+  const o = resolveCookieOptions(opts)
   const preferences = ensureNecessaryAlwaysOn(state.preferences)
 
   const cookieData = {
@@ -185,8 +247,10 @@ export function writeConsentCookie(
 
   logger.cookieOperation('write', o.name, cookieData)
 
+  const expires = new Date(Date.now() + o.maxAge * 1000)
+
   Cookies.set(o.name, JSON.stringify(cookieData), {
-    expires: o.maxAgeDays,
+    expires,
     sameSite: o.sameSite,
     secure: o.secure,
     path: o.path,
@@ -279,7 +343,7 @@ export function removeConsentCookie(opts?: Partial<ConsentCookieOptions>) {
     return
   }
 
-  const o = { ...DEFAULT_COOKIE_OPTS, ...opts }
+  const o = resolveCookieOptions(opts)
   logger.cookieOperation('delete', o.name)
   Cookies.remove(o.name, { path: o.path, domain: o.domain })
   logger.info('Consent cookie removed')

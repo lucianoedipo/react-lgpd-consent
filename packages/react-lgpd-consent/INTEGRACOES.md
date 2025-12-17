@@ -6,6 +6,36 @@ A biblioteca oferece integrações nativas para as ferramentas mais comuns, elim
 
 O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automaticamente, disparando-os apenas quando o usuário concede consentimento para a categoria correspondente.
 
+### ✨ Novidades v0.7.1
+
+- **🎯 Google Consent Mode v2 Automático**: GA4 e GTM agora implementam Consent Mode v2 automaticamente:
+  - `bootstrap`: Seta `consent('default', 'denied')` antes de qualquer carregamento
+  - `onConsentUpdate`: Envia `consent('update', 'granted')` quando usuário consente
+  - Zero configuração manual necessária!
+
+- **🔄 Sistema de Fila com Prioridade**: Scripts são executados ordenadamente:
+  1. Categoria `necessary` sempre primeiro
+  2. Dentro da mesma categoria: maior `priority` primeiro
+  3. Mesmo priority: ordem de registro (timestamp)
+
+- **📝 API `registerScript()`**: Registre scripts programaticamente fora do JSX:
+
+  ```tsx
+  import { registerScript } from 'react-lgpd-consent'
+
+  const cleanup = registerScript({
+    id: 'my-script',
+    category: 'analytics',
+    priority: 5,
+    execute: async () => {
+      /* carrega script */
+    },
+    onConsentUpdate: ({ preferences }) => {
+      /* reage a mudanças */
+    },
+  })
+  ```
+
 > 💡 **Procurando exemplos práticos?** Veja [RECIPES.md](../../RECIPES.md) para receitas passo a passo de Google Consent Mode v2, Next.js App Router e CSP/nonce.
 
 ## 🎯 Integrações Nativas Disponíveis
@@ -15,6 +45,7 @@ O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automa
 - **Categoria**: `analytics`
 - **Função**: `createGoogleAnalyticsIntegration(config)`
 - **Descrição**: Integração completa com o Google Analytics 4. Suporta `measurementId` e configurações adicionais para o `gtag`.
+- **✨ Novo v0.7.1**: Google Consent Mode v2 automático (sem configuração manual)
 
 ```tsx
 import { createGoogleAnalyticsIntegration, ConsentScriptLoader } from 'react-lgpd-consent'
@@ -27,20 +58,28 @@ const integrations = [
 ]
 
 <ConsentScriptLoader integrations={integrations} />
+// ✅ Consent Mode v2 implementado automaticamente:
+// - bootstrap: consent('default', 'denied') antes do script
+// - onConsentUpdate: consent('update', 'granted') após consentimento
 ```
 
 ### 2. Google Tag Manager (GTM)
 
 - **Categoria**: `analytics`
 - **Função**: `createGoogleTagManagerIntegration(config)`
-- **Descrição**: Carrega o container do Google Tag Manager. Suporta `gtmId` e `dataLayerName`.
+- **Descrição**: Carrega o container do Google Tag Manager. Suporta `containerId` (ou `gtmId` legado) e `dataLayerName`.
+- **✨ Novo v0.7.1**: Google Consent Mode v2 automático com dataLayer customizado
 
 ```tsx
 import { createGoogleTagManagerIntegration } from 'react-lgpd-consent'
 
 const integrations = [
-  createGoogleTagManagerIntegration({ gtmId: 'GTM-XXXXXXX' })
+  createGoogleTagManagerIntegration({
+    containerId: 'GTM-XXXXXXX',
+    dataLayerName: 'dataLayer', // opcional
+  }),
 ]
+// ✅ Consent Mode v2 no dataLayer customizado automaticamente
 ```
 
 ### 3. Facebook Pixel
@@ -52,9 +91,7 @@ const integrations = [
 ```tsx
 import { createFacebookPixelIntegration } from 'react-lgpd-consent'
 
-const integrations = [
-  createFacebookPixelIntegration({ pixelId: 'YOUR_PIXEL_ID', autoTrack: true })
-]
+const integrations = [createFacebookPixelIntegration({ pixelId: 'YOUR_PIXEL_ID', autoTrack: true })]
 ```
 
 ### 4. Hotjar
@@ -142,7 +179,11 @@ Para simplificar a configuração de múltiplas integrações, a biblioteca ofer
 ### Exemplo de Template (E-commerce)
 
 ```tsx
-import { ConsentProvider, ConsentScriptLoader, createECommerceIntegrations } from 'react-lgpd-consent'
+import {
+  ConsentProvider,
+  ConsentScriptLoader,
+  createECommerceIntegrations,
+} from 'react-lgpd-consent'
 
 function App() {
   const integrations = createECommerceIntegrations({
@@ -185,6 +226,7 @@ categorizeDiscoveredCookies(discovered, true)
 ## 🧱 Nota SSR/Next.js (App Router)
 
 Para evitar hydration mismatch e vazamento de scripts:
+
 - Coloque o `ConsentProvider` dentro de um Client Component e carregue-o com `dynamic(..., { ssr: false })` a partir do `RootLayout` (Server Component).
 - Use o `ConsentScriptLoader` para carregar GTM/GA4 somente após consentimento e inicialize o Consent Mode v2 com `gtag('consent','default', denied)` antes de qualquer script.
 - Consulte a seção “SSR/Next.js (App Router) — Padrões seguros” em `QUICKSTART.md` para ordem dos provedores/estilos (MUI/Emotion) e checklist SSR.
@@ -218,6 +260,7 @@ A partir da versão **0.4.5**, a biblioteca dispara automaticamente eventos padr
 Disparado quando o sistema de consentimento é inicializado (após hidratação).
 
 **Payload:**
+
 ```typescript
 {
   event: 'consent_initialized',
@@ -232,6 +275,7 @@ Disparado quando o sistema de consentimento é inicializado (após hidratação)
 ```
 
 **Exemplo de uso no GTM:**
+
 - **Tipo de acionador**: Evento personalizado
 - **Nome do evento**: `consent_initialized`
 - **Variáveis**: `{{categories.analytics}}`, `{{categories.marketing}}`, etc.
@@ -241,6 +285,7 @@ Disparado quando o sistema de consentimento é inicializado (após hidratação)
 Disparado sempre que o usuário atualiza suas preferências de consentimento.
 
 **Payload:**
+
 ```typescript
 {
   event: 'consent_updated',
@@ -257,6 +302,7 @@ Disparado sempre que o usuário atualiza suas preferências de consentimento.
 ```
 
 **Exemplo de uso no GTM:**
+
 - **Tipo de acionador**: Evento personalizado
 - **Nome do evento**: `consent_updated`
 - **Condição**: `{{changed_categories}}` contém `analytics`
@@ -313,7 +359,7 @@ Crie uma tag para registrar mudanças de consentimento em um sistema de auditori
     categories: {{DLV - Consent Categories}},
     changed: {{DLV - Changed Categories}}
   };
-  
+
   // Enviar para seu sistema de auditoria
   fetch('/api/consent-audit', {
     method: 'POST',
@@ -336,9 +382,9 @@ const handleCustomUpdate = () => {
   const newPreferences = {
     necessary: true,
     analytics: true,
-    marketing: false
+    marketing: false,
   }
-  
+
   pushConsentUpdatedEvent(newPreferences, 'programmatic')
 }
 ```
@@ -350,7 +396,7 @@ import type {
   ConsentEvent,
   ConsentEventOrigin,
   ConsentInitializedEvent,
-  ConsentUpdatedEvent
+  ConsentUpdatedEvent,
 } from 'react-lgpd-consent'
 
 // Origem da ação
@@ -389,7 +435,6 @@ interface ConsentUpdatedEvent {
 | Live Chat          | `functional`          | Funcionalidade de suporte        |
 | YouTube/Vimeo      | `social`              | Conteúdo de redes sociais        |
 
-
 ---
 
 ## 🆕 Recursos Avançados v0.7.0
@@ -402,7 +447,7 @@ Integre sistemas de auditoria monitorando eventos de consentimento:
 import { ConsentProvider, ConsentScriptLoader } from 'react-lgpd-consent'
 import { googleAnalytics4Integration } from './integrations'
 
-<ConsentProvider
+;<ConsentProvider
   categories={{ enabledCategories: ['analytics', 'marketing'] }}
   onConsentInit={(state) => {
     // Disparado na inicialização (útil para analytics)
@@ -411,19 +456,19 @@ import { googleAnalytics4Integration } from './integrations'
   onConsentChange={(current, previous) => {
     // Disparado em toda mudança de preferências
     console.log('Mudança:', { current, previous })
-    
+
     // Exemplo: disparar evento no dataLayer
     window.dataLayer?.push({
       event: 'consent_preferences_updated',
       consent_analytics: current.preferences.analytics,
-      consent_marketing: current.preferences.marketing
+      consent_marketing: current.preferences.marketing,
     })
   }}
   onAuditLog={(entry) => {
     // Enviar para backend de compliance
     fetch('/api/consent-audit', {
       method: 'POST',
-      body: JSON.stringify(entry)
+      body: JSON.stringify(entry),
     })
   }}
 >
@@ -460,6 +505,7 @@ const customConfig = createAnpdCategories({
 ```
 
 **Vantagens dos presets:**
+
 - ✅ Conformidade com diretrizes ANPD
 - ✅ Nomes e descrições em pt-BR revisadas
 - ✅ Tipagem forte para evitar erros

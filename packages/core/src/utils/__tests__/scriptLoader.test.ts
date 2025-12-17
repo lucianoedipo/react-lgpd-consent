@@ -273,6 +273,25 @@ describe('loadScript', () => {
     await expect(promise).resolves.toBeUndefined()
   })
 
+  test('rejects when consentSnapshot nega a categoria', async () => {
+    const promise = loadScript(
+      'denied-script',
+      'https://example.com/deny.js',
+      'analytics',
+      {},
+      undefined,
+      {
+        consentSnapshot: {
+          consented: true,
+          preferences: { necessary: true, analytics: false },
+        } as any,
+      },
+    )
+
+    await expect(promise).rejects.toThrow("Consent not granted for category 'analytics'")
+    expect(document.getElementById('denied-script')).toBeNull()
+  })
+
   test('loads when category is null (no category gating)', async () => {
     const consent = {
       consented: true,

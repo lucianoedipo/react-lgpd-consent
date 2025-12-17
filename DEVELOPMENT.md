@@ -62,6 +62,42 @@ A stack continua baseada em:
 
 Consulte [REACT19-STRICTMODE.md](./docs/REACT19-STRICTMODE.md) para detalhes da implementação.
 
+## 🍪 Estratégia de cookie por ambiente
+
+- **Localhost / desenvolvimento**
+  ```tsx
+  cookie: {
+    name: 'consent-dev',
+    domain: undefined, // não compartilha entre subdomínios
+    sameSite: 'Lax',
+    secure: false, // localhost sem HTTPS
+  }
+  ```
+
+- **Staging (ex.: dev.example.com, api.dev.example.com)**
+  ```tsx
+  cookie: {
+    name: 'consent-staging',
+    domain: '.example.com', // compartilha entre subdomínios
+    sameSite: 'Lax',
+    secure: true, // exige HTTPS
+  }
+  ```
+
+- **Produção (example.com + www.example.com)**
+  ```tsx
+  cookie: {
+    name: 'consent',
+    domain: '.example.com',
+    sameSite: 'Lax',
+    secure: true,
+  }
+  ```
+
+Notas rápidas:
+- Não há dependência de `NODE_ENV` para o cookie; configure explicitamente via prop `cookie`.
+- Para compartilhar entre subdomínios, sempre use `domain` com ponto (`.example.com`) e `secure: true`.
+
 ## 📁 Estrutura do Projeto
 
 packages/

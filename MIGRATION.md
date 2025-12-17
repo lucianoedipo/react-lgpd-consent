@@ -1,6 +1,110 @@
-# Guia de Migração - v0.4.x → v0.5.0
+# Guia de Migração
 
-## 📋 Visão Geral
+## 🆕 v0.7.0 → v0.7.1 (16/12/2025)
+
+### 📋 Mudanças Principais
+
+#### ✨ **Novas Features**
+
+1. **Google Consent Mode v2 Automático**
+   - GA4 e GTM agora implementam Consent Mode v2 sem configuração manual
+   - `bootstrap`: Seta consent padrão antes do carregamento
+   - `onConsentUpdate`: Atualiza consent quando preferências mudam
+
+2. **Sistema de Fila de Scripts com Prioridade**
+   - Nova API `registerScript()` para registro programático
+   - Scripts executam em ordem: necessary → categoria → prioridade → timestamp
+   - Interface `RegisteredScript` com `priority`, `allowReload`, `onConsentUpdate`
+
+3. **Cookie Options Modernizadas**
+   - **NOVO**: `maxAge` em segundos (padrão moderno)
+   - **DEPRECATED**: `maxAgeDays` (mantido por compatibilidade)
+   - **NOVO**: Suporte a `sameSite: 'None'` para contextos cross-site
+   - Detecção automática de HTTPS para `secure: true`
+4. **Entrypoint UI-only (`@react-lgpd-consent/mui/ui`)**
+   - Exporta apenas a camada MUI, sem re-exportar o core
+   - Reduz ambiguidade de nomes (`ConsentProvider` headless vs. MUI) e melhora tree-shaking
+
+#### 🔄 **Migrações Recomendadas**
+
+**Cookie Options (Opcional, backward compatible):**
+
+```diff
+<ConsentProvider
+  cookie={{
+    name: 'myConsent',
+-   maxAgeDays: 365,
++   maxAge: 365 * 24 * 60 * 60, // 365 dias em segundos
+    sameSite: 'Lax',
+    secure: true // Detectado automaticamente em HTTPS
+  }}
+>
+```
+
+**Google Consent Mode v2 (Automático, nenhuma mudança necessária!):**
+
+```tsx
+// Antes v0.7.1: Configuração manual complexa
+function GtagConsentBootstrap() {
+  React.useEffect(() => {
+    gtag('consent', 'default', { analytics_storage: 'denied' })
+  }, [])
+}
+
+// Depois v0.7.1: Automático!
+const integrations = [
+  createGoogleAnalyticsIntegration({ measurementId: 'G-XXX' })
+]
+<ConsentScriptLoader integrations={integrations} />
+// ✅ Consent Mode v2 implementado automaticamente
+```
+
+**Registro Programático de Scripts (Nova feature):**
+
+```tsx
+import { registerScript } from 'react-lgpd-consent'
+
+// Registre scripts fora do JSX com prioridade e callbacks
+const cleanup = registerScript({
+  id: 'custom-script',
+  category: 'analytics',
+  priority: 10, // Maior = executa primeiro
+  execute: async () => {
+    await loadMyScript()
+  },
+  onConsentUpdate: ({ consented, preferences }) => {
+    if (preferences.analytics) {
+      updateMyScriptConsent('granted')
+    }
+  }
+})
+
+// Cleanup quando componente desmontar
+React.useEffect(() => cleanup, [])
+```
+
+**UI-only (reduzir bundle e evitar ambiguidade):**
+
+```diff
+-import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui'
++import { ConsentProvider, CookieBanner } from '@react-lgpd-consent/mui/ui'
+```
+
+Precisa da lógica headless? Importe direto do `@react-lgpd-consent/core` ou use `headless.ConsentProvider` do entrypoint principal.
+
+#### ⚠️ **Breaking Changes**
+
+Nenhum! Todas as mudanças são backward compatible.
+
+- `maxAgeDays` continua funcionando (mas deprecated)
+- Comportamento padrão preservado
+- APIs existentes mantidas
+
+---
+
+## v0.4.x → v0.5.0
+
+### 📋 Visão Geral
 
 A versão **0.5.0** introduz uma **arquitetura modular** que permite escolher entre diferentes níveis de dependência:
 
