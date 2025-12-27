@@ -85,6 +85,102 @@ export default [
       ],
       '@typescript-eslint/no-require-imports': 'error',
       'no-inner-declarations': 'off',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "Program > ExpressionStatement > AssignmentExpression[left.object.name='window']",
+          message:
+            'Evite acessar window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > AssignmentExpression[left.object.name='document']",
+          message:
+            'Evite acessar document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > MemberExpression[object.name='window']",
+          message:
+            'Evite acessar window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > MemberExpression[object.name='document']",
+          message:
+            'Evite acessar document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector: "Program > ExpressionStatement > CallExpression[callee.object.name='window']",
+          message:
+            'Evite acessar window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > CallExpression[callee.object.name='document']",
+          message:
+            'Evite acessar document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector: "Program > VariableDeclaration > VariableDeclarator[init.name='window']",
+          message:
+            'Evite acessar window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector: "Program > VariableDeclaration > VariableDeclarator[init.name='document']",
+          message:
+            'Evite acessar document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > VariableDeclaration > VariableDeclarator MemberExpression[object.name='window']",
+          message:
+            'Evite acessar window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > VariableDeclaration > VariableDeclarator MemberExpression[object.name='document']",
+          message:
+            'Evite acessar document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > MemberExpression[object.name='globalThis'][property.name='window']",
+          message:
+            'Evite acessar globalThis.window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > MemberExpression[object.name='globalThis'][property.name='document']",
+          message:
+            'Evite acessar globalThis.document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > CallExpression[callee.object.name='globalThis'][callee.property.name='window']",
+          message:
+            'Evite acessar globalThis.window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > ExpressionStatement > CallExpression[callee.object.name='globalThis'][callee.property.name='document']",
+          message:
+            'Evite acessar globalThis.document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > VariableDeclaration > VariableDeclarator MemberExpression[object.name='globalThis'][property.name='window']",
+          message:
+            'Evite acessar globalThis.window no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+        {
+          selector:
+            "Program > VariableDeclaration > VariableDeclarator MemberExpression[object.name='globalThis'][property.name='document']",
+          message:
+            'Evite acessar globalThis.document no topo do módulo; mova para efeitos ou guards SSR.',
+        },
+      ],
 
       // Estilo
       semi: ['error', 'never'],
@@ -127,6 +223,7 @@ export default [
           rules: {
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/ban-ts-comment': 'off',
+            'no-restricted-syntax': 'off',
           },
         },
         ...storybook.configs['flat/recommended'],

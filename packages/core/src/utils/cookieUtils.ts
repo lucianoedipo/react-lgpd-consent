@@ -56,8 +56,7 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   maxAge: DEFAULT_MAX_AGE_SECONDS,
   maxAgeDays: 365,
   sameSite: 'Lax',
-  secure:
-    globalThis.window === undefined ? false : globalThis.window.location.protocol === 'https:',
+  secure: false,
   path: '/',
   domain: undefined,
 }

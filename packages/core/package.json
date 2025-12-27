@@ -1,6 +1,6 @@
 {
   "name": "@react-lgpd-consent/core",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "Núcleo da biblioteca de consentimento LGPD para React - Estado, hooks e utilitários sem dependências de UI",
   "keywords": [
     "lgpd",
