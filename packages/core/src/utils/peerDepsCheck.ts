@@ -469,8 +469,8 @@ function detectMultipleReactInstances(): boolean {
 
     // Técnica 3: Verificar se há múltiplas versões no contexto global
     const hasMultipleVersions =
-      ((currentWindow as unknown as ReactGlobal).__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers
-        ?.size ?? 0) > 1
+      ((currentWindow as unknown as ReactGlobal).__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size ??
+        0) > 1
 
     return hasMultipleVersions || false
   } catch {
