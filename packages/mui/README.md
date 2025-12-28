@@ -97,9 +97,9 @@ import { ConsentProvider } from '@react-lgpd-consent/mui'
 ### Presets ANPD
 
 ```tsx
-import { createAnpdCategories } from '@react-lgpd-consent/mui'
+import { createAnpdCategoriesConfig } from '@react-lgpd-consent/mui'
 
-const categories = createAnpdCategories({
+const categories = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing']
 })
 
@@ -158,6 +158,17 @@ function CustomUI() {
   position="bottom-right"
   offset={24}
   icon={<CustomIcon />}
+/>
+```
+
+Para bloquear navegação até a decisão, use `blockingMode="hard"` no provider:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  blocking
+  blockingMode="hard"
+  blockingStrategy="provider"
 />
 ```
 

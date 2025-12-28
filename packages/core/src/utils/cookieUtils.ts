@@ -54,7 +54,6 @@ export function buildConsentStorageKey(options?: {
 export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   name: 'cookieConsent',
   maxAge: DEFAULT_MAX_AGE_SECONDS,
-  maxAgeDays: 365,
   sameSite: 'Lax',
   secure: false,
   path: '/',
@@ -73,30 +72,32 @@ type ResolvedCookieOptions = {
 function resolveCookieOptions(opts?: Partial<ConsentCookieOptions>): ResolvedCookieOptions {
   const currentWindow = globalThis.window
   const currentLocation = globalThis.location
-  const protocols = [currentWindow?.location?.protocol, currentLocation?.protocol].filter(
-    Boolean,
-  ) as string[]
+  const protocols = [currentWindow?.location?.protocol, currentLocation?.protocol].filter(Boolean)
   const forceHttps =
     (globalThis as unknown as { __LGPD_FORCE_HTTPS__?: boolean }).__LGPD_FORCE_HTTPS__ === true
   const isHttps = forceHttps || protocols.includes('https:')
 
-  const maxAgeSecondsFromDays =
-    typeof opts?.maxAgeDays === 'number' ? Math.max(0, opts.maxAgeDays * 24 * 60 * 60) : null
   const maxAgeSeconds =
     typeof opts?.maxAge === 'number'
       ? Math.max(0, opts.maxAge)
-      : (maxAgeSecondsFromDays ?? DEFAULT_MAX_AGE_SECONDS)
+      : typeof opts?.maxAgeDays === 'number'
+        ? Math.max(0, opts.maxAgeDays) * 24 * 60 * 60
+        : DEFAULT_MAX_AGE_SECONDS
+
+  let secure: boolean
+  if (typeof opts?.secure === 'boolean') {
+    secure = opts.secure
+  } else if (isHttps) {
+    secure = true
+  } else {
+    secure = DEFAULT_COOKIE_OPTS.secure ?? false
+  }
 
   return {
     name: opts?.name ?? DEFAULT_COOKIE_OPTS.name,
     maxAge: maxAgeSeconds,
     sameSite: opts?.sameSite ?? DEFAULT_COOKIE_OPTS.sameSite ?? 'Lax',
-    secure:
-      typeof opts?.secure === 'boolean'
-        ? opts.secure
-        : isHttps
-          ? true
-          : (DEFAULT_COOKIE_OPTS.secure ?? false),
+    secure,
     path: opts?.path ?? DEFAULT_COOKIE_OPTS.path ?? '/',
     domain: opts?.domain ?? DEFAULT_COOKIE_OPTS.domain ?? undefined,
   }

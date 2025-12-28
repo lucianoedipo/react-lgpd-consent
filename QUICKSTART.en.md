@@ -7,7 +7,7 @@ This quickstart gives everything you need to integrate `react-lgpd-consent` into
 ## 🆕 What's New in v0.7.0
 
 - ✅ **Lifecycle Callbacks** - Monitor consent events with `onConsentInit`, `onConsentChange`, `onAuditLog`
-- ✅ **ANPD Presets** - Pre-validated category configurations with `createAnpdCategories()`
+- ✅ **ANPD Presets** - Pre-validated category configurations with `createAnpdCategoriesConfig()`
 - ✅ **Audit Logging** - Compliance tracking with `createConsentAuditEntry()`
 - ✅ **Improved Error Messages** - Clear error messages in pt-BR when hooks are used outside Provider
 
@@ -33,7 +33,8 @@ npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
 >
 > - `react-lgpd-consent` remains the main npm package.
 > - `@react-lgpd-consent/core` exposes contexts, hooks and utilities only.
-> - `@react-lgpd-consent/mui` ships the Material-UI layer (currently a proxy).
+> - `@react-lgpd-consent/mui` ships the MUI components and re-exports the core.
+> - For UI-only (smaller bundle), use `@react-lgpd-consent/mui/ui`.
 > - Subpath imports (`react-lgpd-consent/core`, `react-lgpd-consent/mui`) are available for advanced setups.
 
 ## 🎯 Basic Usage (30 seconds)
@@ -119,12 +120,12 @@ Add project-specific categories (e.g., support chat, video players, A/B testing)
 import { useConsent } from 'react-lgpd-consent'
 
 function MyComponent() {
-  const { consent } = useConsent()
+  const { preferences } = useConsent()
 
   // Check if user consented to specific categories
-  const canShowChat = consent?.preferences?.chat === true
-  const canLoadVideos = consent?.preferences?.video === true
-  const canRunABTests = consent?.preferences?.abTesting === true
+  const canShowChat = preferences?.chat === true
+  const canLoadVideos = preferences?.video === true
+  const canRunABTests = preferences?.abTesting === true
 
   return (
     <div>
@@ -165,6 +166,7 @@ This is a condensed reference of the most commonly-used props. For a full typed 
 - `theme` — Material-UI theme for consent components.
 - `designTokens` — Advanced visual tokens (colors, spacing, backdrop).
 - `blocking` (boolean) — If true, provider will block interaction until user acts.
+- `blockingMode` (`"soft" | "hard"`) — Blocking intensity; `hard` makes the app content inert (no focus/keyboard).
 - `blockingStrategy` (`"auto" | "provider" | "component"`) — How overlay is managed.
 - `hideBranding` (boolean) — Hide library branding.
 - `onConsentGiven` — Callback when user gives consent for the first time.

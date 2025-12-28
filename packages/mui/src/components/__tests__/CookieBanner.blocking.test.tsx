@@ -38,7 +38,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     // Message visible and Snackbar wrapper present
-    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
     expect(screen.getByTestId('cookie-snackbar')).toBeInTheDocument()
   })
 
@@ -57,7 +57,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     // Banner text is visible but Snackbar wrapper should not exist
-    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
     expect(screen.queryByTestId('cookie-snackbar')).toBeNull()
   })
 
@@ -112,7 +112,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
         </ConsentProvider>,
       )
 
-      expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+      expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
       expect(screen.getByTestId('cookie-snackbar')).toBeInTheDocument()
       expect(screen.queryByTestId('lgpd-cookie-banner-overlay')).toBeNull()
     } finally {
@@ -134,7 +134,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
       </ConsentProvider>,
     )
 
-    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
     expect(await screen.findByTestId('lgpd-cookie-banner-overlay')).toBeInTheDocument()
   })
 
@@ -154,7 +154,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
       </ThemeProvider>,
     )
 
-    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
     const overlayStyles = globalThis.window.getComputedStyle(overlay)
@@ -258,7 +258,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
       </ConsentProvider>,
     )
 
-    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
     expect(screen.queryByText(/fornecido por|LÉdipO\.eti\.br/i)).toBeNull()
   })
 
@@ -274,7 +274,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
       </ConsentProvider>,
     )
 
-    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByText(/cookies necessários/i)).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: /LÉdipO\.eti\.br/i,

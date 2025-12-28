@@ -38,7 +38,7 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `resolveTexts`                      | Função     | (v0.4.1) Resolve textos baseados em templates e contexto.                        |
 | `createConsentAuditEntry`           | Função     | **(v0.7.0)** Cria entrada de auditoria de consentimento para logs.                |
 | `ANPD_CATEGORY_PRESETS`             | Constante  | **(v0.7.0)** Presets de categorias conforme diretrizes LGPD/ANPD.                 |
-| `createAnpdCategories`              | Função     | **(v0.7.0)** Helper para gerar configurações tipadas com presets ANPD.            |
+| `createAnpdCategoriesConfig`        | Função     | **(v0.7.0)** Helper para gerar configurações tipadas com presets ANPD.            |
 | `TEXT_TEMPLATES`                    | Constante  | (v0.4.1) Templates pré-configurados (ecommerce, saas, governo).                  |
 | `AdvancedConsentTexts`              | Tipo       | (v0.4.1) Interface expandida com i18n e contextos.                               |
 | `DesignTokens`                      | Tipo       | (v0.4.1) Sistema completo com 200+ pontos de customização.                       |
@@ -135,6 +135,7 @@ function App() {
 | `textVariant` | `'formal' \| 'casual' \| 'concise' \| 'detailed'` | Aplica variação de tom sobre os textos base. |
 | `designTokens` | `DesignTokens` | Ajuste visual granular (cores, spacing, tipografia, overlays). |
 | `blocking` | `boolean` | Ativa overlay bloqueante até o usuário decidir. Padrão: `false`. |
+| `blockingMode` | `'soft' \| 'hard'` | Intensidade do bloqueio; `hard` torna o conteúdo da aplicação inerte (sem foco/teclado). |
 | `blockingStrategy` | `'auto' \| 'provider' \| 'component'` | Controla quem desenha o overlay quando `blocking` está ativo. |
 | `hideBranding` | `boolean` | Oculta o selo “fornecido por”. |
 | `disableDeveloperGuidance` | `boolean` | Suprime avisos/sugestões no console em desenvolvimento. |
@@ -472,6 +473,26 @@ const customTexts = resolveTexts(TEXT_TEMPLATES.ecommerce, {
 
 ### Design Tokens Expandidos
 
+Principais grupos de tokens (top-level):
+
+- `colors`: cores base, semânticas e por componente
+- `typography`: fontes, tamanhos, pesos e hierarquia
+- `spacing`: espaçamentos, padding/margin e radius
+- `layout`: posição, largura, backdrop e z-index
+- `effects`: sombras, transições e filtros
+- `accessibility`: contraste, motion e foco
+- `themes`: overrides para light/dark
+
+Além dos tokens, você pode sobrescrever detalhes via `sx` e `ThemeProvider` do MUI:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  cookieBannerProps={{ PaperProps: { sx: { borderRadius: 3 } } }}
+  preferencesModalProps={{ DialogProps: { sx: { '& .MuiDialog-paper': { borderRadius: 4 } } } }}
+/>
+```
+
 ```tsx
 import type { DesignTokens } from 'react-lgpd-consent'
 
@@ -719,21 +740,21 @@ interface ConsentAuditEntry {
 Use presets conformes com diretrizes da ANPD:
 
 ```tsx
-import { ConsentProvider, createAnpdCategories, ANPD_CATEGORY_PRESETS } from 'react-lgpd-consent'
+import { ConsentProvider, createAnpdCategoriesConfig, ANPD_CATEGORY_PRESETS } from 'react-lgpd-consent'
 
 // Preset BÁSICO (necessary + analytics)
-const basicConfig = createAnpdCategories({ include: ['analytics'] })
+const basicConfig = createAnpdCategoriesConfig({ include: ['analytics'] })
 
 // Preset COMPLETO (todas as categorias)
-const fullConfig = createAnpdCategories({
+const fullConfig = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
 })
 
 // Preset MÍNIMO (apenas necessary)
-const minimalConfig = createAnpdCategories({ include: [] })
+const minimalConfig = createAnpdCategoriesConfig({ include: [] })
 
 // Com customizações
-const customConfig = createAnpdCategories({
+const customConfig = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing'],
   names: { analytics: 'Análises' },
   descriptions: { marketing: 'Anúncios personalizados baseados no seu perfil.' }

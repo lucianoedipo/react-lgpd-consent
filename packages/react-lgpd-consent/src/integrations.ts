@@ -11,7 +11,7 @@
  * This module provides a convenient access point to integration factories
  * (Google Analytics, GTM, Facebook Pixel, etc.) without importing from core directly.
  *
- * @category Integrations
+ * @category Utils
  * @since 0.5.0
  * @exports COMMON_INTEGRATIONS
  * @exports createClarityIntegration
@@ -26,6 +26,16 @@
  * @exports createSaaSIntegrations
  * @exports createUserWayIntegration
  * @exports createZendeskChatIntegration
+ *
+ * @example
+ * ```tsx
+ * import { COMMON_INTEGRATIONS } from 'react-lgpd-consent/integrations'
+ *
+ * const integrations = [
+ *   COMMON_INTEGRATIONS.googleAnalytics({ measurementId: 'G-XXXX' }),
+ *   COMMON_INTEGRATIONS.googleTagManager({ containerId: 'GTM-XXXX' })
+ * ]
+ * ```
  */
 
 export {

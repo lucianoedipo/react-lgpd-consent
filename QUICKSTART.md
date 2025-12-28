@@ -22,8 +22,9 @@ npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
 >
 > - `react-lgpd-consent` continua sendo o pacote principal publicado.
 > - `@react-lgpd-consent/core` expõe apenas contextos, hooks e utilitários (sem UI).
-> - `@react-lgpd-consent/mui` publica os componentes baseados em Material-UI (atualmente um proxy).
-> - Use os novos subpaths (`react-lgpd-consent/core`, `react-lgpd-consent/mui`) conforme a necessidade.
+> - `@react-lgpd-consent/mui` publica os componentes MUI e re-exporta o core.
+> - Para UI-only (bundle menor), use `@react-lgpd-consent/mui/ui`.
+> - Subpaths do agregador: `react-lgpd-consent/core` e `react-lgpd-consent/mui`.
 
 ## 🎯 Uso Básico (30 segundos)
 
@@ -46,17 +47,17 @@ function App() {
   )
 ```
 
-## 🧭 Storybook — quick note
+## 🧭 Storybook — nota rápida
 
-This repository ships an interactive Storybook playground used for manual testing and visual exploration of components. Quick commands:
+Este repositório possui um Storybook interativo para testes manuais e exploração visual dos componentes. Comandos rápidos:
 
-- Run locally (development):
+- Rodar localmente (desenvolvimento):
 
 ```bash
 npm run storybook
 ```
 
-- Build static Storybook (for publishing to GitHub Pages):
+- Build do Storybook estático (para publicar no GitHub Pages):
 
 ```bash
 npm run build-storybook
@@ -323,6 +324,10 @@ Z-index e Portals
 - O overlay bloqueante do Provider usa `z-index: 1299`; o Modal/Banner usa camadas ≥ 1300.
 - Em caso de conflito com headers fixos, ajuste o `theme.zIndex` (ex.: `appBar: 1200`, `modal: 1300+`) ou os `designTokens` conforme a necessidade.
 
+Bloqueio “hard” (sem foco no app)
+- Use `blockingMode="hard"` quando precisar impedir navegação por teclado fora do banner/modal.
+- Nesse modo, o Provider aplica `inert` e `aria-hidden` no conteúdo da aplicação até a decisão do usuário.
+
 Checklist SSR (evite hydration mismatch)
 - [ ] Hooks somente em Client Components (`'use client'` no topo).
 - [ ] Nada de `window`/`document`/`localStorage` no topo de módulo (apenas em `useEffect`).
@@ -387,12 +392,12 @@ Adicione categorias específicas do seu projeto (ex.: chat de suporte, players d
 import { useConsent } from 'react-lgpd-consent'
 
 function MyComponent() {
-  const { consent } = useConsent()
+  const { preferences } = useConsent()
 
   // Verificar se o usuário consentiu com categorias específicas
-  const canShowChat = consent?.preferences?.chat === true
-  const canLoadVideos = consent?.preferences?.video === true
-  const canRunABTests = consent?.preferences?.abTesting === true
+  const canShowChat = preferences?.chat === true
+  const canLoadVideos = preferences?.video === true
+  const canRunABTests = preferences?.abTesting === true
 
   return (
     <div>
@@ -415,7 +420,8 @@ function MyComponent() {
 | `theme`                              | `any`                                                       | ❌ Não      | Tema padrão         | Tema Material-UI para os componentes           |
 | `designTokens`                       | `DesignTokens`                                              | ❌ Não      | Tokens padrão       | Tokens de design para customização avançada    |
 | `blocking`                           | `boolean`                                                   | ❌ Não      | `false`             | Exibe overlay bloqueando interação até decisão |
-| `blockingStrategy`                   | `'auto' \| 'provider'`                                      | ❌ Não      | `'auto'`            | Estratégia de renderização do overlay          |
+| `blockingMode`                       | `'soft' \| 'hard'`                                          | ❌ Não      | `'soft'`            | Intensidade do bloqueio (`hard` deixa app inerte) |
+| `blockingStrategy`                   | `'auto' \| 'provider' \| 'component'`                       | ❌ Não      | `'auto'`            | Estratégia de renderização do overlay          |
 | `hideBranding`                       | `boolean`                                                   | ❌ Não      | `false`             | Oculta branding "fornecido por"                |
 | `onConsentGiven`                     | `(state: ConsentState) => void`                             | ❌ Não      | -                   | Callback na primeira vez que usuário consente  |
 | `onPreferencesSaved`                 | `(prefs: ConsentPreferences) => void`                       | ❌ Não      | -                   | Callback quando preferências são salvas        |
@@ -1179,6 +1185,16 @@ function App() {
     </ConsentProvider>
   )
 }
+```
+
+Você também pode complementar com overrides pontuais via `sx`/tema MUI:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  cookieBannerProps={{ PaperProps: { sx: { borderRadius: 3 } } }}
+  preferencesModalProps={{ DialogProps: { sx: { '& .MuiDialog-paper': { borderRadius: 4 } } } }}
+/>
 ```
 
 ### Configuração de Cookie Personalizada

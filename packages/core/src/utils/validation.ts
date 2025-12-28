@@ -80,11 +80,7 @@ export function validateConsentProviderProps(
   }
 
   // Validação de categories (+sanitização) — independente de zod
-  if (!props.categories) {
-    warnings.push(
-      "Prop 'categories' não fornecida — o ConsentProvider requer configuração de categorias.",
-    )
-  } else {
+  if (props.categories) {
     const cat = props.categories
     const enabled = [...new Set(cat.enabledCategories ?? [])]
     if (enabled.includes('necessary')) {
@@ -139,6 +135,10 @@ export function validateConsentProviderProps(
       enabledCategories: sanitizedEnabled as ProjectCategoriesConfig['enabledCategories'],
       customCategories: custom,
     }
+  } else {
+    warnings.push(
+      "Prop 'categories' não fornecida — o ConsentProvider requer configuração de categorias.",
+    )
   }
 
   // Emitir mensagens no console (apenas em DEV)

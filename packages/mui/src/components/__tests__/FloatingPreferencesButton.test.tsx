@@ -116,7 +116,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       </ConsentProvider>,
     )
 
-    const button = await screen.findByLabelText('Configurar Cookies')
+    const button = await screen.findByLabelText('Gerenciar cookies')
     expect(button).toBeInTheDocument()
   })
 
@@ -150,7 +150,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       </ConsentProvider>,
     )
 
-    const button = await screen.findByLabelText('Configurar Cookies')
+    const button = await screen.findByLabelText('Gerenciar cookies')
     // MUI aplica styles via CSS-in-JS classes; use getComputedStyle to inspect layout values
     expect(button).toBeInTheDocument()
     const target =
@@ -173,7 +173,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       </ConsentProvider>,
     )
 
-    const maybe = screen.queryByLabelText('Configurar Cookies')
+    const maybe = screen.queryByLabelText('Gerenciar cookies')
     expect(maybe).not.toBeInTheDocument()
   })
 
@@ -189,7 +189,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       </ConsentProvider>,
     )
 
-    const baseButton = await findByLabelText('Configurar Cookies')
+    const baseButton = await findByLabelText('Gerenciar cookies')
     const baseEl =
       baseButton.tagName === 'BUTTON'
         ? baseButton
@@ -209,7 +209,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       </ConsentProvider>,
     )
 
-    const updatedButton = screen.getByLabelText('Configurar Cookies')
+    const updatedButton = screen.getByLabelText('Gerenciar cookies')
     const updatedEl =
       updatedButton.tagName === 'BUTTON'
         ? updatedButton
@@ -229,7 +229,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       </ConsentProvider>,
     )
 
-    const fallbackButton = screen.getByLabelText('Configurar Cookies')
+    const fallbackButton = screen.getByLabelText('Gerenciar cookies')
     const fallbackEl =
       fallbackButton.tagName === 'BUTTON'
         ? fallbackButton

@@ -508,18 +508,18 @@ import { googleAnalytics4Integration } from './integrations'
 Use configurações pré-validadas pela ANPD:
 
 ```tsx
-import { ConsentProvider, createAnpdCategories } from 'react-lgpd-consent'
+import { ConsentProvider, createAnpdCategoriesConfig } from 'react-lgpd-consent'
 
 // Preset BÁSICO (necessary + analytics)
-const basicConfig = createAnpdCategories({ include: ['analytics'] })
+const basicConfig = createAnpdCategoriesConfig({ include: ['analytics'] })
 
 // Preset COMPLETO (todas as 6 categorias)
-const fullConfig = createAnpdCategories({
+const fullConfig = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
 })
 
 // Com customizações
-const customConfig = createAnpdCategories({
+const customConfig = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing'],
   names: { analytics: 'Análises' },
   descriptions: { marketing: 'Anúncios personalizados' }

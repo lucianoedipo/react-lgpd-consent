@@ -25,7 +25,7 @@ import { COOKIE_PATTERNS_BY_CATEGORY, setCookieCatalogOverrides } from './cookie
  */
 export function discoverRuntimeCookies(): CookieDescriptor[] {
   const currentDocument = globalThis.document
-  if (currentDocument === undefined || !currentDocument.cookie) return []
+  if (!currentDocument?.cookie) return []
 
   const names = Array.from(
     new Set(
@@ -95,7 +95,7 @@ function isConsentJson(val: string): boolean {
 
 export function detectConsentCookieName(): string | null {
   const currentDocument = globalThis.document
-  if (currentDocument === undefined || !currentDocument.cookie) return null
+  if (!currentDocument?.cookie) return null
 
   try {
     const pairs = currentDocument.cookie

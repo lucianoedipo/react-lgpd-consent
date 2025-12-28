@@ -38,7 +38,7 @@ describe('CookieBanner component', () => {
     )
 
     // Banner should be present (may appear in multiple wrappers: take any)
-    const messages = await screen.findAllByText(/Utilizamos cookies/i)
+    const messages = await screen.findAllByText(/cookies necessários/i)
     expect(messages.length).toBeGreaterThan(0)
 
     // Click 'Aceitar todos' should call Cookies.set via provider flow
@@ -65,7 +65,7 @@ describe('CookieBanner component', () => {
       </ConsentProvider>,
     )
 
-    const papers = await screen.findAllByText(/Utilizamos cookies/i)
+    const papers = await screen.findAllByText(/cookies necessários/i)
     const paper = papers[0]
     const computed = globalThis.window.getComputedStyle(paper as Element)
     // Check font size from tokens
@@ -111,7 +111,7 @@ describe('CookieBanner component', () => {
 
     // The backdrop is not directly inspectable, so we can't test its color directly.
     // We will check if the banner is rendered, which is a good proxy.
-    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+    expect(await screen.findAllByText(/cookies necessários/i)).not.toBeNull()
 
     rerender(
       <ThemeProvider theme={lightTheme}>
@@ -126,7 +126,7 @@ describe('CookieBanner component', () => {
       </ThemeProvider>,
     )
 
-    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+    expect(await screen.findAllByText(/cookies necessários/i)).not.toBeNull()
   })
 
   it('não renderiza quando consentido e debug está desativado', async () => {
@@ -136,7 +136,7 @@ describe('CookieBanner component', () => {
       </ConsentProvider>,
     )
 
-    expect(screen.queryByText(/Utilizamos cookies/i)).toBeNull()
+    expect(screen.queryByText(/cookies necessários/i)).toBeNull()
   })
 
   it('renderiza em modo debug mesmo com consentimento', async () => {
@@ -150,7 +150,7 @@ describe('CookieBanner component', () => {
       </ConsentProvider>,
     )
 
-    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+    expect(await screen.findAllByText(/cookies necessários/i)).not.toBeNull()
   })
 
   it('renderiza link de política com target e rel corretos', async () => {

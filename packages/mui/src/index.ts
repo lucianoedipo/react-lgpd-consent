@@ -6,6 +6,20 @@
  * Este pacote fornece componentes visuais usando Material-UI para gerenciar
  * consentimento LGPD. Inclui banner de cookies, modal de preferências e botão flutuante.
  *
+ * @example Uso básico (UI pronta)
+ * ```tsx
+ * import { ConsentProvider } from '@react-lgpd-consent/mui'
+ *
+ * <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+ *   <App />
+ * </ConsentProvider>
+ * ```
+ *
+ * @example Import apenas UI (bundle menor)
+ * ```tsx
+ * import { ConsentProvider } from '@react-lgpd-consent/mui/ui'
+ * ```
+ *
  * @since 0.5.0
  * @category Packages
  */

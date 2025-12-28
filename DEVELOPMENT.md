@@ -29,7 +29,7 @@ nvm use 20
 Desde a versão **0.5.0** a biblioteca é publicada como um **workspace PNPM** composto por três pacotes:
 
 - `@react-lgpd-consent/core`: Núcleo com contextos, hooks, validadores, integrações e utilitários (sem compromisso com UI).
-- `@react-lgpd-consent/mui`: Camada de componentes baseada em Material-UI. Inicialmente funciona como _proxy_ dos componentes existentes.
+- `@react-lgpd-consent/mui`: Camada de componentes baseada em Material-UI, com UI pronta e re-export do core (use `@react-lgpd-consent/mui/ui` para UI-only).
 - `react-lgpd-consent`: Pacote agregador que mantém a API pública atual e reexporta os módulos dos pacotes anteriores.
 
 A stack continua baseada em:
@@ -39,10 +39,10 @@ A stack continua baseada em:
 - **TypeScript** para garantir contratos estáveis.
 - **Material-UI** opcional para os componentes fornecidos pela camada MUI.
 
-### Status Atual (v0.5.0)
+### Status Atual (v0.7.x)
 
 - Estrutura modularizada em workspace sem quebrar a API existente.
-- `@react-lgpd-consent/mui` inicia como package de fachada para os componentes padrão.
+- `@react-lgpd-consent/mui` fornece componentes MUI prontos e um entrypoint UI-only (`@react-lgpd-consent/mui/ui`).
 - Documentação e pipeline atualizados para trabalhar com filtros `pnpm --filter`.
 
 ### Suporte

@@ -100,13 +100,13 @@ import { ConsentProvider } from '@react-lgpd-consent/core'
 ### Presets ANPD
 
 ```tsx
-import { createAnpdCategories, ANPD_CATEGORY_PRESETS } from '@react-lgpd-consent/core'
+import { createAnpdCategoriesConfig, ANPD_CATEGORY_PRESETS } from '@react-lgpd-consent/core'
 
 // Preset BÁSICO
-const basic = createAnpdCategories({ include: ['analytics'] })
+const basic = createAnpdCategoriesConfig({ include: ['analytics'] })
 
 // Preset COMPLETO
-const full = createAnpdCategories({
+const full = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
 })
 ```
