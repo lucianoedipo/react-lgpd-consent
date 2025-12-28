@@ -1,11 +1,5 @@
 # Changelog - @react-lgpd-consent/core
 
-## 0.8.0
-
-### Minor Changes
-
-- Consolidacao das entregas 0.7.2 e 0.7.3: validacao e sanitizacao de categorias, modos de bloqueio (soft/hard), melhorias em textos e acessibilidade, discovery de cookies e integracoes, compatibilidade SSR via globalThis e expansao de testes.
-
 ## 0.7.1
 
 ### Patch Changes

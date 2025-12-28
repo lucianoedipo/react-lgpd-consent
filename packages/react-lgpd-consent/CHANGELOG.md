@@ -1,20 +1,5 @@
 # Changelog
 
-## 0.8.0
-
-### Minor Changes
-
-- Consolidacao das entregas 0.7.2 e 0.7.3: validacao e sanitizacao de categorias no ConsentProvider, modos de bloqueio (soft/hard), ajustes de textos, melhorias em discovery de cookies e integracoes, compatibilidade SSR via globalThis e expansao de testes.
-
-### Patch Changes
-
-- docs: quickstart com comentarios e nota sobre injecao automatica de UI MUI.
-- a11y: PreferencesModal expõe `aria-describedby` e ganhou testes de teclado (Escape + retorno de foco).
-
-- Updated dependencies:
-  - @react-lgpd-consent/core@0.8.0
-  - @react-lgpd-consent/mui@0.8.0
-
 ## 0.7.1
 
 ### Patch Changes
