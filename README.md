@@ -121,12 +121,14 @@ const GTM_ID = import.meta.env.VITE_GTM_ID
 export function App() {
   return (
     <ConsentProvider
+      // O Provider do pacote principal injeta CookieBanner/PreferencesModal automaticamente.
       categories={{ enabledCategories: ['analytics', 'marketing'] }}
       blocking
       blockingMode="hard"
       blockingStrategy="provider"
       cookieBannerProps={{ policyLinkUrl: '/privacidade' }}
     >
+      {/* Scripts so carregam apos consentimento por categoria. */}
       <ConsentScriptLoader
         integrations={[
           COMMON_INTEGRATIONS.googleAnalytics({ measurementId: GA4_ID }),
@@ -139,6 +141,8 @@ export function App() {
   )
 }
 ```
+
+O `ConsentProvider` do pacote principal ja traz banner, modal e botao flutuante MUI por padrao.
 
 Veja variações para Next.js/Vite e Consent Mode v2 em **[QUICKSTART.md](./QUICKSTART.md)** e detalhes de integrações em **[INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md)**.
 

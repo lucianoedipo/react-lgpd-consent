@@ -358,6 +358,8 @@ export function PreferencesModal({
     closePreferences()
   }
 
+  const descriptionId = 'cookie-pref-description'
+
   const modalTitleSx: SxProps<Theme> = (theme) => ({
     fontSize: designTokens?.typography?.fontSize?.modal ?? undefined,
     color: designTokens?.colors?.text ?? theme.palette.text.primary,
@@ -390,11 +392,15 @@ export function PreferencesModal({
       'lgpd-preferences-modal-root',
   }
 
+  const ariaDescribedBy =
+    (dialogRest as { ['aria-describedby']?: string })['aria-describedby'] ?? descriptionId
+
   const mergedDialogProps: DialogProps = {
     open,
     fullWidth: true,
     maxWidth: 'sm',
     ...dialogRest,
+    'aria-describedby': ariaDescribedBy,
     slotProps: {
       ...dialogRest?.slotProps,
       root: rootSlotProps,
@@ -408,6 +414,7 @@ export function PreferencesModal({
       </DialogTitle>
       <DialogContent dividers sx={modalContentSx}>
         <Typography
+          id={descriptionId}
           variant="body2"
           sx={(theme) => ({
             mb: 2,
