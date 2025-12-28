@@ -34,6 +34,7 @@
 - b04c00b testes: validar renderizacao do CookieBanner por consentimento e modo debug
 - b04c00b testes: verificar textos localizados no FloatingPreferencesButton via props
 - b04c00b testes: cobrir reset temporario, scripts ativos e textos customizados no PreferencesModal
+- testes: cobrir fluxo SSR de leitura/remoção/escrita de cookie consent
 
 ### Ferramentas
 

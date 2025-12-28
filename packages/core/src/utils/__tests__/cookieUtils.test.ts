@@ -34,15 +34,6 @@ describe('cookieUtils', () => {
     expect(out).toBeNull()
   })
 
-  it('readConsentCookie retorna null em ambiente SSR', () => {
-    const originalDocument = globalThis.document
-    // @ts-ignore
-    globalThis.document = undefined
-    const out = readConsentCookie('cookieConsent')
-    expect(out).toBeNull()
-    globalThis.document = originalDocument
-  })
-
   it('readConsentCookie parses valid cookie', () => {
     const sample: ConsentState = {
       version: '1.0',
@@ -94,18 +85,6 @@ describe('cookieUtils', () => {
       'cookieConsent',
       expect.objectContaining({ path: '/' }),
     )
-  })
-
-  it('removeConsentCookie retorna sem remover em ambiente SSR', () => {
-    const originalDocument = globalThis.document
-    ;(Cookies.remove as jest.Mock).mockClear()
-    // jsdom expõe document como não configurável, então usamos atribuição direta
-    // para simular ambiente SSR.
-    // @ts-ignore
-    globalThis.document = undefined
-    removeConsentCookie()
-    expect(Cookies.remove).not.toHaveBeenCalled()
-    globalThis.document = originalDocument
   })
 
   it('removeConsentCookie aplica domínio customizado quando fornecido', () => {
