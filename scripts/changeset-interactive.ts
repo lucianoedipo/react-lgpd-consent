@@ -39,6 +39,14 @@ const prefix =
   getArgValue('--prefix') ?? process.env.SCOPE_PREFIX ?? '@react-lgpd-consent/'
 
 /**
+ * Pacotes extras para incluir mesmo fora do prefixo (ex: agregador).
+ */
+const extraPackages = (process.env.EXTRA_PACKAGES ?? 'react-lgpd-consent')
+  .split(',')
+  .map((name) => name.trim())
+  .filter(Boolean)
+
+/**
  * Flag para incluir pacotes privados na seleção.
  */
 const includePrivate = args.includes('--include-private')
@@ -165,7 +173,9 @@ function getWorkspacePackages(): WorkspacePackage[] {
     }
     return [single]
       .filter((entry) => (includePrivate ? true : !entry.private))
-      .filter((entry) => (prefix ? entry.name.startsWith(prefix) : true))
+      .filter((entry) =>
+        prefix ? entry.name.startsWith(prefix) || extraPackages.includes(entry.name) : true,
+      )
   }
 
   const entries = fs
@@ -189,7 +199,9 @@ function getWorkspacePackages(): WorkspacePackage[] {
       }
     })
     .filter((pkg) => (includePrivate ? true : !pkg.private))
-    .filter((pkg) => (prefix ? pkg.name.startsWith(prefix) : true))
+    .filter((pkg) =>
+      prefix ? pkg.name.startsWith(prefix) || extraPackages.includes(pkg.name) : true,
+    )
     .sort((a, b) => a.name.localeCompare(b.name))
 }
 
