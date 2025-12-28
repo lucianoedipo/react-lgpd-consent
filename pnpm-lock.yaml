@@ -196,7 +196,7 @@ importers:
         specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
         version: 7.3.4(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@react-lgpd-consent/core':
-        specifier: workspace:^0.7.1
+        specifier: workspace:^0.7.2
         version: link:../core
       react:
         specifier: 19.2.3
@@ -214,10 +214,10 @@ importers:
         specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
         version: 7.3.4(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react@19.2.3))(@types/react@19.2.7)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@react-lgpd-consent/core':
-        specifier: workspace:^0.7.1
+        specifier: workspace:^0.7.2
         version: link:../core
       '@react-lgpd-consent/mui':
-        specifier: workspace:^0.7.1
+        specifier: workspace:^0.7.2
         version: link:../mui
       react:
         specifier: 19.2.3
@@ -4568,6 +4568,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
