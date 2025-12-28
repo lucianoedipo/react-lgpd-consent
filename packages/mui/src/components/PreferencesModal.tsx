@@ -9,7 +9,7 @@ import FormGroup from '@mui/material/FormGroup'
 import type { SxProps, Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import type { Category, ConsentPreferences } from '@react-lgpd-consent/core'
+import type { AdvancedConsentTexts, Category, ConsentPreferences } from '@react-lgpd-consent/core'
 import {
   getCookiesInfoForCategory,
   resolveTexts,
@@ -17,7 +17,6 @@ import {
   useConsent,
   useConsentTexts,
   useDesignTokens,
-  type AdvancedConsentTexts,
 } from '@react-lgpd-consent/core'
 import * as React from 'react'
 import { Branding } from './Branding'

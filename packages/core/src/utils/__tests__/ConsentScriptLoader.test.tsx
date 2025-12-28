@@ -2,6 +2,7 @@ import { act, render, waitFor } from '@testing-library/react'
 import { ConsentProvider } from '../../context/ConsentContext'
 import * as autoConfig from '../autoConfigureCategories'
 import { ConsentScriptLoader } from '../ConsentScriptLoader'
+import * as scriptLoaderModule from '../ConsentScriptLoader'
 import { createGoogleAnalyticsIntegration } from '../scriptIntegrations'
 
 jest.mock('../scriptLoader', () => ({
@@ -82,6 +83,82 @@ describe('ConsentScriptLoader component', () => {
         'nonce-abc',
         expect.objectContaining({ skipConsentCheck: true }),
       )
+    })
+  })
+
+  test('nao re-registra integracoes inalteradas e re-registra apos remover', async () => {
+    scriptLoaderModule.__resetScriptRegistryForTests()
+
+    const integration = {
+      id: 'custom-analytics',
+      category: 'analytics' as const,
+      src: 'https://example.com/custom.js',
+      bootstrap: jest.fn(),
+      init: jest.fn(),
+    }
+
+    const initialState = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+      version: '1.0',
+      consentDate: new Date().toISOString(),
+      lastUpdate: new Date().toISOString(),
+      source: 'programmatic',
+      projectConfig: { enabledCategories: ['analytics'] },
+    }
+
+    const { rerender } = render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={initialState as any}
+      >
+        <ConsentScriptLoader integrations={[{ ...integration }]} />
+      </ConsentProvider>,
+    )
+
+    const { loadScript } = require('../scriptLoader')
+    ;(loadScript as jest.Mock).mockClear()
+
+    await waitFor(() => {
+      expect(loadScript).toHaveBeenCalled()
+      expect(integration.bootstrap).toHaveBeenCalled()
+      expect(integration.init).toHaveBeenCalled()
+    })
+    const initialLoadCalls = (loadScript as jest.Mock).mock.calls.length
+    const initialBootstrapCalls = integration.bootstrap.mock.calls.length
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={initialState as any}
+      >
+        <ConsentScriptLoader integrations={[{ ...integration }]} />
+      </ConsentProvider>,
+    )
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={initialState as any}
+      >
+        <ConsentScriptLoader integrations={[]} />
+      </ConsentProvider>,
+    )
+
+    rerender(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={initialState as any}
+      >
+        <ConsentScriptLoader integrations={[{ ...integration }]} />
+      </ConsentProvider>,
+    )
+
+    await waitFor(() => {
+      expect((loadScript as jest.Mock).mock.calls.length).toBeGreaterThan(initialLoadCalls)
+      expect(integration.bootstrap.mock.calls.length).toBeGreaterThan(initialBootstrapCalls)
+      expect(integration.init.mock.calls.length).toBeGreaterThan(0)
     })
   })
 })

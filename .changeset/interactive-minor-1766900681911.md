@@ -6,7 +6,6 @@
 
 ### Correcoes
 
-- 1d8718b fix: corrigir versao do pacote react-lgpd-consent para 0.6.3
 - 1d15920 fix: corrigir formatacao da verificacao de multiplas versoes do React
 
 ### Refactors e compatibilidade

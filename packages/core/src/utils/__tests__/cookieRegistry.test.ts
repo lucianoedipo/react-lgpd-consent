@@ -158,6 +158,37 @@ describe('Cookie Registry - Working Coverage Tests', () => {
       expect(customGa?.domain).toBe('.custom-domain.com')
     })
 
+    it('deve substituir cookie existente ao aplicar override por categoria', () => {
+      setCookieCatalogOverrides({
+        byIntegration: {
+          'google-analytics': [
+            {
+              name: '_ga',
+              purpose: 'Original',
+              provider: 'Original Inc.',
+              duration: '1 ano',
+            },
+          ],
+        },
+        byCategory: {
+          analytics: [
+            {
+              name: '_ga',
+              purpose: 'Override direto',
+              provider: 'Override Inc.',
+              duration: '10 dias',
+            },
+          ],
+        },
+      })
+
+      const cookies = getCookiesInfoForCategory('analytics', ['google-analytics'])
+      const overridden = cookies.find((c) => c.name === '_ga')
+      expect(overridden?.purpose).toBe('Override direto')
+      expect(overridden?.provider).toBe('Override Inc.')
+      expect(overridden?.duration).toBe('10 dias')
+    })
+
     it('deve funcionar com integrações vazias quando há override de categoria', () => {
       const categoryOnlyCookies: CookieDescriptor[] = [
         {
@@ -262,6 +293,15 @@ describe('Cookie Registry - Working Coverage Tests', () => {
   })
 
   describe('Edge Cases e Scenarios Especiais', () => {
+    it('deve incluir cookieConsent na categoria necessary quando ausente', () => {
+      setCookieCatalogOverrides({
+        byCategory: { necessary: [] },
+        byIntegration: {},
+      })
+      const cookies = getCookiesInfoForCategory('necessary', [])
+      expect(cookies.some((c) => c.name === 'cookieConsent')).toBe(true)
+    })
+
     it('deve lidar com nomes de cookies especiais', () => {
       const specialCookies: CookieDescriptor[] = [
         { name: 'cookie-with-dashes', purpose: 'Dash test' },

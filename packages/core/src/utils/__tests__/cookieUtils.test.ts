@@ -34,6 +34,15 @@ describe('cookieUtils', () => {
     expect(out).toBeNull()
   })
 
+  it('readConsentCookie retorna null em ambiente SSR', () => {
+    const originalDocument = globalThis.document
+    // @ts-ignore
+    globalThis.document = undefined
+    const out = readConsentCookie('cookieConsent')
+    expect(out).toBeNull()
+    globalThis.document = originalDocument
+  })
+
   it('readConsentCookie parses valid cookie', () => {
     const sample: ConsentState = {
       version: '1.0',
@@ -87,6 +96,18 @@ describe('cookieUtils', () => {
     )
   })
 
+  it('removeConsentCookie retorna sem remover em ambiente SSR', () => {
+    const originalDocument = globalThis.document
+    ;(Cookies.remove as jest.Mock).mockClear()
+    // jsdom expõe document como não configurável, então usamos atribuição direta
+    // para simular ambiente SSR.
+    // @ts-ignore
+    globalThis.document = undefined
+    removeConsentCookie()
+    expect(Cookies.remove).not.toHaveBeenCalled()
+    globalThis.document = originalDocument
+  })
+
   it('removeConsentCookie aplica domínio customizado quando fornecido', () => {
     ;(Cookies.remove as jest.Mock).mockClear()
     removeConsentCookie({ domain: '.example.com' })
@@ -109,6 +130,26 @@ describe('cookieUtils', () => {
     // migration should add version and normalize fields
     expect(out).toHaveProperty('version', '1.0')
     expect(out?.consented).toBe(true)
+  })
+
+  it('readConsentCookie retorna null quando migracao legada falha', () => {
+    const originalDate = globalThis.Date
+    // @ts-ignore
+    globalThis.Date = class extends Date {
+      constructor(...args: ConstructorParameters<typeof Date>) {
+        super(...args)
+        throw new Error('fail')
+      }
+    }
+
+    ;(Cookies.get as jest.Mock).mockReturnValue(
+      JSON.stringify({ consented: true, preferences: { necessary: true } }),
+    )
+
+    const out = readConsentCookie('cookieConsent')
+    expect(out).toBeNull()
+
+    globalThis.Date = originalDate
   })
 
   it('readConsentCookie returns null on invalid JSON', () => {
