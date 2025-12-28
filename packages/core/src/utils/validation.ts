@@ -1,21 +1,51 @@
 import type { ConsentProviderProps, ProjectCategoriesConfig } from '../types/types'
 import { logger } from './logger'
+
+/**
+ * Declaração para uso de require dinâmico em ambientes Node.js.
+ * @internal
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const require: any
 
-// Tipos runtime-lite para fallback quando Zod não estiver disponível (produção)
+/**
+ * Tipo leve de issue para fallback quando Zod não está disponível (produção).
+ * @category Types
+ * @internal
+ */
 type LiteIssue = { path: string; message: string }
 
+/**
+ * Resultado da validação das props do ConsentProvider.
+ * @category Types
+ * @since 0.4.0
+ */
 export type ValidationResult = {
+  /** Props saneadas para uso seguro */
   sanitized: {
     categories?: ProjectCategoriesConfig
   }
+  /** Avisos não bloqueantes */
   warnings: string[]
+  /** Erros bloqueantes */
   errors: string[]
 }
 
+/**
+ * Detecta se está em ambiente de desenvolvimento (não produção).
+ * @category Utils
+ * @returns True se for ambiente de desenvolvimento
+ * @internal
+ */
 const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
 
+/**
+ * Remove duplicatas e filtra 'necessary' das categorias habilitadas.
+ * @category Utils
+ * @param categories Configuração de categorias
+ * @returns Categorias saneadas
+ * @internal
+ */
 const sanitizeCategories = (categories: ProjectCategoriesConfig) => {
   const enabled = [...new Set(categories.enabledCategories ?? [])]
   const sanitizedEnabled = enabled.filter((c) => c !== 'necessary')
@@ -26,6 +56,14 @@ const sanitizeCategories = (categories: ProjectCategoriesConfig) => {
   }
 }
 
+/**
+ * Coleta issues de validação usando Zod, se disponível.
+ * @category Utils
+ * @param z Instância de Zod (ou undefined)
+ * @param categories Configuração de categorias
+ * @param issues Array de issues a ser preenchido
+ * @internal
+ */
 const collectZodIssues = (
   z: typeof import('zod') | undefined,
   categories: ProjectCategoriesConfig | undefined,
@@ -63,6 +101,13 @@ const collectZodIssues = (
   }
 }
 
+/**
+ * Coleta avisos de configuração de categorias (duplicatas, inválidas, etc).
+ * @category Utils
+ * @param input Objeto com enabled, sanitizedEnabled e custom
+ * @returns Array de avisos
+ * @internal
+ */
 const collectCategoryWarnings = (input: {
   enabled: string[]
   sanitizedEnabled: string[]
@@ -105,6 +150,14 @@ const collectCategoryWarnings = (input: {
   return warnings
 }
 
+/**
+ * Emite mensagens de validação no console (apenas em DEV).
+ * @category Utils
+ * @param warnings Avisos não bloqueantes
+ * @param errors Erros bloqueantes
+ * @param issues Issues detalhadas (ex: Zod)
+ * @internal
+ */
 const reportValidationMessages = (warnings: string[], errors: string[], issues: LiteIssue[]) => {
   if (warnings.length > 0) {
     logger.warn('Validação do ConsentProvider:', ...warnings)
@@ -116,9 +169,20 @@ const reportValidationMessages = (warnings: string[], errors: string[], issues: 
 }
 
 /**
- * Valida e saneia as props do ConsentProvider em modo DEV.
- * - Gera mensagens claras e acionáveis no console
- * - Remove itens inválidos que possam causar comportamento inesperado
+ * Valida e saneia as props do ConsentProvider.
+ *
+ * - Em DEV: usa validação detalhada (Zod, se disponível) e gera mensagens claras no console.
+ * - Em produção: faz apenas sanitização leve, sem dependências extras.
+ *
+ * @category Utils
+ * @param props Props do ConsentProvider (apenas categories)
+ * @returns Resultado da validação (sanitizado, avisos, erros)
+ * @remarks
+ * - Remove itens inválidos que possam causar comportamento inesperado.
+ * - Gera mensagens acionáveis para o dev.
+ * @since 0.4.0
+ * @example
+ * const result = validateConsentProviderProps({ categories: { enabledCategories: ['analytics'] } })
  */
 export function validateConsentProviderProps(
   props: Readonly<Pick<ConsentProviderProps, 'categories'>>,
