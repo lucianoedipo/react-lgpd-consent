@@ -111,6 +111,25 @@ describe('cookieUtils', () => {
     expect(out?.consented).toBe(true)
   })
 
+  it('readConsentCookie retorna null quando migracao legada falha', () => {
+    const originalDate = globalThis.Date
+    // @ts-ignore
+    globalThis.Date = class extends Date {
+      constructor(...args: ConstructorParameters<typeof Date>) {
+        super(...args)
+        throw new Error('fail')
+      }
+    }
+    ;(Cookies.get as jest.Mock).mockReturnValue(
+      JSON.stringify({ consented: true, preferences: { necessary: true } }),
+    )
+
+    const out = readConsentCookie('cookieConsent')
+    expect(out).toBeNull()
+
+    globalThis.Date = originalDate
+  })
+
   it('readConsentCookie returns null on invalid JSON', () => {
     ;(Cookies.get as jest.Mock).mockReturnValue('not-a-json')
     const out = readConsentCookie('cookieConsent')

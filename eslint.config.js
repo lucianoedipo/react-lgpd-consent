@@ -14,9 +14,9 @@ import prettier from 'eslint-config-prettier'
 import jestPlugin from 'eslint-plugin-jest'
 import reactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
-import { dirname } from 'path'
+import { dirname } from 'node:path'
 import tseslint from 'typescript-eslint'
-import { fileURLToPath } from 'url'
+import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const jestFlat = jestPlugin.configs?.['flat/recommended'] ?? {}

@@ -37,26 +37,12 @@ jobs:
           node-version: 20
           cache: pnpm
 
-      - name: Detect changesets on main
-        id: detect-changesets
-        run: |
-          git fetch origin main
-          if git ls-tree -r --name-only origin/main .changeset | grep -q '\.md$'; then
-            echo "has_changesets=true" >> $GITHUB_OUTPUT
-            echo "✅ Changesets detectados em main"
-          else
-            echo "has_changesets=false" >> $GITHUB_OUTPUT
-            echo "ℹ️  Nenhum changeset em main"
-          fi
-
       - name: Install dependencies
-        if: steps.detect-changesets.outputs.has_changesets == 'true'
         run: pnpm install --frozen-lockfile
 
       - name: Create Version PR or Tag
         id: changesets
         uses: changesets/action@v1
-        if: steps.detect-changesets.outputs.has_changesets == 'true'
         with:
           version: pnpm run changeset:version
           commit: 'chore(release): version packages'
@@ -64,27 +50,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check if version PR was merged on main
+      - name: Check if version PR was merged
         id: check-merge
         run: |
-          git fetch origin main
-          LATEST_MSG=$(git log -1 --pretty=%B origin/main)
-          if echo "$LATEST_MSG" | grep -q "chore(release): version packages"; then
-            if git ls-tree -r --name-only origin/main .changeset | grep -q '\.md$'; then
-              echo "merged=false" >> $GITHUB_OUTPUT
-              echo "ℹ️  Main ainda possui changesets pendentes"
-            else
-              echo "merged=true" >> $GITHUB_OUTPUT
-              echo "✅ PR de version foi mergeado, criando tag..."
-            fi
+          # Verifica se estamos na main após merge de PR de version
+          if git log -1 --pretty=%B | grep -q "chore(release): version packages"; then
+            echo "merged=true" >> $GITHUB_OUTPUT
+            echo "✅ PR de version foi mergeado, criando tag..."
           else
             echo "merged=false" >> $GITHUB_OUTPUT
             echo "ℹ️  Aguardando merge do PR de version"
           fi
-
-      - name: Checkout main for tag
-        if: steps.check-merge.outputs.merged == 'true'
-        run: git checkout --force origin/main
 
       - name: Extract version from main package
         if: steps.check-merge.outputs.merged == 'true'

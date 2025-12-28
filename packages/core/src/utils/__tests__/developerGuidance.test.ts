@@ -17,6 +17,24 @@ describe('developerGuidance utilities', () => {
     expect(guidance.suggestions.length).toBeGreaterThanOrEqual(1)
   })
 
+  test('analyzeDeveloperConfiguration adiciona aviso quando ha muitas categorias opcionais', () => {
+    const guidance = analyzeDeveloperConfiguration({
+      enabledCategories: ['analytics', 'marketing', 'functional', 'social', 'personalization'],
+      customCategories: [
+        {
+          id: 'support',
+          name: 'Cookies de Suporte',
+          description: 'Atendimento e suporte ao usuario',
+        },
+      ],
+    })
+
+    const hasUsabilityWarning = guidance.messages.some(
+      (msg) => msg.severity === 'warning' && msg.category === 'usability',
+    )
+    expect(hasUsabilityWarning).toBe(true)
+  })
+
   test('logDeveloperGuidance writes to console when enabled and does not when disabled', () => {
     const guidance = analyzeDeveloperConfiguration()
 
@@ -56,5 +74,21 @@ describe('developerGuidance utilities', () => {
     warnSpy.mockRestore()
     infoSpy.mockRestore()
     tableSpy.mockRestore()
+  })
+
+  test('logDeveloperGuidance usa messageProcessor e encerra sem logs', () => {
+    const guidance = analyzeDeveloperConfiguration({
+      enabledCategories: ['analytics', 'marketing'],
+    })
+
+    const messageProcessor = jest.fn()
+    const groupSpy = jest.spyOn(console, 'group').mockImplementation(() => {})
+
+    logDeveloperGuidance(guidance, false, { messageProcessor })
+
+    expect(messageProcessor).toHaveBeenCalledWith(guidance.messages)
+    expect(groupSpy).not.toHaveBeenCalled()
+
+    groupSpy.mockRestore()
   })
 })

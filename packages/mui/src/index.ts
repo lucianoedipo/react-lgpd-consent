@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * @packageDocumentation
  * Implementação Material-UI para react-lgpd-consent.

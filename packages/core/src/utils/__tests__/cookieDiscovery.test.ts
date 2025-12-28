@@ -67,8 +67,23 @@ describe('detectConsentCookieName', () => {
     expect(detectConsentCookieName()).toBe('my-consent-cookie')
   })
 
+  it('should skip cookies sem valor', () => {
+    mockCookie('empty=; consent={"preferences":{"analytics":true},"version":"1"}')
+    expect(detectConsentCookieName()).toBe('consent')
+  })
+
   it('should return null if no consent cookie is found', () => {
     mockCookie('_ga=GA1.2.12345.67890; _gid=GA1.2.98765.43210')
+    expect(detectConsentCookieName()).toBeNull()
+  })
+
+  it('should ignore cookies com valor com encoding invalido', () => {
+    mockCookie('bad=%E0%A4%A; _gid=GA1.2.98765.43210')
+    expect(detectConsentCookieName()).toBeNull()
+  })
+
+  it('should ignore cookies com JSON invalido', () => {
+    mockCookie('broken={invalid; _ga=GA1.2.12345.67890')
     expect(detectConsentCookieName()).toBeNull()
   })
 })
@@ -146,9 +161,10 @@ describe('categorizeDiscoveredCookies', () => {
   })
 
   it('should match wildcard patterns', () => {
-    // O mock define '_ga' como padrão de analytics
-    // Testar que _ga_XXXXX também é match (se houver wildcard)
-    const discoveredCookies = [{ name: '_ga' }]
+    const { COOKIE_PATTERNS_BY_CATEGORY } = require('../cookieRegistry')
+    COOKIE_PATTERNS_BY_CATEGORY.analytics = ['_ga*']
+
+    const discoveredCookies = [{ name: '_ga_test' }]
     const categorized = categorizeDiscoveredCookies(discoveredCookies)
     expect(categorized.analytics).toBeDefined()
   })

@@ -9,7 +9,7 @@ import FormGroup from '@mui/material/FormGroup'
 import type { SxProps, Theme } from '@mui/material/styles'
 import Switch from '@mui/material/Switch'
 import Typography from '@mui/material/Typography'
-import type { Category, ConsentPreferences } from '@react-lgpd-consent/core'
+import type { AdvancedConsentTexts, Category, ConsentPreferences } from '@react-lgpd-consent/core'
 import {
   getCookiesInfoForCategory,
   resolveTexts,
@@ -17,7 +17,6 @@ import {
   useConsent,
   useConsentTexts,
   useDesignTokens,
-  type AdvancedConsentTexts,
 } from '@react-lgpd-consent/core'
 import * as React from 'react'
 import { Branding } from './Branding'
@@ -358,6 +357,8 @@ export function PreferencesModal({
     closePreferences()
   }
 
+  const descriptionId = 'cookie-pref-description'
+
   const modalTitleSx: SxProps<Theme> = (theme) => ({
     fontSize: designTokens?.typography?.fontSize?.modal ?? undefined,
     color: designTokens?.colors?.text ?? theme.palette.text.primary,
@@ -390,11 +391,15 @@ export function PreferencesModal({
       'lgpd-preferences-modal-root',
   }
 
+  const ariaDescribedBy =
+    (dialogRest as { ['aria-describedby']?: string })['aria-describedby'] ?? descriptionId
+
   const mergedDialogProps: DialogProps = {
     open,
     fullWidth: true,
     maxWidth: 'sm',
     ...dialogRest,
+    'aria-describedby': ariaDescribedBy,
     slotProps: {
       ...dialogRest?.slotProps,
       root: rootSlotProps,
@@ -408,6 +413,7 @@ export function PreferencesModal({
       </DialogTitle>
       <DialogContent dividers sx={modalContentSx}>
         <Typography
+          id={descriptionId}
           variant="body2"
           sx={(theme) => ({
             mb: 2,

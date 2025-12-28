@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * Ponto de entrada público do pacote @react-lgpd-consent/core.
  * Exporta componentes headless, hooks, utilitários e tipos para gerenciamento de consentimento de cookies conforme LGPD.
