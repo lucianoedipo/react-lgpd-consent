@@ -10,7 +10,7 @@ O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automa
 
 - **Categoria padrão com override**: cada integração define uma categoria padrão, mas o consumidor pode sobrescrever via `category` no config.
 - **Config obrigatória**: se um campo obrigatório estiver vazio (ex.: `measurementId`, `containerId`, `pixelId`), a integração **não executa**. Em **dev** é logado erro; em **prod** não há log.
-- **DataLayer**: se `window.dataLayer` não existir, a biblioteca cria `[]`; se existir e tiver `push`, usa como está; se existir sem `push`, não sobrescreve e avisa em dev.
+- **DataLayer**: se `globalThis.window.dataLayer` não existir, a biblioteca cria `[]`; se existir e tiver `push`, usa como está; se existir sem `push`, não sobrescreve e avisa em dev.
 
 ### ✨ Novidades v0.7.1
 
@@ -275,7 +275,7 @@ A partir da versão **0.4.5**, a biblioteca dispara automaticamente eventos padr
 
 ### Comportamento do `dataLayer`
 
-- Se `window.dataLayer` não existir, a biblioteca cria `[]`.
+- Se `globalThis.window.dataLayer` não existir, a biblioteca cria `[]`.
 - Se existir e tiver `push`, o array/objeto é usado como está.
 - Se existir sem `push`, a biblioteca não sobrescreve e avisa em dev.
 
@@ -484,7 +484,7 @@ import { googleAnalytics4Integration } from './integrations'
     console.log('Mudança:', { current, previous })
 
     // Exemplo: disparar evento no dataLayer
-    window.dataLayer?.push({
+    globalThis.window?.dataLayer?.push({
       event: 'consent_preferences_updated',
       consent_analytics: current.preferences.analytics,
       consent_marketing: current.preferences.marketing,

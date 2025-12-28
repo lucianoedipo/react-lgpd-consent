@@ -74,7 +74,7 @@ export interface DeveloperGuidance {
   }[]
   /** Indica se está usando configuração padrão */
   usingDefaults: boolean
-  /** Score de conformidade LGPD (0-100) */
+  /** Score de conformidade LGPD (0-100) com carater orientativo */
   complianceScore?: number
 }
 
@@ -91,7 +91,7 @@ export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
  * Calcula score de conformidade LGPD baseado na configuração (0-100).
  * @category Utils
  * @param guidance Resultado da análise de configuração
- * @returns Score de conformidade LGPD (0-100)
+ * @returns Score de conformidade LGPD (0-100) com carater orientativo
  * @since 0.4.0
  */
 function calculateComplianceScore(guidance: DeveloperGuidance): number {
@@ -263,6 +263,27 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
       'Apenas cookies necessários estão configurados. Para compliance LGPD, considere adicionar categorias como "analytics" ou "functional" conforme uso real.',
       'compliance',
     )
+  } else {
+    addMessage(
+      'info',
+      'Cookies não necessários devem iniciar desativados e exigir consentimento expresso, sem pré-seleção e sem consentimento tácito.',
+      'consent',
+    )
+    addMessage(
+      'info',
+      'Ofereça opções claras de aceitar, rejeitar e gerenciar preferências com o mesmo destaque, além de revogação simples e gratuita.',
+      'consent',
+    )
+    addMessage(
+      'info',
+      'Informe finalidades específicas, período de retenção e compartilhamento com terceiros em política/aviso de cookies.',
+      'transparency',
+    )
+    addMessage(
+      'info',
+      'Disponibilize mecanismo próprio de gerenciamento de cookies; configurações do navegador são apenas complementares.',
+      'transparency',
+    )
   }
   if (totalToggleable > 5) {
     addMessage(
@@ -315,7 +336,7 @@ function getComplianceScoreColor(score: number): string {
 function logComplianceScore(prefix: string, score: number): void {
   const color = getComplianceScoreColor(score)
   console.log(
-    `%c${prefix} Score de Conformidade LGPD: ${score}/100`,
+    `%c${prefix} Score de Conformidade LGPD (orientativo): ${score}/100`,
     `color: ${color}; font-weight: bold; font-size: 14px;`,
   )
 }
@@ -571,7 +592,17 @@ export function logDeveloperGuidance(
       'color: #7b1fa2;',
     )
     console.info(
+      `%c${PREFIX}%c Evite consentimento tácito e opções pré-selecionadas`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
+    console.info(
       `%c${PREFIX}%c Documente políticas claras por categoria`,
+      'color: #9c27b0;',
+      'color: #7b1fa2;',
+    )
+    console.info(
+      `%c${PREFIX}%c Informe finalidades, retenção e revogação simples e gratuita`,
       'color: #9c27b0;',
       'color: #7b1fa2;',
     )

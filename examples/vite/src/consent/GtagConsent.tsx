@@ -14,8 +14,9 @@ function toGtagConsentSignals(prefs: Record<string, boolean>) {
 
 export function GtagConsentBootstrap() {
   React.useEffect(() => {
-    if (typeof window === 'undefined') return
-    const w = window as unknown as {
+    const currentWindow = globalThis.window
+    if (currentWindow === undefined) return
+    const w = currentWindow as unknown as {
       dataLayer?: unknown[]
       gtag?: (...args: unknown[]) => void
     }
@@ -39,11 +40,11 @@ export function GtagConsentBootstrap() {
 export function GtagConsentUpdater() {
   const { consented, preferences } = useConsent()
   React.useEffect(() => {
-    if (!consented || typeof window === 'undefined') return
-    const w = window as unknown as { gtag?: (...args: unknown[]) => void }
+    const currentWindow = globalThis.window
+    if (!consented || currentWindow === undefined) return
+    const w = currentWindow as unknown as { gtag?: (...args: unknown[]) => void }
     if (!w.gtag) return
     w.gtag('consent', 'update', toGtagConsentSignals(preferences as Record<string, boolean>))
   }, [consented, preferences])
   return null
 }
-

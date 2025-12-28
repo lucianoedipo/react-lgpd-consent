@@ -275,13 +275,13 @@ function MyComponent() {
 }
 ```
 
-### Global: `window.openPreferencesModal` (for plain JS)
+### Global: `globalThis.window.openPreferencesModal` (for plain JS)
 
 ```html
-<button onclick="window.openPreferencesModal?.()">Configure cookies</button>
+<button onclick="globalThis.window?.openPreferencesModal?.()">Configure cookies</button>
 
 <script>
-  if (typeof window.openPreferencesModal === 'function') {
+  if (typeof globalThis.window?.openPreferencesModal === 'function') {
     console.log('Consent system available')
   }
 </script>

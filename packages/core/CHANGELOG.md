@@ -348,7 +348,7 @@
   - **Correção crítica**: `loadScript` agora aguarda dinamicamente o consentimento em vez de rejeitar imediatamente, permitindo que scripts carreguem quando preferências mudarem
   - Cleanup automático do registro ao completar/falhar carregamento
   - Adicionados testes extensivos: `ConsentScriptLoader.strictmode.test.tsx` e `scriptLoader.strictmode.test.ts`
-  - Documentação completa em `docs/REACT19-STRICTMODE.md`
+  - Documentação completa em `REACT19-STRICTMODE.md`
   - Todos os 302 testes passando, incluindo 5 novos testes de StrictMode
 
   **Breaking Changes:** Nenhuma - totalmente retrocompatível

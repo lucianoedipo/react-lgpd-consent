@@ -67,7 +67,7 @@ describe('CookieBanner component', () => {
 
     const papers = await screen.findAllByText(/Utilizamos cookies/i)
     const paper = papers[0]
-    const computed = window.getComputedStyle(paper as Element)
+    const computed = globalThis.window.getComputedStyle(paper as Element)
     // Check font size from tokens
     expect(computed.fontSize).toBe('16px')
   })
@@ -131,10 +131,7 @@ describe('CookieBanner component', () => {
 
   it('não renderiza quando consentido e debug está desativado', async () => {
     render(
-      <ConsentProvider
-        categories={{ enabledCategories: [] }}
-        initialState={makeInitialState(true)}
-      >
+      <ConsentProvider categories={{ enabledCategories: [] }} initialState={makeInitialState(true)}>
         <div />
       </ConsentProvider>,
     )
@@ -189,10 +186,7 @@ describe('CookieBanner component', () => {
     )
 
     expect(await screen.findByText('Custom message')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Privacy Info' })).toHaveAttribute(
-      'href',
-      '/privacy',
-    )
+    expect(screen.getByRole('link', { name: 'Privacy Info' })).toHaveAttribute('href', '/privacy')
   })
 
   it('resolve textos i18n quando language é definido no Provider', async () => {

@@ -23,8 +23,9 @@ function toGtagConsentSignals(prefs: Record<string, boolean>) {
 // Prepara dataLayer/gtag stub e define consentimento padrão negado (default consent)
 function GtagConsentBootstrap() {
   React.useEffect(() => {
-    if (typeof window === 'undefined') return
-    const w = window as unknown as {
+    const currentWindow = globalThis.window
+    if (currentWindow === undefined) return
+    const w = currentWindow as unknown as {
       dataLayer?: unknown[]
       gtag?: (...args: unknown[]) => void
     }
@@ -51,9 +52,10 @@ function GtagConsentUpdater() {
   const { consented, preferences } = useConsent()
 
   React.useEffect(() => {
-    if (typeof window === 'undefined') return
+    const currentWindow = globalThis.window
+    if (currentWindow === undefined) return
     if (!consented) return
-    const w = window as unknown as { gtag?: (...args: unknown[]) => void }
+    const w = currentWindow as unknown as { gtag?: (...args: unknown[]) => void }
     if (!w.gtag) return
 
     const update = toGtagConsentSignals(preferences as Record<string, boolean>)
@@ -101,4 +103,3 @@ export default function ClientConsent({ children }: Props) {
     </ConsentProvider>
   )
 }
-

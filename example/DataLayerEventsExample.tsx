@@ -18,12 +18,15 @@ function DataLayerMonitor() {
   const [events, setEvents] = React.useState<Array<Record<string, unknown>>>([])
 
   React.useEffect(() => {
+    const currentWindow = globalThis.window
+    if (!currentWindow) return undefined
+
     // Interceptar window.dataLayer.push
-    const originalPush = window.dataLayer?.push
+    const originalPush = currentWindow.dataLayer?.push
 
-    window.dataLayer = window.dataLayer || []
+    currentWindow.dataLayer = currentWindow.dataLayer || []
 
-    window.dataLayer.push = function (...args: Array<Record<string, unknown>>) {
+    currentWindow.dataLayer.push = function (...args: Array<Record<string, unknown>>) {
       // Capturar apenas eventos de consentimento
       const consentEvents = args.filter(
         (item) =>
@@ -41,8 +44,8 @@ function DataLayerMonitor() {
 
     return () => {
       // Restaurar o push original
-      if (originalPush && window.dataLayer) {
-        window.dataLayer.push = originalPush
+      if (originalPush && currentWindow.dataLayer) {
+        currentWindow.dataLayer.push = originalPush
       }
     }
   }, [])

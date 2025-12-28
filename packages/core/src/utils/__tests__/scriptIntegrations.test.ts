@@ -29,19 +29,19 @@ describe('scriptIntegrations factories', () => {
     expect(typeof ga.onConsentUpdate).toBe('function')
 
     ga.bootstrap?.()
-    expect((global as any).window.dataLayer).toBeDefined()
-    const firstPush = (global as any).window.dataLayer[0]
+    expect((globalThis as any).window.dataLayer).toBeDefined()
+    const firstPush = (globalThis as any).window.dataLayer[0]
     expect(firstPush[0]).toBe('consent')
     expect(firstPush[1]).toBe('default')
 
     ga.init?.()
-    expect(typeof (global as any).window.gtag).toBe('function')
+    expect(typeof (globalThis as any).window.gtag).toBe('function')
 
     ga.onConsentUpdate?.({
       consented: true,
       preferences: { necessary: true, analytics: true, marketing: true } as any,
     })
-    const lastPush = (global as any).window.dataLayer.pop()
+    const lastPush = (globalThis as any).window.dataLayer.pop()
     expect(lastPush[0]).toBe('consent')
     expect(lastPush[1]).toBe('update')
     expect(lastPush[2]).toMatchObject({
@@ -52,7 +52,7 @@ describe('scriptIntegrations factories', () => {
 
   test('google analytics bootstrap usa gtag existente quando já definido', () => {
     const gtag = jest.fn()
-    ;(global as any).window.gtag = gtag
+    ;(globalThis as any).window.gtag = gtag
 
     const ga = createGoogleAnalyticsIntegration({ measurementId: 'G-TEST' })
     ga.bootstrap?.()
@@ -73,7 +73,6 @@ describe('scriptIntegrations factories', () => {
 
     const ga = createGoogleAnalyticsIntegration({ measurementId: 'G-TEST' })
     expect(() => ga.bootstrap?.()).not.toThrow()
-
     ;(global as any).window = originalWindow
   })
 
@@ -99,33 +98,33 @@ describe('scriptIntegrations factories', () => {
     expect(typeof gtm.onConsentUpdate).toBe('function')
 
     gtm.bootstrap?.()
-    expect((global as any).window.customLayer).toBeDefined()
-    const firstPush = (global as any).window.customLayer[0]
+    expect((globalThis as any).window.customLayer).toBeDefined()
+    const firstPush = (globalThis as any).window.customLayer[0]
     expect(firstPush[0]).toBe('consent')
     expect(firstPush[1]).toBe('default')
 
     // init mantém dataLayer e adiciona evento de bootstrap do GTM
     gtm.init?.()
-    expect((global as any).window.customLayer.length).toBeGreaterThanOrEqual(2)
+    expect((globalThis as any).window.customLayer.length).toBeGreaterThanOrEqual(2)
 
     gtm.onConsentUpdate?.({
       consented: true,
       preferences: { necessary: true, analytics: true, marketing: false } as any,
     })
-    const lastPush = (global as any).window.customLayer.pop()
+    const lastPush = (globalThis as any).window.customLayer.pop()
     expect(lastPush[1]).toBe('update')
     expect(lastPush[2]).toMatchObject({ analytics_storage: 'granted', ad_storage: 'denied' })
   })
 
   test('google tag manager init reaproveita dataLayer existente', () => {
-    ;(global as any).window.customLayer = [{ event: 'preexisting' }]
+    ;(globalThis as any).window.customLayer = [{ event: 'preexisting' }]
     const gtm = createGoogleTagManagerIntegration({
       containerId: 'GTM-ABC',
       dataLayerName: 'customLayer',
     })
 
     gtm.init?.()
-    expect((global as any).window.customLayer[0]).toMatchObject({ event: 'preexisting' })
+    expect((globalThis as any).window.customLayer[0]).toMatchObject({ event: 'preexisting' })
   })
 
   test('google tag manager bootstrap não falha sem window (SSR-safe)', () => {
@@ -136,7 +135,6 @@ describe('scriptIntegrations factories', () => {
     const gtm = createGoogleTagManagerIntegration({ containerId: 'GTM-ABC' })
     expect(() => gtm.bootstrap?.()).not.toThrow()
     expect(() => gtm.onConsentUpdate?.({ consented: true, preferences: {} as any })).not.toThrow()
-
     ;(global as any).window = originalWindow
   })
 
@@ -146,8 +144,8 @@ describe('scriptIntegrations factories', () => {
     expect(userway.category).toBe('functional')
 
     userway.init?.()
-    expect((global as any).window.UserWayWidgetApp).toBeDefined()
-    expect((global as any).window.UserWayWidgetApp.accountId).toBe('acct-123')
+    expect((globalThis as any).window.UserWayWidgetApp).toBeDefined()
+    expect((globalThis as any).window.UserWayWidgetApp.accountId).toBe('acct-123')
     expect(userway.attrs).toMatchObject({ 'data-account': 'acct-123' })
   })
 
@@ -156,7 +154,7 @@ describe('scriptIntegrations factories', () => {
     expect(fb.id).toBe('facebook-pixel')
     expect(fb.category).toBe('marketing')
     fb.init?.()
-    expect((global as any).window.fbq).toBeDefined()
+    expect((globalThis as any).window.fbq).toBeDefined()
   })
 
   test('facebook pixel uses callMethod when available', () => {
@@ -164,8 +162,8 @@ describe('scriptIntegrations factories', () => {
     fb.init?.()
 
     const callMethod = jest.fn()
-    ;(global as any).window.fbq.callMethod = callMethod
-    ;(global as any).window.fbq('track', 'Purchase')
+    ;(globalThis as any).window.fbq.callMethod = callMethod
+    ;(globalThis as any).window.fbq('track', 'Purchase')
 
     expect(callMethod).toHaveBeenCalledWith('track', 'Purchase')
   })
@@ -173,7 +171,7 @@ describe('scriptIntegrations factories', () => {
   test('facebook pixel integration skips PageView when autoTrack=false', () => {
     const fb = createFacebookPixelIntegration({ pixelId: '123', autoTrack: false })
     const fbq = jest.fn()
-    ;(global as any).window.fbq = fbq
+    ;(globalThis as any).window.fbq = fbq
     fb.init?.()
     expect(fbq).toHaveBeenCalledTimes(1)
     expect(fbq).toHaveBeenCalledWith('init', '123', {})
@@ -184,16 +182,16 @@ describe('scriptIntegrations factories', () => {
     expect(hj.id).toBe('hotjar')
     expect(hj.category).toBe('analytics')
     hj.init?.()
-    expect((global as any).window._hjSettings).toBeDefined()
-    expect(typeof (global as any).window.hj).toBe('function')
+    expect((globalThis as any).window._hjSettings).toBeDefined()
+    expect(typeof (globalThis as any).window.hj).toBe('function')
   })
 
   test('hotjar queue captures events when hj is invoked', () => {
     const hj = createHotjarIntegration({ siteId: '777', version: 6 })
     hj.init?.()
-    ;(global as any).window.hj('event', 'signup')
+    ;(globalThis as any).window.hj('event', 'signup')
 
-    expect((global as any).window.hj.q).toHaveLength(1)
+    expect((globalThis as any).window.hj.q).toHaveLength(1)
   })
 
   test('hotjar integration logs info when debug=true', () => {
@@ -209,21 +207,21 @@ describe('scriptIntegrations factories', () => {
     expect(m.id).toBe('mixpanel')
     expect(m.category).toBe('analytics')
     m.init?.()
-    expect((global as any).window.mixpanel).toBeDefined()
+    expect((globalThis as any).window.mixpanel).toBeDefined()
   })
 
   test('mixpanel integration no-ops quando init não é função', () => {
     const m = createMixpanelIntegration({ token: 'tok' })
-    ;(global as any).window.mixpanel = {}
+    ;(globalThis as any).window.mixpanel = {}
 
     expect(() => m.init?.()).not.toThrow()
   })
 
   test('clarity integration no-ops when upload is undefined', () => {
     const c = createClarityIntegration({ projectId: 'abc123' })
-    ;(global as any).window.clarity = jest.fn()
+    ;(globalThis as any).window.clarity = jest.fn()
     c.init?.()
-    expect((global as any).window.clarity).not.toHaveBeenCalled()
+    expect((globalThis as any).window.clarity).not.toHaveBeenCalled()
   })
 
   test('clarity integration calls clarity set when upload is configured', () => {
@@ -233,14 +231,14 @@ describe('scriptIntegrations factories', () => {
     expect(c.src).toBe('https://www.clarity.ms/tag/abc123')
 
     // Mock clarity function
-    ;(global as any).window.clarity = jest.fn()
+    ;(globalThis as any).window.clarity = jest.fn()
     c.init?.()
-    expect((global as any).window.clarity).toHaveBeenCalledWith('set', 'upload', false)
+    expect((globalThis as any).window.clarity).toHaveBeenCalledWith('set', 'upload', false)
   })
 
   test('clarity integration ignora quando clarity não é função', () => {
     const c = createClarityIntegration({ projectId: 'abc123', upload: true })
-    ;(global as any).window.clarity = {}
+    ;(globalThis as any).window.clarity = {}
 
     expect(() => c.init?.()).not.toThrow()
   })
@@ -251,9 +249,9 @@ describe('scriptIntegrations factories', () => {
     expect(i.category).toBe('functional')
 
     // Mock Intercom function
-    ;(global as any).window.Intercom = jest.fn()
+    ;(globalThis as any).window.Intercom = jest.fn()
     i.init?.()
-    expect((global as any).window.Intercom).toHaveBeenCalledWith('boot', { app_id: 'xyz789' })
+    expect((globalThis as any).window.Intercom).toHaveBeenCalledWith('boot', { app_id: 'xyz789' })
   })
 
   test('zendesk integration identifies with key', () => {
@@ -262,9 +260,9 @@ describe('scriptIntegrations factories', () => {
     expect(z.category).toBe('functional')
 
     // Mock zE function
-    ;(global as any).window.zE = jest.fn()
+    ;(globalThis as any).window.zE = jest.fn()
     z.init?.()
-    expect((global as any).window.zE).toHaveBeenCalledWith('webWidget', 'identify', {
+    expect((globalThis as any).window.zE).toHaveBeenCalledWith('webWidget', 'identify', {
       key: 'key123',
     })
   })

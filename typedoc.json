@@ -86,6 +86,7 @@
   "hideGenerator": true,
   "projectDocuments": [
     "README.md",
+    "REACT19-STRICTMODE.md",
     "packages/core/README.md",
     "packages/mui/README.md",
     "packages/react-lgpd-consent/README.md",

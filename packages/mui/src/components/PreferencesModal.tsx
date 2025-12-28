@@ -436,8 +436,7 @@ export function PreferencesModal({
             const tableHeaders = texts.cookieDetails?.tableHeaders
             const toggleDetailsText = texts.cookieDetails?.toggleDetails?.expand ?? 'Ver detalhes'
             const scriptLabelPrefix = texts.cookieDetails?.scriptLabelPrefix ?? '(script) '
-            const scriptPurpose =
-              texts.cookieDetails?.scriptPurpose ?? 'Script de integração ativo'
+            const scriptPurpose = texts.cookieDetails?.scriptPurpose ?? 'Script de integração ativo'
 
             // Buscar cookiesInfo das integrações ativas
             const enrichedDescriptors = descriptors.map((desc) => {
@@ -505,9 +504,7 @@ export function PreferencesModal({
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th style={{ textAlign: 'left' }}>
-                            {tableHeaders?.name ?? 'Cookie'}
-                          </th>
+                          <th style={{ textAlign: 'left' }}>{tableHeaders?.name ?? 'Cookie'}</th>
                           <th style={{ textAlign: 'left' }}>
                             {tableHeaders?.purpose ?? 'Finalidade'}
                           </th>

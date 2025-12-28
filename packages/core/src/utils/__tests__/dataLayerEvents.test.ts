@@ -349,7 +349,7 @@ describe('dataLayerEvents', () => {
       expect(globalThis.window.dataLayer).toBeInstanceOf(Array)
     })
 
-    it('should create dataLayer when window.dataLayer is null', () => {
+    it('should create dataLayer when globalThis.window.dataLayer is null', () => {
       // @ts-ignore - test mock window object
       globalThis.window.dataLayer = null
 

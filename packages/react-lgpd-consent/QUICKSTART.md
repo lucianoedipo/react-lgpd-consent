@@ -492,7 +492,11 @@ function ComplianceWrapper({ children }: { children: React.ReactNode }) {
       }}
       onConsentVersionChange={({ previousKey, nextKey, resetConsent }) => {
         console.info('[consent] versão atualizada', { previousKey, nextKey })
-        window.dataLayer?.push({ event: 'consent_version_bumped', previousKey, nextKey })
+        globalThis.window?.dataLayer?.push({
+          event: 'consent_version_bumped',
+          previousKey,
+          nextKey,
+        })
         localStorage.removeItem('marketing-optins')
         resetConsent()
       }}
@@ -954,24 +958,24 @@ function MeuComponente() {
 }
 ```
 
-### window.openPreferencesModal (JavaScript Puro)
+### globalThis.window.openPreferencesModal (JavaScript Puro)
 
 ```html
 <!-- Em templates HTML, emails ou widgets externos -->
-<button onclick="window.openPreferencesModal?.()">Configurar Cookies</button>
+<button onclick="globalThis.window?.openPreferencesModal?.()">Configurar Cookies</button>
 
 <script>
   // Ou em JavaScript puro
   function abrirConfiguracoesCookies() {
-    if (window.openPreferencesModal) {
-      window.openPreferencesModal()
+    if (globalThis.window?.openPreferencesModal) {
+      globalThis.window.openPreferencesModal()
     } else {
       console.warn('Sistema de consentimento não carregado')
     }
   }
 
   // Verificar se função está disponível
-  if (typeof window.openPreferencesModal === 'function') {
+  if (typeof globalThis.window?.openPreferencesModal === 'function') {
     console.log('✅ Sistema de consentimento disponível')
   }
 </script>

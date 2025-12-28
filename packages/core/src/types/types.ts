@@ -1580,7 +1580,7 @@ export type ConsentEventOrigin = 'banner' | 'modal' | 'reset' | 'programmatic'
  * @example
  * ```typescript
  * // Exemplo de evento no dataLayer
- * window.dataLayer.push({
+ * globalThis.window?.dataLayer?.push({
  *   event: 'consent_initialized',
  *   consent_version: '0.4.5',
  *   timestamp: '2025-10-25T13:52:33.729Z',
@@ -1619,7 +1619,7 @@ export interface ConsentInitializedEvent {
  * @example
  * ```typescript
  * // Exemplo de evento no dataLayer após aceitar analytics
- * window.dataLayer.push({
+ * globalThis.window?.dataLayer?.push({
  *   event: 'consent_updated',
  *   consent_version: '0.4.5',
  *   timestamp: '2025-10-25T13:52:33.729Z',

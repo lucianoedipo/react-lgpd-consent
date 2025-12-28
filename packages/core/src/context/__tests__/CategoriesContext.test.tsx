@@ -86,9 +86,9 @@ describe('CategoriesContext', () => {
   })
 
   test('não quebra quando addEventListener não está disponível (fallback SSR)', () => {
-    const originalAdd = window.addEventListener
+    const originalAdd = globalThis.window.addEventListener
     // @ts-ignore - simular ambiente sem addEventListener
-    delete window.addEventListener
+    delete globalThis.window.addEventListener
 
     expect(() =>
       render(
@@ -98,7 +98,7 @@ describe('CategoriesContext', () => {
       ),
     ).not.toThrow()
 
-    window.addEventListener = originalAdd
+    globalThis.window.addEventListener = originalAdd
   })
 
   test('logs cookie discovery in development', () => {

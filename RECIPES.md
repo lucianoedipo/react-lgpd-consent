@@ -42,7 +42,7 @@ npm install react-lgpd-consent @mui/material @mui/icons-material @emotion/react 
 
 Crie `.env.local`:
 
-```env
+```text
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 ```
@@ -119,7 +119,7 @@ npm run dev
 5. Aceite cookies e verifique se scripts carregam
 
 ### 🔗 Referências
-- [Exemplo completo: examples/next-app-router](./examples/next-app-router)
+- [Exemplos completos](./examples/README.md)
 - [QUICKSTART.md - Next.js App Router](./QUICKSTART.md#nextjs-1415-app-router-ssr-safe)
 
 ---
@@ -204,11 +204,11 @@ Crie um componente para inicializar gtag **antes** de carregar scripts:
 
 export function GtagConsentBootstrap() {
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.dataLayer = window.dataLayer ?? []
+    if (globalThis.window) {
+      globalThis.window.dataLayer = globalThis.window.dataLayer ?? []
       function gtag(...args: any[]) {
-        if (typeof window.dataLayer?.push === 'function') {
-          window.dataLayer.push(args)
+        if (typeof globalThis.window?.dataLayer?.push === 'function') {
+          globalThis.window.dataLayer.push(args)
         }
       }
 
@@ -243,12 +243,12 @@ export function ConsentModeSync() {
   const { preferences, consented } = useConsent()
 
   useEffect(() => {
-    if (!consented || typeof window === 'undefined') return
+    if (!consented || !globalThis.window) return
 
     function gtag(...args: any[]) {
-      window.dataLayer = window.dataLayer ?? []
-      if (typeof window.dataLayer?.push === 'function') {
-        window.dataLayer.push(args)
+      globalThis.window.dataLayer = globalThis.window.dataLayer ?? []
+      if (typeof globalThis.window.dataLayer?.push === 'function') {
+        globalThis.window.dataLayer.push(args)
       }
     }
 
@@ -293,7 +293,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ### ✨ Validação
 
 1. Abra DevTools → Console
-2. Execute: `window.dataLayer`
+2. Execute: `globalThis.window?.dataLayer`
 3. Verifique eventos `consent.default` e `consent.update`
 4. No GTM Preview Mode, confirme que os sinais estão corretos
 
@@ -529,7 +529,7 @@ npm install react-lgpd-consent @mui/material @mui/icons-material @emotion/react 
 
 Crie `.env`:
 
-```env
+```text
 VITE_GA_ID=G-XXXXXXXXXX
 VITE_GTM_ID=GTM-XXXXXXX
 ```
@@ -595,7 +595,7 @@ npm run dev
 4. Aceite cookies e valide carga de scripts
 
 ### 🔗 Referências
-- [Exemplo completo: examples/vite](./examples/vite)
+- [Exemplos completos](./examples/README.md)
 
 ---
 
@@ -894,7 +894,7 @@ import { ConsentProvider as ConsentProviderHeadless } from 'react-lgpd-consent/c
 - [INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md) - Integrações nativas
 - [CONFORMIDADE.md](./CONFORMIDADE.md) - Conformidade LGPD
 - [API.md](./packages/react-lgpd-consent/API.md) - Referência completa da API
-- [Examples](./examples) - Projetos completos
+- [Examples](./examples/README.md) - Projetos completos
 
 ---
 

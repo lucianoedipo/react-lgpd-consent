@@ -55,7 +55,7 @@ describe('ConsentProvider blockingStrategy overlay', () => {
     const overlay = await waitFor(() => getByTestId('lgpd-provider-overlay'))
     expect(overlay).toHaveAttribute('data-testid', 'lgpd-provider-overlay')
     // jsdom may normalize 'transparent' to 'rgba(0, 0, 0, 0)'; aceitar ambas formas
-    const bg = window.getComputedStyle(overlay).backgroundColor
+    const bg = globalThis.window.getComputedStyle(overlay).backgroundColor
     expect(['transparent', 'rgba(0, 0, 0, 0)', 'rgba(0,0,0,0)']).toContain(bg)
   })
 

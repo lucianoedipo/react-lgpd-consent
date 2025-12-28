@@ -306,10 +306,7 @@ export function ConsentProvider({
   onConsentChange,
   onAuditLog,
 }: Readonly<ConsentProviderProps>) {
-  const mergedTexts = React.useMemo(
-    () => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }),
-    [textsProp],
-  )
+  const mergedTexts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const texts = React.useMemo(
     () => resolveTexts(mergedTexts, { language, variant: textVariant }),
     [mergedTexts, language, textVariant],

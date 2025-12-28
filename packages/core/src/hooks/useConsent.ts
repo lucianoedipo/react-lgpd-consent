@@ -149,7 +149,7 @@ import { logger } from '../utils/logger'
  *     return (
  *       <div>
  *         ❌ Este recurso requer cookies funcionais.
- *         <button onClick={() => window.openPreferencesModal?.()}>
+ *         <button onClick={() => globalThis.window?.openPreferencesModal?.()}>
  *           Alterar Preferências
  *         </button>
  *       </div>
@@ -401,7 +401,7 @@ export function useConsentTexts(): AdvancedConsentTexts {
  *     return (
  *       <div className="consent-partial">
  *         <p>Este recurso requer cookies funcionais.</p>
- *         <button onClick={() => window.openPreferencesModal?.()}>
+ *         <button onClick={() => globalThis.window?.openPreferencesModal?.()}>
  *           Alterar Preferências
  *         </button>
  *       </div>
@@ -738,7 +738,7 @@ export function useOpenPreferencesModal(): () => void {
  * @example
  * ```javascript
  * // Em código JavaScript puro
- * window.openPreferencesModal?.();
+ * globalThis.window?.openPreferencesModal?.();
  *
  * // Ou importando diretamente
  * import { openPreferencesModal } from 'react-lgpd-consent';

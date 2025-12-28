@@ -50,7 +50,7 @@ describe('error handling in integrations', () => {
     const m = createMixpanelIntegration({ token: 'tok' })
 
     // Mock mixpanel.init to throw error
-    ;(global as any).window.mixpanel = {
+    ;(globalThis as any).window.mixpanel = {
       init: jest.fn(() => {
         throw new Error('Network error')
       }),
@@ -64,7 +64,7 @@ describe('error handling in integrations', () => {
     const c = createClarityIntegration({ projectId: 'abc', upload: true })
 
     // Mock clarity to throw error
-    ;(global as any).window.clarity = jest.fn(() => {
+    ;(globalThis as any).window.clarity = jest.fn(() => {
       throw new Error('Config error')
     })
 
@@ -79,7 +79,7 @@ describe('error handling in integrations', () => {
     const i = createIntercomIntegration({ app_id: 'app123' })
 
     // Mock Intercom to throw error
-    ;(global as any).window.Intercom = jest.fn(() => {
+    ;(globalThis as any).window.Intercom = jest.fn(() => {
       throw new Error('Boot error')
     })
 
@@ -91,7 +91,7 @@ describe('error handling in integrations', () => {
     const z = createZendeskChatIntegration({ key: 'key123' })
 
     // Mock zE to throw error
-    ;(global as any).window.zE = jest.fn(() => {
+    ;(globalThis as any).window.zE = jest.fn(() => {
       throw new Error('Identify error')
     })
 

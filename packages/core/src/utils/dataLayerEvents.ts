@@ -59,9 +59,7 @@ function ensureDataLayer(): void {
       (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV ??
       'production'
     if (env !== 'production') {
-      console.warn(
-        '[LGPD-CONSENT] dataLayer presente mas sem push; eventos não serão registrados.',
-      )
+      console.warn('[LGPD-CONSENT] dataLayer presente mas sem push; eventos não serão registrados.')
     }
   }
 }

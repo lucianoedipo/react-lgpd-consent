@@ -24,11 +24,12 @@ import { COOKIE_PATTERNS_BY_CATEGORY, setCookieCatalogOverrides } from './cookie
  * @since 0.4.1
  */
 export function discoverRuntimeCookies(): CookieDescriptor[] {
-  if (typeof document === 'undefined' || !document.cookie) return []
+  const currentDocument = globalThis.document
+  if (currentDocument === undefined || !currentDocument.cookie) return []
 
   const names = Array.from(
     new Set(
-      document.cookie
+      currentDocument.cookie
         .split(';')
         .map((s) => s.trim())
         .filter(Boolean)
@@ -93,10 +94,11 @@ function isConsentJson(val: string): boolean {
  */
 
 export function detectConsentCookieName(): string | null {
-  if (typeof document === 'undefined' || !document.cookie) return null
+  const currentDocument = globalThis.document
+  if (currentDocument === undefined || !currentDocument.cookie) return null
 
   try {
-    const pairs = document.cookie
+    const pairs = currentDocument.cookie
       .split(';')
       .map((s) => s.trim())
       .filter(Boolean)

@@ -105,11 +105,11 @@ export function loadScript(
   nonce?: string,
   options?: LoadScriptOptions,
 ) {
-  if (!src) return Promise.resolve()
-  if (typeof document === 'undefined') return Promise.resolve()
+  const currentDocument = globalThis.document
+  if (!src || currentDocument === undefined) return Promise.resolve()
 
   // Se script já existe no DOM, resolve imediatamente
-  if (document.getElementById(id)) return Promise.resolve()
+  if (currentDocument.getElementById(id)) return Promise.resolve()
 
   // Se já está sendo carregado, retorna a Promise existente (previne duplicação)
   const existingPromise = LOADING_SCRIPTS.get(id)
@@ -121,7 +121,7 @@ export function loadScript(
 
   const promise = new Promise<void>((resolve, reject) => {
     const inject = () => {
-      const s = document.createElement('script')
+      const s = currentDocument.createElement('script')
       s.id = id
       s.src = src
       s.async = mergedAttrs.async !== 'false'
@@ -141,7 +141,7 @@ export function loadScript(
         reject(new Error(`Failed to load script: ${src}`))
       }
 
-      document.body.appendChild(s)
+      currentDocument.body.appendChild(s)
     }
 
     const snapshot = options?.consentSnapshot

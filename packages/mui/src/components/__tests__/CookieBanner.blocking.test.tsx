@@ -94,8 +94,8 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
   })
 
   it('não aplica overlay quando a rota atual é segura (policyLinkUrl/termsLinkUrl)', async () => {
-    const originalHref = window.location.href
-    window.history.replaceState(null, '', '/politica')
+    const originalHref = globalThis.window.location.href
+    globalThis.window.history.replaceState(null, '', '/politica')
 
     try {
       render(
@@ -116,7 +116,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
       expect(screen.getByTestId('cookie-snackbar')).toBeInTheDocument()
       expect(screen.queryByTestId('lgpd-cookie-banner-overlay')).toBeNull()
     } finally {
-      window.history.replaceState(null, '', originalHref)
+      globalThis.window.history.replaceState(null, '', originalHref)
     }
   })
 
@@ -157,7 +157,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
-    const overlayStyles = window.getComputedStyle(overlay)
+    const overlayStyles = globalThis.window.getComputedStyle(overlay)
     expect(overlayStyles.backgroundColor).toBe('rgba(255, 255, 255, 0.12)')
   })
 
@@ -177,7 +177,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
-    expect(window.getComputedStyle(overlay).backgroundColor).toBe('rgba(0, 0, 0, 0.4)')
+    expect(globalThis.window.getComputedStyle(overlay).backgroundColor).toBe('rgba(0, 0, 0, 0.4)')
   })
 
   it('usa backdrop transparente quando token é false', async () => {
@@ -193,7 +193,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
-    expect(window.getComputedStyle(overlay).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+    expect(globalThis.window.getComputedStyle(overlay).backgroundColor).toBe('rgba(0, 0, 0, 0)')
   })
 
   it('usa backdrop customizado quando token é string', async () => {
@@ -209,7 +209,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
-    expect(window.getComputedStyle(overlay).backgroundColor).toBe('rgb(18, 52, 86)')
+    expect(globalThis.window.getComputedStyle(overlay).backgroundColor).toBe('rgb(18, 52, 86)')
   })
 
   it('posiciona banner no topo quando layout.position=top', async () => {
@@ -225,7 +225,7 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
-    expect(window.getComputedStyle(bannerWrapper as HTMLElement).top).toBe('0px')
+    expect(globalThis.window.getComputedStyle(bannerWrapper as HTMLElement).top).toBe('0px')
   })
 
   it('aplica z-index customizado vindo de designTokens no banner e overlay', async () => {
@@ -241,10 +241,10 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
-    expect(window.getComputedStyle(overlay).zIndex).toBe('2400')
+    expect(globalThis.window.getComputedStyle(overlay).zIndex).toBe('2400')
 
     const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
-    expect(window.getComputedStyle(bannerWrapper as HTMLElement).zIndex).toBe('2500')
+    expect(globalThis.window.getComputedStyle(bannerWrapper as HTMLElement).zIndex).toBe('2500')
   })
 
   it('propaga hideBranding do provider para o CookieBanner padrão', async () => {
@@ -295,9 +295,9 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     )
 
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
-    expect(window.getComputedStyle(overlay).zIndex).toBe('2400')
+    expect(globalThis.window.getComputedStyle(overlay).zIndex).toBe('2400')
 
     const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
-    expect(window.getComputedStyle(bannerWrapper as HTMLElement).zIndex).toBe('2500')
+    expect(globalThis.window.getComputedStyle(bannerWrapper as HTMLElement).zIndex).toBe('2500')
   })
 })

@@ -51,12 +51,12 @@ describe('PreferencesModal', () => {
     )
 
     const title = document.getElementById('cookie-pref-title')
-    const computedTitle = window.getComputedStyle(title as Element)
+    const computedTitle = globalThis.window.getComputedStyle(title as Element)
     expect(computedTitle.fontSize).toBe('18px')
 
     const content = document.querySelector('div.MuiDialogContent-root')
     expect(content).toBeTruthy()
-    const computed = window.getComputedStyle(content as Element)
+    const computed = globalThis.window.getComputedStyle(content as Element)
     // padding may be applied as shorthand - assert it contains our value
     expect(computed.padding).toEqual(expect.stringContaining('20'))
   })
@@ -165,8 +165,9 @@ describe('PreferencesModal', () => {
   })
 
   it('renderiza scripts ativos quando não há cookies detalhados', async () => {
-    ;(globalThis as unknown as { __LGPD_INTEGRATIONS_MAP__?: Record<string, string> })
-      .__LGPD_INTEGRATIONS_MAP__ = {
+    ;(
+      globalThis as unknown as { __LGPD_INTEGRATIONS_MAP__?: Record<string, string> }
+    ).__LGPD_INTEGRATIONS_MAP__ = {
       'my-script': 'custom',
     }
 
@@ -175,9 +176,7 @@ describe('PreferencesModal', () => {
         categories={
           {
             enabledCategories: ['custom'],
-            customCategories: [
-              { id: 'custom', name: 'Custom', description: 'Categoria custom' },
-            ],
+            customCategories: [{ id: 'custom', name: 'Custom', description: 'Categoria custom' }],
           } as any
         }
         initialState={makeInitialState()}
@@ -271,8 +270,9 @@ describe('PreferencesModal', () => {
         'google-analytics': [{ name: 'ga_missing' }],
       },
     })
-    ;(globalThis as unknown as { __LGPD_USED_INTEGRATIONS__?: string[] }).__LGPD_USED_INTEGRATIONS__ =
-      ['google-analytics']
+    ;(
+      globalThis as unknown as { __LGPD_USED_INTEGRATIONS__?: string[] }
+    ).__LGPD_USED_INTEGRATIONS__ = ['google-analytics']
 
     render(
       <ConsentProvider

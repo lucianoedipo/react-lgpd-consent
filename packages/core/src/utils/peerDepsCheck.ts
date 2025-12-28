@@ -439,11 +439,12 @@ function getMessages(): PeerDepsMessages {
  * @internal
  */
 function detectMultipleReactInstances(): boolean {
-  if (globalThis.window === undefined) return false
+  const currentWindow = globalThis.window
+  if (currentWindow === undefined) return false
 
   try {
     // Técnica 1: Verificar se há múltiplos símbolos React
-    const reactSymbols = Object.getOwnPropertySymbols(globalThis.window)
+    const reactSymbols = Object.getOwnPropertySymbols(currentWindow)
       .map(String)
       .filter((name) => name.includes('react'))
 
@@ -453,14 +454,15 @@ function detectMultipleReactInstances(): boolean {
 
     // Técnica 2: Verificar se React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED está duplicado
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ReactModule = (window as any).React
+    const ReactModule = (currentWindow as any).React
     if (ReactModule && Array.isArray(ReactModule)) {
       return true // Múltiplas instâncias carregadas como array
     }
 
     // Técnica 3: Verificar se há múltiplas versões no contexto global
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const hasMultipleVersions = (window as any).__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size > 1
+    const hasMultipleVersions =
+      (currentWindow as any).__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size > 1
 
     return hasMultipleVersions || false
   } catch {
@@ -478,16 +480,17 @@ function detectMultipleReactInstances(): boolean {
  * @internal
  */
 function getPackageVersion(packageName: string): string | null {
-  if (globalThis.window === undefined) return null
+  const currentWindow = globalThis.window
+  if (currentWindow === undefined) return null
 
   try {
     // Tentar pegar do módulo carregado (se disponível globalmente para debug)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const pkg = (window as any)[packageName]
+    const pkg = (currentWindow as any)[packageName]
     if (pkg?.version) return pkg.version
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const React = (window as any).React
+    const React = (currentWindow as any).React
     if (packageName === 'react' && React?.version) {
       return React.version
     }
@@ -570,7 +573,8 @@ export function checkPeerDeps(
   }
 
   // Apenas executar no browser
-  if (globalThis.window === undefined) {
+  const currentWindow = globalThis.window
+  if (currentWindow === undefined) {
     return result
   }
 
@@ -602,7 +606,7 @@ export function checkPeerDeps(
 
   // 3. Verificar versão do MUI (se estiver carregado)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const muiVersion = (window as any)['@mui/material']?.version
+  const muiVersion = (currentWindow as any)['@mui/material']?.version
   if (muiVersion) {
     if (!isVersionInRange(muiVersion, 5, 7)) {
       result.warnings.push(messages.MUI_OUT_OF_RANGE(muiVersion))

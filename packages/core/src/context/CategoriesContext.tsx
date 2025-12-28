@@ -62,16 +62,7 @@ export function CategoriesProvider({
   disableDeveloperGuidance?: boolean
   disableDiscoveryLog?: boolean
 }>) {
-  const [impliedVersion, setImpliedVersion] = React.useState(0)
-
-  React.useEffect(() => {
-    const handler = () => setImpliedVersion((v) => v + 1)
-    if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
-      window.addEventListener('lgpd:requiredCategories', handler)
-      return () => window.removeEventListener('lgpd:requiredCategories', handler)
-    }
-    return () => {}
-  }, [])
+  // Removido impliedVersion pois não era utilizado
 
   // Força reavaliação quando integrações anunciam categorias requeridas via evento global
   // impliedVersion é usado como trigger de recálculo
@@ -82,16 +73,13 @@ export function CategoriesProvider({
 
     const toggleableCategories = guidance.activeCategoriesInfo.filter((cat) => cat.uiRequired)
 
-    // Valida que impliedVersion está sendo usado (trigger de recálculo)
-    void impliedVersion
-
     return {
       config: finalConfig,
       guidance,
       toggleableCategories,
       allCategories: guidance.activeCategoriesInfo,
     }
-  }, [config, impliedVersion])
+  }, [config])
 
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
@@ -104,33 +92,33 @@ export function CategoriesProvider({
         __LGPD_DISCOVERY_LOGGED__?: boolean
         process?: { env?: { NODE_ENV?: string } }
       }
-      const env = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
+      const env = gt.process?.env?.NODE_ENV
       const isDev = env === 'development'
-      if (!isDev || gt.__LGPD_DISCOVERY_LOGGED__ === true || disableDiscoveryLog) return
+      if (isDev && gt.__LGPD_DISCOVERY_LOGGED__ !== true && !disableDiscoveryLog) {
+        const discovered = discoverRuntimeCookies()
+        const consentName = detectConsentCookieName() || DEFAULT_COOKIE_OPTS.name
 
-      const discovered = discoverRuntimeCookies()
-      const consentName = detectConsentCookieName() || DEFAULT_COOKIE_OPTS.name
-
-      const PREFIX = '[🍪 LGPD-CONSENT]'
-      if (typeof console !== 'undefined') {
-        try {
-          console.group(`${PREFIX} 🔎 Descoberta de cookies (experimental)`) //
-          const names = Array.from(
-            new Set([consentName, ...discovered.map((d) => d.name)].filter(Boolean)),
-          )
-          const rows = names.map((n) => ({ Cookie: n }))
-          if (typeof console.table === 'function') console.table(rows)
-          else console.log(rows)
-          console.info(
-            `${PREFIX} ℹ️  Estes nomes são detectados em tempo de execução. Ajuste ou categorize via APIs de override se necessário.`,
-          )
-          console.groupEnd()
-        } catch {
-          // ignore console errors
+        const PREFIX = '[🍪 LGPD-CONSENT]'
+        if (typeof console !== 'undefined') {
+          try {
+            console.group(`${PREFIX} 🔎 Descoberta de cookies (experimental)`) //
+            const names = Array.from(
+              new Set([consentName, ...discovered.map((d) => d.name)].filter(Boolean)),
+            )
+            const rows = names.map((n) => ({ Cookie: n }))
+            if (typeof console.table === 'function') console.table(rows)
+            else console.log(rows)
+            console.info(
+              `${PREFIX} ℹ️  Estes nomes são detectados em tempo de execução. Ajuste ou categorize via APIs de override se necessário.`,
+            )
+            console.groupEnd()
+          } catch {
+            // ignore console errors
+          }
         }
-      }
 
-      gt.__LGPD_DISCOVERY_LOGGED__ = true
+        gt.__LGPD_DISCOVERY_LOGGED__ = true
+      }
     } catch {
       // ignore
     }

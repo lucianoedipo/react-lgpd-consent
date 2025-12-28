@@ -822,7 +822,7 @@ function App() {
 
 - [README Principal](./README.md) - Documentação geral
 - [API Reference](./packages/react-lgpd-consent/API.md) - API completa
-- [Exemplos](./examples/) - Exemplos práticos
+- [Exemplos](./examples/README.md) - Exemplos práticos
 - [CHANGELOG](./packages/react-lgpd-consent/CHANGELOG.md) - Histórico de mudanças
 
 ## ❓ Perguntas Frequentes

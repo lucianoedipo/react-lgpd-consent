@@ -414,12 +414,9 @@ describe('loadScript', () => {
 
     document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
 
-    const promise = loadScript(
-      'sync-script',
-      'https://example.com/sync.js',
-      'analytics',
-      { async: 'false' },
-    )
+    const promise = loadScript('sync-script', 'https://example.com/sync.js', 'analytics', {
+      async: 'false',
+    })
 
     const script = document.getElementById('sync-script') as HTMLScriptElement | null
     expect(script).toBeTruthy()
@@ -485,5 +482,4 @@ describe('loadScript', () => {
     await expect(promise).resolves.toBeUndefined()
     jest.useRealTimers()
   })
-
 })

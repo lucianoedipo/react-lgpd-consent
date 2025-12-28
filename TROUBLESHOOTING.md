@@ -683,8 +683,8 @@ Os callbacks podem ser usados para enviar eventos customizados ao `dataLayer`:
 <ConsentProvider
   categories={{ enabledCategories: ['analytics', 'marketing'] }}
   onConsentChange={(preferences, origin) => {
-    if (typeof window !== 'undefined' && window.dataLayer) {
-      window.dataLayer.push({
+    if (globalThis.window?.dataLayer) {
+      globalThis.window.dataLayer.push({
         event: 'custom_consent_update',
         consent_preferences: preferences,
         consent_origin: origin,

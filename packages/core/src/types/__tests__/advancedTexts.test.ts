@@ -83,14 +83,14 @@ describe('Sistema Avançado de Textos', () => {
     })
 
     it('deve conter configuração de cookie details', () => {
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.name).toBe('Nome')
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.purpose).toBe('Finalidade')
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.duration).toBe('Duração')
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.provider).toBe('Fornecedor')
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.toggleDetails?.expand).toBe('Ver detalhes')
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.scriptLabelPrefix).toBe('(script) ')
-    expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.scriptPurpose).toBe('Script de integração ativo')
-  })
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.name).toBe('Nome')
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.purpose).toBe('Finalidade')
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.duration).toBe('Duração')
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.tableHeaders?.provider).toBe('Fornecedor')
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.toggleDetails?.expand).toBe('Ver detalhes')
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.scriptLabelPrefix).toBe('(script) ')
+      expect(EXPANDED_DEFAULT_TEXTS.cookieDetails?.scriptPurpose).toBe('Script de integração ativo')
+    })
   })
 
   describe('TEXT_TEMPLATES', () => {

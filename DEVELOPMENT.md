@@ -49,7 +49,7 @@ A stack continua baseada em:
 
 - ✅ **Aplicações Client-Side**: React SPA, CRA, Vite, etc.
 - ✅ **SSR (Server-Side Rendering)**: Compatível com Next.js, com hidratação através da prop `initialState` para evitar "flash" de conteúdo.
-- ✅ **React 19 StrictMode**: Totalmente compatível com double-invoking de efeitos em desenvolvimento (ver [REACT19-STRICTMODE.md](./docs/REACT19-STRICTMODE.md))
+- ✅ **React 19 StrictMode**: Totalmente compatível com double-invoking de efeitos em desenvolvimento (ver [REACT19-STRICTMODE.md](./REACT19-STRICTMODE.md))
 
 ### Princípios de Design para Efeitos
 
@@ -60,13 +60,13 @@ A stack continua baseada em:
 3. **SSR-Safe**: Verificação de `typeof window/document !== 'undefined'`
 4. **StrictMode-Safe**: Proteção contra double-invoking em desenvolvimento
 
-Consulte [REACT19-STRICTMODE.md](./docs/REACT19-STRICTMODE.md) para detalhes da implementação.
+Consulte [REACT19-STRICTMODE.md](./REACT19-STRICTMODE.md) para detalhes da implementação.
 
 ### Regras de Integrações e DataLayer (RN)
 
 - Integrações têm **categoria padrão**, mas o consumidor pode sobrescrever via `category` no config.
 - Configs obrigatórias inválidas **não executam** a integração; em dev é logado erro, em prod fica silencioso.
-- `window.dataLayer`: cria `[]` quando inexistente, usa se tiver `push`, e avisa em dev se existir sem `push`.
+- `globalThis.window.dataLayer`: cria `[]` quando inexistente, usa se tiver `push`, e avisa em dev se existir sem `push`.
 
 ## 🍪 Estratégia de cookie por ambiente
 
