@@ -93,21 +93,23 @@ function createFullConsentState(
 // 🔹 Chaves EN, valores padrão pt-BR (UI do usuário final)
 const BASE_TEXTS: AdvancedConsentTexts = {
   // Textos básicos
-  bannerMessage: 'Utilizamos cookies para melhorar sua experiência.',
+  bannerMessage:
+    'Usamos cookies necessários para o funcionamento do site. Os demais cookies são opcionais e você pode aceitar, rejeitar ou ajustar suas preferências.',
   acceptAll: 'Aceitar todos',
-  declineAll: 'Recusar',
+  declineAll: 'Rejeitar opcionais',
   preferences: 'Preferências',
-  policyLink: 'Saiba mais',
-  modalTitle: 'Preferências de Cookies',
+  policyLink: 'Política de privacidade',
+  modalTitle: 'Preferências de cookies',
   modalIntro:
-    'Ajuste as categorias de cookies. Cookies necessários são sempre utilizados para funcionalidades básicas.',
+    'Cookies necessários são sempre ativos. As demais categorias são opcionais e você pode ativá-las ou desativá-las a qualquer momento.',
   save: 'Salvar preferências',
   necessaryAlwaysOn: 'Cookies necessários (sempre ativos)',
 
   // Textos adicionais para UI customizada
-  preferencesButton: 'Configurar Cookies',
-  preferencesTitle: 'Gerenciar Preferências de Cookies',
-  preferencesDescription: 'Escolha quais tipos de cookies você permite que sejam utilizados.',
+  preferencesButton: 'Gerenciar cookies',
+  preferencesTitle: 'Gerenciar preferências de cookies',
+  preferencesDescription:
+    'Escolha quais categorias opcionais você permite. Cookies necessários permanecem sempre ativos.',
   close: 'Fechar',
   accept: 'Aceitar',
   reject: 'Rejeitar',
@@ -243,6 +245,7 @@ function buildProviderError(hookName: string) {
  * @param {ProjectCategoriesConfig} props.categories - **Obrigatório**. Define as categorias de cookies que seu projeto utiliza, em conformidade com o princípio de minimização da LGPD.
  * @param {Partial<AdvancedConsentTexts>} [props.texts] - Objeto para customizar todos os textos exibidos na UI.
  * @param {boolean} [props.blocking=false] - Se `true`, exibe um overlay que impede a interação com o site até uma decisão do usuário.
+ * @param {'soft' | 'hard'} [props.blockingMode='soft'] - Intensidade do bloqueio; use `hard` para tornar o conteúdo inerte e restringir navegação por teclado.
  * @param {(state: ConsentState) => void} [props.onConsentGiven] - Callback executado na primeira vez que o usuário dá o consentimento.
  * @param {(prefs: ConsentPreferences) => void} [props.onPreferencesSaved] - Callback executado sempre que o usuário salva novas preferências.
  * @param {boolean} [props.disableDeveloperGuidance=false] - Desativa as mensagens de orientação no console em ambiente de desenvolvimento.
@@ -291,6 +294,7 @@ export function ConsentProvider({
   floatingPreferencesButtonProps = {},
   disableFloatingPreferencesButton = false,
   blocking = false,
+  blockingMode = 'soft',
   blockingStrategy = 'auto',
   hideBranding: _hideBranding = false,
   onConsentGiven,
@@ -647,6 +651,8 @@ export function ConsentProvider({
     }
   }, [cookieBannerProps, blocking, _hideBranding])
 
+  const hardBlockingActive = blocking && isHydrated && !state.consented && blockingMode === 'hard'
+
   const content = (
     <StateCtx.Provider value={state}>
       <ActionsCtx.Provider value={api}>
@@ -658,7 +664,14 @@ export function ConsentProvider({
                 disableDeveloperGuidance={disableDeveloperGuidance}
                 disableDiscoveryLog={disableDiscoveryLog}
               >
-                {children}
+                <div
+                  data-testid="lgpd-app-content"
+                  aria-hidden={hardBlockingActive ? true : undefined}
+                  inert={hardBlockingActive}
+                  style={{ display: 'contents' }}
+                >
+                  {children}
+                </div>
                 {/* Modal de preferências - renderizado apenas quando fornecido */}
                 {PreferencesModalComponent ? (
                   <PreferencesModalComponent

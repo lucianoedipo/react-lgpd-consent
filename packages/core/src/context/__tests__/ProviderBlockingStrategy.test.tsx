@@ -100,6 +100,39 @@ describe('ConsentProvider blockingStrategy overlay', () => {
     })
   })
 
+  it('aplica inert ao conteúdo quando blockingMode="hard" até o usuário consentir', async () => {
+    function TriggerAccept() {
+      const { acceptAll } = useConsent()
+      React.useEffect(() => {
+        const timer = setTimeout(() => acceptAll(), 0)
+        return () => clearTimeout(timer)
+      }, [acceptAll])
+      return null
+    }
+
+    const { getByTestId } = render(
+      <ConsentProvider
+        blocking
+        blockingMode="hard"
+        blockingStrategy="provider"
+        disableFloatingPreferencesButton
+      >
+        <TriggerAccept />
+        <div>App</div>
+      </ConsentProvider>,
+    )
+
+    await waitFor(() => {
+      expect(getByTestId('lgpd-app-content')).toHaveAttribute('inert')
+      expect(getByTestId('lgpd-app-content')).toHaveAttribute('aria-hidden', 'true')
+    })
+
+    await waitFor(() => {
+      expect(getByTestId('lgpd-app-content')).not.toHaveAttribute('inert')
+      expect(getByTestId('lgpd-app-content')).not.toHaveAttribute('aria-hidden')
+    })
+  })
+
   it('removes overlay after user consents (provider strategy)', async () => {
     function TriggerAccept() {
       const { acceptAll } = useConsent()

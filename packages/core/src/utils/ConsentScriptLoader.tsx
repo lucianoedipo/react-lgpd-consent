@@ -167,6 +167,20 @@ async function processQueue(
   }
 }
 
+/**
+ * Props do ConsentScriptLoader.
+ *
+ * @category Types
+ * @since 0.2.0
+ *
+ * @example
+ * ```tsx
+ * <ConsentScriptLoader
+ *   integrations={[COMMON_INTEGRATIONS.googleTagManager({ containerId: 'GTM-XXXX' })]}
+ *   reloadOnChange
+ * />
+ * ```
+ */
 export interface ConsentScriptLoaderProps {
   /** Lista de integrações de scripts para carregar baseado no consentimento */
   integrations: ScriptIntegration[]
@@ -195,6 +209,14 @@ export interface ConsentScriptLoaderProps {
  * ];
  *
  * <ConsentScriptLoader integrations={integrations} />
+ * ```
+ *
+ * @example
+ * ```tsx
+ * <ConsentScriptLoader
+ *   integrations={[COMMON_INTEGRATIONS.googleTagManager({ containerId: 'GTM-XXXX' })]}
+ *   nonce="csp-nonce"
+ * />
  * ```
  */
 export function ConsentScriptLoader({

@@ -13,8 +13,7 @@ import type { ConsentTexts } from './types'
  * Tipo auxiliar para variações de texto.
  *
  * Define um subconjunto opcional dos textos principais do banner e modal,
- * permitindo variações de t    es: {
-      bannerMessage: 'Utilizamos cookies para mejorar su experiencia y mostrar contenido personalizado.', (formal, casual, etc.) sem sobrescrever todos os textos.
+ * permitindo variações de tom (formal, casual, etc.) sem sobrescrever todos os textos.
  *
  * @category Types
  * @since 0.4.1
@@ -296,27 +295,27 @@ export const EXPANDED_DEFAULT_TEXTS: Partial<AdvancedConsentTexts> = {
   categories: {
     necessary: {
       name: 'Cookies Necessários',
-      description: 'Essenciais para o funcionamento básico do site',
+      description: 'Essenciais para o funcionamento básico do site e não podem ser desativados',
       examples: 'Sessão, segurança, preferências de idioma',
     },
     analytics: {
       name: 'Cookies de Analytics',
-      description: 'Ajudam a entender como os visitantes usam o site',
+      description: 'Opcionais. Ajudam a entender como os visitantes usam o site',
       examples: 'Google Analytics, contadores de página',
     },
     marketing: {
       name: 'Cookies de Marketing',
-      description: 'Usados para personalizar anúncios e ofertas',
+      description: 'Opcionais. Usados para personalizar anúncios e ofertas',
       examples: 'Facebook Pixel, Google Ads, remarketing',
     },
     functional: {
       name: 'Cookies Funcionais',
-      description: 'Melhoram a funcionalidade e personalização',
+      description: 'Opcionais. Melhoram a funcionalidade e personalização',
       examples: 'Chat, mapas, vídeos embarcados',
     },
     performance: {
       name: 'Cookies de Performance',
-      description: 'Coletam informações sobre velocidade e estabilidade',
+      description: 'Opcionais. Coletam informações sobre velocidade e estabilidade',
       examples: 'Monitoramento de erro, otimização de velocidade',
     },
   },

@@ -12,7 +12,7 @@ LGPD-compliant cookie consent management for React — this package is the aggre
 
 ## Overview
 
-`react-lgpd-consent` is the compatibility aggregator for the v0.5.x monorepo. It re-exports the ready-made MUI components and keeps the API compatible with previous releases. If you want to optimize your bundle, import only `@react-lgpd-consent/core` (headless) or `@react-lgpd-consent/mui` (MUI components).
+`react-lgpd-consent` is the compatibility aggregator for the v0.5.x monorepo. It re-exports the ready-made MUI components and keeps the API compatible with previous releases. If you want to optimize your bundle, import only `@react-lgpd-consent/core` (headless) or `@react-lgpd-consent/mui/ui` (MUI components only).
 
 Key features:
 
@@ -54,11 +54,11 @@ export default function App() {
 }
 
 function YourApp() {
-  const { preferences, acceptCategory } = useConsent()
+  const { preferences, setPreference } = useConsent()
 
   return (
     <div>
-      <button onClick={() => acceptCategory('marketing')}>Accept Marketing</button>
+      <button onClick={() => setPreference('marketing', true)}>Accept Marketing</button>
     </div>
   )
 }
@@ -67,17 +67,15 @@ function YourApp() {
 Load a script only if the user granted the related category:
 
 ```tsx
-import { ConsentScriptLoader } from 'react-lgpd-consent'
+import { ConsentScriptLoader, COMMON_INTEGRATIONS } from 'react-lgpd-consent'
 
 function Analytics() {
   return (
     <ConsentScriptLoader
-      category="analytics"
-      src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
-      strategy="afterInteractive"
-    >
-      {`globalThis.window && (globalThis.window.dataLayer = globalThis.window.dataLayer || []); function gtag(){ if (typeof globalThis.window?.dataLayer?.push === 'function') { globalThis.window.dataLayer.push(arguments) } } gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');`}
-    </ConsentScriptLoader>
+      integrations={[
+        COMMON_INTEGRATIONS.googleAnalytics({ measurementId: 'GA_MEASUREMENT_ID' }),
+      ]}
+    />
   )
 }
 ```
@@ -102,9 +100,9 @@ function Analytics() {
 ### ANPD Category Presets (#70)
 
 ```tsx
-import { createAnpdCategories } from 'react-lgpd-consent'
+import { createAnpdCategoriesConfig } from 'react-lgpd-consent'
 
-const categories = createAnpdCategories({
+const categories = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing']
 })
 ```

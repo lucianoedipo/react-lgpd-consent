@@ -124,6 +124,29 @@ function AnalyticsFeature() {
 }
 ```
 
+## 🛑 Modo hard block/veil (interação condicionada)
+
+Alguns contextos regulatórios exigem que o usuário **decida explicitamente** antes de interagir com o site. Para isso:
+
+- Use `blocking={true}` + `blockingMode="hard"` + `blockingStrategy="provider"`.
+- O Provider aplica overlay e torna o conteúdo da aplicação **inerte** (`inert` + `aria-hidden`) até a decisão.
+- O banner e o modal permanecem acessíveis por teclado, atendendo requisitos de acessibilidade.
+- Use `cookieBannerProps.policyLinkUrl` para expor o link da política de privacidade.
+
+Exemplo:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics', 'marketing'] }}
+  blocking
+  blockingMode="hard"
+  blockingStrategy="provider"
+  cookieBannerProps={{ policyLinkUrl: '/privacidade' }}
+>
+  <App />
+</ConsentProvider>
+```
+
 ## 🔄 Versionamento de Consentimento (v0.5.x)
 
 - **Resumo da solicitação**: habilitar namespace + versão para a chave de armazenamento de consentimento e uma estratégia clara de migração, inclusive ao compartilhar banners entre subdomínios.

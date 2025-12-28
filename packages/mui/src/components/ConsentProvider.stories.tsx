@@ -47,6 +47,11 @@ const meta: Meta<typeof ConsentProvider> = {
       options: ['auto', 'provider', 'component'],
       description: 'Estratégia de bloqueio quando blocking está ativo',
     },
+    blockingMode: {
+      control: { type: 'select' },
+      options: ['soft', 'hard'],
+      description: 'Intensidade do bloqueio (soft = overlay, hard = conteúdo inerte)',
+    },
     hideBranding: {
       control: 'boolean',
       description: 'Se true, oculta branding da biblioteca',
@@ -58,6 +63,10 @@ const meta: Meta<typeof ConsentProvider> = {
     texts: {
       control: 'object',
       description: 'Textos customizados para a interface',
+    },
+    designTokens: {
+      control: 'object',
+      description: 'Tokens de design para personalização visual (cores, layout, tipografia)',
     },
   },
 }
@@ -162,6 +171,22 @@ export const WithBlocking: Story = {
       enabledCategories: ['analytics', 'marketing'],
     },
     blocking: true,
+    blockingStrategy: 'provider',
+  },
+  render: (args) => (
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
+      <ConsentDemo />
+    </ConsentProvider>
+  ),
+}
+
+export const HardBlocking: Story = {
+  args: {
+    categories: {
+      enabledCategories: ['analytics', 'marketing'],
+    },
+    blocking: true,
+    blockingMode: 'hard',
     blockingStrategy: 'provider',
   },
   render: (args) => (

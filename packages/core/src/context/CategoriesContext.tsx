@@ -67,6 +67,8 @@ export function CategoriesProvider({
   // Força reavaliação quando integrações anunciam categorias requeridas via evento global
   // impliedVersion é usado como trigger de recálculo
   const contextValue = React.useMemo(() => {
+    // Usado para forçar recálculo quando integrações anunciam novas categorias.
+    void impliedVersion
     const finalConfig: ProjectCategoriesConfig = config || DEFAULT_PROJECT_CATEGORIES
 
     const guidance = analyzeDeveloperConfiguration(config)

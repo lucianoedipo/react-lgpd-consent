@@ -780,6 +780,19 @@ type BackdropConfig =
  * @since 0.1.3
  * @remarks
  * **Histórico**: v0.4.1 - Expandido substancialmente com novos tokens
+ *
+ * ### Mapa de tokens (top-level)
+ * - `colors`: cores base, semânticas e por componente
+ * - `typography`: fonte, tamanhos, pesos e hierarquia
+ * - `spacing`: espaçamentos, padding/margin e radius
+ * - `layout`: posição, largura, backdrop e z-index
+ * - `effects`: sombras, transições e filtros
+ * - `accessibility`: contraste, motion e foco
+ * - `themes`: overrides para light/dark
+ *
+ * ### Overrides complementares (MUI)
+ * Mesmo com tokens, você pode ajustar detalhes via `sx` e `ThemeProvider`.
+ * Ex.: `cookieBannerProps.PaperProps.sx` e `preferencesModalProps.DialogProps.sx`.
  * @public
  *
  * @example Configuração básica
@@ -1288,6 +1301,17 @@ export interface ConsentProviderProps {
   blocking?: boolean
 
   /**
+   * Intensidade do bloqueio quando `blocking` estiver habilitado.
+   * - 'soft' (padrão): aplica apenas overlay visual (cliques bloqueados).
+   * - 'hard': aplica overlay + torna o conteúdo da aplicação inerte (sem foco/teclado).
+   *
+   * @remarks
+   * O modo `hard` utiliza o atributo `inert` para restringir navegação por teclado
+   * ao banner/modal, atendendo contextos regulatórios mais estritos.
+   */
+  blockingMode?: 'soft' | 'hard'
+
+  /**
    * Estratégia de bloqueio quando `blocking` estiver habilitado.
    * - 'auto' (padrão):
    *   - Se usar o banner padrão da lib, o bloqueio visual/funcional fica a cargo do próprio banner.
@@ -1445,6 +1469,20 @@ export interface ConsentProviderProps {
  * @since 0.3.1
  * @public
  * Fornece acesso ao estado de consentimento e ações necessárias para o banner.
+ *
+ * @example
+ * ```tsx
+ * function MyBanner({ acceptAll, rejectAll, openPreferences, texts }: CustomCookieBannerProps) {
+ *   return (
+ *     <div>
+ *       <p>{texts.bannerMessage}</p>
+ *       <button onClick={acceptAll}>{texts.acceptAll}</button>
+ *       <button onClick={rejectAll}>{texts.declineAll}</button>
+ *       <button onClick={openPreferences}>{texts.preferences}</button>
+ *     </div>
+ *   )
+ * }
+ * ```
  */
 export interface CustomCookieBannerProps {
   consented: boolean
@@ -1471,6 +1509,28 @@ export interface CustomCookieBannerProps {
  * Fornece acesso às preferências atuais do usuário, funções para atualizar e salvar preferências,
  * fechar o modal e textos customizados da interface.
  *
+ * @example
+ * ```tsx
+ * function MyPreferencesModal({
+ *   preferences,
+ *   setPreferences,
+ *   closePreferences,
+ *   isModalOpen,
+ *   texts,
+ * }: CustomPreferencesModalProps) {
+ *   if (!isModalOpen) return null
+ *   return (
+ *     <div role="dialog" aria-label={texts.accessibility?.modalLabel}>
+ *       <h2>{texts.modalTitle}</h2>
+ *       <button onClick={() => setPreferences({ ...preferences, analytics: true })}>
+ *         {texts.acceptAll}
+ *       </button>
+ *       <button onClick={closePreferences}>{texts.close ?? 'Fechar'}</button>
+ *     </div>
+ *   )
+ * }
+ * ```
+ *
  * @property preferences Preferências atuais de consentimento do usuário.
  * @property setPreferences Função para atualizar e salvar as preferências.
  * @property closePreferences Função para fechar o modal de preferências.
@@ -1491,6 +1551,14 @@ export interface CustomPreferencesModalProps {
  * @since 0.3.1
  * @public
  * Fornece acesso às ações de abertura do modal e ao estado de consentimento.
+ *
+ * @example
+ * ```tsx
+ * function MyFloatingButton({ openPreferences, consented }: CustomFloatingPreferencesButtonProps) {
+ *   if (!consented) return null
+ *   return <button onClick={openPreferences}>Gerenciar cookies</button>
+ * }
+ * ```
  */
 export interface CustomFloatingPreferencesButtonProps {
   openPreferences: () => void

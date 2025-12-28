@@ -54,11 +54,11 @@ export default function App() {
 }
 
 function YourApp() {
-  const { preferences, acceptCategory } = useConsent()
+  const { preferences, setPreference } = useConsent()
 
   return (
     <div>
-      <button onClick={() => acceptCategory('marketing')}>Aceitar Marketing</button>
+      <button onClick={() => setPreference('marketing', true)}>Aceitar Marketing</button>
     </div>
   )
 }
@@ -67,17 +67,15 @@ function YourApp() {
 Para carregar scripts condicionados ao consentimento:
 
 ```tsx
-import { ConsentScriptLoader } from 'react-lgpd-consent'
+import { ConsentScriptLoader, COMMON_INTEGRATIONS } from 'react-lgpd-consent'
 
 function Analytics() {
   return (
     <ConsentScriptLoader
-      category="analytics"
-      src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
-      strategy="afterInteractive"
-    >
-      {`globalThis.window && (globalThis.window.dataLayer = globalThis.window.dataLayer ?? []); function gtag(){ if (typeof globalThis.window?.dataLayer?.push === 'function') { globalThis.window.dataLayer.push(arguments) } } gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');`}
-    </ConsentScriptLoader>
+      integrations={[
+        COMMON_INTEGRATIONS.googleAnalytics({ measurementId: 'GA_MEASUREMENT_ID' }),
+      ]}
+    />
   )
 }
 ```
@@ -102,9 +100,9 @@ function Analytics() {
 ### Presets ANPD (#70)
 
 ```tsx
-import { createAnpdCategories } from 'react-lgpd-consent'
+import { createAnpdCategoriesConfig } from 'react-lgpd-consent'
 
-const categories = createAnpdCategories({
+const categories = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing']
 })
 ```

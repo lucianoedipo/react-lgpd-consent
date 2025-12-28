@@ -104,6 +104,44 @@ function App() {
 }
 ```
 
+### Quickstart completo (copiar e colar)
+
+Inclui Provider + categorias + banner/modal MUI (automáticos) + loader de scripts + GTM/GA4:
+
+```tsx
+import {
+  ConsentProvider,
+  ConsentScriptLoader,
+  COMMON_INTEGRATIONS
+} from 'react-lgpd-consent'
+
+const GA4_ID = import.meta.env.VITE_GA4_ID
+const GTM_ID = import.meta.env.VITE_GTM_ID
+
+export function App() {
+  return (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics', 'marketing'] }}
+      blocking
+      blockingMode="hard"
+      blockingStrategy="provider"
+      cookieBannerProps={{ policyLinkUrl: '/privacidade' }}
+    >
+      <ConsentScriptLoader
+        integrations={[
+          COMMON_INTEGRATIONS.googleAnalytics({ measurementId: GA4_ID }),
+          COMMON_INTEGRATIONS.googleTagManager({ containerId: GTM_ID })
+        ]}
+      />
+
+      <YourApp />
+    </ConsentProvider>
+  )
+}
+```
+
+Veja variações para Next.js/Vite e Consent Mode v2 em **[QUICKSTART.md](./QUICKSTART.md)** e detalhes de integrações em **[INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md)**.
+
 ---
 
 ## 🧪 Testes (Jest/Vitest) e ESM/CJS
@@ -144,6 +182,45 @@ Mais detalhes e variações em **[RECIPES.md](./RECIPES.md)**.
 
 ---
 
+## 🎨 Design Tokens e customização via sx/theme
+
+Os componentes MUI aceitam **design tokens** para ajustes globais e também suportam override fino por `sx` e tema MUI.
+
+**Principais grupos de tokens**:
+
+- `colors`, `typography`, `spacing`, `layout`, `effects`, `accessibility`, `themes`
+
+Exemplo rápido com tokens:
+
+```tsx
+import type { DesignTokens } from 'react-lgpd-consent'
+
+const designTokens: DesignTokens = {
+  colors: { primary: { main: '#0f766e' } },
+  layout: { backdrop: 'rgba(15, 118, 110, 0.4)', position: 'center' },
+  typography: { fontFamily: '"Inter", system-ui, sans-serif' }
+}
+
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  designTokens={designTokens}
+/>
+```
+
+Override por `sx` e tema:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  cookieBannerProps={{ PaperProps: { sx: { borderRadius: 3 } } }}
+  preferencesModalProps={{ DialogProps: { sx: { '& .MuiDialog-paper': { borderRadius: 4 } } } }}
+/>
+```
+
+Detalhes completos na **TypeDoc** e exemplos no **Storybook**.
+
+---
+
 ## 🆕 Novidades v0.7.0
 
 ### Callbacks de Lifecycle
@@ -171,9 +248,9 @@ Monitore eventos de consentimento para auditoria e compliance:
 Configurações pré-validadas conforme diretrizes da ANPD:
 
 ```tsx
-import { createAnpdCategories } from 'react-lgpd-consent'
+import { createAnpdCategoriesConfig } from 'react-lgpd-consent'
 
-const categories = createAnpdCategories({
+const categories = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing', 'functional']
 })
 
