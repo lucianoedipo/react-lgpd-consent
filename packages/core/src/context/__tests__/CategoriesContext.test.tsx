@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import * as cookieDiscovery from '../../utils/cookieDiscovery'
 import { CategoriesProvider, useCategories, useCategoryStatus } from '../CategoriesContext'
 
@@ -62,9 +62,11 @@ describe('CategoriesContext', () => {
     expect(txt).toContain('needsToggle')
   })
 
-  test('listens for lgpd:requiredCategories event and cleans up', () => {
-    const addEventListenerSpy = jest.spyOn(window, 'addEventListener')
-    const removeEventListenerSpy = jest.spyOn(window, 'removeEventListener')
+  test('listens for lgpd:requiredCategories event and cleans up', async () => {
+    const currentWindow = globalThis.window ?? window
+    globalThis.window = currentWindow
+    const addEventListenerSpy = jest.spyOn(currentWindow, 'addEventListener')
+    const removeEventListenerSpy = jest.spyOn(currentWindow, 'removeEventListener')
 
     const { unmount } = render(
       <CategoriesProvider>
@@ -72,23 +74,29 @@ describe('CategoriesContext', () => {
       </CategoriesProvider>,
     )
 
-    expect(addEventListenerSpy).toHaveBeenCalledWith(
-      'lgpd:requiredCategories',
-      expect.any(Function),
+    await waitFor(() =>
+      expect(addEventListenerSpy).toHaveBeenCalledWith(
+        'lgpd:requiredCategories',
+        expect.any(Function),
+      ),
     )
 
     unmount()
 
-    expect(removeEventListenerSpy).toHaveBeenCalledWith(
-      'lgpd:requiredCategories',
-      expect.any(Function),
+    await waitFor(() =>
+      expect(removeEventListenerSpy).toHaveBeenCalledWith(
+        'lgpd:requiredCategories',
+        expect.any(Function),
+      ),
     )
   })
 
   test('não quebra quando addEventListener não está disponível (fallback SSR)', () => {
-    const originalAdd = globalThis.window.addEventListener
+    const currentWindow = globalThis.window ?? window
+    globalThis.window = currentWindow
+    const originalAdd = currentWindow.addEventListener
     // @ts-ignore - simular ambiente sem addEventListener
-    delete globalThis.window.addEventListener
+    delete currentWindow.addEventListener
 
     expect(() =>
       render(
@@ -98,7 +106,7 @@ describe('CategoriesContext', () => {
       ),
     ).not.toThrow()
 
-    globalThis.window.addEventListener = originalAdd
+    currentWindow.addEventListener = originalAdd
   })
 
   test('logs cookie discovery in development', () => {

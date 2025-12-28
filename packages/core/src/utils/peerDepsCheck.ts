@@ -452,17 +452,25 @@ function detectMultipleReactInstances(): boolean {
       return true
     }
 
+    type ReactGlobal = {
+      React?: unknown
+      __REACT_DEVTOOLS_GLOBAL_HOOK__?: {
+        renderers?: {
+          size?: number
+        }
+      }
+    }
+
     // Técnica 2: Verificar se React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED está duplicado
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const ReactModule = (currentWindow as any).React
+    const ReactModule = (currentWindow as unknown as ReactGlobal).React
     if (ReactModule && Array.isArray(ReactModule)) {
       return true // Múltiplas instâncias carregadas como array
     }
 
     // Técnica 3: Verificar se há múltiplas versões no contexto global
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const hasMultipleVersions =
-      (currentWindow as any).__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers?.size > 1
+      ((currentWindow as unknown as ReactGlobal).__REACT_DEVTOOLS_GLOBAL_HOOK__?.renderers
+        ?.size ?? 0) > 1
 
     return hasMultipleVersions || false
   } catch {

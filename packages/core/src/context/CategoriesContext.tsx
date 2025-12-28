@@ -62,7 +62,7 @@ export function CategoriesProvider({
   disableDeveloperGuidance?: boolean
   disableDiscoveryLog?: boolean
 }>) {
-  // Removido impliedVersion pois não era utilizado
+  const [impliedVersion, setImpliedVersion] = React.useState(0)
 
   // Força reavaliação quando integrações anunciam categorias requeridas via evento global
   // impliedVersion é usado como trigger de recálculo
@@ -79,7 +79,19 @@ export function CategoriesProvider({
       toggleableCategories,
       allCategories: guidance.activeCategoriesInfo,
     }
-  }, [config])
+  }, [config, impliedVersion])
+
+  React.useEffect(() => {
+    const currentWindow = globalThis.window
+    if (!currentWindow || typeof currentWindow.addEventListener !== 'function') return
+    const handler = () => {
+      setImpliedVersion((current) => current + 1)
+    }
+    currentWindow.addEventListener('lgpd:requiredCategories', handler)
+    return () => {
+      currentWindow.removeEventListener('lgpd:requiredCategories', handler)
+    }
+  }, [])
 
   React.useEffect(() => {
     logDeveloperGuidance(contextValue.guidance, disableDeveloperGuidance)
