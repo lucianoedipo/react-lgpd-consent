@@ -120,7 +120,6 @@ describe('cookieUtils', () => {
         throw new Error('fail')
       }
     }
-
     ;(Cookies.get as jest.Mock).mockReturnValue(
       JSON.stringify({ consented: true, preferences: { necessary: true } }),
     )

@@ -19,13 +19,7 @@ describe('developerGuidance utilities', () => {
 
   test('analyzeDeveloperConfiguration adiciona aviso quando ha muitas categorias opcionais', () => {
     const guidance = analyzeDeveloperConfiguration({
-      enabledCategories: [
-        'analytics',
-        'marketing',
-        'functional',
-        'social',
-        'personalization',
-      ],
+      enabledCategories: ['analytics', 'marketing', 'functional', 'social', 'personalization'],
       customCategories: [
         {
           id: 'support',

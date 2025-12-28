@@ -1,6 +1,11 @@
 /** @jest-environment node */
 import Cookies from 'js-cookie'
-import { createInitialConsentState, readConsentCookie, removeConsentCookie, writeConsentCookie } from '../cookieUtils'
+import {
+  createInitialConsentState,
+  readConsentCookie,
+  removeConsentCookie,
+  writeConsentCookie,
+} from '../cookieUtils'
 
 jest.mock('js-cookie')
 
