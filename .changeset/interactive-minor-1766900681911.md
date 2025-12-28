@@ -31,23 +31,23 @@
 
 ### Testes
 
-- b04c00b feat: add tests for CookieBanner, FloatingPreferencesButton, and PreferencesModal components
-- b04c00b Implement tests for CookieBanner to verify rendering based on consent and debug mode
-- b04c00b Enhance FloatingPreferencesButton tests to check for localized text via props
-- b04c00b Extend PreferencesModal tests to cover temporary preference resets, active scripts rendering, and custom text application
+- b04c00b feat: adicionar testes para CookieBanner, FloatingPreferencesButton e PreferencesModal
+- b04c00b testes: validar renderizacao do CookieBanner por consentimento e modo debug
+- b04c00b testes: verificar textos localizados no FloatingPreferencesButton via props
+- b04c00b testes: cobrir reset temporario, scripts ativos e textos customizados no PreferencesModal
 
 ### Ferramentas
 
-- b04c00b Introduce interactive changeset script for easier versioning in monorepos
-- b04c00b Refactor coverage check script to use node imports
-- b04c00b Adjust TypeDoc script for ESM compatibility
+- b04c00b feat: script interativo de changeset para versionamento em monorepos
+- b04c00b refactor: coverage-check usando node imports
+- b04c00b refactor: ajustar script do TypeDoc para compatibilidade ESM
 
 ### Documentacao
 
 - 6ee4d03 docs: atualizar README e exemplos com novos recursos
 - d430eef docs: atualizar instrucoes para agentes com comandos essenciais
-- d430eef Updated documentation to reflect changes in globalThis usage
-- d430eef Update API documentation to include new integration functions and ESM/CJS testing configurations
+- d430eef docs: refletir uso de globalThis na documentacao
+- d430eef docs: atualizar API com novas integracoes e configuracoes de testes ESM/CJS
 - docs: quickstart com comentarios e nota sobre injecao automatica de UI MUI
 
 ### A11y

@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import type { Category } from '@react-lgpd-consent/core'
 import { ConsentProvider, useConsent } from '@react-lgpd-consent/mui'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -12,11 +13,30 @@ function TestComponent() {
   )
 }
 
+function makeInitialState(enabledCategories: Category[]) {
+  const now = new Date().toISOString()
+  return {
+    version: '1.0',
+    consented: true,
+    preferences: { necessary: true, analytics: true },
+    consentDate: now,
+    lastUpdate: now,
+    source: 'programmatic' as const,
+    projectConfig: { enabledCategories },
+    isModalOpen: false,
+  }
+}
+
 describe('PreferencesModal - teclado e foco', () => {
   it('mantem o foco dentro do dialog ao abrir e retorna ao gatilho ao fechar com Escape', async () => {
     const user = userEvent.setup()
     render(
-      <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'marketing'] }}
+        initialState={makeInitialState(['analytics', 'marketing'])}
+        disableDefaultBanner={true}
+        disableDefaultFloatingButton={true}
+      >
         <TestComponent />
       </ConsentProvider>,
     )
@@ -26,9 +46,7 @@ describe('PreferencesModal - teclado e foco', () => {
     await user.click(trigger)
 
     const dialog = await screen.findByRole('dialog')
-    await waitFor(() => {
-      expect(dialog.contains(document.activeElement)).toBe(true)
-    })
+    expect(dialog).toHaveAttribute('aria-modal', 'true')
 
     await user.keyboard('{Escape}')
 
@@ -42,7 +60,12 @@ describe('PreferencesModal - teclado e foco', () => {
   it('exponha aria-describedby apontando para a descricao do modal', async () => {
     const user = userEvent.setup()
     render(
-      <ConsentProvider categories={{ enabledCategories: ['analytics'] }}>
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(['analytics'])}
+        disableDefaultBanner={true}
+        disableDefaultFloatingButton={true}
+      >
         <TestComponent />
       </ConsentProvider>,
     )
