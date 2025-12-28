@@ -76,7 +76,7 @@ function Analytics() {
       src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
       strategy="afterInteractive"
     >
-      {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');`}
+      {`globalThis.window && (globalThis.window.dataLayer = globalThis.window.dataLayer || []); function gtag(){ if (typeof globalThis.window?.dataLayer?.push === 'function') { globalThis.window.dataLayer.push(arguments) } } gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');`}
     </ConsentScriptLoader>
   )
 }
@@ -174,4 +174,3 @@ MIT © Luciano Edipo — see the `LICENSE` file.
 ---
 
 If you want the Portuguese README, see `README.md` in the same package.
-

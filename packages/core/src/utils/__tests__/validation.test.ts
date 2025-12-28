@@ -190,4 +190,25 @@ describe('validateConsentProviderProps', () => {
     expect(result.warnings.some((w) => w.includes('IDs de categoria duplicados'))).toBe(true)
     expect(result.warnings.some((w) => w.includes('necessary'))).toBe(true)
   })
+
+  test('segue com validacoes leves quando zod nao pode ser carregado', () => {
+    jest.isolateModules(() => {
+      jest.doMock('zod', () => {
+        throw new Error('zod indisponivel')
+      })
+
+      const { validateConsentProviderProps } = require('../validation')
+      const result = validateConsentProviderProps({
+        categories: {
+          enabledCategories: ['analytics'],
+        },
+      })
+
+      expect(result.sanitized.categories?.enabledCategories).toEqual(['analytics'])
+      expect(result.errors).toEqual([])
+    })
+
+    jest.dontMock('zod')
+    jest.resetModules()
+  })
 })

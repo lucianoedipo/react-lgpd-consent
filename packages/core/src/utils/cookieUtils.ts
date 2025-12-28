@@ -56,8 +56,7 @@ export const DEFAULT_COOKIE_OPTS: ConsentCookieOptions = {
   maxAge: DEFAULT_MAX_AGE_SECONDS,
   maxAgeDays: 365,
   sameSite: 'Lax',
-  secure:
-    globalThis.window === undefined ? false : globalThis.window.location.protocol === 'https:',
+  secure: false,
   path: '/',
   domain: undefined,
 }
@@ -72,10 +71,11 @@ type ResolvedCookieOptions = {
 }
 
 function resolveCookieOptions(opts?: Partial<ConsentCookieOptions>): ResolvedCookieOptions {
-  const protocols = [
-    typeof globalThis.window !== 'undefined' ? globalThis.window?.location?.protocol : undefined,
-    typeof globalThis.location !== 'undefined' ? globalThis.location?.protocol : undefined,
-  ].filter(Boolean) as string[]
+  const currentWindow = globalThis.window
+  const currentLocation = globalThis.location
+  const protocols = [currentWindow?.location?.protocol, currentLocation?.protocol].filter(
+    Boolean,
+  ) as string[]
   const forceHttps =
     (globalThis as unknown as { __LGPD_FORCE_HTTPS__?: boolean }).__LGPD_FORCE_HTTPS__ === true
   const isHttps = forceHttps || protocols.includes('https:')
@@ -127,7 +127,7 @@ const COOKIE_SCHEMA_VERSION = '1.0'
 export function readConsentCookie(name: string = DEFAULT_COOKIE_OPTS.name): ConsentState | null {
   logger.debug('Reading consent cookie', { name })
 
-  if (typeof document === 'undefined') {
+  if (globalThis.document === undefined) {
     logger.debug('Cookie read skipped: server-side environment')
     return null
   }
@@ -223,8 +223,8 @@ export function writeConsentCookie(
   source: 'banner' | 'modal' | 'programmatic' = 'banner',
 ) {
   if (
-    typeof document === 'undefined' ||
-    typeof window === 'undefined' ||
+    globalThis.document === undefined ||
+    globalThis.window === undefined ||
     (globalThis as unknown as { __LGPD_SSR__?: boolean }).__LGPD_SSR__ === true
   ) {
     logger.debug('Cookie write skipped: server-side environment')
@@ -338,7 +338,7 @@ export function createInitialConsentState(): ConsentState {
  * - Usa as opções padrão do cookie se não forem especificadas.
  */
 export function removeConsentCookie(opts?: Partial<ConsentCookieOptions>) {
-  if (typeof document === 'undefined') {
+  if (globalThis.document === undefined) {
     logger.debug('Cookie removal skipped: server-side environment')
     return
   }

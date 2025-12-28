@@ -26,6 +26,26 @@ describe('categoryPresets (ANPD)', () => {
     ])
   })
 
+  it('usa o preset padrão quando include é vazio', () => {
+    const cfg = createAnpdCategoriesConfig({ include: [] })
+
+    expect(cfg.enabledCategories).toEqual(['analytics', 'functional', 'marketing'])
+    expect(cfg.customCategories).toBeUndefined()
+  })
+
+  it('usa fallback do preset quando necessary não possui override', () => {
+    const cfg = createAnpdCategoriesConfig({ include: ['necessary'] })
+
+    expect(cfg.enabledCategories).toEqual([])
+    expect(cfg.customCategories).toEqual([
+      expect.objectContaining({
+        id: 'necessary',
+        name: ANPD_CATEGORY_PRESETS.necessary.name,
+        description: ANPD_CATEGORY_PRESETS.necessary.description,
+      }),
+    ])
+  })
+
   it('expoe presets tipados para reutilização', () => {
     expect(ANPD_CATEGORY_PRESETS.analytics.id).toBe('analytics')
     expect(ANPD_CATEGORY_PRESETS.marketing.essential).toBe(false)

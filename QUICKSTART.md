@@ -259,7 +259,13 @@ function BootstrapConsentMode() {
   React.useEffect(() => {
     const w = window as any
     w.dataLayer = w.dataLayer ?? []
-    w.gtag = w.gtag ?? ((...args: any[]) => w.dataLayer.push(args))
+    w.gtag =
+      w.gtag ??
+      ((...args: any[]) => {
+        if (typeof w.dataLayer?.push === 'function') {
+          w.dataLayer.push(args)
+        }
+      })
     w.gtag('consent', 'default', {
       ad_storage: 'denied',
       ad_user_data: 'denied',
@@ -403,7 +409,9 @@ function MyComponent() {
 | Prop              | Tipo                                             | Obrigatória | Padrão         | Descrição                               |
 | ----------------- | ------------------------------------------------ | ----------- | -------------- | --------------------------------------- |
 | `categories`                         | `ProjectCategoriesConfig`                                   | ✅ **Sim**  | -                   | Define as categorias de cookies do projeto     |
-| `texts`                              | `Partial<ConsentTexts>`                                     | ❌ Não      | Textos padrão PT-BR | Customiza textos da interface                  |
+| `texts`                              | `Partial<AdvancedConsentTexts>`                             | ❌ Não      | Textos padrão PT-BR | Customiza textos da interface                  |
+| `language`                           | `'pt' \| 'en' \| 'es' \| 'fr' \| 'de' \| 'it'`               | ❌ Não      | `'pt'`              | Resolve textos via i18n do Provider            |
+| `textVariant`                        | `'formal' \| 'casual' \| 'concise' \| 'detailed'`           | ❌ Não      | -                   | Aplica variação de tom nos textos              |
 | `theme`                              | `any`                                                       | ❌ Não      | Tema padrão         | Tema Material-UI para os componentes           |
 | `designTokens`                       | `DesignTokens`                                              | ❌ Não      | Tokens padrão       | Tokens de design para customização avançada    |
 | `blocking`                           | `boolean`                                                   | ❌ Não      | `false`             | Exibe overlay bloqueando interação até decisão |
@@ -423,6 +431,22 @@ function MyComponent() {
 | `cookie`                             | `Partial<ConsentCookieOptions>`                             | ❌ Não      | Opções padrão       | Configurações do cookie (override fino de `name`, `domain`, `sameSite` etc.) |
 | `storage`                            | `ConsentStorageConfig`                                      | ❌ Não      | `{ namespace: 'lgpd-consent', version: '1' }` | Namespace, versão e domínio compartilhado da chave de consentimento |
 | `onConsentVersionChange`             | `(context: ConsentVersionChangeContext) => void`            | ❌ Não      | Reset automático    | Hook disparado após bump da chave; use para limpar caches adicionais |
+
+## 🌐 Internacionalização via Provider
+
+Use `language` para resolver `texts.i18n` em runtime sem rebuilds:
+
+```tsx
+import { ConsentProvider, EXPANDED_DEFAULT_TEXTS } from 'react-lgpd-consent'
+
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  texts={EXPANDED_DEFAULT_TEXTS}
+  language="en"
+>
+  <YourApp />
+</ConsentProvider>
+```
 
 ## 🔄 Versionamento de Consentimento (0.5.x)
 
@@ -488,7 +512,11 @@ function ComplianceWrapper({ children }: { children: React.ReactNode }) {
       }}
       onConsentVersionChange={({ previousKey, nextKey, resetConsent }) => {
         console.info('[consent] versão atualizada', { previousKey, nextKey })
-        window.dataLayer?.push({ event: 'consent_version_bumped', previousKey, nextKey })
+        globalThis.window?.dataLayer?.push({
+          event: 'consent_version_bumped',
+          previousKey,
+          nextKey,
+        })
         localStorage.removeItem('marketing-optins')
         resetConsent()
       }}
@@ -950,24 +978,24 @@ function MeuComponente() {
 }
 ```
 
-### window.openPreferencesModal (JavaScript Puro)
+### globalThis.window.openPreferencesModal (JavaScript Puro)
 
 ```html
 <!-- Em templates HTML, emails ou widgets externos -->
-<button onclick="window.openPreferencesModal?.()">Configurar Cookies</button>
+<button onclick="globalThis.window?.openPreferencesModal?.()">Configurar Cookies</button>
 
 <script>
   // Ou em JavaScript puro
   function abrirConfiguracoesCookies() {
-    if (window.openPreferencesModal) {
-      window.openPreferencesModal()
+    if (globalThis.window?.openPreferencesModal) {
+      globalThis.window.openPreferencesModal()
     } else {
       console.warn('Sistema de consentimento não carregado')
     }
   }
 
   // Verificar se função está disponível
-  if (typeof window.openPreferencesModal === 'function') {
+  if (typeof globalThis.window?.openPreferencesModal === 'function') {
     console.log('✅ Sistema de consentimento disponível')
   }
 </script>

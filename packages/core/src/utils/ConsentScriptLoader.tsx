@@ -331,43 +331,43 @@ export function ConsentScriptLoader({
       // Atualizar hash processado
       processedIntegrationsRef.current.set(integration.id, structuralHash)
 
-        if (integration.bootstrap) {
-          cleanups.push(
-            registerScript({
-              id: `${integration.id}__bootstrap`,
-              category: 'necessary',
-              priority: (integration.priority ?? 0) + 1000,
-              execute: integration.bootstrap,
-            }),
-          )
-        }
-
+      if (integration.bootstrap) {
         cleanups.push(
           registerScript({
-            id: integration.id,
-            category: integration.category,
-            priority: integration.priority,
-            allowReload: reloadOnChange,
-            onConsentUpdate: integration.onConsentUpdate,
-            execute: async () => {
-              const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
-              const scriptNonce = integration.nonce ?? nonce
-              if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
-              await loadScript(
-                integration.id,
-                integration.src,
-                integration.category,
-                mergedAttrs,
-                scriptNonce,
-                { skipConsentCheck: true },
-              )
-              if (integration.init) {
-                integration.init()
-              }
-            },
+            id: `${integration.id}__bootstrap`,
+            category: 'necessary',
+            priority: (integration.priority ?? 0) + 1000,
+            execute: integration.bootstrap,
           }),
         )
-      })
+      }
+
+      cleanups.push(
+        registerScript({
+          id: integration.id,
+          category: integration.category,
+          priority: integration.priority,
+          allowReload: reloadOnChange,
+          onConsentUpdate: integration.onConsentUpdate,
+          execute: async () => {
+            const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
+            const scriptNonce = integration.nonce ?? nonce
+            if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
+            await loadScript(
+              integration.id,
+              integration.src,
+              integration.category,
+              mergedAttrs,
+              scriptNonce,
+              { skipConsentCheck: true },
+            )
+            if (integration.init) {
+              integration.init()
+            }
+          },
+        }),
+      )
+    })
 
     // Remover integrações que não estão mais presentes
     processedIntegrationsRef.current.forEach((_, id) => {

@@ -38,7 +38,7 @@ describe('Branding component', () => {
 
     const link = await screen.findByRole('link', { name: /LÉdipO.eti.br/i })
     // color is applied by sx prop into style attribute; check computed style
-    const computed = window.getComputedStyle(link)
+    const computed = globalThis.window.getComputedStyle(link)
     expect(computed.color).toBe('rgb(17, 34, 51)') // #112233
   })
 
@@ -50,7 +50,7 @@ describe('Branding component', () => {
     )
 
     const link = await screen.findByRole('link', { name: /LÉdipO.eti.br/i })
-    const computed = window.getComputedStyle(link)
+    const computed = globalThis.window.getComputedStyle(link)
     // default safe theme primary.main in tests is MUI default (#1976d2) -> rgb(25,118,210)
     expect(computed.color).toBe('rgb(25, 118, 210)')
   })

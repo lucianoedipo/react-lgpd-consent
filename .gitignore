@@ -19,8 +19,6 @@ test-app/
 coverage/
 .eslintcache
 
-# ---- Tooling / CI files ----
-GEMINI.md
 
 # ---- Environment / secrets (do not commit) ----
 .env

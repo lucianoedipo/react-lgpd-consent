@@ -176,7 +176,7 @@ describe('peerDepsCheck', () => {
   })
 
   describe('detectMultipleReactInstances coverage', () => {
-    it('deve detectar instâncias React no window.__REACT_DEVTOOLS_GLOBAL_HOOK__', () => {
+    it('deve detectar instâncias React no globalThis.window.__REACT_DEVTOOLS_GLOBAL_HOOK__', () => {
       // @ts-expect-error - Teste
       globalThis.window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
         renderers: new Map([
@@ -205,7 +205,7 @@ describe('peerDepsCheck', () => {
   })
 
   describe('getPackageVersion coverage', () => {
-    it('deve obter versão do React de window.React.version', () => {
+    it('deve obter versão do React de globalThis.window.React.version', () => {
       // @ts-expect-error - Teste
       globalThis.window.React = { version: '18.3.1' }
 

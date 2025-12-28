@@ -11,11 +11,11 @@
     "skipLibCheck": true,
     "strict": true,
     "resolveJsonModule": true,
-    "baseUrl": ".",
+
     "paths": {
-      "@react-lgpd-consent/core": ["packages/core/src/index.ts"],
-      "@react-lgpd-consent/mui": ["packages/mui/src/index.ts"],
-      "react-lgpd-consent": ["packages/react-lgpd-consent/src/index.ts"]
+      "@react-lgpd-consent/core": ["./packages/core/src/index.ts"],
+      "@react-lgpd-consent/mui": ["./packages/mui/src/index.ts"],
+      "react-lgpd-consent": ["./packages/react-lgpd-consent/src/index.ts"]
     }
   }
 }

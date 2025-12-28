@@ -127,6 +127,7 @@ export {
   createIntercomIntegration,
   createMixpanelIntegration,
   createSaaSIntegrations,
+  createSuggestedIntegration,
   createUserWayIntegration,
   createZendeskChatIntegration,
   INTEGRATION_TEMPLATES,
@@ -142,6 +143,7 @@ export {
   type MixpanelConfig,
   type SaaSConfig,
   type ScriptIntegration,
+  type SuggestedIntegrationConfig,
   type UserWayConfig,
   type ZendeskConfig,
 } from './utils/scriptIntegrations'

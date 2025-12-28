@@ -24,20 +24,19 @@ import { COOKIE_PATTERNS_BY_CATEGORY, setCookieCatalogOverrides } from './cookie
  * @since 0.4.1
  */
 export function discoverRuntimeCookies(): CookieDescriptor[] {
-  if (typeof document === 'undefined' || !document.cookie) return []
+  const currentDocument = globalThis.document
+  if (currentDocument === undefined || !currentDocument.cookie) return []
 
   const names = Array.from(
     new Set(
-      document.cookie
+      currentDocument.cookie
         .split(';')
         .map((s) => s.trim())
         .filter(Boolean)
         .map((s) => s.split('=')[0]),
     ),
   )
-
   const list: CookieDescriptor[] = names.map((name) => ({ name }))
-
   try {
     ;(
       globalThis as unknown as { __LGPD_DISCOVERED_COOKIES__?: CookieDescriptor[] }
@@ -55,10 +54,51 @@ export function discoverRuntimeCookies(): CookieDescriptor[] {
  * @category Utils
  * @since 0.4.1
  */
-export function detectConsentCookieName(): string | null {
-  if (typeof document === 'undefined' || !document.cookie) return null
+
+function tryDecode(val: string): string {
   try {
-    const pairs = document.cookie
+    return decodeURIComponent(val)
+  } catch {
+    return val
+  }
+}
+
+function isConsentJson(val: string): boolean {
+  if (!val.startsWith('{')) return false
+  try {
+    const obj = JSON.parse(val)
+    return obj && typeof obj === 'object' && 'preferences' in obj && 'version' in obj
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Tenta detectar o nome do cookie de consentimento LGPD presente no navegador.
+ *
+ * - Percorre todos os cookies disponíveis em `document.cookie`.
+ * - Decodifica o valor e verifica se corresponde à estrutura JSON esperada de consentimento.
+ * - Retorna o nome do cookie se encontrado, ou `null` se não houver nenhum compatível.
+ *
+ * @returns Nome do cookie de consentimento ou `null` se não encontrado
+ * @category Utils
+ * @since 0.4.1
+ * @example
+ * ```ts
+ * const consentCookie = detectConsentCookieName()
+ * if (consentCookie) {
+ *   console.log('Cookie de consentimento encontrado:', consentCookie)
+ * }
+ * ```
+ * @remarks SSR-safe: retorna `null` se executado fora do browser.
+ */
+
+export function detectConsentCookieName(): string | null {
+  const currentDocument = globalThis.document
+  if (currentDocument === undefined || !currentDocument.cookie) return null
+
+  try {
+    const pairs = currentDocument.cookie
       .split(';')
       .map((s) => s.trim())
       .filter(Boolean)
@@ -66,21 +106,9 @@ export function detectConsentCookieName(): string | null {
       const [name, ...rest] = p.split('=')
       const raw = rest.join('=')
       if (!raw) continue
-      let val = raw
-      try {
-        val = decodeURIComponent(raw)
-      } catch {
-        // ignore decode errors
-      }
-      if (val.startsWith('{')) {
-        try {
-          const obj = JSON.parse(val)
-          if (obj && typeof obj === 'object' && 'preferences' in obj && 'version' in obj) {
-            return name
-          }
-        } catch {
-          // not json
-        }
+      const val = tryDecode(raw)
+      if (isConsentJson(val)) {
+        return name
       }
     }
   } catch {

@@ -4,6 +4,27 @@ Esta pasta contém scripts auxiliares para build, CI/CD e monitoramento de quali
 
 ## 📋 Scripts Disponíveis
 
+### `changeset-interactive.ts`
+
+**Propósito**: Assistente interativo para criar changesets em monorepos.
+
+**Uso**:
+
+```bash
+pnpm exec tsx scripts/changeset-interactive.ts
+```
+
+**Opções**:
+
+- `--prefix @react-lgpd-consent/` (default) para filtrar pacotes do workspace.
+- `--include-private` para incluir pacotes privados na lista.
+- `SCOPE_PREFIX` pode ser usado via env para substituir o prefixo.
+
+**Observações**:
+
+- Sugere mensagens baseadas em commits convencionais.
+- Gera arquivo `.changeset/interactive-<tipo>-<timestamp>.md`.
+
 ### `coverage-check.cjs`
 
 **Propósito**: Verificar se a cobertura de testes atende aos thresholds configurados.

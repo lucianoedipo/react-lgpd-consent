@@ -8,6 +8,7 @@ Este documento descreve as medidas de conformidade da biblioteca **react-lgpd-co
 
 - [Lei Geral de Proteção de Dados (Lei Nº 13.709/2018)](https://www.planalto.gov.br/ccivil_03/_ato2015-2018/2018/lei/l13709.htm)
 - [Guia Orientativo de Cookies e Proteção de Dados Pessoais da ANPD](https://www.gov.br/anpd/pt-br/documentos-e-publicacoes/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf)
+- Baseline local: `baseline/guia-orientativo-cookies-e-protecao-de-dados-pessoais.pdf`
 
 ## 📜 Objetivo
 
@@ -26,6 +27,16 @@ A biblioteca implementa os seguintes princípios e requisitos da LGPD:
 ## 🧠 Sistema de Orientações para Desenvolvedores
 
 A biblioteca inclui um sistema que **orienta os desenvolvedores durante a implementação**, exibindo informações úteis no console para garantir que a configuração esteja correta.
+
+### Base ANPD (o que o guidance reforça)
+
+Com base no guia da ANPD, o guidance reforça pontos como:
+
+- Cookies não necessários devem iniciar desativados e depender de consentimento expresso.
+- Não utilizar consentimento tácito nem opções pré-selecionadas.
+- Oferecer aceitar/rejeitar/gerenciar com o mesmo destaque e possibilitar revogação simples e gratuita.
+- Informar finalidades específicas, período de retenção e compartilhamento com terceiros.
+- Disponibilizar mecanismo próprio de gerenciamento de cookies (navegador é complementar).
 
 ### Console de Desenvolvimento
 
@@ -86,6 +97,10 @@ Exemplo completo (site com analytics/marketing):
   <App />
 </ConsentProvider>
 ```
+
+### Score de conformidade (orientativo, não normativo)
+
+O **score de conformidade** exibido no guidance é **heurístico** e serve apenas para orientar a qualidade da configuração. Ele **não** substitui avaliação jurídica ou auditoria de compliance.
 
 ### Hooks de Validação
 

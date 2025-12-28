@@ -75,6 +75,65 @@ export interface ScriptIntegration {
   }>
 }
 
+/**
+ * Configuração para integrações customizadas com categoria sugerida automaticamente.
+ *
+ * @category Utils
+ * @since 0.7.2
+ */
+export interface SuggestedIntegrationConfig extends Omit<ScriptIntegration, 'category'> {
+  /** Categoria LGPD customizada (opcional). Se omitida, usa sugestão automática. */
+  category?: string
+}
+
+/**
+ * Cria integração customizada aplicando categoria sugerida automaticamente.
+ * Permite sobrescrever a categoria quando necessário.
+ *
+ * @category Utils
+ * @since 0.7.2
+ *
+ * @example
+ * ```typescript
+ * const custom = createSuggestedIntegration({
+ *   id: 'custom-chat',
+ *   src: 'https://example.com/chat.js'
+ * })
+ * // -> category sugerida: 'functional'
+ * ```
+ */
+export function createSuggestedIntegration(config: SuggestedIntegrationConfig): ScriptIntegration {
+  const suggested = suggestCategoryForScript(config.id)[0] ?? 'analytics'
+  const category = resolveCategory(suggested, config.category)
+  const { category: _ignored, ...rest } = config
+  return { ...rest, category }
+}
+
+const resolveCategory = (fallback: string, override?: string) => {
+  if (typeof override === 'string' && override.trim().length > 0) return override.trim()
+  return fallback
+}
+
+const isDevEnv = () => {
+  const env =
+    typeof globalThis !== 'undefined'
+      ? (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV
+      : undefined
+  return env !== 'production'
+}
+
+const resolveRequiredString = (value: string, field: string, integrationId: string) => {
+  if (typeof value !== 'string' || value.trim().length === 0) {
+    if (isDevEnv()) {
+      console.error(
+        `[LGPD-CONSENT] Config inválida: integração "${integrationId}" requer "${field}".`,
+      )
+    }
+    return null
+  }
+  return value.trim()
+}
+
 function buildConsentModeSignals(preferences: ConsentPreferences) {
   const analytics = preferences.analytics ? 'granted' : 'denied'
   const marketing = preferences.marketing ? 'granted' : 'denied'
@@ -88,8 +147,9 @@ function buildConsentModeSignals(preferences: ConsentPreferences) {
 }
 
 function pushToLayer(entry: unknown[], dataLayerName?: string) {
-  if (typeof globalThis.window === 'undefined') return
-  const registry = globalThis.window as unknown as Record<string, unknown>
+  const currentWindow = globalThis.window
+  if (currentWindow === undefined) return
+  const registry = currentWindow as unknown as Record<string, unknown>
   const name = dataLayerName ?? 'dataLayer'
   const layer = (registry[name] as unknown[]) ?? []
   registry[name] = layer
@@ -97,9 +157,10 @@ function pushToLayer(entry: unknown[], dataLayerName?: string) {
 }
 
 function ensureGtag(dataLayerName: string = 'dataLayer') {
-  if (typeof globalThis.window === 'undefined') return null
+  const currentWindow = globalThis.window
+  if (currentWindow === undefined) return null
   type Gtag = (...args: unknown[]) => void
-  const w = window as Window & { dataLayer?: unknown[]; gtag?: Gtag }
+  const w = currentWindow as Window & { dataLayer?: unknown[]; gtag?: Gtag }
   const registry = w as unknown as Record<string, unknown>
   const layer = (registry[dataLayerName] as unknown[]) ?? []
   registry[dataLayerName] = layer
@@ -155,6 +216,8 @@ export interface GoogleAnalyticsConfig {
   config?: Record<string, unknown>
   /** URL do script GA4. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -178,6 +241,8 @@ export interface GoogleTagManagerConfig {
   dataLayerName?: string
   /** URL do script GTM. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -198,6 +263,8 @@ export interface UserWayConfig {
   accountId: string
   /** URL do script UserWay. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -223,11 +290,45 @@ export interface UserWayConfig {
  * - SSR-safe: verifica disponibilidade do window
  */
 export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig): ScriptIntegration {
-  const src =
-    config.scriptUrl ?? `https://www.googletagmanager.com/gtag/js?id=${config.measurementId}`
+  const category = resolveCategory('analytics', config.category)
+  const measurementId = resolveRequiredString(
+    config.measurementId,
+    'measurementId',
+    'google-analytics',
+  )
+  if (!measurementId) {
+    return {
+      id: 'google-analytics',
+      category,
+      src: '',
+      cookies: ['_ga', '_ga_*', '_gid'],
+      cookiesInfo: [
+        {
+          name: '_ga',
+          purpose: 'Identificação única de visitantes para análise de tráfego',
+          duration: '2 anos',
+          provider: 'Google Analytics',
+        },
+        {
+          name: '_ga_*',
+          purpose: 'Rastreamento de sessões e eventos específicos do stream GA4',
+          duration: '2 anos',
+          provider: 'Google Analytics',
+        },
+        {
+          name: '_gid',
+          purpose: 'Distinção de visitantes únicos em período de 24h',
+          duration: '24 horas',
+          provider: 'Google Analytics',
+        },
+      ],
+      attrs: { async: 'true' },
+    }
+  }
+  const src = config.scriptUrl ?? `https://www.googletagmanager.com/gtag/js?id=${measurementId}`
   return {
     id: 'google-analytics',
-    category: 'analytics',
+    category,
     src,
     cookies: ['_ga', '_ga_*', '_gid'],
     cookiesInfo: [
@@ -260,7 +361,7 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
       const gtag = ensureGtag()
       if (!gtag) return
       gtag('js', new Date())
-      gtag('config', config.measurementId, config.config ?? {})
+      gtag('config', measurementId, config.config ?? {})
     },
     attrs: { async: 'true' },
   }
@@ -291,10 +392,20 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
 export function createGoogleTagManagerIntegration(
   config: GoogleTagManagerConfig,
 ): ScriptIntegration {
-  const src = config.scriptUrl ?? `https://www.googletagmanager.com/gtm.js?id=${config.containerId}`
+  const category = resolveCategory('analytics', config.category)
+  const containerId = resolveRequiredString(config.containerId, 'containerId', 'google-tag-manager')
+  if (!containerId) {
+    return {
+      id: 'google-tag-manager',
+      category,
+      src: '',
+      cookies: ['_gcl_au'],
+    }
+  }
+  const src = config.scriptUrl ?? `https://www.googletagmanager.com/gtm.js?id=${containerId}`
   return {
     id: 'google-tag-manager',
-    category: 'analytics',
+    category,
     src,
     cookies: ['_gcl_au'],
     bootstrap: () => {
@@ -304,9 +415,10 @@ export function createGoogleTagManagerIntegration(
       applyConsentModeUpdate(preferences, config.dataLayerName)
     },
     init: () => {
-      if (globalThis.window !== undefined) {
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
         const dataLayerName = config.dataLayerName || 'dataLayer'
-        const w = window as unknown as Record<string, unknown>
+        const w = currentWindow as unknown as Record<string, unknown>
         const layer = (w[dataLayerName] as unknown[]) ?? []
         w[dataLayerName] = layer
         layer.push({ 'gtm.start': Date.now(), event: 'gtm.js' })
@@ -337,20 +449,31 @@ export function createGoogleTagManagerIntegration(
  * - SSR-safe: verifica disponibilidade do window
  */
 export function createUserWayIntegration(config: UserWayConfig): ScriptIntegration {
+  const category = resolveCategory('functional', config.category)
+  const accountId = resolveRequiredString(config.accountId, 'accountId', 'userway')
+  if (!accountId) {
+    return {
+      id: 'userway',
+      category,
+      src: '',
+      cookies: ['_userway_*'],
+    }
+  }
   const src = config.scriptUrl ?? 'https://cdn.userway.org/widget.js'
   return {
     id: 'userway',
-    category: 'functional',
+    category,
     src,
     cookies: ['_userway_*'],
     init: () => {
-      if (globalThis.window !== undefined) {
-        const w = window as Window & { UserWayWidgetApp?: { accountId?: string } }
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
+        const w = currentWindow as Window & { UserWayWidgetApp?: { accountId?: string } }
         w.UserWayWidgetApp = w.UserWayWidgetApp || {}
-        w.UserWayWidgetApp.accountId = config.accountId
+        w.UserWayWidgetApp.accountId = accountId
       }
     },
-    attrs: { 'data-account': config.accountId },
+    attrs: { 'data-account': accountId },
   }
 }
 
@@ -396,6 +519,8 @@ export interface FacebookPixelConfig {
   advancedMatching?: Record<string, unknown>
   /** URL do script do Pixel. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -422,6 +547,8 @@ export interface HotjarConfig {
   debug?: boolean
   /** URL do script Hotjar. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -448,6 +575,8 @@ export interface MixpanelConfig {
   api_host?: string
   /** URL do script Mixpanel. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -471,6 +600,8 @@ export interface ClarityConfig {
   upload?: boolean
   /** URL do script Clarity. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -491,6 +622,8 @@ export interface IntercomConfig {
   app_id: string
   /** URL do script Intercom. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -511,6 +644,8 @@ export interface ZendeskConfig {
   key: string
   /** URL do script Zendesk. Se omitido usa o padrão oficial. */
   scriptUrl?: string
+  /** Categoria LGPD customizada (opcional). */
+  category?: string
 }
 
 /**
@@ -536,20 +671,31 @@ export interface ZendeskConfig {
  * - SSR-safe: verifica disponibilidade do window
  */
 export function createFacebookPixelIntegration(config: FacebookPixelConfig): ScriptIntegration {
+  const category = resolveCategory('marketing', config.category)
+  const pixelId = resolveRequiredString(config.pixelId, 'pixelId', 'facebook-pixel')
+  if (!pixelId) {
+    return {
+      id: 'facebook-pixel',
+      category,
+      src: '',
+      cookies: ['_fbp', 'fr'],
+    }
+  }
   const src = config.scriptUrl ?? 'https://connect.facebook.net/en_US/fbevents.js'
   return {
     id: 'facebook-pixel',
-    category: 'marketing',
+    category,
     src,
     cookies: ['_fbp', 'fr'],
     init: () => {
-      if (globalThis.window !== undefined) {
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
         type FbqFn = ((...args: unknown[]) => void) & {
           queue?: unknown[]
           loaded?: boolean
           callMethod?: (...args: unknown[]) => void
         }
-        const w = window as unknown as { fbq?: FbqFn }
+        const w = currentWindow as unknown as { fbq?: FbqFn }
         if (!w.fbq) {
           const fbq: FbqFn = (...args: unknown[]) => {
             if (w.fbq && typeof w.fbq.callMethod === 'function') {
@@ -562,7 +708,7 @@ export function createFacebookPixelIntegration(config: FacebookPixelConfig): Scr
           fbq.loaded = true
           w.fbq = fbq
         }
-        w.fbq('init', config.pixelId, config.advancedMatching ?? {})
+        w.fbq('init', pixelId, config.advancedMatching ?? {})
         if (config.autoTrack !== false) w.fbq('track', 'PageView')
       }
     },
@@ -592,11 +738,27 @@ export function createFacebookPixelIntegration(config: FacebookPixelConfig): Scr
  * - SSR-safe: verifica disponibilidade do window
  */
 export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration {
+  const category = resolveCategory('analytics', config.category)
+  const siteId = resolveRequiredString(config.siteId, 'siteId', 'hotjar')
   const v = config.version ?? 6
-  const src = config.scriptUrl ?? `https://static.hotjar.com/c/hotjar-${config.siteId}.js?sv=${v}`
+  if (!siteId) {
+    return {
+      id: 'hotjar',
+      category,
+      src: '',
+      cookies: [
+        '_hjSession_*',
+        '_hjSessionUser_*',
+        '_hjFirstSeen',
+        '_hjIncludedInSessionSample',
+        '_hjAbsoluteSessionInProgress',
+      ],
+    }
+  }
+  const src = config.scriptUrl ?? `https://static.hotjar.com/c/hotjar-${siteId}.js?sv=${v}`
   return {
     id: 'hotjar',
-    category: 'analytics',
+    category,
     src,
     cookies: [
       '_hjSession_*',
@@ -638,10 +800,14 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
       },
     ],
     init: () => {
-      if (globalThis.window !== undefined) {
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
         type HjFn = ((...args: unknown[]) => void) & { q?: unknown[] }
-        const w = window as unknown as { hj?: HjFn; _hjSettings?: { hjid: string; hjsv: number } }
-        w._hjSettings = { hjid: config.siteId, hjsv: v }
+        const w = currentWindow as unknown as {
+          hj?: HjFn
+          _hjSettings?: { hjid: string; hjsv: number }
+        }
+        w._hjSettings = { hjid: siteId, hjsv: v }
         if (!w.hj) {
           const hj: HjFn = (...args: unknown[]) => {
             hj.q = hj.q || []
@@ -650,7 +816,7 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
           w.hj = hj
         }
         if (config.debug && typeof console !== 'undefined' && typeof console.info === 'function') {
-          console.info('[Hotjar] initialized with siteId', config.siteId)
+          console.info('[Hotjar] initialized with siteId', siteId)
         }
       }
     },
@@ -681,10 +847,28 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
  * - Inclui tratamento de erro na inicialização
  */
 export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegration {
+  const category = resolveCategory('analytics', config.category)
+  const token = resolveRequiredString(config.token, 'token', 'mixpanel')
+  if (!token) {
+    return {
+      id: 'mixpanel',
+      category,
+      src: '',
+      cookies: ['mp_*'],
+      cookiesInfo: [
+        {
+          name: 'mp_*',
+          purpose: 'Rastreamento de eventos e propriedades do usuário para analytics',
+          duration: '1 ano',
+          provider: 'Mixpanel',
+        },
+      ],
+    }
+  }
   const src = config.scriptUrl ?? 'https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js'
   return {
     id: 'mixpanel',
-    category: 'analytics',
+    category,
     src,
     cookies: ['mp_*'],
     cookiesInfo: [
@@ -696,12 +880,13 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
       },
     ],
     init: () => {
-      if (globalThis.window !== undefined) {
-        const w = window as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
+        const w = currentWindow as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
         w.mixpanel = w.mixpanel || { init: () => undefined }
         if (w.mixpanel && typeof w.mixpanel.init === 'function') {
           try {
-            w.mixpanel.init(config.token, config.config ?? {}, config.api_host)
+            w.mixpanel.init(token, config.config ?? {}, config.api_host)
           } catch (error) {
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('[Mixpanel] Failed to initialize:', error)
@@ -737,15 +922,26 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
  * - Configuração de upload opcional
  */
 export function createClarityIntegration(config: ClarityConfig): ScriptIntegration {
-  const src = config.scriptUrl ?? `https://www.clarity.ms/tag/${config.projectId}`
+  const category = resolveCategory('analytics', config.category)
+  const projectId = resolveRequiredString(config.projectId, 'projectId', 'clarity')
+  if (!projectId) {
+    return {
+      id: 'clarity',
+      category,
+      src: '',
+      cookies: ['_clck', '_clsk', 'CLID', 'ANONCHK', 'MR', 'MUID', 'SM'],
+    }
+  }
+  const src = config.scriptUrl ?? `https://www.clarity.ms/tag/${projectId}`
   return {
     id: 'clarity',
-    category: 'analytics',
+    category,
     src,
     cookies: ['_clck', '_clsk', 'CLID', 'ANONCHK', 'MR', 'MUID', 'SM'],
     init: () => {
-      if (globalThis.window !== undefined && typeof config.upload !== 'undefined') {
-        const w = window as unknown as { clarity?: (...args: unknown[]) => void }
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined && typeof config.upload !== 'undefined') {
+        const w = currentWindow as unknown as { clarity?: (...args: unknown[]) => void }
         if (typeof w.clarity === 'function') {
           try {
             w.clarity('set', 'upload', config.upload)
@@ -783,18 +979,29 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
  * - Inclui tratamento de erro na inicialização
  */
 export function createIntercomIntegration(config: IntercomConfig): ScriptIntegration {
-  const src = config.scriptUrl ?? `https://widget.intercom.io/widget/${config.app_id}`
+  const category = resolveCategory('functional', config.category)
+  const appId = resolveRequiredString(config.app_id, 'app_id', 'intercom')
+  if (!appId) {
+    return {
+      id: 'intercom',
+      category,
+      src: '',
+      cookies: ['intercom-id-*', 'intercom-session-*'],
+    }
+  }
+  const src = config.scriptUrl ?? `https://widget.intercom.io/widget/${appId}`
   return {
     id: 'intercom',
-    category: 'functional',
+    category,
     src,
     cookies: ['intercom-id-*', 'intercom-session-*'],
     init: () => {
-      if (globalThis.window !== undefined) {
-        const w = window as unknown as { Intercom?: (...args: unknown[]) => void }
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
+        const w = currentWindow as unknown as { Intercom?: (...args: unknown[]) => void }
         if (typeof w.Intercom === 'function') {
           try {
-            w.Intercom('boot', { app_id: config.app_id })
+            w.Intercom('boot', { app_id: appId })
           } catch (error) {
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('[Intercom] Failed to boot:', error)
@@ -829,18 +1036,29 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
  * - Inclui tratamento de erro na identificação
  */
 export function createZendeskChatIntegration(config: ZendeskConfig): ScriptIntegration {
-  const src = config.scriptUrl ?? `https://static.zdassets.com/ekr/snippet.js?key=${config.key}`
+  const category = resolveCategory('functional', config.category)
+  const key = resolveRequiredString(config.key, 'key', 'zendesk-chat')
+  if (!key) {
+    return {
+      id: 'zendesk-chat',
+      category,
+      src: '',
+      cookies: ['__zlcmid', '_zendesk_shared_session'],
+    }
+  }
+  const src = config.scriptUrl ?? `https://static.zdassets.com/ekr/snippet.js?key=${key}`
   return {
     id: 'zendesk-chat',
-    category: 'functional',
+    category,
     src,
     cookies: ['__zlcmid', '_zendesk_shared_session'],
     init: () => {
-      if (globalThis.window !== undefined) {
-        const w = window as unknown as { zE?: (...args: unknown[]) => void }
+      const currentWindow = globalThis.window
+      if (currentWindow !== undefined) {
+        const w = currentWindow as unknown as { zE?: (...args: unknown[]) => void }
         if (typeof w.zE === 'function') {
           try {
-            w.zE('webWidget', 'identify', { key: config.key })
+            w.zE('webWidget', 'identify', { key })
           } catch (error) {
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('[Zendesk] Failed to identify:', error)

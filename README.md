@@ -5,7 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![React 19 Ready](https://img.shields.io/badge/React%2019-StrictMode%20Ready-61dafb.svg)](./docs/REACT19-STRICTMODE.md)
+[![React 19 Ready](https://img.shields.io/badge/React%2019-StrictMode%20Ready-61dafb.svg)](./REACT19-STRICTMODE.md)
 [![Coverage](https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/lucianoedipo/react-lgpd-consent)
 
 **Documentação**: https://lucianoedipo.github.io/react-lgpd-consent  
@@ -17,7 +17,7 @@
 
 Este é um **monorepo** que contém 3 pacotes publicados no npm:
 
-### [@react-lgpd-consent/core](packages/core)
+### [@react-lgpd-consent/core](packages/core/README.md)
 
 [![npm](https://img.shields.io/npm/v/@react-lgpd-consent/core.svg)](https://www.npmjs.com/package/@react-lgpd-consent/core)
 
@@ -38,7 +38,7 @@ npm install @react-lgpd-consent/core
 
 ---
 
-### [@react-lgpd-consent/mui](packages/mui)
+### [@react-lgpd-consent/mui](packages/mui/README.md)
 
 [![npm](https://img.shields.io/npm/v/@react-lgpd-consent/mui.svg)](https://www.npmjs.com/package/@react-lgpd-consent/mui)
 
@@ -59,7 +59,7 @@ npm install @react-lgpd-consent/mui @mui/material @emotion/react @emotion/styled
 
 ---
 
-### [react-lgpd-consent](packages/react-lgpd-consent) ⭐ **Recomendado**
+### [react-lgpd-consent](packages/react-lgpd-consent/README.md) ⭐ **Recomendado**
 
 [![npm](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)
 
@@ -103,6 +103,44 @@ function App() {
   )
 }
 ```
+
+---
+
+## 🧪 Testes (Jest/Vitest) e ESM/CJS
+
+Este projeto publica **dual build** (ESM + CJS). Se o seu runner Jest estiver em CJS,
+é necessário transformar os pacotes `react-lgpd-consent` e `@react-lgpd-consent/*`.
+
+### Exemplo mínimo (Jest + babel-jest)
+
+```js
+// jest.config.cjs
+module.exports = {
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
+  },
+  transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
+}
+```
+
+### Exemplo mínimo (Vitest)
+
+```ts
+// vitest.config.ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    deps: {
+      inline: ['react-lgpd-consent', '@react-lgpd-consent/core', '@react-lgpd-consent/mui'],
+    },
+  },
+})
+```
+
+Mais detalhes e variações em **[RECIPES.md](./RECIPES.md)**.
 
 ---
 
@@ -167,7 +205,7 @@ const audit = createConsentAuditEntry(
 - **[📖 Receitas](./RECIPES.md)**: Guia prático com casos de uso comuns (Next.js, CSP, Consent Mode v2)
 - **[🔧 Troubleshooting](./TROUBLESHOOTING.md)**: Soluções para problemas comuns
 - **[⚙️ Workflows CI/CD](./WORKFLOWS.md)**: Documentação dos workflows de release e deploy
-- **[React 19 StrictMode](./docs/REACT19-STRICTMODE.md)**: Compatibilidade e idempotência de efeitos
+- **[React 19 StrictMode](./REACT19-STRICTMODE.md)**: Compatibilidade e idempotência de efeitos
 - **[Versionamento e Release](./VERSIONING.md)**: Guia de Changesets e Turborepo
 - **[API Reference](./packages/react-lgpd-consent/API.md)**: Referência completa
 - **[Conformidade LGPD](./CONFORMIDADE.md)**: Compliance e auditoria

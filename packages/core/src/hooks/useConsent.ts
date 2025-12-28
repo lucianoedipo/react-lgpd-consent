@@ -15,7 +15,8 @@ import {
   useConsentStateInternal,
   useConsentTextsInternal,
 } from '../context/ConsentContext'
-import type { ConsentContextValue, ConsentTexts } from '../types/types'
+import type { ConsentContextValue } from '../types/types'
+import type { AdvancedConsentTexts } from '../types/advancedTexts'
 import { logger } from '../utils/logger'
 
 /**
@@ -148,7 +149,7 @@ import { logger } from '../utils/logger'
  *     return (
  *       <div>
  *         ❌ Este recurso requer cookies funcionais.
- *         <button onClick={() => window.openPreferencesModal?.()}>
+ *         <button onClick={() => globalThis.window?.openPreferencesModal?.()}>
  *           Alterar Preferências
  *         </button>
  *       </div>
@@ -299,13 +300,13 @@ export function useConsent(): ConsentContextValue {
  * }
  * ```
  *
- * @see {@link ConsentTexts} - Interface completa dos textos
+ * @see {@link AdvancedConsentTexts} - Interface completa dos textos
  * @see {@link ConsentProvider} - Para configurar textos personalizados
  *
  * @public
  * @since 0.1.0
  */
-export function useConsentTexts(): ConsentTexts {
+export function useConsentTexts(): AdvancedConsentTexts {
   return useConsentTextsInternal()
 }
 
@@ -400,7 +401,7 @@ export function useConsentTexts(): ConsentTexts {
  *     return (
  *       <div className="consent-partial">
  *         <p>Este recurso requer cookies funcionais.</p>
- *         <button onClick={() => window.openPreferencesModal?.()}>
+ *         <button onClick={() => globalThis.window?.openPreferencesModal?.()}>
  *           Alterar Preferências
  *         </button>
  *       </div>
@@ -737,7 +738,7 @@ export function useOpenPreferencesModal(): () => void {
  * @example
  * ```javascript
  * // Em código JavaScript puro
- * window.openPreferencesModal?.();
+ * globalThis.window?.openPreferencesModal?.();
  *
  * // Ou importando diretamente
  * import { openPreferencesModal } from 'react-lgpd-consent';

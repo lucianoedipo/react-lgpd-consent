@@ -12,10 +12,12 @@ import Typography from '@mui/material/Typography'
 import type { Category, ConsentPreferences } from '@react-lgpd-consent/core'
 import {
   getCookiesInfoForCategory,
+  resolveTexts,
   useCategories,
   useConsent,
   useConsentTexts,
   useDesignTokens,
+  type AdvancedConsentTexts,
 } from '@react-lgpd-consent/core'
 import * as React from 'react'
 import { Branding } from './Branding'
@@ -154,6 +156,22 @@ export interface PreferencesModalProps {
    * @defaultValue undefined (usa função do contexto)
    */
   closePreferences?: () => void
+
+  /**
+   * Textos customizados para o modal.
+   * Permite sobrescrever textos do contexto e aplicar i18n localmente.
+   */
+  texts?: Partial<AdvancedConsentTexts>
+
+  /**
+   * Idioma local para resolver `texts.i18n`.
+   */
+  language?: 'pt' | 'en' | 'es' | 'fr' | 'de' | 'it'
+
+  /**
+   * Variação de tom local para resolver `texts.variants`.
+   */
+  textVariant?: 'formal' | 'casual' | 'concise' | 'detailed'
 }
 
 /**
@@ -275,6 +293,9 @@ export function PreferencesModal({
   preferences: preferencesProp,
   setPreferences: setPreferencesProp,
   closePreferences: closePreferencesProp,
+  texts: textsProp,
+  language,
+  textVariant,
 }: Readonly<PreferencesModalProps>) {
   const hookValue = useConsent()
   const preferences = preferencesProp ?? hookValue.preferences
@@ -282,7 +303,15 @@ export function PreferencesModal({
   const closePreferences = closePreferencesProp ?? hookValue.closePreferences
   const isModalOpen = isModalOpenProp ?? hookValue.isModalOpen
 
-  const texts = useConsentTexts()
+  const baseTexts = useConsentTexts()
+  const mergedTexts = React.useMemo(
+    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    [baseTexts, textsProp],
+  )
+  const texts = React.useMemo(
+    () => resolveTexts(mergedTexts, { language, variant: textVariant }),
+    [mergedTexts, language, textVariant],
+  )
   const designTokens = useDesignTokens()
   const { toggleableCategories, allCategories } = useCategories() // Categorias que precisam de toggle + metadados
 
@@ -404,6 +433,10 @@ export function PreferencesModal({
             // Integrations used (global), SSR-safe
             const used: string[] = globalThis.__LGPD_USED_INTEGRATIONS__ || []
             const descriptors = getCookiesInfoForCategory(category.id as unknown as Category, used)
+            const tableHeaders = texts.cookieDetails?.tableHeaders
+            const toggleDetailsText = texts.cookieDetails?.toggleDetails?.expand ?? 'Ver detalhes'
+            const scriptLabelPrefix = texts.cookieDetails?.scriptLabelPrefix ?? '(script) '
+            const scriptPurpose = texts.cookieDetails?.scriptPurpose ?? 'Script de integração ativo'
 
             // Buscar cookiesInfo das integrações ativas
             const enrichedDescriptors = descriptors.map((desc) => {
@@ -439,8 +472,8 @@ export function PreferencesModal({
                 const scriptRows = Object.entries(gmap)
                   .filter(([, cat]) => cat === category.id)
                   .map(([id]) => ({
-                    name: `(script) ${id}`,
-                    purpose: 'Script de integração ativo',
+                    name: `${scriptLabelPrefix}${id}`,
+                    purpose: scriptPurpose,
                     duration: '-',
                     provider: '-',
                   }))
@@ -466,15 +499,21 @@ export function PreferencesModal({
                   label={`${category.name} - ${category.description}`}
                 />
                 <details style={{ marginLeft: 48 }}>
-                  <summary>Ver detalhes</summary>
+                  <summary>{toggleDetailsText}</summary>
                   <Box sx={{ mt: 1 }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                       <thead>
                         <tr>
-                          <th style={{ textAlign: 'left' }}>Cookie</th>
-                          <th style={{ textAlign: 'left' }}>Finalidade</th>
-                          <th style={{ textAlign: 'left' }}>Duração</th>
-                          <th style={{ textAlign: 'left' }}>Fornecedor</th>
+                          <th style={{ textAlign: 'left' }}>{tableHeaders?.name ?? 'Cookie'}</th>
+                          <th style={{ textAlign: 'left' }}>
+                            {tableHeaders?.purpose ?? 'Finalidade'}
+                          </th>
+                          <th style={{ textAlign: 'left' }}>
+                            {tableHeaders?.duration ?? 'Duração'}
+                          </th>
+                          <th style={{ textAlign: 'left' }}>
+                            {tableHeaders?.provider ?? 'Fornecedor'}
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -499,15 +538,23 @@ export function PreferencesModal({
 
           {/* Detalhes da categoria Necessária, incluindo cookie de consentimento */}
           <details style={{ marginLeft: 48 }}>
-            <summary>Ver detalhes</summary>
+            <summary>{texts.cookieDetails?.toggleDetails?.expand ?? 'Ver detalhes'}</summary>
             <Box sx={{ mt: 1 }}>
               <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                 <thead>
                   <tr>
-                    <th style={{ textAlign: 'left' }}>Cookie</th>
-                    <th style={{ textAlign: 'left' }}>Finalidade</th>
-                    <th style={{ textAlign: 'left' }}>Duração</th>
-                    <th style={{ textAlign: 'left' }}>Fornecedor</th>
+                    <th style={{ textAlign: 'left' }}>
+                      {texts.cookieDetails?.tableHeaders?.name ?? 'Cookie'}
+                    </th>
+                    <th style={{ textAlign: 'left' }}>
+                      {texts.cookieDetails?.tableHeaders?.purpose ?? 'Finalidade'}
+                    </th>
+                    <th style={{ textAlign: 'left' }}>
+                      {texts.cookieDetails?.tableHeaders?.duration ?? 'Duração'}
+                    </th>
+                    <th style={{ textAlign: 'left' }}>
+                      {texts.cookieDetails?.tableHeaders?.provider ?? 'Fornecedor'}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -542,7 +589,9 @@ export function PreferencesModal({
         </Button>
       </DialogActions>
       {/* Branding */}
-      {!hideBranding && <Branding variant="modal" />}
+      {!hideBranding && (
+        <Branding variant="modal" texts={textsProp} language={language} textVariant={textVariant} />
+      )}
     </Dialog>
   )
 }

@@ -17,9 +17,10 @@ import {
   type ConsentPreferences,
   type ConsentProviderProps,
   type ConsentState,
-  type ConsentTexts,
   type ProjectCategoriesConfig,
 } from '../types/types'
+import type { AdvancedConsentTexts } from '../types/advancedTexts'
+import { EXPANDED_DEFAULT_TEXTS, resolveTexts } from '../types/advancedTexts'
 import {
   createProjectPreferences,
   ensureNecessaryAlwaysOn,
@@ -90,7 +91,7 @@ function createFullConsentState(
 }
 
 // 🔹 Chaves EN, valores padrão pt-BR (UI do usuário final)
-const DEFAULT_TEXTS: ConsentTexts = {
+const BASE_TEXTS: AdvancedConsentTexts = {
   // Textos básicos
   bannerMessage: 'Utilizamos cookies para melhorar sua experiência.',
   acceptAll: 'Aceitar todos',
@@ -121,6 +122,11 @@ const DEFAULT_TEXTS: ConsentTexts = {
   retentionPeriod: undefined, // Exibido se definido
   lawfulBasis: undefined, // Exibido se definido
   transferCountries: undefined, // Exibido se definido
+}
+
+const DEFAULT_TEXTS: AdvancedConsentTexts = {
+  ...BASE_TEXTS,
+  ...EXPANDED_DEFAULT_TEXTS,
 }
 
 // 🔹 Actions em EN
@@ -213,7 +219,7 @@ function reducer(state: ConsentState, action: Action): ConsentState {
 
 const StateCtx = React.createContext<ConsentState | null>(null)
 const ActionsCtx = React.createContext<ConsentContextValue | null>(null)
-const TextsCtx = React.createContext<ConsentTexts>(DEFAULT_TEXTS)
+const TextsCtx = React.createContext<AdvancedConsentTexts>(DEFAULT_TEXTS)
 const HydrationCtx = React.createContext<boolean>(false)
 
 function buildProviderError(hookName: string) {
@@ -235,7 +241,7 @@ function buildProviderError(hookName: string) {
  *
  * @param {Readonly<ConsentProviderProps>} props - As propriedades para configurar o provider.
  * @param {ProjectCategoriesConfig} props.categories - **Obrigatório**. Define as categorias de cookies que seu projeto utiliza, em conformidade com o princípio de minimização da LGPD.
- * @param {Partial<ConsentTexts>} [props.texts] - Objeto para customizar todos os textos exibidos na UI.
+ * @param {Partial<AdvancedConsentTexts>} [props.texts] - Objeto para customizar todos os textos exibidos na UI.
  * @param {boolean} [props.blocking=false] - Se `true`, exibe um overlay que impede a interação com o site até uma decisão do usuário.
  * @param {(state: ConsentState) => void} [props.onConsentGiven] - Callback executado na primeira vez que o usuário dá o consentimento.
  * @param {(prefs: ConsentPreferences) => void} [props.onPreferencesSaved] - Callback executado sempre que o usuário salva novas preferências.
@@ -274,6 +280,8 @@ export function ConsentProvider({
   initialState,
   categories,
   texts: textsProp,
+  language,
+  textVariant,
   designTokens,
   PreferencesModalComponent,
   preferencesModalProps = {},
@@ -298,7 +306,11 @@ export function ConsentProvider({
   onConsentChange,
   onAuditLog,
 }: Readonly<ConsentProviderProps>) {
-  const texts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
+  const mergedTexts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
+  const texts = React.useMemo(
+    () => resolveTexts(mergedTexts, { language, variant: textVariant }),
+    [mergedTexts, language, textVariant],
+  )
   const cookie = React.useMemo(() => {
     const base = { ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }
     base.name =

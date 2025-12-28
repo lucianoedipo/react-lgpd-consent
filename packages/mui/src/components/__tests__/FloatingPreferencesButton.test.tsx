@@ -120,6 +120,24 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
     expect(button).toBeInTheDocument()
   })
 
+  it('usa textos locais quando fornecidos via props do botão flutuante', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(true)}
+        floatingPreferencesButtonProps={{
+          texts: { preferencesButton: 'Manage Cookies' },
+        }}
+      >
+        <div>App</div>
+        <TestConsumer />
+      </ConsentProvider>,
+    )
+
+    const button = await screen.findByLabelText('Manage Cookies')
+    expect(button).toBeInTheDocument()
+  })
+
   it('applies position and offset via floatingPreferencesButtonProps', async () => {
     render(
       <ConsentProvider
@@ -137,7 +155,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
     expect(button).toBeInTheDocument()
     const target =
       button.tagName === 'BUTTON' ? button : (button.closest('button') as Element) || button
-    const computed = window.getComputedStyle(target as Element)
+    const computed = globalThis.window.getComputedStyle(target as Element)
     // should be positioned fixed and have top/left set for 'top-left' position
     expect(computed.position).toBe('fixed')
     expect(computed.top).toEqual(expect.stringContaining('10'))
@@ -176,7 +194,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       baseButton.tagName === 'BUTTON'
         ? baseButton
         : (baseButton.closest('button') as Element) || baseButton
-    let computed = window.getComputedStyle(baseEl as Element)
+    let computed = globalThis.window.getComputedStyle(baseEl as Element)
     expect(computed.bottom).toMatch(/32/)
     expect(computed.left).toMatch(/32/)
 
@@ -196,7 +214,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       updatedButton.tagName === 'BUTTON'
         ? updatedButton
         : (updatedButton.closest('button') as Element) || updatedButton
-    computed = window.getComputedStyle(updatedEl as Element)
+    computed = globalThis.window.getComputedStyle(updatedEl as Element)
     expect(computed.top).toMatch(/32/)
     expect(computed.right).toMatch(/32/)
 
@@ -216,7 +234,7 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
       fallbackButton.tagName === 'BUTTON'
         ? fallbackButton
         : (fallbackButton.closest('button') as Element) || fallbackButton
-    computed = window.getComputedStyle(fallbackEl as Element)
+    computed = globalThis.window.getComputedStyle(fallbackEl as Element)
     expect(computed.bottom).toMatch(/32/)
     expect(computed.right).toMatch(/32/)
   })

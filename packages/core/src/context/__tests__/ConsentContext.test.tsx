@@ -602,7 +602,7 @@ describe('ConsentProvider Additional Tests', () => {
       // Mockar Cookies.get para retornar undefined (sem cookie salvo)
       ;(Cookies.get as jest.Mock).mockReturnValue(undefined)
 
-      // Mock do window.dataLayer
+      // Mock do globalThis.window.dataLayer
       const mockDataLayer: Array<Record<string, unknown>> = []
       // @ts-ignore - test mock
       globalThis.window.dataLayer = mockDataLayer

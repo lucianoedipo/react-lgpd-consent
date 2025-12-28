@@ -6,6 +6,12 @@ A biblioteca oferece integrações nativas para as ferramentas mais comuns, elim
 
 O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automaticamente, disparando-os apenas quando o usuário concede consentimento para a categoria correspondente.
 
+### ✅ Regras de Configuração (RN)
+
+- **Categoria padrão com override**: cada integração define uma categoria padrão, mas o consumidor pode sobrescrever via `category` no config.
+- **Config obrigatória**: se um campo obrigatório estiver vazio (ex.: `measurementId`, `containerId`, `pixelId`), a integração **não executa**. Em **dev** é logado erro; em **prod** não há log.
+- **DataLayer**: se `globalThis.window.dataLayer` não existir, a biblioteca cria `[]`; se existir e tiver `push`, usa como está; se existir sem `push`, não sobrescreve e avisa em dev.
+
 ### ✨ Novidades v0.7.1
 
 - **🎯 Google Consent Mode v2 Automático**: GA4 e GTM agora implementam Consent Mode v2 automaticamente:
@@ -173,6 +179,7 @@ const integrations = [createUserWayIntegration({ accountId: 'USERWAY_ACCOUNT_ID'
 Para simplificar a configuração de múltiplas integrações, a biblioteca oferece templates e funções de ajuda.
 
 - `suggestCategoryForScript(name: string)`: Sugere a categoria LGPD apropriada para um nome de script conhecido.
+- `createSuggestedIntegration(config)`: Cria integração customizada com categoria sugerida automaticamente (pode sobrescrever com `category`).
 - `createECommerceIntegrations`, `createSaaSIntegrations`, `createCorporateIntegrations`: Templates de negócio que agrupam as integrações mais comuns para cada setor.
 - `INTEGRATION_TEMPLATES`: Constante com presets de IDs e categorias para cada template.
 
@@ -199,6 +206,19 @@ function App() {
     </ConsentProvider>
   )
 }
+```
+
+### Exemplo de integração sugerida (custom)
+
+```tsx
+import { createSuggestedIntegration } from 'react-lgpd-consent'
+
+const integrations = [
+  createSuggestedIntegration({
+    id: 'custom-chat',
+    src: 'https://example.com/chat.js',
+  }),
+]
 ```
 
 ---
@@ -252,6 +272,12 @@ interface ScriptIntegration {
 ## 📊 Eventos DataLayer (Google Tag Manager)
 
 A partir da versão **0.4.5**, a biblioteca dispara automaticamente eventos padronizados no `dataLayer` para facilitar rastreamento, auditoria LGPD e integrações com o Google Tag Manager.
+
+### Comportamento do `dataLayer`
+
+- Se `globalThis.window.dataLayer` não existir, a biblioteca cria `[]`.
+- Se existir e tiver `push`, o array/objeto é usado como está.
+- Se existir sem `push`, a biblioteca não sobrescreve e avisa em dev.
 
 ### Eventos Disponíveis
 
@@ -458,7 +484,7 @@ import { googleAnalytics4Integration } from './integrations'
     console.log('Mudança:', { current, previous })
 
     // Exemplo: disparar evento no dataLayer
-    window.dataLayer?.push({
+    globalThis.window?.dataLayer?.push({
       event: 'consent_preferences_updated',
       consent_analytics: current.preferences.analytics,
       consent_marketing: current.preferences.marketing,

@@ -1,126 +1,143 @@
-# Repository Guidelines
+# Guia para Agentes de IA (react-lgpd-consent)
 
-Interações em pt-BR, Date Format em BR: DD/MM/YYYY, Time Format em BR: HH:mm:ss 24h
+Este guia fornece o contexto essencial para que um agente de IA seja imediatamente produtivo neste repositório.
 
-## Full Contexts use
+**Preferências Globais:**
+- **Idioma:** Interações em `pt-BR`.
+- **Formatos:** Data `DD/MM/YYYY`, Hora `HH:mm:ss` (24h).
 
-- GEMINI.md
-- .github\copilot-instructions.md
+**Arquivos de Contexto Primários:**
+- `GEMINI.md`
+- `AGENTS.md`
+- `.github/copilot-instructions.md`
 
-## Project Overview
+---
 
-- **Package**: `react-lgpd-consent` - React/TypeScript library for LGPD consent management
-- **License**: MIT by @lucianoedipo
-- **Language Policy**: UI in pt-BR; public API/names in English; JSDoc in pt-BR is OK
-- **NextJS-friendly**: SSR-safe, client-only effects
-- **Peer Dependencies**: React 18/19, MUI 5–7
+## 1. Visão Geral do Projeto
 
-## Project Structure & Modules
+`react-lgpd-consent` é uma biblioteca modular em React/TypeScript para gerenciamento de consentimento de cookies (LGPD/GDPR).
 
-- **Source**: `src/` organized by feature and concern:
-  - `components/` - UI components (CookieBanner, PreferencesModal, FloatingPreferencesButton) using MUI `sx` and design tokens
-  - `context/` - ConsentContext and CategoriesContext for state management
-  - `hooks/` - useConsent and other React hooks (primary consumer API)
-  - `utils/` - scriptIntegrations, ConsentScriptLoader, logger, cookieUtils, scriptLoader
-  - `types/` - TypeScript type definitions
-  - `@types/` - Additional type declarations
-- **Tests**: co-located in `src/**` as `*.test.ts(x)` or `*.spec.ts(x)`; some behavior tests use `*.behavior.test.tsx`
-- **Stories**: `src/components/*.stories.tsx` (Storybook)
-- **Build output**: `dist/` (ESM/CJS + types)
-- **Docs**: `docs/` (generated via TypeDoc)
-- **Examples**: `example/` (App.tsx, CompleteExample.tsx)
+- **Arquitetura:** Monorepo gerenciado com `pnpm` e `Turborepo`.
+- **Modularidade:**
+  - `@react-lgpd-consent/core`: Lógica headless (hooks, context).
+  - `@react-lgpd-consent/mui`: Componentes de UI com Material-UI.
+  - `react-lgpd-consent`: Pacote agregador principal.
+- **Tecnologias:** React 18/19, TypeScript, Material-UI, Jest, Storybook.
 
-## Architecture Key Points
+---
 
-- **Entry Point**: `src/index.ts` exports ConsentProvider, hooks (useConsent), components and utilities
-- **State Management**: ConsentContext.tsx and CategoriesContext.tsx maintain consent state
-- **Script Loading**: scriptIntegrations.ts and ConsentScriptLoader.tsx load scripts based on consent
-- **Design System**: Components use design tokens defensively (designTokens.layout.backdrop, colors.primary)
-- **LGPD Focus**: `categories` is mandatory in ConsentProvider - includes validations and console messages
-- **Tree-shaking Ready**: `package.json` configures `sideEffects: false`
+## 2. Arquitetura do Monorepo
 
-## Build, Test, and Dev Commands
+- `packages/core`: Lógica de negócio, hooks, contextos e utilitários. Sem dependências de UI.
+- `packages/mui`: Componentes de UI (`CookieBanner`, `PreferencesModal`) que dependem do pacote `core`.
+- `packages/react-lgpd-consent`: Pacote agregador que re-exporta tudo para fácil consumo.
+- `example/` & `examples/`: Exemplos de uso e projetos completos (Next.js, Vite).
+- `.storybook/`: Configuração do Storybook para desenvolvimento interativo de UI.
 
-- `npm run build` – Build library with tsup (ESM/CJS + d.ts)
-- `npm run dev` – Watch build for local development
-- `npm test` – Run Jest (jsdom) test suite
-- `npm run lint` / `npm run format` – ESLint and Prettier
-- `npm run type-check` – TypeScript compile checks only (`tsc --noEmit`)
-- `npm run storybook` – Run Storybook at `http://localhost:6006`
-- `npm run docs:generate` – Generate API docs into `docs/` (TypeDoc)
-- `npm run mutation` – Run Stryker mutation tests (optional, slower)
+---
 
-### Essential Pre-PR Pipeline
+## 3. Comandos Essenciais
 
-```powershell
-npm run type-check
-npm run test
-npm run lint
-npm run build
-npm run docs:generate
+Todos os comandos devem ser executados a partir da raiz do projeto.
+
+- **Instalar Dependências:**
+  ```bash
+  pnpm install
+  ```
+- **Build (todos os pacotes):**
+  ```bash
+  pnpm build
+  ```
+- **Testes (todos os pacotes):**
+  ```bash
+  pnpm test
+  ```
+- **Lint (todos os pacotes):**
+  ```bash
+  pnpm lint
+  ```
+- **Type-Check (todos os pacotes):**
+  ```bash
+  pnpm type-check
+  ```
+- **Formatação:**
+  ```bash
+  pnpm format
+  ```
+- **Storybook (desenvolvimento de UI):**
+  ```bash
+  pnpm storybook
+  ```
+- **Gerar Documentação (TypeDoc):**
+  ```bash
+  pnpm docs:generate
+  ```
+
+### Pipeline Completo (Pré-PR)
+
+```bash
+pnpm type-check && pnpm test && pnpm lint && pnpm build && pnpm docs:generate
 ```
 
-## Coding Style & Naming
+### Comandos Específicos de Pacote
 
-- Language: TypeScript (ESM). Node >= 20 (see `.nvmrc`)
-- Formatting: Prettier (no semicolons, single quotes, width 100)
-- Linting: ESLint flat config; key rules: no `any` (tests/stories allowed),
-  require described `// @ts-ignore`, React Hooks rules enforced
-- Indentation: 2 spaces; filenames in `camelCase` or `PascalCase` for components
-- Exports: prefer named exports from index modules
+Use `pnpm --filter <nome-do-pacote>` para executar um script em um único pacote.
+```bash
+# Testar apenas o pacote core
+pnpm --filter @react-lgpd-consent/core test
 
-### Documentation Standards (TSDoc/TypeDoc)
+# Fazer build apenas do pacote mui
+pnpm --filter @react-lgpd-consent/mui build
+```
 
-- **API Categories**: `Components`, `Hooks`, `Context`, `Utils`, `Types`
-- **Required Tags**: `@category`, `@example` for public APIs, `@param`, `@returns`
-- **Component Tags**: `@component`, `@since` (SemVer), `@see` for external links
-- **Design Notes**: `@remarks` for SSR/performance/design decisions (pt-BR)
-- **Error Handling**: `@throws` for predictable errors
-- Update `src/index.ts` when adding/removing public exports; `package.json` points `types: dist/index.d.ts`
+---
 
-## Testing Guidelines
+## 4. Padrões e Convenções
 
-- Framework: Jest + Testing Library (`jest.config.mjs`, `jest.setup.ts`)
-- Location: tests near code; name as `*.test.ts(x)`; use `*.behavior.test.tsx` for UI flows
-- Avoid implementation details; assert behavior and accessibility roles/labels
-- Run `npm test` locally; consider `npm run mutation` for critical logic
+- **API Pública:** Ao adicionar/remover exports, atualize o `index.ts` do respectivo pacote (`packages/*/src/index.ts`).
+- **Estilo de Código:** Siga as regras do ESLint e Prettier (sem ponto e vírgula, aspas simples, largura 100).
+- **Commits:** Use [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, etc.).
+- **Design Tokens:** Componentes em `packages/mui` devem usar `designTokens` do contexto para consistência.
+- **LGPD (Core Logic):** A prop `categories` é obrigatória no `ConsentProvider`. Validações e logs estão em `packages/core`.
+- **Logging:** Use o utilitário de logger em `packages/core/src/utils/logger.ts`.
+- **Integrações:** Fábricas de scripts estão em `packages/core/src/utils/scriptIntegrations.ts` e são carregadas via `ConsentScriptLoader`.
+- **Qualidade de Código:**
+  - **Tree-shaking:** Módulos são `sideEffects: false`. Não introduza efeitos colaterais no nível superior dos arquivos.
+  - **SSR-Safe:** Efeitos devem ser executados apenas no cliente. Verifique a existência de `window`.
+  - **React 19:** Efeitos devem ser idempotentes e ter cleanup adequado para o `StrictMode`.
 
-### LGPD-Specific Testing
+---
 
-- Test consent state management and category validation
-- Mock script integrations (Google Analytics, GTM, UserWay)
-- Verify SSR-safe behavior (client-only effects)
-- Test design token overrides and MUI `sx` integration
+## 5. Testes
 
-## Commit & Pull Requests
+- **Framework:** Jest + React Testing Library. Configurações em `jest.config.mjs` e `jest.setup.ts`.
+- **Localização:** Testes são co-localizados com os arquivos de origem (`*.test.tsx`) dentro de cada pacote.
+- **Foco:** Testar comportamento do usuário e acessibilidade, evitando detalhes de implementação.
+- **Testes Específicos de LGPD:**
+  - Gerenciamento de estado de consentimento.
+  - Validação de categorias de cookies.
+  - Mock de integrações de scripts (GA, GTM).
+  - Comportamento SSR-safe.
+  - Overrides de `designTokens`.
 
-- Use Conventional Commits: `feat:`, `fix:`, `docs:`, `test:`, `chore:`, `refactor:`, `ci:`
-- PRs must include: clear description, linked issues, rationale, before/after notes;
-  add/adjust tests and stories for UI changes; update docs where applicable
-- Keep changes focused; do not reformat unrelated files
+---
 
-## LGPD & Design System Guidelines
+## 6. Documentação (TSDoc)
 
-- **Design Tokens**: Components use design tokens defensively; prefer tokens in `sx` for consistency
-- **Script Loading**: Create factories in `src/utils/scriptIntegrations.ts` and load via `ConsentScriptLoader`
-- **State Management**: `categories` is mandatory in ConsentProvider; includes validations and console messages
-- **Logging**: Use `src/utils/logger.ts` for `componentRender` and `apiUsage` events
-- **Tree-shaking**: Do not introduce side effects at module top level; `package.json` configures `sideEffects: false`
+- **Tags de Categoria:** Use `@category` para agrupar (ex: `Components`, `Hooks`, `Utils`).
+- **Tags Essenciais:** `@example`, `@param`, `@returns` para APIs públicas.
+- **Componentes:** Use `@component`, `@since` (SemVer), e `@see` para links relacionados.
+- **Decisões de Design:** Use `@remarks` para explicar decisões de arquitetura, performance ou SSR.
+- **Erros:** Use `@throws` para documentar erros previsíveis.
 
-## Security & Config Tips
+---
 
-- Respect peer deps: React 18/19, MUI 5–7. Do not commit `dist/`
-- Never include secrets in tests or stories; prefer environment-safe mocks
+## 7. Arquivos de Referência
 
-## Agent-Specific Notes
+- **Estado e Hooks:** `packages/core/src/context/ConsentContext.tsx`, `packages/core/src/hooks/useConsent.ts`
+- **Componentes:** `packages/mui/src/components/CookieBanner.tsx`, `PreferencesModal.tsx`
+- **Integrações:** `packages/core/src/utils/scriptIntegrations.ts`, `ConsentScriptLoader.tsx`
+- **Tipos:** `packages/core/src/types/types.ts`
+- **Exemplos:** `example/` e `examples/`
 
-- Follow these rules for any edits within `src/**` and tests. Avoid touching generated folders (`dist/`, `docs/`, `storybook-static/`).
-
-### Key Architecture Files
-
-- **State & Hooks**: `src/context/ConsentContext.tsx`, `src/hooks/useConsent.ts`
-- **Components**: `src/components/CookieBanner.tsx`, `PreferencesModal.tsx`, `FloatingPreferencesButton.tsx`
-- **Integrations**: `src/utils/scriptIntegrations.ts`, `src/utils/ConsentScriptLoader.tsx`
-- **Utils**: `src/utils/logger.ts`, `src/utils/cookieUtils.ts`, `src/utils/scriptLoader.ts`
-- **Types**: `src/types/types.ts`
-- **Examples**: `example/App.tsx`, `example/CompleteExample.tsx`
+Se algo estiver ambíguo, peça para um mantenedor adicionar um exemplo ou documentação.

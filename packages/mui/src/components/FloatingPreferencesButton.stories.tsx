@@ -101,6 +101,27 @@ export const Default: Story = {
   ),
 }
 
+export const English: Story = {
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      language="en"
+      floatingPreferencesButtonProps={args}
+      PreferencesModalComponent={PreferencesModal}
+    >
+      <Box sx={{ minHeight: '100vh', p: 3, position: 'relative', bgcolor: '#f1f5f9' }}>
+        <Typography variant="h4" gutterBottom color="primary">
+          🌍 English
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>
+          Botão flutuante com tooltip resolvido via i18n do Provider.
+        </Typography>
+        <FloatingPreferencesButton {...args} />
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
 export const CustomPosition: Story = {
   render: (args) => (
     <ConsentProvider
