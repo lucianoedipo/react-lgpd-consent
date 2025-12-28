@@ -20,6 +20,11 @@ describe('categoryUtils', () => {
     expect(prefs).toEqual({ necessary: true, analytics: false, marketing: false })
   })
 
+  test('createProjectPreferences ignores necessary when provided in enabledCategories', () => {
+    const prefs = createProjectPreferences({ enabledCategories: ['necessary', 'analytics'] })
+    expect(prefs).toEqual({ necessary: true, analytics: false })
+  })
+
   test('createProjectPreferences can set defaultValue true', () => {
     const prefs = createProjectPreferences({ enabledCategories: ['analytics'] }, true)
     expect(prefs).toEqual({ necessary: true, analytics: true })
@@ -31,11 +36,25 @@ describe('categoryUtils', () => {
     expect(valid).toEqual({ necessary: true, analytics: true })
   })
 
+  test('validateProjectPreferences skips enabled categories sem valor salvo', () => {
+    const saved = { necessary: true }
+    const valid = validateProjectPreferences(saved as any, { enabledCategories: ['analytics'] })
+    expect(valid).toEqual({ necessary: true })
+  })
+
   test('getAllProjectCategories returns necessary plus enabled ones', () => {
     const list = getAllProjectCategories({ enabledCategories: ['analytics'] })
     const ids = list.map((c) => c.id)
     expect(ids).toContain('necessary')
     expect(ids).toContain('analytics')
+  })
+
+  test('getAllProjectCategories ignora necessary em enabledCategories', () => {
+    const list = getAllProjectCategories({ enabledCategories: ['necessary', 'marketing'] as any })
+    const ids = list.map((c) => c.id)
+    expect(ids).toContain('necessary')
+    expect(ids).toContain('marketing')
+    expect(ids.filter((id) => id === 'necessary')).toHaveLength(1)
   })
 
   test('createProjectPreferences includes customCategories with default false', () => {
@@ -63,6 +82,18 @@ describe('categoryUtils', () => {
     expect(valid).toEqual({ necessary: true, analytics: true, chat: true })
   })
 
+  test('validateProjectPreferences ignora customCategories sem id valido ou sem valor salvo', () => {
+    const saved = { necessary: true }
+    const valid = validateProjectPreferences(saved as any, {
+      customCategories: [
+        { id: '', name: 'Empty', description: 'Ignorar' },
+        { id: 'necessary', name: 'Necessary', description: 'Ignorar' },
+        { id: 'chat', name: 'Chat', description: 'Suporte' },
+      ],
+    })
+    expect(valid).toEqual({ necessary: true })
+  })
+
   test('getAllProjectCategories merges customCategories with names/descriptions', () => {
     const list = getAllProjectCategories({
       enabledCategories: ['functional'],
@@ -78,10 +109,29 @@ describe('categoryUtils', () => {
     expect(map.abTesting.description).toBe('Experimentos de UI')
   })
 
+  test('getAllProjectCategories ignora customCategories sem id ou com id necessary', () => {
+    const list = getAllProjectCategories({
+      customCategories: [
+        { id: '', name: 'Empty', description: 'Ignore' },
+        { id: 'necessary', name: 'Necessary', description: 'Ignore' },
+      ],
+    })
+    const ids = list.map((c) => c.id)
+    expect(ids).toEqual(['necessary'])
+  })
+
   test('validateCategoriesConfig reports invalid default categories', () => {
     // for test purposes cast to any to allow an invalid category string
     const errors = validateCategoriesConfig({ enabledCategories: ['invalid', 'analytics'] } as any)
     expect(errors).toContain('Categoria padrão inválida: invalid')
+  })
+
+  test('validateCategoriesConfig retorna vazio quando config não é informado', () => {
+    expect(validateCategoriesConfig()).toEqual([])
+  })
+
+  test('validateCategoriesConfig retorna vazio quando enabledCategories não é definido', () => {
+    expect(validateCategoriesConfig({ customCategories: [] })).toEqual([])
   })
 
   // Edge cases para customCategories

@@ -4,15 +4,36 @@ import React from 'react'
 import type { Category, ProjectCategoriesConfig } from '../types/types'
 import { COOKIE_PATTERNS_BY_CATEGORY, getCookiesInfoForCategory } from './cookieRegistry'
 
+/**
+ * Nível de severidade para mensagens de orientação ao desenvolvedor.
+ * @category Types
+ * @since 0.4.0
+ */
 export type GuidanceSeverity = 'info' | 'warning' | 'error'
 
+/**
+ * Representa uma mensagem de orientação para o desenvolvedor.
+ * @category Types
+ * @since 0.4.0
+ * @example
+ * { severity: 'warning', message: 'Configuração ausente', category: 'configuration', actionable: true }
+ */
 export interface GuidanceMessage {
+  /** Nível de severidade da mensagem */
   severity: GuidanceSeverity
+  /** Texto da mensagem */
   message: string
+  /** Categoria relacionada à mensagem */
   category?: string
+  /** Indica se há ação recomendada */
   actionable?: boolean
 }
 
+/**
+ * Configuração para controle de exibição de mensagens de orientação.
+ * @category Types
+ * @since 0.4.0
+ */
 export interface GuidanceConfig {
   /** Controla se avisos devem ser exibidos */
   showWarnings?: boolean
@@ -30,10 +51,19 @@ export interface GuidanceConfig {
   messageProcessor?: (messages: GuidanceMessage[]) => void
 }
 
+/**
+ * Resultado da análise de configuração LGPD para orientação do desenvolvedor.
+ * @category Types
+ * @since 0.4.0
+ */
 export interface DeveloperGuidance {
+  /** Lista de avisos críticos */
   warnings: string[]
+  /** Lista de sugestões */
   suggestions: string[]
+  /** Mensagens detalhadas de orientação */
   messages: GuidanceMessage[]
+  /** Informações das categorias ativas */
   activeCategoriesInfo: {
     id: string
     name: string
@@ -42,16 +72,27 @@ export interface DeveloperGuidance {
     uiRequired: boolean
     cookies?: string[]
   }[]
+  /** Indica se está usando configuração padrão */
   usingDefaults: boolean
+  /** Score de conformidade LGPD (0-100) */
   complianceScore?: number
 }
 
+/**
+ * Configuração padrão de categorias do projeto.
+ * @category Consts
+ * @since 0.4.0
+ */
 export const DEFAULT_PROJECT_CATEGORIES: ProjectCategoriesConfig = {
   enabledCategories: ['analytics'],
 }
 
 /**
- * Calcula score de conformidade LGPD baseado na configuração (0-100)
+ * Calcula score de conformidade LGPD baseado na configuração (0-100).
+ * @category Utils
+ * @param guidance Resultado da análise de configuração
+ * @returns Score de conformidade LGPD (0-100)
+ * @since 0.4.0
  */
 function calculateComplianceScore(guidance: DeveloperGuidance): number {
   let score = 0
@@ -78,10 +119,15 @@ function calculateComplianceScore(guidance: DeveloperGuidance): number {
 }
 
 /**
- * Analisa configuração e integrações implícitas para orientar o dev.
- *
+ * Analisa configuração e integrações implícitas para orientar o desenvolvedor.
+ * @category Utils
+ * @param config Configuração de categorias do projeto
+ * @returns Objeto de orientação ao desenvolvedor
+ * @remarks
  * Since v0.4.0: inclui customCategories.
  * Since v0.4.1: considera categorias/integrações implícitas e enriquece cookies por categoria.
+ * @example
+ * const guidance = analyzeDeveloperConfiguration({ enabledCategories: ['analytics', 'marketing'] })
  */
 export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig): DeveloperGuidance {
   const guidance: DeveloperGuidance = {
@@ -172,7 +218,7 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
     const gt = globalThis as { __LGPD_REQUIRED_CATEGORIES__?: string[] }
     const implied = (gt.__LGPD_REQUIRED_CATEGORIES__ || []).filter(Boolean)
     implied.forEach((id) => {
-      if (!guidance.activeCategoriesInfo.find((c) => c.id === id)) {
+      if (!guidance.activeCategoriesInfo.some((c) => c.id === id)) {
         const info = NAMES[id]
         if (info) {
           guidance.activeCategoriesInfo.push({
@@ -232,20 +278,40 @@ export function analyzeDeveloperConfiguration(config?: ProjectCategoriesConfig):
   return guidance
 }
 
-// Sistema de cache para evitar logs repetitivos
+/**
+ * Cache para evitar logs repetitivos de orientação.
+ * @internal
+ */
 const GUIDANCE_CACHE = new Set<string>()
+/**
+ * Flags de sessão para logging único.
+ * @internal
+ */
 const SESSION_LOGGED = {
   intro: false,
   bestPractices: false,
 }
 
-// Funções auxiliares para logging
+/**
+ * Retorna cor para score de conformidade LGPD.
+ * @category Utils
+ * @param score Score de conformidade
+ * @returns Cor hex para uso em logs
+ * @internal
+ */
 function getComplianceScoreColor(score: number): string {
   if (score >= 80) return '#4caf50'
   if (score >= 60) return '#ff9800'
   return '#f44336'
 }
 
+/**
+ * Loga score de conformidade LGPD no console.
+ * @category Utils
+ * @param prefix Prefixo visual
+ * @param score Score de conformidade
+ * @internal
+ */
 function logComplianceScore(prefix: string, score: number): void {
   const color = getComplianceScoreColor(score)
   console.log(
@@ -254,6 +320,16 @@ function logComplianceScore(prefix: string, score: number): void {
   )
 }
 
+/**
+ * Loga mensagens filtradas por tipo/severidade.
+ * @category Utils
+ * @param prefix Prefixo visual
+ * @param messages Array de mensagens
+ * @param type Severidade
+ * @param config Configuração de exibição
+ * @returns True se logou mensagens
+ * @internal
+ */
 function logMessagesByType(
   prefix: string,
   messages: GuidanceMessage[],
@@ -302,6 +378,13 @@ function logMessagesByType(
   return true
 }
 
+/**
+ * Gera hash único para orientação, usado em cache de logs.
+ * @category Utils
+ * @param guidance Objeto de orientação
+ * @returns Hash string
+ * @internal
+ */
 function getGuidanceHash(guidance: DeveloperGuidance): string {
   const sortedWarnings = [...guidance.warnings].sort((a: string, b: string) => a.localeCompare(b))
   const sortedSuggestions = [...guidance.suggestions].sort((a: string, b: string) =>
@@ -319,6 +402,11 @@ function getGuidanceHash(guidance: DeveloperGuidance): string {
   })
 }
 
+/**
+ * Loga introdução do sistema LGPD-CONSENT uma única vez por sessão.
+ * @category Utils
+ * @internal
+ */
 function logIntroOnce(): void {
   if (SESSION_LOGGED.intro) return
   SESSION_LOGGED.intro = true
@@ -330,6 +418,12 @@ function logIntroOnce(): void {
   )
 }
 
+/**
+ * Loga orientação no servidor se disponível (SSR/dev server).
+ * @category Utils
+ * @param guidance Objeto de orientação
+ * @internal
+ */
 function logServerSideIfAvailable(guidance: DeveloperGuidance): void {
   // Tenta logar no servidor se estiver em ambiente Node.js (SSR/dev server)
   try {
@@ -368,6 +462,16 @@ function logServerSideIfAvailable(guidance: DeveloperGuidance): void {
   }
 }
 
+/**
+ * Loga orientação ao desenvolvedor no console/browser/servidor.
+ * @category Utils
+ * @param guidance Objeto de orientação
+ * @param disableGuidanceProp Desabilita logs se true
+ * @param config Configuração customizada de exibição
+ * @remarks
+ * Não loga em produção ou se desabilitado.
+ * @since 0.4.0
+ */
 export function logDeveloperGuidance(
   guidance: DeveloperGuidance,
   disableGuidanceProp?: boolean,
@@ -377,7 +481,7 @@ export function logDeveloperGuidance(
     process?: { env?: { NODE_ENV?: string } }
     __LGPD_PRODUCTION__?: boolean
   }
-  const nodeEnv = typeof gt.process !== 'undefined' ? gt.process?.env?.NODE_ENV : undefined
+  const nodeEnv = gt.process ? gt.process?.env?.NODE_ENV : undefined
   const isProd = nodeEnv === 'production' || gt.__LGPD_PRODUCTION__ === true
 
   if (isProd || disableGuidanceProp) return
@@ -480,6 +584,21 @@ export function logDeveloperGuidance(
   }
 }
 
+/**
+ * Hook React para análise e logging de orientação LGPD ao desenvolvedor.
+ * @category Hooks
+ * @param config Configuração de categorias do projeto
+ * @param disableGuidanceProp Desabilita logs se true
+ * @param guidanceConfig Configuração customizada de exibição
+ * @returns Objeto de orientação LGPD
+ * @remarks
+ * SSR-safe: só loga no client.
+ * @since 0.4.0
+ * @see analyzeDeveloperConfiguration
+ * @see logDeveloperGuidance
+ * @example
+ * const guidance = useDeveloperGuidance({ enabledCategories: ['analytics'] })
+ */
 export function useDeveloperGuidance(
   config?: ProjectCategoriesConfig,
   disableGuidanceProp?: boolean,
@@ -487,13 +606,19 @@ export function useDeveloperGuidance(
 ): DeveloperGuidance {
   const guidance = React.useMemo(() => analyzeDeveloperConfiguration(config), [config])
   React.useEffect(() => {
-    if (!disableGuidanceProp) logDeveloperGuidance(guidance, disableGuidanceProp, guidanceConfig)
+    if (globalThis.window !== undefined && !disableGuidanceProp) {
+      logDeveloperGuidance(guidance, disableGuidanceProp, guidanceConfig)
+    }
   }, [guidance, disableGuidanceProp, guidanceConfig])
   return guidance
 }
 
 /**
- * Presets de configuração para diferentes ambientes
+ * Presets de configuração para diferentes ambientes de desenvolvimento/produção.
+ * @category Consts
+ * @since 0.4.0
+ * @example
+ * GUIDANCE_PRESETS.development
  */
 export const GUIDANCE_PRESETS = {
   /** Configuração completa para desenvolvimento */

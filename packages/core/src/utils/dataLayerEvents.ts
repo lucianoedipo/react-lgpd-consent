@@ -32,7 +32,11 @@ const LIBRARY_VERSION = __LIBRARY_VERSION__
  */
 declare global {
   interface Window {
-    dataLayer?: Array<ConsentEvent | Record<string, unknown>>
+    dataLayer?:
+      | Array<ConsentEvent | Record<string, unknown>>
+      | {
+          push?: (...args: unknown[]) => unknown
+        }
   }
 }
 
@@ -41,8 +45,25 @@ declare global {
  * @internal
  */
 function ensureDataLayer(): void {
-  if (globalThis.window === undefined) return
-  globalThis.window.dataLayer ??= []
+  const currentWindow = globalThis.window as Window | undefined
+  if (!currentWindow) return
+
+  const currentLayer = currentWindow.dataLayer
+  if (currentLayer == null) {
+    currentWindow.dataLayer = []
+    return
+  }
+
+  if (typeof (currentLayer as unknown as { push?: unknown }).push !== 'function') {
+    const env =
+      (globalThis as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV ??
+      'production'
+    if (env !== 'production') {
+      console.warn(
+        '[LGPD-CONSENT] dataLayer presente mas sem push; eventos não serão registrados.',
+      )
+    }
+  }
 }
 
 /**
@@ -76,8 +97,6 @@ function ensureDataLayer(): void {
  * @public
  */
 export function pushConsentInitializedEvent(categories: ConsentPreferences): void {
-  if (globalThis.window === undefined) return
-
   ensureDataLayer()
 
   const event: ConsentInitializedEvent = {
@@ -88,7 +107,10 @@ export function pushConsentInitializedEvent(categories: ConsentPreferences): voi
     preferences: categories,
   }
 
-  globalThis.window.dataLayer?.push(event)
+  const layer = globalThis.window?.dataLayer
+  if (layer && typeof (layer as { push?: unknown }).push === 'function') {
+    ;(layer as { push: (entry: ConsentEvent) => void }).push(event)
+  }
 }
 
 /**
@@ -140,8 +162,6 @@ export function pushConsentUpdatedEvent(
   origin: ConsentEventOrigin,
   previousCategories?: ConsentPreferences,
 ): void {
-  if (globalThis.window === undefined) return
-
   ensureDataLayer()
 
   const changedCategories = previousCategories
@@ -158,7 +178,10 @@ export function pushConsentUpdatedEvent(
     changed_categories: changedCategories,
   }
 
-  globalThis.window.dataLayer?.push(event)
+  const layer = globalThis.window?.dataLayer
+  if (layer && typeof (layer as { push?: unknown }).push === 'function') {
+    ;(layer as { push: (entry: ConsentEvent) => void }).push(event)
+  }
 }
 
 /**

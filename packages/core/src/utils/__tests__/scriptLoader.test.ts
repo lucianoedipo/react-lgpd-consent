@@ -49,6 +49,11 @@ describe('loadScript', () => {
     expect(script.src).toContain('https://example.com/script.js')
   })
 
+  test('resolves immediately when src is empty', async () => {
+    await expect(loadScript('no-src', '', 'analytics')).resolves.toBeUndefined()
+    expect(document.getElementById('no-src')).toBeNull()
+  })
+
   test('waits for consent when category not initially consented', async () => {
     const consent = {
       consented: true,
@@ -119,6 +124,31 @@ describe('loadScript', () => {
     await expect(loadScript('already', 'https://example.com/ok.js')).resolves.toBeUndefined()
     const found = document.querySelectorAll('script#already')
     expect(found.length).toBe(1)
+  })
+
+  test('returns the same promise when a script is already loading', async () => {
+    jest.useFakeTimers()
+
+    const promiseA = loadScript('dup-script', 'https://example.com/dup.js', 'analytics')
+    const promiseB = loadScript('dup-script', 'https://example.com/dup.js', 'analytics')
+
+    expect(promiseB).toBe(promiseA)
+    expect(document.querySelectorAll('script#dup-script')).toHaveLength(0)
+
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+    jest.advanceTimersByTime(100)
+
+    const script = document.getElementById('dup-script') as HTMLScriptElement | null
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promiseA).resolves.toBeUndefined()
+    await expect(promiseB).resolves.toBeUndefined()
+    jest.useRealTimers()
   })
 
   test('waits and retries when no consent cookie present', async () => {
@@ -273,6 +303,34 @@ describe('loadScript', () => {
     await expect(promise).resolves.toBeUndefined()
   })
 
+  test('prefers nonce from attrs over explicit nonce param', async () => {
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    const promise = loadScript(
+      'test-nonce-attr',
+      'https://example.com/script.js',
+      'analytics',
+      { nonce: 'nonce-from-attrs' },
+      'nonce-param',
+    )
+
+    const script = document.getElementById('test-nonce-attr') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (!script) throw new Error('script not found')
+
+    expect(script.nonce).toBe('nonce-from-attrs')
+    expect(script.getAttribute('nonce')).toBe('nonce-from-attrs')
+
+    script.dispatchEvent(new Event('load'))
+    await expect(promise).resolves.toBeUndefined()
+  })
+
   test('rejects when consentSnapshot nega a categoria', async () => {
     const promise = loadScript(
       'denied-script',
@@ -305,4 +363,127 @@ describe('loadScript', () => {
     if (script) script.dispatchEvent(new Event('load'))
     await expect(p).resolves.toBeUndefined()
   })
+
+  test('loads immediately when skipConsentCheck=true', async () => {
+    const promise = loadScript(
+      'skip-consent',
+      'https://example.com/skip.js',
+      'analytics',
+      {},
+      undefined,
+      {
+        skipConsentCheck: true,
+      },
+    )
+
+    const script = document.getElementById('skip-consent') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+  })
+
+  test('loads when consentSnapshot grants the category', async () => {
+    const promise = loadScript(
+      'snapshot-allow',
+      'https://example.com/allow.js',
+      'analytics',
+      {},
+      undefined,
+      {
+        consentSnapshot: {
+          consented: true,
+          preferences: { necessary: true, analytics: true },
+        } as any,
+      },
+    )
+
+    const script = document.getElementById('snapshot-allow') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+  })
+
+  test('respects async=false when attrs.async is "false"', async () => {
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    const promise = loadScript(
+      'sync-script',
+      'https://example.com/sync.js',
+      'analytics',
+      { async: 'false' },
+    )
+
+    const script = document.getElementById('sync-script') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (!script) throw new Error('script not found')
+    expect(script.async).toBe(false)
+
+    script.dispatchEvent(new Event('load'))
+    await expect(promise).resolves.toBeUndefined()
+  })
+
+  test('resolves consent using custom cookie name and global fallback', async () => {
+    ;(globalThis as unknown as { __LGPD_CONSENT_COOKIE__?: string }).__LGPD_CONSENT_COOKIE__ =
+      'custom2'
+
+    const consent = {
+      consented: true,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+    document.cookie = `custom2=${encodeURIComponent(JSON.stringify(consent))}`
+
+    const promise = loadScript(
+      'custom-cookie',
+      'https://example.com/custom.js',
+      'analytics',
+      {},
+      undefined,
+      { cookieName: 'custom1' },
+    )
+
+    const script = document.getElementById('custom-cookie') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+
+    delete (globalThis as unknown as { __LGPD_CONSENT_COOKIE__?: string }).__LGPD_CONSENT_COOKIE__
+  })
+
+  test('waits when consented=false and proceeds after update', async () => {
+    jest.useFakeTimers()
+    const consent = {
+      consented: false,
+      isModalOpen: false,
+      preferences: { analytics: true },
+    }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(consent))}`
+
+    const promise = loadScript('consent-false', 'https://example.com/consent.js', 'analytics')
+
+    jest.advanceTimersByTime(100)
+    expect(document.getElementById('consent-false')).toBeNull()
+
+    const updatedConsent = { ...consent, consented: true }
+    document.cookie = `cookieConsent=${encodeURIComponent(JSON.stringify(updatedConsent))}`
+
+    jest.advanceTimersByTime(100)
+
+    const script = document.getElementById('consent-false') as HTMLScriptElement | null
+    expect(script).toBeTruthy()
+    if (script) script.dispatchEvent(new Event('load'))
+
+    await expect(promise).resolves.toBeUndefined()
+    jest.useRealTimers()
+  })
+
 })

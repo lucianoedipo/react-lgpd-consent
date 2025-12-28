@@ -120,6 +120,24 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     }
   })
 
+  it('não considera URL inválida como rota segura', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        cookieBannerProps={{
+          blocking: true,
+          policyLinkUrl: 'https://[invalid-url',
+        }}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    expect(await screen.findByText(/Utilizamos cookies/i)).toBeInTheDocument()
+    expect(await screen.findByTestId('lgpd-cookie-banner-overlay')).toBeInTheDocument()
+  })
+
   it("usa backdrop 'auto' com tema dark aplicando cor clara", async () => {
     const theme = createTheme({ palette: { mode: 'dark' } })
 
@@ -141,6 +159,73 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
     const overlayStyles = window.getComputedStyle(overlay)
     expect(overlayStyles.backgroundColor).toBe('rgba(255, 255, 255, 0.12)')
+  })
+
+  it('usa backdrop padrão no tema claro quando token não é informado', async () => {
+    const theme = createTheme({ palette: { mode: 'light' } })
+
+    render(
+      <ThemeProvider theme={theme}>
+        <ConsentProvider
+          categories={{ enabledCategories: ['analytics'] }}
+          initialState={makeInitialState(false)}
+          cookieBannerProps={{ blocking: true } as any}
+        >
+          <div />
+        </ConsentProvider>
+      </ThemeProvider>,
+    )
+
+    const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
+    expect(window.getComputedStyle(overlay).backgroundColor).toBe('rgba(0, 0, 0, 0.4)')
+  })
+
+  it('usa backdrop transparente quando token é false', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { backdrop: false } } as any}
+        cookieBannerProps={{ blocking: true } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
+    expect(window.getComputedStyle(overlay).backgroundColor).toBe('rgba(0, 0, 0, 0)')
+  })
+
+  it('usa backdrop customizado quando token é string', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { backdrop: '#123456' } } as any}
+        cookieBannerProps={{ blocking: true } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const overlay = await screen.findByTestId('lgpd-cookie-banner-overlay')
+    expect(window.getComputedStyle(overlay).backgroundColor).toBe('rgb(18, 52, 86)')
+  })
+
+  it('posiciona banner no topo quando layout.position=top', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { position: 'top' } } as any}
+        cookieBannerProps={{ blocking: true } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    expect(window.getComputedStyle(bannerWrapper as HTMLElement).top).toBe('0px')
   })
 
   it('aplica z-index customizado vindo de designTokens no banner e overlay', async () => {

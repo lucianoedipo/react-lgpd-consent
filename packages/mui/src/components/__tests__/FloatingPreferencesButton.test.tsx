@@ -120,6 +120,24 @@ describe('FloatingPreferencesButton (integration via ConsentProvider)', () => {
     expect(button).toBeInTheDocument()
   })
 
+  it('usa textos locais quando fornecidos via props do botão flutuante', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(true)}
+        floatingPreferencesButtonProps={{
+          texts: { preferencesButton: 'Manage Cookies' },
+        }}
+      >
+        <div>App</div>
+        <TestConsumer />
+      </ConsentProvider>,
+    )
+
+    const button = await screen.findByLabelText('Manage Cookies')
+    expect(button).toBeInTheDocument()
+  })
+
   it('applies position and offset via floatingPreferencesButtonProps', async () => {
     render(
       <ConsentProvider

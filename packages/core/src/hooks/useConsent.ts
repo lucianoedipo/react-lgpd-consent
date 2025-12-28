@@ -15,7 +15,8 @@ import {
   useConsentStateInternal,
   useConsentTextsInternal,
 } from '../context/ConsentContext'
-import type { ConsentContextValue, ConsentTexts } from '../types/types'
+import type { ConsentContextValue } from '../types/types'
+import type { AdvancedConsentTexts } from '../types/advancedTexts'
 import { logger } from '../utils/logger'
 
 /**
@@ -299,13 +300,13 @@ export function useConsent(): ConsentContextValue {
  * }
  * ```
  *
- * @see {@link ConsentTexts} - Interface completa dos textos
+ * @see {@link AdvancedConsentTexts} - Interface completa dos textos
  * @see {@link ConsentProvider} - Para configurar textos personalizados
  *
  * @public
  * @since 0.1.0
  */
-export function useConsentTexts(): ConsentTexts {
+export function useConsentTexts(): AdvancedConsentTexts {
   return useConsentTextsInternal()
 }
 

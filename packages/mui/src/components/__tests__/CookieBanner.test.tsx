@@ -3,6 +3,7 @@ import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Cookies from 'js-cookie'
+import { CookieBanner } from '../CookieBanner'
 
 jest.mock('js-cookie')
 
@@ -126,5 +127,86 @@ describe('CookieBanner component', () => {
     )
 
     expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+  })
+
+  it('não renderiza quando consentido e debug está desativado', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: [] }}
+        initialState={makeInitialState(true)}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    expect(screen.queryByText(/Utilizamos cookies/i)).toBeNull()
+  })
+
+  it('renderiza em modo debug mesmo com consentimento', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: [] }}
+        initialState={makeInitialState(true)}
+        disableDefaultBanner
+      >
+        <CookieBanner debug />
+      </ConsentProvider>,
+    )
+
+    expect(await screen.findAllByText(/Utilizamos cookies/i)).not.toBeNull()
+  })
+
+  it('renderiza link de política com target e rel corretos', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: [] }}
+        initialState={makeInitialState(false)}
+        cookieBannerProps={{ policyLinkUrl: '/politica' }}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const link = await screen.findByRole('link', { name: /Saiba mais|Política/i })
+    expect(link).toHaveAttribute('href', '/politica')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('aplica textos locais via props do CookieBanner', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: [] }}
+        initialState={makeInitialState(false)}
+        disableDefaultBanner
+      >
+        <CookieBanner
+          debug
+          policyLinkUrl="/privacy"
+          texts={{ bannerMessage: 'Custom message', policyLink: 'Privacy Info' }}
+        />
+      </ConsentProvider>,
+    )
+
+    expect(await screen.findByText('Custom message')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Privacy Info' })).toHaveAttribute(
+      'href',
+      '/privacy',
+    )
+  })
+
+  it('resolve textos i18n quando language é definido no Provider', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: [] }}
+        initialState={makeInitialState(false)}
+        language="en"
+        disableDefaultBanner
+      >
+        <CookieBanner debug />
+      </ConsentProvider>,
+    )
+
+    expect(await screen.findByRole('button', { name: /Accept All/i })).toBeInTheDocument()
   })
 })

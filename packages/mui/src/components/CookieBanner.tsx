@@ -29,12 +29,15 @@ import Snackbar from '@mui/material/Snackbar'
 import Stack from '@mui/material/Stack'
 import type { SxProps, Theme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
+import * as React from 'react'
 import {
   logger,
+  resolveTexts,
   useConsent,
   useConsentHydration,
   useConsentTexts,
   useDesignTokens,
+  type AdvancedConsentTexts,
 } from '@react-lgpd-consent/core'
 import { Branding } from './Branding'
 
@@ -180,6 +183,23 @@ export interface CookieBannerProps {
    * ```
    */
   PaperProps?: Partial<PaperProps>
+
+  /**
+   * Textos customizados para o banner.
+   * Permite sobrescrever textos do contexto e aplicar i18n localmente.
+   */
+  texts?: Partial<AdvancedConsentTexts>
+
+  /**
+   * Idioma local para resolver `texts.i18n`.
+   * Se omitido, usa o idioma do contexto (quando configurado no Provider).
+   */
+  language?: 'pt' | 'en' | 'es' | 'fr' | 'de' | 'it'
+
+  /**
+   * Variação de tom local para resolver `texts.variants`.
+   */
+  textVariant?: 'formal' | 'casual' | 'concise' | 'detailed'
 }
 
 /**
@@ -281,9 +301,20 @@ export function CookieBanner({
   hideBranding = false,
   SnackbarProps,
   PaperProps,
+  texts: textsProp,
+  language,
+  textVariant,
 }: Readonly<CookieBannerProps>) {
   const { consented, acceptAll, rejectAll, openPreferences } = useConsent()
-  const texts = useConsentTexts()
+  const baseTexts = useConsentTexts()
+  const mergedTexts = React.useMemo(
+    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    [baseTexts, textsProp],
+  )
+  const texts = React.useMemo(
+    () => resolveTexts(mergedTexts, { language, variant: textVariant }),
+    [mergedTexts, language, textVariant],
+  )
   const isHydrated = useConsentHydration()
   const designTokens = useDesignTokens()
 
@@ -377,7 +408,14 @@ export function CookieBanner({
           </Button>
         </Stack>
 
-        {!hideBranding && <Branding variant="banner" />}
+        {!hideBranding && (
+          <Branding
+            variant="banner"
+            texts={textsProp}
+            language={language}
+            textVariant={textVariant}
+          />
+        )}
       </Stack>
     </Paper>
   )

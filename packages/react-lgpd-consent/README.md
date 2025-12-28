@@ -76,7 +76,7 @@ function Analytics() {
       src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
       strategy="afterInteractive"
     >
-      {`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');`}
+      {`window.dataLayer = window.dataLayer ?? []; function gtag(){ if (typeof window.dataLayer?.push === 'function') { window.dataLayer.push(arguments) } } gtag('js', new Date()); gtag('config', 'GA_MEASUREMENT_ID');`}
     </ConsentScriptLoader>
   )
 }

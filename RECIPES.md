@@ -16,6 +16,7 @@
 6. [Vite + React SPA](#6-vite--react-spa)
 7. [UI Customizada sem MUI](#7-ui-customizada-sem-mui)
 8. [Múltiplos Idiomas](#8-múltiplos-idiomas)
+9. [Jest/Vitest (ESM + CJS)](#9-jestvitest-esm--cjs)
 
 ---
 
@@ -204,9 +205,11 @@ Crie um componente para inicializar gtag **antes** de carregar scripts:
 export function GtagConsentBootstrap() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      window.dataLayer = window.dataLayer || []
+      window.dataLayer = window.dataLayer ?? []
       function gtag(...args: any[]) {
-        window.dataLayer.push(args)
+        if (typeof window.dataLayer?.push === 'function') {
+          window.dataLayer.push(args)
+        }
       }
 
       // Inicializa Consent Mode v2 com tudo negado
@@ -243,8 +246,10 @@ export function ConsentModeSync() {
     if (!consented || typeof window === 'undefined') return
 
     function gtag(...args: any[]) {
-      window.dataLayer = window.dataLayer || []
-      window.dataLayer.push(args)
+      window.dataLayer = window.dataLayer ?? []
+      if (typeof window.dataLayer?.push === 'function') {
+        window.dataLayer.push(args)
+      }
     }
 
     gtag('consent', 'update', {
@@ -772,7 +777,7 @@ export function App() {
           { id: 'marketing', ...texts.categories.marketing }
         ]
       }}
-      customTexts={texts}
+      texts={texts}
     >
       <button onClick={() => setLocale(locale === 'pt-BR' ? 'en-US' : 'pt-BR')}>
         {locale === 'pt-BR' ? '🇺🇸 English' : '🇧🇷 Português'}
@@ -781,6 +786,30 @@ export function App() {
     </ConsentProvider>
   )
 }
+```
+
+#### 8.4. Troca de idioma em runtime (Provider)
+
+```tsx
+import { ConsentProvider, EXPANDED_DEFAULT_TEXTS } from 'react-lgpd-consent'
+
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  texts={EXPANDED_DEFAULT_TEXTS}
+  language={locale === 'en-US' ? 'en' : 'pt'}
+>
+  {/* App */}
+</ConsentProvider>
+```
+
+#### 8.5. Override local por componente
+
+```tsx
+<CookieBanner
+  debug
+  texts={{ bannerMessage: 'We use cookies', policyLink: 'Learn more' }}
+  language="en"
+/>
 ```
 
 ### ✨ Validação
@@ -792,6 +821,70 @@ export function App() {
 
 ### 🔗 Referências
 - [API.md - Textos Customizados](./packages/react-lgpd-consent/API.md)
+
+---
+
+## 9. Jest/Vitest (ESM + CJS)
+
+### 🎯 Objetivo
+Evitar falhas em Jest CJS ao importar pacotes ESM publicados como dual build.
+
+### ✅ Pré-requisitos
+- Jest 29+ ou Vitest 1+
+- Babel ou ts-jest configurado
+
+### 🧪 Jest com babel-jest (CJS)
+
+```js
+// jest.config.cjs
+module.exports = {
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
+  },
+  transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
+}
+```
+
+### 🧪 Jest com ts-jest (CJS)
+
+```js
+// jest.config.cjs
+module.exports = {
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.(t|j)sx?$': ['ts-jest', { tsconfig: 'tsconfig.json', useESM: false }],
+  },
+  transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
+}
+```
+
+### ⚡ Vitest (Vite)
+
+```ts
+// vitest.config.ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    deps: {
+      inline: ['react-lgpd-consent', '@react-lgpd-consent/core', '@react-lgpd-consent/mui'],
+    },
+  },
+})
+```
+
+### ✅ Importações recomendadas
+
+```ts
+import { ConsentProvider } from 'react-lgpd-consent'
+import { createGoogleAnalyticsIntegration } from 'react-lgpd-consent/integrations'
+import { ConsentProvider as ConsentProviderHeadless } from 'react-lgpd-consent/core'
+```
+
+### 🔗 Referências
+- [API.md - Exports](./packages/react-lgpd-consent/API.md)
 
 ---
 

@@ -252,6 +252,10 @@ export interface AdvancedConsentTexts extends ConsentTexts {
       expand?: string
       collapse?: string
     }
+    /** Prefixo exibido antes do ID do script */
+    scriptLabelPrefix?: string
+    /** Texto de finalidade para scripts ativos detectados */
+    scriptPurpose?: string
   }
 }
 
@@ -434,6 +438,8 @@ export const EXPANDED_DEFAULT_TEXTS: Partial<AdvancedConsentTexts> = {
       expand: 'Ver detalhes',
       collapse: 'Ocultar detalhes',
     },
+    scriptLabelPrefix: '(script) ',
+    scriptPurpose: 'Script de integração ativo',
   },
 }
 
@@ -454,11 +460,11 @@ export function resolveTexts(
     context?: 'ecommerce' | 'saas' | 'government' | 'education'
     variant?: 'formal' | 'casual' | 'concise' | 'detailed'
   } = {},
-): ConsentTexts {
+): AdvancedConsentTexts {
   const { language = 'pt', variant } = options
 
   // Começar com textos base
-  let resolved: ConsentTexts = { ...texts }
+  let resolved: AdvancedConsentTexts = { ...texts }
 
   // Aplicar variação de tom se especificada
   if (variant && texts.variants?.[variant]) {

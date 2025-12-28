@@ -62,6 +62,12 @@ A stack continua baseada em:
 
 Consulte [REACT19-STRICTMODE.md](./docs/REACT19-STRICTMODE.md) para detalhes da implementação.
 
+### Regras de Integrações e DataLayer (RN)
+
+- Integrações têm **categoria padrão**, mas o consumidor pode sobrescrever via `category` no config.
+- Configs obrigatórias inválidas **não executam** a integração; em dev é logado erro, em prod fica silencioso.
+- `window.dataLayer`: cria `[]` quando inexistente, usa se tiver `push`, e avisa em dev se existir sem `push`.
+
 ## 🍪 Estratégia de cookie por ambiente
 
 - **Localhost / desenvolvimento**

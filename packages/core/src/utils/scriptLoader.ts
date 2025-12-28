@@ -105,6 +105,7 @@ export function loadScript(
   nonce?: string,
   options?: LoadScriptOptions,
 ) {
+  if (!src) return Promise.resolve()
   if (typeof document === 'undefined') return Promise.resolve()
 
   // Se script já existe no DOM, resolve imediatamente

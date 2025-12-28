@@ -257,7 +257,13 @@ function BootstrapConsentMode() {
   React.useEffect(() => {
     const w = window as any
     w.dataLayer = w.dataLayer ?? []
-    w.gtag = w.gtag ?? ((...args: any[]) => w.dataLayer.push(args))
+    w.gtag =
+      w.gtag ??
+      ((...args: any[]) => {
+        if (typeof w.dataLayer?.push === 'function') {
+          w.dataLayer.push(args)
+        }
+      })
     w.gtag('consent', 'default', {
       ad_storage: 'denied',
       ad_user_data: 'denied',

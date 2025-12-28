@@ -230,6 +230,17 @@ describe('autoConfigureCategories', () => {
     expect(mockConsole.info).toHaveBeenCalled()
   })
 
+  it('usa opções padrão quando não são fornecidas', () => {
+    const integrations = [createFacebookPixelIntegration({ pixelId: 'FB_ID' })]
+
+    const result = autoConfigureCategories(undefined, integrations)
+
+    expect(result.wasAdjusted).toBe(true)
+    expect(result.autoEnabledCategories).toEqual(['marketing'])
+    expect(mockConsole.group).toHaveBeenCalled()
+    expect(mockConsole.info).toHaveBeenCalled()
+  })
+
   it('deve incluir mapeamento de integrações por categoria', () => {
     const integrations = [
       createGoogleAnalyticsIntegration({ measurementId: 'GA_ID' }),
@@ -246,6 +257,36 @@ describe('autoConfigureCategories', () => {
       analytics: ['google-analytics', 'google-tag-manager'],
       marketing: ['facebook-pixel'],
     })
+  })
+
+  it('não deve logar avisos em produção quando warningOnly está ativo', () => {
+    process.env.NODE_ENV = 'production'
+    const integrations = [
+      createGoogleAnalyticsIntegration({ measurementId: 'GA_ID' }),
+      createFacebookPixelIntegration({ pixelId: 'FB_ID' }),
+    ]
+
+    const result = autoConfigureCategories({ enabledCategories: ['analytics'] }, integrations, {
+      warningOnly: true,
+      silent: false,
+    })
+
+    expect(result.wasAdjusted).toBe(false)
+    expect(mockConsole.warn).not.toHaveBeenCalled()
+  })
+
+  it('não deve logar infos em produção quando auto-habilita categorias', () => {
+    process.env.NODE_ENV = 'production'
+    const integrations = [createFacebookPixelIntegration({ pixelId: 'FB_ID' })]
+
+    const result = autoConfigureCategories({ enabledCategories: ['analytics'] }, integrations, {
+      warningOnly: false,
+      silent: false,
+    })
+
+    expect(result.wasAdjusted).toBe(true)
+    expect(mockConsole.group).not.toHaveBeenCalled()
+    expect(mockConsole.info).not.toHaveBeenCalled()
   })
 })
 

@@ -1,4 +1,5 @@
 import type { GuidanceConfig } from '../utils/developerGuidance'
+import type { AdvancedConsentTexts } from './advancedTexts'
 
 /**
  * @fileoverview
@@ -1213,7 +1214,21 @@ export interface ConsentProviderProps {
    * }}
    * ```
    */
-  texts?: Partial<ConsentTexts>
+  texts?: Partial<AdvancedConsentTexts>
+
+  /**
+   * Idioma ativo para resolver textos via i18n (opcional).
+   * Quando definido, aplica `texts.i18n[language]` nos campos principais.
+   *
+   * @defaultValue 'pt'
+   */
+  language?: 'pt' | 'en' | 'es' | 'fr' | 'de' | 'it'
+
+  /**
+   * Variação de tom aplicada aos textos (opcional).
+   * Utiliza `texts.variants[variant]` como override dos textos principais.
+   */
+  textVariant?: 'formal' | 'casual' | 'concise' | 'detailed'
 
   /**
    * Tokens de design para customização visual avançada.
@@ -1436,7 +1451,7 @@ export interface CustomCookieBannerProps {
   acceptAll: () => void
   rejectAll: () => void
   openPreferences: () => void
-  texts: ConsentTexts
+  texts: AdvancedConsentTexts
   /** Indica se o branding padrão deve ser ocultado. */
   hideBranding?: boolean
   /**
@@ -1467,7 +1482,7 @@ export interface CustomPreferencesModalProps {
   setPreferences: (preferences: ConsentPreferences) => void
   closePreferences: () => void
   isModalOpen?: boolean
-  texts: ConsentTexts
+  texts: AdvancedConsentTexts
 }
 
 /**

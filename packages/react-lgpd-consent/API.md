@@ -30,6 +30,7 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `createClarityIntegration`          | Função     | (v0.4.1) Integração nativa com Microsoft Clarity.                                |
 | `createIntercomIntegration`         | Função     | (v0.4.1) Integração nativa com Intercom (chat).                                  |
 | `createZendeskChatIntegration`      | Função     | (v0.4.1) Integração nativa com Zendesk Chat.                                     |
+| `createSuggestedIntegration`        | Função     | (v0.7.2) Cria integração customizada com categoria sugerida automaticamente.    |
 | `suggestCategoryForScript`          | Função     | (v0.4.1) Sugere categoria(s) LGPD para um script conhecido.                      |
 | `discoverRuntimeCookies`            | Função     | (v0.4.1) Descobre cookies em tempo real no navegador.                            |
 | `categorizeDiscoveredCookies`       | Função     | (v0.4.1) Categoriza cookies descobertos usando padrões LGPD.                     |
@@ -45,7 +46,60 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 | `createSaaSIntegrations`            | Função     | (v0.4.1) Cria integrações comuns para SaaS.                                      |
 | `createCorporateIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para ambientes corporativos.                    |
 | `INTEGRATION_TEMPLATES`             | Constante  | (v0.4.1) Presets com IDs essenciais/opcionais e categorias por tipo de negócio.  |
+| `SuggestedIntegrationConfig`        | Tipo       | (v0.7.2) Configuração para integração customizada com categoria sugerida.        |
 | `setDebugLogging`                   | Função     | Habilita/desabilita o logging de debug da biblioteca.                           |
+
+---
+
+## ESM/CJS e Testes (Jest/Vitest)
+
+O pacote publica **dual build** (ESM + CJS) via `exports`:
+
+```json
+{
+  ".": { "import": "./dist/index.js", "require": "./dist/index.cjs" },
+  "./core": { "import": "./dist/core.js", "require": "./dist/core.cjs" },
+  "./mui": { "import": "./dist/mui.js", "require": "./dist/mui.cjs" },
+  "./integrations": { "import": "./dist/integrations.js", "require": "./dist/integrations.cjs" }
+}
+```
+
+### Jest (CJS) com babel-jest
+
+```js
+// jest.config.cjs
+module.exports = {
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
+  },
+  transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
+}
+```
+
+### Vitest (Vite)
+
+```ts
+// vitest.config.ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    deps: {
+      inline: ['react-lgpd-consent', '@react-lgpd-consent/core', '@react-lgpd-consent/mui'],
+    },
+  },
+})
+```
+
+### Importações recomendadas
+
+```ts
+import { ConsentProvider } from 'react-lgpd-consent'
+import { ConsentProvider as ConsentProviderHeadless } from 'react-lgpd-consent/core'
+import { createGoogleAnalyticsIntegration } from 'react-lgpd-consent/integrations'
+```
 
 ---
 
@@ -76,7 +130,9 @@ function App() {
 | Prop | Tipo | Descrição |
 | --- | --- | --- |
 | `categories` | `ProjectCategoriesConfig` | **Obrigatório.** Fonte única de verdade sobre as categorias habilitadas; usada por UI, hooks e integrações. |
-| `texts` | `Partial<ConsentTexts>` | Customiza todos os textos exibidos (banner, modal, botão). |
+| `texts` | `Partial<AdvancedConsentTexts>` | Customiza todos os textos exibidos (banner, modal, botão). |
+| `language` | `'pt' \| 'en' \| 'es' \| 'fr' \| 'de' \| 'it'` | Resolve textos via i18n no Provider. |
+| `textVariant` | `'formal' \| 'casual' \| 'concise' \| 'detailed'` | Aplica variação de tom sobre os textos base. |
 | `designTokens` | `DesignTokens` | Ajuste visual granular (cores, spacing, tipografia, overlays). |
 | `blocking` | `boolean` | Ativa overlay bloqueante até o usuário decidir. Padrão: `false`. |
 | `blockingStrategy` | `'auto' \| 'provider' \| 'component'` | Controla quem desenha o overlay quando `blocking` está ativo. |
@@ -586,7 +642,7 @@ Para customizações avançadas e tipagem, você pode importar os seguintes tipo
 - `CustomPreferencesModalProps`: Props passadas para um modal de preferências customizado.
 - `ConsentState`: Objeto que representa o estado completo do consentimento do usuário.
 - `ConsentPreferences`: Objeto com as preferências de consentimento para cada categoria.
-- `ConsentTexts`: Objeto com todos os textos customizáveis da UI.
+- `ConsentTexts`: Tipo base com textos essenciais da UI (pt-BR).
 - `Category`: Objeto que representa a definição de uma categoria de cookie.
 ### Exemplos de categorias (mínimo e completo)
 

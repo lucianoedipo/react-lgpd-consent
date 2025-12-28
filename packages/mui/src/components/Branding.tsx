@@ -1,6 +1,7 @@
 import Link from '@mui/material/Link'
 import Typography from '@mui/material/Typography'
-import { useConsentTexts, useDesignTokens } from '@react-lgpd-consent/core'
+import { resolveTexts, useConsentTexts, useDesignTokens } from '@react-lgpd-consent/core'
+import type { AdvancedConsentTexts } from '@react-lgpd-consent/core'
 import * as React from 'react'
 
 /**
@@ -42,6 +43,21 @@ export interface BrandingProps {
    * @defaultValue false
    */
   hidden?: boolean
+
+  /**
+   * Textos customizados para o branding.
+   */
+  texts?: Partial<AdvancedConsentTexts>
+
+  /**
+   * Idioma local para resolver `texts.i18n`.
+   */
+  language?: 'pt' | 'en' | 'es' | 'fr' | 'de' | 'it'
+
+  /**
+   * Variação de tom local para resolver `texts.variants`.
+   */
+  textVariant?: 'formal' | 'casual' | 'concise' | 'detailed'
 }
 
 const brandingStyles = {
@@ -136,8 +152,19 @@ const linkStyles = {
 export const Branding = React.memo(function Branding({
   variant,
   hidden = false,
+  texts: textsProp,
+  language,
+  textVariant,
 }: Readonly<BrandingProps>) {
-  const texts = useConsentTexts()
+  const baseTexts = useConsentTexts()
+  const mergedTexts = React.useMemo(
+    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    [baseTexts, textsProp],
+  )
+  const texts = React.useMemo(
+    () => resolveTexts(mergedTexts, { language, variant: textVariant }),
+    [mergedTexts, language, textVariant],
+  )
   const designTokens = useDesignTokens()
   if (hidden) return null
 

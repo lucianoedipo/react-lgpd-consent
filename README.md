@@ -106,6 +106,44 @@ function App() {
 
 ---
 
+## 🧪 Testes (Jest/Vitest) e ESM/CJS
+
+Este projeto publica **dual build** (ESM + CJS). Se o seu runner Jest estiver em CJS,
+é necessário transformar os pacotes `react-lgpd-consent` e `@react-lgpd-consent/*`.
+
+### Exemplo mínimo (Jest + babel-jest)
+
+```js
+// jest.config.cjs
+module.exports = {
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
+  },
+  transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
+}
+```
+
+### Exemplo mínimo (Vitest)
+
+```ts
+// vitest.config.ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    environment: 'jsdom',
+    deps: {
+      inline: ['react-lgpd-consent', '@react-lgpd-consent/core', '@react-lgpd-consent/mui'],
+    },
+  },
+})
+```
+
+Mais detalhes e variações em **[RECIPES.md](./RECIPES.md)**.
+
+---
+
 ## 🆕 Novidades v0.7.0
 
 ### Callbacks de Lifecycle

@@ -3,7 +3,14 @@ import type { FabProps } from '@mui/material/Fab'
 import Fab from '@mui/material/Fab'
 import Tooltip from '@mui/material/Tooltip'
 import { useTheme } from '@mui/material/styles'
-import { logger, useConsent, useConsentTexts, useDesignTokens } from '@react-lgpd-consent/core'
+import {
+  logger,
+  resolveTexts,
+  useConsent,
+  useConsentTexts,
+  useDesignTokens,
+  type AdvancedConsentTexts,
+} from '@react-lgpd-consent/core'
 import * as React from 'react'
 
 /**
@@ -183,6 +190,21 @@ export interface FloatingPreferencesButtonProps {
    * @defaultValue false
    */
   hideWhenConsented?: boolean
+
+  /**
+   * Textos customizados para o botão flutuante.
+   */
+  texts?: Partial<AdvancedConsentTexts>
+
+  /**
+   * Idioma local para resolver `texts.i18n`.
+   */
+  language?: 'pt' | 'en' | 'es' | 'fr' | 'de' | 'it'
+
+  /**
+   * Variação de tom local para resolver `texts.variants`.
+   */
+  textVariant?: 'formal' | 'casual' | 'concise' | 'detailed'
 }
 
 /**
@@ -200,9 +222,20 @@ function FloatingPreferencesButtonComponent({
   tooltip,
   FabProps,
   hideWhenConsented = false,
+  texts: textsProp,
+  language,
+  textVariant,
 }: Readonly<FloatingPreferencesButtonProps>) {
   const { openPreferences, consented } = useConsent()
-  const texts = useConsentTexts()
+  const baseTexts = useConsentTexts()
+  const mergedTexts = React.useMemo(
+    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    [baseTexts, textsProp],
+  )
+  const texts = React.useMemo(
+    () => resolveTexts(mergedTexts, { language, variant: textVariant }),
+    [mergedTexts, language, textVariant],
+  )
   const safeTheme = useThemeWithFallbacks()
   const designTokens = useDesignTokens()
 

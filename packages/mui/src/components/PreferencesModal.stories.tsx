@@ -166,6 +166,28 @@ export const CustomTexts: Story = {
   },
 }
 
+export const English: Story = {
+  render: (args: StoryArgs) => {
+    return (
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics', 'functional'] }}
+        language="en"
+        PreferencesModalComponent={(props) => <PreferencesModal {...props} {...args} />}
+      >
+        <Box sx={{ p: 3, minHeight: '50vh', bgcolor: '#f1f5f9' }}>
+          <Typography variant="h4" gutterBottom>
+            🌍 English
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            Modal com textos resolvidos via i18n do Provider.
+          </Typography>
+          <ModalDemo />
+        </Box>
+      </ConsentProvider>
+    )
+  },
+}
+
 export const ECommerceExample: Story = {
   render: (args: StoryArgs) => {
     return (

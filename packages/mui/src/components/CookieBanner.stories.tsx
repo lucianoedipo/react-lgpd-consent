@@ -196,6 +196,31 @@ export const CustomTexts: Story = {
   ),
 }
 
+export const English: Story = {
+  args: {
+    debug: true,
+  },
+  render: (args) => (
+    <ConsentProvider
+      categories={{ enabledCategories: ['analytics'] }}
+      CookieBannerComponent={() => null}
+      language="en"
+    >
+      <Box sx={{ position: 'relative', minHeight: '100vh', bgcolor: '#f1f5f9' }}>
+        <Box sx={{ p: 3 }}>
+          <Typography variant="h4" gutterBottom color="primary">
+            🌍 English
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 3 }}>
+            Banner com idioma inglês resolvido via i18n no Provider.
+          </Typography>
+        </Box>
+        <CookieBanner {...args} />
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
 export const DarkTheme: Story = {
   args: {
     debug: true,

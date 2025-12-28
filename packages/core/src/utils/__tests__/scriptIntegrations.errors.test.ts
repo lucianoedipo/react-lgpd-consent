@@ -1,7 +1,13 @@
+import type { ScriptIntegration } from '../scriptIntegrations'
 import {
   createClarityIntegration,
+  createFacebookPixelIntegration,
   createIntercomIntegration,
   createMixpanelIntegration,
+  createGoogleAnalyticsIntegration,
+  createGoogleTagManagerIntegration,
+  createHotjarIntegration,
+  createUserWayIntegration,
   createZendeskChatIntegration,
 } from '../scriptIntegrations'
 
@@ -91,5 +97,66 @@ describe('error handling in integrations', () => {
 
     expect(() => z.init?.()).not.toThrow()
     expect(mockWarn).toHaveBeenCalledWith('[Zendesk] Failed to identify:', expect.any(Error))
+  })
+})
+
+describe('integration config validation', () => {
+  const originalEnv = process.env.NODE_ENV
+  const originalError = console.error
+
+  beforeEach(() => {
+    console.error = jest.fn()
+  })
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalEnv
+    console.error = originalError
+  })
+
+  test('logs error in dev and returns no-op integration when required config is missing', () => {
+    process.env.NODE_ENV = 'development'
+    const ga = createGoogleAnalyticsIntegration({ measurementId: '' } as any)
+
+    expect(console.error).toHaveBeenCalled()
+    expect(ga.src).toBe('')
+    expect(ga.init).toBeUndefined()
+    expect(ga.bootstrap).toBeUndefined()
+  })
+
+  test('does not log error in production when required config is missing', () => {
+    process.env.NODE_ENV = 'production'
+    createGoogleAnalyticsIntegration({ measurementId: '' } as any)
+
+    expect(console.error).not.toHaveBeenCalled()
+  })
+
+  test('returns no-op integration when GTM containerId is missing', () => {
+    process.env.NODE_ENV = 'production'
+    const gtm = createGoogleTagManagerIntegration({ containerId: '' } as any)
+
+    expect(gtm.src).toBe('')
+    expect(gtm.bootstrap).toBeUndefined()
+    expect(gtm.onConsentUpdate).toBeUndefined()
+  })
+
+  test('returns no-op integrations when required configs are missing', () => {
+    process.env.NODE_ENV = 'production'
+
+    const cases: Array<[string, () => ScriptIntegration]> = [
+      ['facebook-pixel', () => createFacebookPixelIntegration({ pixelId: '' } as any)],
+      ['hotjar', () => createHotjarIntegration({ siteId: '' } as any)],
+      ['mixpanel', () => createMixpanelIntegration({ token: '' } as any)],
+      ['clarity', () => createClarityIntegration({ projectId: '' } as any)],
+      ['intercom', () => createIntercomIntegration({ app_id: '' } as any)],
+      ['zendesk-chat', () => createZendeskChatIntegration({ key: '' } as any)],
+      ['userway', () => createUserWayIntegration({ accountId: '' } as any)],
+    ]
+
+    cases.forEach(([id, factory]) => {
+      const integration = factory()
+      expect(integration.src).toBe('')
+      expect(integration.init).toBeUndefined()
+      expect(integration.id).toBe(id)
+    })
   })
 })

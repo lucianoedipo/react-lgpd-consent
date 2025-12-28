@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process'
 import { readFileSync, unlinkSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
+import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const __dirname = dirname(fileURLToPath(import.meta.url))
-const workspaceRoot = resolve(__dirname, '..')
+const __dirnameESM = fileURLToPath(new URL('.', import.meta.url))
+const workspaceRoot = resolve(__dirnameESM, '..')
 const typedocOptions = resolve(workspaceRoot, 'typedoc.json')
 
 // Extrair versão do pacote principal

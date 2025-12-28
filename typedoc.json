@@ -57,7 +57,8 @@
     "@property",
     "@hook",
     "@constant",
-    "@defaultValue"
+    "@defaultValue",
+    "@default"
   ],
 
   "externalSymbolLinkMappings": {
