@@ -27,7 +27,6 @@ const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 const result = spawnSync(pnpmCommand, ['exec', 'typedoc', '--options', tempConfig], {
   cwd: workspaceRoot,
   stdio: 'inherit',
-  shell: true,
 })
 
 // Limpar arquivo temporário

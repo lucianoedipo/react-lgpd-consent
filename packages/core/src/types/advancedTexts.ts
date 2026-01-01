@@ -352,7 +352,7 @@ export const EXPANDED_DEFAULT_TEXTS: Partial<AdvancedConsentTexts> = {
   variants: {
     formal: {
       bannerMessage:
-        'Este sítio eletrônico utiliza cookies para otimizar a experiência de navegação.',
+        'Este sítio eletrônico utiliza cookies necessários e, mediante sua autorização, cookies opcionais para otimizar a experiência de navegação.',
       acceptAll: 'Concordar com todos os cookies',
       declineAll: 'Recusar cookies opcionais',
       modalTitle: 'Configuração de Cookies',
@@ -371,7 +371,7 @@ export const EXPANDED_DEFAULT_TEXTS: Partial<AdvancedConsentTexts> = {
     },
     detailed: {
       bannerMessage:
-        'Utilizamos cookies e tecnologias similares para melhorar sua experiência de navegação, personalizar conteúdo, analisar tráfego e oferecer funcionalidades de redes sociais.',
+        'Utilizamos cookies e tecnologias similares para melhorar sua experiência de navegação, personalizar conteúdo, analisar tráfego e oferecer funcionalidades de redes sociais. Os cookies necessários permanecem ativos e os opcionais dependem da sua autorização.',
       acceptAll: 'Aceitar todos os cookies e tecnologias',
       declineAll: 'Recusar todos os cookies opcionais',
       modalTitle: 'Centro de Preferências de Privacidade',

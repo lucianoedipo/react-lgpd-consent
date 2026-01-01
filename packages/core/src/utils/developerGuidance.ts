@@ -1,5 +1,3 @@
-/* eslint-env browser, node */
-
 import React from 'react'
 import type { Category, ProjectCategoriesConfig } from '../types/types'
 import { COOKIE_PATTERNS_BY_CATEGORY, getCookiesInfoForCategory } from './cookieRegistry'

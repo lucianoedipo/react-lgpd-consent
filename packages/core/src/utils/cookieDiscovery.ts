@@ -9,7 +9,6 @@
  * @remarks Funcionalidades experimentais para auxiliar no mapeamento de cookies em conformidade com LGPD.
  *          Recomenda-se uso em desenvolvimento para inspeção manual e merge com catálogo existente.
  */
-/* eslint-env browser */
 import type { Category, CookieDescriptor } from '../types/types'
 import { COOKIE_PATTERNS_BY_CATEGORY, setCookieCatalogOverrides } from './cookieRegistry'
 

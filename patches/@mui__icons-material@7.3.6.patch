@@ -1,0 +1,12 @@
+diff --git a/package.json b/package.json
+index ec92605fce5993e9e798063423c1bf3b32166a04..3b904866bd9a514e0270d71b9351ca288bbbd990 100644
+--- a/package.json
++++ b/package.json
+@@ -67,6 +67,7 @@
+         "default": "./esm/*.js"
+       }
+     },
++    "./package.json": "./package.json",
+     "./esm": null,
+     "./utils/*": null
+   },

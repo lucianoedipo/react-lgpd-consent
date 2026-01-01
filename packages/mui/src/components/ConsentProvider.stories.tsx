@@ -6,19 +6,28 @@ import {
   CardContent,
   Chip,
   Divider,
+  FormControlLabel,
+  Paper,
   Stack,
+  Switch,
   ThemeProvider,
   Typography,
 } from '@mui/material'
 import { createTheme } from '@mui/material/styles'
 import {
   ConsentProvider,
+  ConsentScriptLoader,
+  createFacebookPixelIntegration,
+  createGoogleAnalyticsIntegration,
+  createHotjarIntegration,
   resolveTexts,
   TEXT_TEMPLATES,
   useConsent,
   type DesignTokens,
+  type ScriptIntegration,
 } from '@react-lgpd-consent/mui'
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import * as React from 'react'
 import { PreferencesModal } from './PreferencesModal'
 
 const meta: Meta<typeof ConsentProvider> = {
@@ -148,6 +157,147 @@ const ConsentDemo = () => {
           Reset (mostrar banner novamente)
         </Button>
       </Box>
+    </Box>
+  )
+}
+
+const formatLogTime = () =>
+  new Date().toLocaleTimeString('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })
+
+const ScriptFlowDemo = () => {
+  const {
+    preferences,
+    consented,
+    acceptAll,
+    rejectAll,
+    openPreferences,
+    resetConsent,
+    setPreference,
+  } = useConsent()
+  const [logs, setLogs] = React.useState<string[]>([])
+  const lastSnapshot = React.useRef<string>('')
+
+  const addLog = React.useCallback((message: string) => {
+    setLogs((current) => {
+      const entry = `${formatLogTime()} • ${message}`
+      return [entry, ...current].slice(0, 12)
+    })
+  }, [])
+
+  React.useEffect(() => {
+    const snapshot = Object.entries(preferences)
+      .map(([category, enabled]) => `${category}:${enabled ? 'on' : 'off'}`)
+      .join(', ')
+    if (snapshot !== lastSnapshot.current) {
+      addLog(`Preferências atualizadas: ${snapshot || 'sem categorias'}`)
+      lastSnapshot.current = snapshot
+    }
+  }, [preferences, addLog])
+
+  const integrations = React.useMemo(() => {
+    const mocked = (integration: ScriptIntegration) => ({
+      ...integration,
+      src: 'data:text/javascript,/* mocked */',
+      init: () =>
+        addLog(`Script carregado: ${integration.name ?? integration.id} (${integration.category})`),
+      onConsentUpdate: (consent: { consented: boolean; preferences: Record<string, boolean> }) => {
+        const enabled = Boolean(consent.preferences?.[integration.category])
+        addLog(`Consentimento ${enabled ? 'liberou' : 'bloqueou'} ${integration.category}`)
+      },
+    })
+
+    return [
+      mocked(createGoogleAnalyticsIntegration({ measurementId: 'G-STORY' })),
+      mocked(createHotjarIntegration({ siteId: '999' })),
+      mocked(createFacebookPixelIntegration({ pixelId: 'PIXEL-123' })),
+    ]
+  }, [addLog])
+
+  return (
+    <Box sx={{ p: 3, minHeight: '100vh', bgcolor: '#f8fafc' }}>
+      <Typography variant="h4" gutterBottom color="primary.main" fontWeight="bold">
+        🔍 Fluxo End-to-End com Scripts Mockados
+      </Typography>
+      <Typography variant="body1" sx={{ mb: 3 }} color="text.secondary">
+        Use os controles abaixo para alternar consentimento e visualizar logs por categoria.
+      </Typography>
+
+      <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} sx={{ mb: 3 }}>
+        <Card elevation={2} sx={{ flex: 1 }}>
+          <CardContent>
+            <Typography variant="h6" gutterBottom>
+              🎛️ Controles de Consentimento
+            </Typography>
+            <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
+              <Button size="small" variant="contained" color="success" onClick={acceptAll}>
+                Aceitar todos
+              </Button>
+              <Button size="small" variant="outlined" color="error" onClick={rejectAll}>
+                Rejeitar opcionais
+              </Button>
+              <Button size="small" variant="outlined" onClick={openPreferences}>
+                Abrir preferências
+              </Button>
+              <Button size="small" variant="outlined" color="warning" onClick={resetConsent}>
+                Resetar consentimento
+              </Button>
+            </Stack>
+
+            <Alert severity={consented ? 'success' : 'warning'}>
+              {consented ? 'Consentimento registrado.' : 'Aguardando decisão do usuário.'}
+            </Alert>
+
+            <Stack spacing={1} sx={{ mt: 2 }}>
+              {Object.entries(preferences).map(([category, enabled]) => (
+                <FormControlLabel
+                  key={category}
+                  control={
+                    <Switch
+                      checked={enabled}
+                      disabled={category === 'necessary'}
+                      onChange={(event) => setPreference(category, event.target.checked)}
+                    />
+                  }
+                  label={`${category} (${enabled ? 'on' : 'off'})`}
+                />
+              ))}
+            </Stack>
+          </CardContent>
+        </Card>
+
+        <Paper elevation={2} sx={{ flex: 1, p: 2, bgcolor: 'white' }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+            <Typography variant="h6">📋 Logs por Categoria</Typography>
+            <Button size="small" onClick={() => setLogs([])}>
+              Limpar
+            </Button>
+          </Stack>
+          <Stack spacing={1}>
+            {logs.length === 0 ? (
+              <Typography variant="body2" color="text.secondary">
+                Nenhum log ainda. Interaja com o banner ou com as preferências.
+              </Typography>
+            ) : (
+              logs.map((entry) => (
+                <Typography
+                  key={entry}
+                  variant="body2"
+                  sx={{ fontFamily: 'monospace', color: 'text.secondary' }}
+                >
+                  {entry}
+                </Typography>
+              ))
+            )}
+          </Stack>
+        </Paper>
+      </Stack>
+
+      <ConsentScriptLoader integrations={integrations} reloadOnChange />
     </Box>
   )
 }
@@ -532,6 +682,81 @@ export const CompleteIntegrationDemo: Story = {
 
         <EnhancedConsentDashboard />
       </Box>
+    </ConsentProvider>
+  ),
+}
+
+export const CollisionAvoidance: Story = {
+  args: {
+    categories: {
+      enabledCategories: ['analytics', 'marketing', 'functional'],
+    },
+    blocking: false,
+    cookieBannerProps: {
+      position: 'bottom',
+      anchor: 'center',
+      offset: 72,
+    },
+    floatingPreferencesButtonProps: {
+      position: 'bottom-right',
+      offset: 96,
+    },
+  },
+  render: (args) => (
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
+      <Box sx={{ minHeight: '100vh', bgcolor: '#fff8e1', p: 3, pb: 12 }}>
+        <Typography variant="h4" gutterBottom color="warning.dark">
+          🧭 Colisões Resolvidas com Offset
+        </Typography>
+        <Typography variant="body1" sx={{ mb: 2 }} color="text.secondary">
+          Exemplo com footer fixo e botão flutuante. O banner usa `offset` para não sobrepor o
+          footer e o FAB foi reposicionado para não colidir.
+        </Typography>
+
+        <Card elevation={1} sx={{ maxWidth: 520 }}>
+          <CardContent>
+            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+              Configuração aplicada
+            </Typography>
+            <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+              <Chip label="Banner: bottom + offset 72px" size="small" color="warning" />
+              <Chip label="FAB: bottom-right + offset 96px" size="small" color="info" />
+              <Chip label="Footer fixo: 64px" size="small" color="default" />
+            </Stack>
+          </CardContent>
+        </Card>
+
+        <Box
+          sx={{
+            position: 'fixed',
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: 64,
+            bgcolor: '#111827',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1200,
+          }}
+        >
+          Footer fixo (64px)
+        </Box>
+      </Box>
+    </ConsentProvider>
+  ),
+}
+
+export const ScriptedFlowWithLogs: Story = {
+  args: {
+    categories: {
+      enabledCategories: ['analytics', 'marketing', 'functional'],
+    },
+  },
+  render: (args) => (
+    <ConsentProvider {...args} PreferencesModalComponent={PreferencesModal}>
+      <ScriptFlowDemo />
     </ConsentProvider>
   ),
 }

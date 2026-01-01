@@ -200,6 +200,24 @@ export interface CookieBannerProps {
    * Variação de tom local para resolver `texts.variants`.
    */
   textVariant?: 'formal' | 'casual' | 'concise' | 'detailed'
+
+  /**
+   * Posição vertical do banner (top/bottom).
+   * Sobrescreve `designTokens.layout.position` quando definido.
+   */
+  position?: 'top' | 'bottom'
+
+  /**
+   * Âncora horizontal do banner (left/center/right).
+   * Útil para alinhar o snackbar ou banners com largura menor que 100%.
+   */
+  anchor?: 'left' | 'center' | 'right'
+
+  /**
+   * Offset em px para afastar o banner das bordas da viewport.
+   * Exemplo: `offset={64}` empurra o banner 64px para cima quando `position="bottom"`.
+   */
+  offset?: number
 }
 
 /**
@@ -304,6 +322,9 @@ export function CookieBanner({
   texts: textsProp,
   language,
   textVariant,
+  position,
+  anchor,
+  offset,
 }: Readonly<CookieBannerProps>) {
   const { consented, acceptAll, rejectAll, openPreferences } = useConsent()
   const baseTexts = useConsentTexts()
@@ -429,8 +450,8 @@ export function CookieBanner({
    * Comportamento:
    * - position: "fixed" para torná-lo fixo em relação à viewport.
    * - zIndex: 1300 para garantir que o banner fique acima da maioria dos elementos.
-   * - Define top: 0 quando designTokens.layout.position === "top", caso contrário define bottom: 0.
-   * - left: 0 e right: 0 para estender o banner de ponta a ponta horizontalmente.
+   * - Define top/bottom com base em `position` ou `designTokens.layout.position`, aplicando `offset` quando informado.
+   * - left/right são calculados conforme `anchor` e a largura definida em tokens (ou 100%).
    * - width: utiliza designTokens.layout.width.desktop quando disponível; caso contrário, "100%".
    * - p: 2 representa shorthand de padding conforme a escala de espaçamento do tema/sistema de estilos.
    *
@@ -447,13 +468,34 @@ export function CookieBanner({
   const resolveBannerZIndex = (theme: Theme) =>
     designTokens?.layout?.zIndex?.banner ?? theme?.zIndex?.snackbar ?? 1400
 
+  const resolvedPosition =
+    position ?? (designTokens?.layout?.position === 'top' ? 'top' : 'bottom')
+  const resolvedAnchor = anchor ?? 'center'
+  const resolvedOffset = offset ?? 0
+  const resolvedWidth = designTokens?.layout?.width?.desktop ?? '100%'
+
+  const resolveHorizontalPosition = (width: string | number) => {
+    const isFullWidth = width === '100%' || width === '100vw' || width === '100dvw'
+    if (isFullWidth) {
+      return { left: 0, right: 0 }
+    }
+
+    switch (resolvedAnchor) {
+      case 'left':
+        return { left: 0 }
+      case 'right':
+        return { right: 0 }
+      default:
+        return { left: '50%', transform: 'translateX(-50%)' }
+    }
+  }
+
   const positionStyle: SxProps<Theme> = (theme) => ({
     position: 'fixed',
     zIndex: resolveBannerZIndex(theme),
-    ...(designTokens?.layout?.position === 'top' ? { top: 0 } : { bottom: 0 }),
-    left: 0,
-    right: 0,
-    width: designTokens?.layout?.width?.desktop ?? '100%',
+    ...(resolvedPosition === 'top' ? { top: resolvedOffset } : { bottom: resolvedOffset }),
+    ...resolveHorizontalPosition(resolvedWidth),
+    width: resolvedWidth,
     p: 2,
   })
 
@@ -527,14 +569,31 @@ export function CookieBanner({
     )
   }
 
+  const resolvedAnchorOrigin = {
+    vertical: SnackbarProps?.anchorOrigin?.vertical ?? resolvedPosition,
+    horizontal: SnackbarProps?.anchorOrigin?.horizontal ?? resolvedAnchor,
+  }
+
+  const offsetSx: SxProps<Theme> | undefined =
+    resolvedOffset > 0
+      ? resolvedAnchorOrigin.vertical === 'top'
+        ? { top: resolvedOffset }
+        : { bottom: resolvedOffset }
+      : undefined
+
+  const snackbarSx: SxProps<Theme> | undefined =
+    offsetSx && SnackbarProps?.sx
+      ? Array.isArray(SnackbarProps.sx)
+        ? [offsetSx, ...SnackbarProps.sx]
+        : [offsetSx, SnackbarProps.sx]
+      : offsetSx ?? SnackbarProps?.sx
+
   return (
     <Snackbar
       open={open}
-      anchorOrigin={{
-        vertical: designTokens?.layout?.position === 'top' ? 'top' : 'bottom',
-        horizontal: 'center',
-      }}
+      anchorOrigin={resolvedAnchorOrigin}
       {...SnackbarProps}
+      sx={snackbarSx}
     >
       {bannerContent}
     </Snackbar>

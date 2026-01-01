@@ -101,6 +101,7 @@ pnpm --filter @react-lgpd-consent/mui build
 - **LGPD (Core Logic):** A prop `categories` é obrigatória no `ConsentProvider`. Validações e logs estão em `packages/core`.
 - **Logging:** Use o utilitário de logger em `packages/core/src/utils/logger.ts`.
 - **Integrações:** Fábricas de scripts estão em `packages/core/src/utils/scriptIntegrations.ts` e são carregadas via `ConsentScriptLoader`.
+- **Posicionamento:** Componentes MUI (`CookieBanner`, `FloatingPreferencesButton`) suportam props `position`, `anchor` e `offset` para controle preciso de layout e evitar colisões com elementos fixos.
 - **Qualidade de Código:**
   - **Tree-shaking:** Módulos são `sideEffects: false`. Não introduza efeitos colaterais no nível superior dos arquivos.
   - **SSR-Safe:** Efeitos devem ser executados apenas no cliente. Verifique a existência de `window`.

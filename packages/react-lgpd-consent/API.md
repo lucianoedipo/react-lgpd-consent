@@ -533,6 +533,28 @@ const customTokens: DesignTokens = {
 
 ---
 
+## 🎯 Posicionamento do banner e FAB
+
+Para evitar colisões com footers, chat widgets ou outros elementos fixos, use `cookieBannerProps` e
+`floatingPreferencesButtonProps` com `position`/`anchor`/`offset`:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics', 'marketing'] }}
+  cookieBannerProps={{
+    position: 'bottom',
+    anchor: 'center',
+    offset: 72, // afasta o banner do footer fixo
+  }}
+  floatingPreferencesButtonProps={{
+    position: 'bottom-right',
+    offset: 96, // evita colisão com o banner/footer
+  }}
+/>
+```
+
+---
+
 ## `getCookiesInfoForCategory(categoryId, integrations)`
 
 Função utilitária que retorna informações detalhadas sobre os cookies de uma categoria específica.
