@@ -22,6 +22,7 @@ A biblioteca implementa os seguintes princípios e requisitos da LGPD:
 - **Minimização de Dados**: O cookie de consentimento armazena **apenas** as preferências para as categorias que foram ativadas na configuração do `ConsentProvider`. Isso reduz a superfície de dados e atende ao princípio da minimização.
 - **Transparência e Auditoria**: O cookie de consentimento armazena metadados essenciais para auditoria, como `version` (versão da estrutura do cookie), `consentDate` (data do primeiro consentimento), `lastUpdate` (data da última alteração) e `source` (origem da ação: "banner" ou "modal").
 - **Facilidade de Revogação**: O usuário pode alterar suas preferências a qualquer momento através do botão flutuante e do modal de preferências, ou programaticamente.
+- **Comunicação Clara**: Os textos padrão explicam que cookies necessários são sempre ativos e que categorias opcionais dependem de autorização do titular.
 - **Segurança**: O cookie é configurado com `SameSite=Lax` por padrão e o atributo `secure` é ativado automaticamente quando o site é servido via HTTPS.
 
 ## 🧠 Sistema de Orientações para Desenvolvedores

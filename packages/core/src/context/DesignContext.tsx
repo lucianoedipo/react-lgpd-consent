@@ -23,8 +23,9 @@ const DesignContext = React.createContext<DesignTokens | undefined>(undefined)
  * precisam acessar tokens de design. Permite overrides globais de design sem alterar
  * os componentes individuais, mantendo tree-shaking e performance.
  *
- * @param tokens - Tokens de design opcionais para customização (cores, layouts, etc.)
- * @param children - Componentes filhos que terão acesso aos tokens via contexto
+ * @param props - Propriedades do DesignProvider.
+ * @param props.tokens - Tokens de design opcionais para customização (cores, layouts, etc.)
+ * @param props.children - Componentes filhos que terão acesso aos tokens via contexto
  *
  * @example Uso básico com tokens padrão
  * ```tsx
@@ -62,10 +63,12 @@ const DesignContext = React.createContext<DesignTokens | undefined>(undefined)
  * @category Context
  * @since 0.1.0
  */
-export function DesignProvider({
-  tokens,
-  children,
-}: Readonly<{ tokens?: DesignTokens; children: React.ReactNode }>) {
+export interface DesignProviderProps {
+  tokens?: DesignTokens
+  children: React.ReactNode
+}
+
+export function DesignProvider({ tokens, children }: Readonly<DesignProviderProps>) {
   return <DesignContext.Provider value={tokens}>{children}</DesignContext.Provider>
 }
 

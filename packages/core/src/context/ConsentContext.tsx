@@ -94,14 +94,14 @@ function createFullConsentState(
 const BASE_TEXTS: AdvancedConsentTexts = {
   // Textos básicos
   bannerMessage:
-    'Usamos cookies necessários para o funcionamento do site. Os demais cookies são opcionais e você pode aceitar, rejeitar ou ajustar suas preferências.',
+    'Usamos cookies necessários para o funcionamento do site e, com sua autorização, cookies opcionais para melhorar sua experiência. Você pode aceitar todos, rejeitar os opcionais ou ajustar suas preferências.',
   acceptAll: 'Aceitar todos',
   declineAll: 'Rejeitar opcionais',
   preferences: 'Preferências',
   policyLink: 'Política de privacidade',
   modalTitle: 'Preferências de cookies',
   modalIntro:
-    'Cookies necessários são sempre ativos. As demais categorias são opcionais e você pode ativá-las ou desativá-las a qualquer momento.',
+    'Cookies necessários são sempre ativos. As categorias opcionais só serão usadas com sua autorização e podem ser ativadas ou desativadas a qualquer momento.',
   save: 'Salvar preferências',
   necessaryAlwaysOn: 'Cookies necessários (sempre ativos)',
 
@@ -109,7 +109,7 @@ const BASE_TEXTS: AdvancedConsentTexts = {
   preferencesButton: 'Gerenciar cookies',
   preferencesTitle: 'Gerenciar preferências de cookies',
   preferencesDescription:
-    'Escolha quais categorias opcionais você permite. Cookies necessários permanecem sempre ativos.',
+    'Escolha quais categorias opcionais você permite. Cookies necessários permanecem sempre ativos e você pode mudar sua escolha quando quiser.',
   close: 'Fechar',
   accept: 'Aceitar',
   reject: 'Rejeitar',

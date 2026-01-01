@@ -438,6 +438,26 @@ function MyComponent() {
 | `storage`                            | `ConsentStorageConfig`                                      | ❌ Não      | `{ namespace: 'lgpd-consent', version: '1' }` | Namespace, versão e domínio compartilhado da chave de consentimento |
 | `onConsentVersionChange`             | `(context: ConsentVersionChangeContext) => void`            | ❌ Não      | Reset automático    | Hook disparado após bump da chave; use para limpar caches adicionais |
 
+## 📐 Posicionamento do banner e botão flutuante
+
+Use `cookieBannerProps` e `floatingPreferencesButtonProps` para evitar colisões com footers,
+chat widgets ou barras fixas:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics', 'marketing'] }}
+  cookieBannerProps={{
+    position: 'bottom',
+    anchor: 'center',
+    offset: 72, // afasta o banner do footer fixo
+  }}
+  floatingPreferencesButtonProps={{
+    position: 'bottom-right',
+    offset: 96, // evita colisão com o banner/footer
+  }}
+/>
+```
+
 ## 🌐 Internacionalização via Provider
 
 Use `language` para resolver `texts.i18n` em runtime sem rebuilds:

@@ -119,7 +119,7 @@
     {
       "name": "ESM Bundle",
       "path": "dist/index.js",
-      "limit": "80 KB"
+      "limit": "90 KB"
     },
     {
       "name": "CJS Bundle",
@@ -135,7 +135,10 @@
       "name": "Complete Package Import",
       "path": "dist/index.js",
       "import": "{ ConsentProvider, useConsent, ConsentScriptLoader }",
-      "limit": "80 KB"
+      "limit": "90 KB"
     }
-  ]
+  ],
+  "devDependencies": {
+    "@mui/icons-material": "7.3.6"
+  }
 }

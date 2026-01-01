@@ -133,8 +133,8 @@ Para documentação completa, exemplos e API reference:
 
 ## 🔗 Pacotes Relacionados
 
-- [`@react-lgpd-consent/mui`](../mui) - Componentes prontos usando Material-UI
-- [`react-lgpd-consent`](../react-lgpd-consent) - Pacote agregador (core + mui)
+- [`@react-lgpd-consent/mui`](../mui/README.md) - Componentes prontos usando Material-UI
+- [`react-lgpd-consent`](../react-lgpd-consent/README.md) - Pacote agregador (core + mui)
 
 ## 📄 Licença
 

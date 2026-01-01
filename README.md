@@ -148,6 +148,15 @@ Veja variações para Next.js/Vite e Consent Mode v2 em **[QUICKSTART.md](./QUIC
 
 ---
 
+## 📝 Textos padrão (pt-BR)
+
+Os textos padrão foram revisados para clareza legal:
+
+- Cookies necessários permanecem sempre ativos.
+- Categorias opcionais só são usadas com autorização e podem ser alteradas a qualquer momento.
+
+---
+
 ## 🧪 Testes (Jest/Vitest) e ESM/CJS
 
 Este projeto publica **dual build** (ESM + CJS). Se o seu runner Jest estiver em CJS,

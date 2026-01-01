@@ -113,7 +113,7 @@ describe('cookieUtils', () => {
 
   it('readConsentCookie retorna null quando migracao legada falha', () => {
     const originalDate = globalThis.Date
-    // @ts-ignore
+    // @ts-ignore: string coercion for legacy cookie parse test
     globalThis.Date = class extends Date {
       constructor(...args: ConstructorParameters<typeof Date>) {
         super(...args)

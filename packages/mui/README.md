@@ -151,7 +151,10 @@ function CustomUI() {
 <CookieBanner
   blocking={true}
   policyLinkUrl="/privacy"
-  SnackbarProps={{ anchorOrigin: { vertical: 'top', horizontal: 'center' } }}
+  position="bottom"
+  anchor="center"
+  offset={64}
+  SnackbarProps={{ autoHideDuration: null }}
 />
 
 <FloatingPreferencesButton
@@ -180,8 +183,8 @@ Para bloquear navegação até a decisão, use `blockingMode="hard"` no provider
 
 ## 🔗 Pacotes Relacionados
 
-- [`@react-lgpd-consent/core`](../core) - Núcleo sem dependências de UI
-- [`react-lgpd-consent`](../react-lgpd-consent) - Pacote agregador (core + mui)
+- [`@react-lgpd-consent/core`](../core/README.md) - Núcleo sem dependências de UI
+- [`react-lgpd-consent`](../react-lgpd-consent/README.md) - Pacote agregador (core + mui)
 
 ## 📄 Licença
 

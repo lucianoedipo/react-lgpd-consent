@@ -38,6 +38,20 @@ const meta: Meta<typeof CookieBanner> = {
       control: 'text',
       description: 'URL para política de privacidade/cookies',
     },
+    position: {
+      control: { type: 'select' },
+      options: ['bottom', 'top'],
+      description: 'Posição vertical do banner',
+    },
+    anchor: {
+      control: { type: 'select' },
+      options: ['left', 'center', 'right'],
+      description: 'Âncora horizontal do banner (snackbar e layouts com largura customizada)',
+    },
+    offset: {
+      control: { type: 'number' },
+      description: 'Offset em px para afastar o banner das bordas da viewport',
+    },
   },
 }
 
