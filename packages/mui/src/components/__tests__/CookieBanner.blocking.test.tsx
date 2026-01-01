@@ -228,6 +228,110 @@ describe('CookieBanner blocking/non-blocking rendering', () => {
     expect(globalThis.window.getComputedStyle(bannerWrapper as HTMLElement).top).toBe('0px')
   })
 
+  it('aplica offset quando position=top', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        cookieBannerProps={{ blocking: true, position: 'top', offset: 24 } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    expect(globalThis.window.getComputedStyle(bannerWrapper as HTMLElement).top).toBe('24px')
+  })
+
+  it('aplica offset quando position=bottom', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        cookieBannerProps={{ blocking: true, position: 'bottom', offset: 32 } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    expect(globalThis.window.getComputedStyle(bannerWrapper as HTMLElement).bottom).toBe('32px')
+  })
+
+  it('alinha banner à esquerda quando anchor=left e width customizada', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { width: { desktop: '320px' } } } as any}
+        cookieBannerProps={{ blocking: true, anchor: 'left' } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    const styles = globalThis.window.getComputedStyle(bannerWrapper as HTMLElement)
+    expect(styles.left).toBe('0px')
+  })
+
+  it('alinha banner ao centro quando anchor=center e width customizada', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { width: { desktop: '320px' } } } as any}
+        cookieBannerProps={{ blocking: true, anchor: 'center' } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    const styles = globalThis.window.getComputedStyle(bannerWrapper as HTMLElement)
+    expect(styles.left).toBe('50%')
+    expect(styles.transform).toContain('translateX(-50%)')
+  })
+
+  it('alinha banner à direita quando anchor=right e width customizada', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        designTokens={{ layout: { width: { desktop: '320px' } } } as any}
+        cookieBannerProps={{ blocking: true, anchor: 'right' } as any}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const bannerWrapper = await screen.findByTestId('lgpd-cookie-banner-wrapper')
+    const styles = globalThis.window.getComputedStyle(bannerWrapper as HTMLElement)
+    expect(styles.right).toBe('0px')
+  })
+
+  it('aplica offset com base no anchorOrigin efetivo no modo snackbar', async () => {
+    render(
+      <ConsentProvider
+        categories={{ enabledCategories: ['analytics'] }}
+        initialState={makeInitialState(false)}
+        cookieBannerProps={{
+          blocking: false,
+          offset: 40,
+          SnackbarProps: {
+            anchorOrigin: { vertical: 'top', horizontal: 'center' },
+            'data-testid': 'cookie-snackbar',
+          } as any,
+        }}
+      >
+        <div />
+      </ConsentProvider>,
+    )
+
+    const snackbar = await screen.findByTestId('cookie-snackbar')
+    expect(globalThis.window.getComputedStyle(snackbar as HTMLElement).top).toBe('40px')
+  })
+
   it('aplica z-index customizado vindo de designTokens no banner e overlay', async () => {
     render(
       <ConsentProvider

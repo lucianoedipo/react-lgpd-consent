@@ -569,9 +569,14 @@ export function CookieBanner({
     )
   }
 
+  const resolvedAnchorOrigin = {
+    vertical: SnackbarProps?.anchorOrigin?.vertical ?? resolvedPosition,
+    horizontal: SnackbarProps?.anchorOrigin?.horizontal ?? resolvedAnchor,
+  }
+
   const offsetSx: SxProps<Theme> | undefined =
     resolvedOffset > 0
-      ? resolvedPosition === 'top'
+      ? resolvedAnchorOrigin.vertical === 'top'
         ? { top: resolvedOffset }
         : { bottom: resolvedOffset }
       : undefined
@@ -586,12 +591,7 @@ export function CookieBanner({
   return (
     <Snackbar
       open={open}
-      anchorOrigin={
-        SnackbarProps?.anchorOrigin ?? {
-          vertical: resolvedPosition,
-          horizontal: resolvedAnchor,
-        }
-      }
+      anchorOrigin={resolvedAnchorOrigin}
       {...SnackbarProps}
       sx={snackbarSx}
     >
