@@ -42,6 +42,7 @@ npm run docs:generate
 - Sem efeitos no topo de módulo; preferir guards e efeitos (tree-shaking)
 - SSR-safe: use `globalThis.window`/`globalThis.document` com guard
 - Tokens de design via `designTokens` e `sx`
+- Posicionamento configurável: `CookieBanner` e `FloatingPreferencesButton` suportam `position`, `anchor`, `offset`
 - Integrações via `packages/core/src/utils/scriptIntegrations.ts` + `ConsentScriptLoader.tsx`
 - Logging via `packages/core/src/utils/logger.ts`
 - Atualize `packages/*/src/index.ts` ao expor APIs públicas

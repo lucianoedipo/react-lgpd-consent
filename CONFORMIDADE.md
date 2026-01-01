@@ -133,6 +133,7 @@ Alguns contextos regulatórios exigem que o usuário **decida explicitamente** a
 - O Provider aplica overlay e torna o conteúdo da aplicação **inerte** (`inert` + `aria-hidden`) até a decisão.
 - O banner e o modal permanecem acessíveis por teclado, atendendo requisitos de acessibilidade.
 - Use `cookieBannerProps.policyLinkUrl` para expor o link da política de privacidade.
+- **Posicionamento:** Configure `position`, `anchor` e `offset` em `cookieBannerProps` e `floatingPreferencesButtonProps` para evitar colisões com footers fixos, chat widgets e outros elementos flutuantes.
 
 Exemplo:
 
@@ -142,7 +143,16 @@ Exemplo:
   blocking
   blockingMode="hard"
   blockingStrategy="provider"
-  cookieBannerProps={{ policyLinkUrl: '/privacidade' }}
+  cookieBannerProps={{ 
+    policyLinkUrl: '/privacidade',
+    position: 'bottom',
+    anchor: 'center',
+    offset: 72 // afasta do footer fixo
+  }}
+  floatingPreferencesButtonProps={{
+    position: 'bottom-right',
+    offset: 96 // evita colisão
+  }}
 >
   <App />
 </ConsentProvider>

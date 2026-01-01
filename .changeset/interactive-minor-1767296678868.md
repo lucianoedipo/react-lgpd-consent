@@ -4,21 +4,30 @@
 'react-lgpd-consent': minor
 ---
 
-feat: enhance cookie consent banner positioning and clarity
-- Updated `main.ts` to remove MDX stories and add Vite configuration for chunk size warnings.
-- Revised `CONFORMIDADE.md` to include clear communication about cookie categories.
-- Added positioning options for the cookie banner and floating button in `QUICKSTART.md`.
-- Clarified default texts in `README.md` regarding cookie usage and user consent.
-- Improved related package links in `README.md` and `core/README.md`.
-- Enhanced consent texts in `ConsentContext.tsx` for better user understanding.
-- Updated `DesignContext.tsx` to improve prop documentation.
-- Revised advanced texts in `advancedTexts.ts` for clarity on cookie usage.
-- Adjusted tests in `cookieUtils.test.ts` for legacy cookie parsing.
-- Removed unnecessary browser environment comment in `cookieDiscovery.ts`.
-- Cleaned up developer guidance in `developerGuidance.ts`.
-- Updated `CookieBanner` and `CookieBanner.stories.tsx` to support new positioning props.
-- Added API documentation for banner positioning in `API.md`.
-- Increased bundle size limits in `react-lgpd-consent/package.json`.
-- Created patch for `@mui/icons-material` to address compatibility issues.
-- Updated `pnpm-lock.yaml` to reflect new dependencies and patches.
-- Removed shell execution in `run-typedoc.mjs` for improved compatibility.
+feat: adiciona posicionamento configurável do banner e aprimora textos de consentimento
+
+### Melhorias de UX e Posicionamento
+
+- **Posicionamento do banner**: novas props `position`, `anchor` e `offset` em `cookieBannerProps` permitem ajustar a posição do banner para evitar colisões com footers fixos, chat widgets e outros elementos flutuantes
+- **Posicionamento do FAB**: prop `offset` em `floatingPreferencesButtonProps` possibilita afastar o botão flutuante de outros elementos da UI
+- **Textos de consentimento**: aprimorados os textos padrão para comunicar claramente o uso de cookies necessários e categorias opcionais, melhorando a transparência LGPD/ANPD
+
+### Melhorias Técnicas
+
+- **Storybook**: removidas stories MDX e adicionada configuração Vite para avisos de tamanho de chunks
+- **TypeDoc**: removida execução shell em `run-typedoc.mjs` para compatibilidade multiplataforma
+- **Bundle**: ajustados limites de tamanho no `react-lgpd-consent/package.json`
+- **MUI Patch**: aplicado patch em `@mui/icons-material@7.3.6` para resolver problemas de compatibilidade com exports
+
+### Documentação
+
+- Adicionada seção de posicionamento em `QUICKSTART.md` e `API.md`
+- Atualizada `CONFORMIDADE.md` com ênfase na comunicação clara de categorias
+- Aprimorada documentação de props em `DesignContext.tsx`
+- Consolidados links entre pacotes em READMEs
+
+### Limpeza e Refinamentos
+
+- Ajustados testes de parsing de cookies legados em `cookieUtils.test.ts`
+- Removidos comentários desnecessários em `cookieDiscovery.ts`
+- Refinado guidance para desenvolvedores em `developerGuidance.ts`

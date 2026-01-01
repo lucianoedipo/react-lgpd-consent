@@ -164,6 +164,25 @@ function CustomUI() {
 />
 ```
 
+### Posicionamento Configurável
+
+Use as props `position`, `anchor` e `offset` para evitar colisões com footers fixos, chat widgets e outros elementos flutuantes:
+
+```tsx
+<ConsentProvider
+  categories={{ enabledCategories: ['analytics'] }}
+  cookieBannerProps={{
+    position: 'bottom',
+    anchor: 'center',
+    offset: 72 // ajuste conforme necessário
+  }}
+  floatingPreferencesButtonProps={{
+    position: 'bottom-right',
+    offset: 96
+  }}
+/>
+```
+
 Para bloquear navegação até a decisão, use `blockingMode="hard"` no provider:
 
 ```tsx

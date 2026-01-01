@@ -126,7 +126,16 @@ export function App() {
       blocking
       blockingMode="hard"
       blockingStrategy="provider"
-      cookieBannerProps={{ policyLinkUrl: '/privacidade' }}
+      cookieBannerProps={{ 
+        policyLinkUrl: '/privacidade',
+        position: 'bottom',
+        anchor: 'center',
+        offset: 72 // ajuste conforme seu layout (footers fixos, etc.)
+      }}
+      floatingPreferencesButtonProps={{
+        position: 'bottom-right',
+        offset: 96 // evita colisão com banner/footer
+      }}
     >
       {/* Scripts so carregam apos consentimento por categoria. */}
       <ConsentScriptLoader
@@ -143,6 +152,8 @@ export function App() {
 ```
 
 O `ConsentProvider` do pacote principal ja traz banner, modal e botao flutuante MUI por padrao.
+
+**💡 Dica:** Use as props `position`, `anchor` e `offset` para evitar colisões com footers fixos, chat widgets e outros elementos flutuantes da sua UI.
 
 Veja variações para Next.js/Vite e Consent Mode v2 em **[QUICKSTART.md](./QUICKSTART.md)** e detalhes de integrações em **[INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md)**.
 
