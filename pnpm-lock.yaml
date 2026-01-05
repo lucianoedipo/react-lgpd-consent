@@ -192,8 +192,8 @@ importers:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
       zod:
-        specifier: ^4.3.4
-        version: 4.3.4
+        specifier: ^4.3.5
+        version: 4.3.5
 
   packages/mui:
     dependencies:
@@ -4692,8 +4692,8 @@ packages:
     peerDependencies:
       zod: ^3.25.0 || ^4.0.0
 
-  zod@4.3.4:
-    resolution: {integrity: sha512-Zw/uYiiyF6pUT1qmKbZziChgNPRu+ZRneAsMUDU6IwmXdWt5JwcUfy2bvLOCUtz5UniaN/Zx5aFttZYbYc7O/A==}
+  zod@4.3.5:
+    resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
 
 snapshots:
 
@@ -7391,8 +7391,8 @@ snapshots:
       '@babel/parser': 7.28.5
       eslint: 9.39.2(jiti@2.6.1)
       hermes-parser: 0.25.1
-      zod: 4.3.4
-      zod-validation-error: 4.0.2(zod@4.3.4)
+      zod: 4.3.5
+      zod-validation-error: 4.0.2(zod@4.3.5)
     transitivePeerDependencies:
       - supports-color
 
@@ -8427,7 +8427,7 @@ snapshots:
 
   mutation-server-protocol@0.4.0:
     dependencies:
-      zod: 4.3.4
+      zod: 4.3.5
 
   mutation-testing-elements@3.6.0: {}
 
@@ -9420,8 +9420,8 @@ snapshots:
 
   yoctocolors@2.1.2: {}
 
-  zod-validation-error@4.0.2(zod@4.3.4):
+  zod-validation-error@4.0.2(zod@4.3.5):
     dependencies:
-      zod: 4.3.4
+      zod: 4.3.5
 
-  zod@4.3.4: {}
+  zod@4.3.5: {}
