@@ -468,8 +468,7 @@ export function CookieBanner({
   const resolveBannerZIndex = (theme: Theme) =>
     designTokens?.layout?.zIndex?.banner ?? theme?.zIndex?.snackbar ?? 1400
 
-  const resolvedPosition =
-    position ?? (designTokens?.layout?.position === 'top' ? 'top' : 'bottom')
+  const resolvedPosition = position ?? (designTokens?.layout?.position === 'top' ? 'top' : 'bottom')
   const resolvedAnchor = anchor ?? 'center'
   const resolvedOffset = offset ?? 0
   const resolvedWidth = designTokens?.layout?.width?.desktop ?? '100%'
@@ -586,15 +585,10 @@ export function CookieBanner({
       ? Array.isArray(SnackbarProps.sx)
         ? [offsetSx, ...SnackbarProps.sx]
         : [offsetSx, SnackbarProps.sx]
-      : offsetSx ?? SnackbarProps?.sx
+      : (offsetSx ?? SnackbarProps?.sx)
 
   return (
-    <Snackbar
-      open={open}
-      anchorOrigin={resolvedAnchorOrigin}
-      {...SnackbarProps}
-      sx={snackbarSx}
-    >
+    <Snackbar open={open} anchorOrigin={resolvedAnchorOrigin} {...SnackbarProps} sx={snackbarSx}>
       {bannerContent}
     </Snackbar>
   )
