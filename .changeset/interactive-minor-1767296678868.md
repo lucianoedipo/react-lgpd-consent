@@ -17,7 +17,7 @@ feat: adiciona posicionamento configurável do banner e aprimora textos de conse
 - **Storybook**: removidas stories MDX e adicionada configuração Vite para avisos de tamanho de chunks
 - **TypeDoc**: removida execução shell em `run-typedoc.mjs` para compatibilidade multiplataforma
 - **Bundle**: ajustados limites de tamanho no `react-lgpd-consent/package.json`
-- **MUI Patch**: aplicado patch em `@mui/icons-material@7.3.6` para resolver problemas de compatibilidade com exports
+- **MUI Patch**: aplicado patch em `@mui/icons-material@7.3.7` para resolver problemas de compatibilidade com exports
 
 ### Documentação
 
