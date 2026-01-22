@@ -1,5 +1,12 @@
 # Changelog - @react-lgpd-consent/core
 
+## 0.9.1
+
+### Patch Changes
+
+- [#154](https://github.com/lucianoedipo/react-lgpd-consent/pull/154) [`2be8e18`](https://github.com/lucianoedipo/react-lgpd-consent/commit/2be8e18c456bdf2b19db611711e2a32517a1f18a) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - - feat: adiciona suporte a posicionamento e offset configuráveis no banner de consentimento
+  - feat: adiciona posicionamento configurável do banner de consentimento e aprimora textos de comunicação
+
 ## 0.9.0
 
 ### Minor Changes
