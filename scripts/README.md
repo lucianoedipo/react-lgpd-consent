@@ -61,6 +61,63 @@ node scripts/coverage-check.cjs
 📈 Bundle Quality Score: 89 %
 ```
 
+### `coverage-analysis.sh`
+
+**Propósito**: Análise completa de coverage com relatórios visuais e múltiplos formatos.
+
+**Uso**:
+
+```bash
+# Via npm script (recomendado)
+pnpm coverage:analyze
+
+# Ou diretamente
+./scripts/coverage-analysis.sh
+```
+
+**Funcionalidades**:
+
+- 🧪 Executa `pnpm test:coverage` automaticamente
+- 📊 Extrai métricas do `coverage-summary.json` com `jq`
+- 📁 Lista todos os formatos de coverage gerados:
+  - LCOV (Codecov, Coveralls, SonarQube)
+  - Cobertura XML (Azure DevOps, GitLab)
+  - Clover XML (Jenkins, Atlassian)
+  - JSON completo e summary
+  - HTML interativo
+- 🌐 Abre automaticamente o relatório HTML no navegador padrão
+- ✅ Fornece resumo visual no terminal
+
+**Exemplo de Output**:
+
+```
+🧪 Executando testes com coverage...
+...
+📊 Resumo de Coverage:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Statements: 94.85%
+✓ Branches:   82.24%
+✓ Functions:  81.92%
+✓ Lines:      95.55%
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📁 Arquivos de coverage gerados:
+  • LCOV:      coverage/lcov.info
+  • Cobertura: coverage/cobertura-coverage.xml
+  • Clover:    coverage/clover.xml
+  • JSON:      coverage/coverage-final.json
+  • Summary:   coverage/coverage-summary.json
+  • HTML:      coverage/lcov-report/index.html
+
+🌐 Abrindo relatório HTML no navegador...
+✅ Análise concluída!
+```
+
+**Requisitos**:
+
+- `jq` instalado (para parsing JSON)
+- Navegador padrão configurado
+
 ## 🔧 Configurações
 
 ### ESLint

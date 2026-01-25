@@ -1,0 +1,57 @@
+# Configuração do Codecov
+# https://docs.codecov.com/docs/codecov-yaml
+
+codecov:
+  require_ci_to_pass: true
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 2
+  round: down
+  range: "70...95"
+  
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        base: auto
+        if_ci_failed: error
+    
+    patch:
+      default:
+        target: 85%
+        threshold: 5%
+        if_ci_failed: error
+
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+  branches:
+    - main
+
+ignore:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/*.stories.ts"
+  - "**/*.stories.tsx"
+  - "**/dist/**"
+  - "**/coverage/**"
+  - "**/storybook-static/**"
+  - "**/node_modules/**"
+  - "**/@types/**"
+  - "example/**"
+  - "examples/**"
+  - "scripts/**"
+
+flags:
+  unittests:
+    paths:
+      - packages/core/src
+      - packages/mui/src

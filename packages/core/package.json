@@ -58,12 +58,12 @@
     "test": "jest --config ../../jest.config.mjs"
   },
   "peerDependencies": {
-    "react": "^18.2.0 || ^19.0.0",
-    "react-dom": "^18.2.0 || ^19.0.0"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "dependencies": {
     "js-cookie": "^3.0.5",
-    "zod": "^4.3.5"
+    "zod": "^4.3.6"
   },
   "repository": {
     "type": "git",

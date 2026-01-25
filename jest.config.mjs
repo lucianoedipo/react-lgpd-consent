@@ -35,7 +35,15 @@ const config = {
     '!packages/**/src/@types/**',
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'json-summary', 'html'],
+  // Múltiplos formatos para CI/CD e ferramentas de análise
+  // - text: saída no console
+  // - lcov: padrão para Codecov, Coveralls, SonarQube
+  // - json: para análise programática
+  // - json-summary: resumo compacto para badges
+  // - html: relatório visual
+  // - cobertura: padrão para Azure DevOps e várias ferramentas
+  // - clover: padrão para PHPUnit, Jenkins, Atlassian
+  coverageReporters: ['text', 'lcov', 'json', 'json-summary', 'html', 'cobertura', 'clover'],
   coverageThreshold: {
     global: {
       statements: 85,

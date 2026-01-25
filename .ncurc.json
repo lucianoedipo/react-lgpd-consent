@@ -3,7 +3,6 @@
   "interactive": true,
   "workspaces": true,
   "target": "latest",
-  "reject": ["@types/node"],
   "peer": true,
   "cache": true,
   "cacheClear": false,
