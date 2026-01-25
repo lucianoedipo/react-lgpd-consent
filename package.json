@@ -12,7 +12,8 @@
     "overrides": {
       "react": "19.2.3",
       "react-dom": "19.2.3",
-      "qs": ">=6.14.1"
+      "qs": ">=6.14.1",
+      "diff": ">=4.0.4"
     },
     "patchedDependencies": {
       "@mui/icons-material@7.3.7": "patches/@mui__icons-material@7.3.7.patch"
