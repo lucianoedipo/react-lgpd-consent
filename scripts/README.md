@@ -39,7 +39,7 @@ node scripts/coverage-check.cjs
 
 **Funcionalidades**:
 
-- ✅ Verifica thresholds de cobertura (statements: 85%, branches: 80%, functions: 70%, lines: 85%)
+- ✅ Verifica thresholds de cobertura (statements: 98%, branches: 91%, functions: 98%, lines: 99%)
 - 📊 Gera relatório formatado com status visual
 - 📈 Calcula Bundle Quality Score baseado nas métricas
 - ❌ Falha (exit code 1) se algum threshold não for atendido
@@ -50,15 +50,15 @@ node scripts/coverage-check.cjs
 ```
 📊 Coverage Report:
 ==================
-✅ statements  : 94.85% (threshold: 85%)
-✅ branches    : 82.24% (threshold: 80%)
-✅ functions   : 81.92% (threshold: 70%)
-✅ lines       : 95.55% (threshold: 85%)
+✅ statements  : 98.15% (threshold: 98%)
+✅ branches    : 91.16% (threshold: 91%)
+✅ functions   : 98.91% (threshold: 98%)
+✅ lines       : 99.04% (threshold: 99%)
 ==================
 
 ✅ All coverage thresholds met!
 
-📈 Bundle Quality Score: 89 %
+📈 Bundle Quality Score: 97 %
 ```
 
 ### `coverage-analysis.sh`

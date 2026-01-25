@@ -19,11 +19,13 @@ function checkCoverage() {
   const coverage = JSON.parse(fs.readFileSync(COVERAGE_FILE, 'utf8'))
   const { total } = coverage
 
+  // Thresholds baseados no coverage atual do projeto (jan/2026)
+  // Projeto mantém excelente cobertura: 98%+ statements/lines, 91%+ branches
   const thresholds = {
-    statements: 85,
-    branches: 80,
-    functions: 70,
-    lines: 85,
+    statements: 98,
+    branches: 91,
+    functions: 98,
+    lines: 99,
   }
 
   console.log('\n📊 Coverage Report:')

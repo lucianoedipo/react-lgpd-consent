@@ -106,7 +106,7 @@ const categories = createAnpdCategoriesConfig({
 <ConsentProvider categories={categories}>
 ```
 
-📖 **Documentação completa:** [API.md](../react-lgpd-consent/API.md) | [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+📖 **Documentação completa:** [API.md](../react-lgpd-consent/API.md) | [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md)
 
 ---
 
@@ -198,7 +198,7 @@ Para bloquear navegação até a decisão, use `blockingMode="hard"` no provider
 
 - [Documentação Principal](https://lucianoedipo.github.io/react-lgpd-consent/)
 - [Storybook (Componentes Interativos)](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)
-- [Guia de Início Rápido](../../QUICKSTART.md)
+- [Guia de Início Rápido](../../doc/QUICKSTART.md)
 
 ## 🔗 Pacotes Relacionados
 

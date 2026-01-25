@@ -11,7 +11,7 @@ This quickstart gives everything you need to integrate `react-lgpd-consent` into
 - ✅ **Audit Logging** - Compliance tracking with `createConsentAuditEntry()`
 - ✅ **Improved Error Messages** - Clear error messages in pt-BR when hooks are used outside Provider
 
-📖 **Full details:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | [API.md](./packages/react-lgpd-consent/API.md)
+📖 **Full details:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | [API.md](../packages/react-lgpd-consent/API.md)
 
 ---
 

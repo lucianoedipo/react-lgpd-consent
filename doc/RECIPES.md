@@ -692,7 +692,7 @@ export function CustomPreferencesModal() {
 3. Teste todos os fluxos (aceitar/recusar/personalizar)
 
 ### 🔗 Referências
-- [packages/core/README.md](./packages/core/README.md)
+- [packages/core/README.md](../packages/core/README.md)
 - [ARCHITECTURE.md - Headless Core](./ARCHITECTURE.md)
 
 ---

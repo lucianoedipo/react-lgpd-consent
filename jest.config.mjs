@@ -44,12 +44,14 @@ const config = {
   // - cobertura: padrão para Azure DevOps e várias ferramentas
   // - clover: padrão para PHPUnit, Jenkins, Atlassian
   coverageReporters: ['text', 'lcov', 'json', 'json-summary', 'html', 'cobertura', 'clover'],
+  // Thresholds baseados no coverage atual do projeto (jan/2026)
+  // Projeto mantém excelente cobertura: 98%+ statements/lines, 91%+ branches
   coverageThreshold: {
     global: {
-      statements: 85,
-      branches: 80,
-      functions: 70,
-      lines: 85,
+      statements: 98,
+      branches: 91,
+      functions: 98,
+      lines: 99,
     },
   },
 }

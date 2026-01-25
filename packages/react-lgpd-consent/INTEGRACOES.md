@@ -42,7 +42,7 @@ O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automa
   })
   ```
 
-> 💡 **Procurando exemplos práticos?** Veja [RECIPES.md](../../RECIPES.md) para receitas passo a passo de Google Consent Mode v2, Next.js App Router e CSP/nonce.
+> 💡 **Procurando exemplos práticos?** Veja [RECIPES.md](../../doc/RECIPES.md) para receitas passo a passo de Google Consent Mode v2, Next.js App Router e CSP/nonce.
 
 ## 🎯 Integrações Nativas Disponíveis
 
@@ -542,8 +542,8 @@ const customConfig = createAnpdCategoriesConfig({
 ## 📚 Recursos Adicionais
 
 - [API.md](./API.md) – Documentação completa da API pública
-- [RECIPES.md](../../RECIPES.md) – Receitas práticas com Next.js, CSP, Google Consent Mode v2
-- [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) – Solução de problemas comuns
-- [CONFORMIDADE.md](../../CONFORMIDADE.md) – Conformidade LGPD e ANPD
+- [RECIPES.md](../../doc/RECIPES.md) – Receitas práticas com Next.js, CSP, Google Consent Mode v2
+- [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md) – Solução de problemas comuns
+- [CONFORMIDADE.md](../../doc/CONFORMIDADE.md) – Conformidade LGPD e ANPD
 
 **Problemas de integração?** Consulte [TROUBLESHOOTING.md - Seção de Integrations](../../TROUBLESHOOTING.md#integrações-de-terceiros).

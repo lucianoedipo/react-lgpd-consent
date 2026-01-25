@@ -2,6 +2,16 @@
 
 Este documento descreve os artefatos de coverage gerados pelo projeto e como utilizá-los.
 
+## 🎯 Métricas Atuais
+
+O projeto mantém excelente cobertura de testes (atualizado em jan/2026):
+
+- **Statements:** 98.15% ✅
+- **Branches:** 91.16% ✅  
+- **Functions:** 98.91% ✅
+- **Lines:** 99.04% ✅
+- **Bundle Quality Score:** 97%
+
 ## Formatos Exportados
 
 O projeto está configurado para exportar coverage em múltiplos formatos para máxima compatibilidade com ferramentas de CI/CD:
@@ -102,10 +112,10 @@ Em cada Pull Request, o CI gera automaticamente:
 ### Jest (Local + CI)
 ```javascript
 global: {
-  statements: 85%,
-  branches: 80%,
-  functions: 70%,
-  lines: 85%
+  statements: 98%,
+  branches: 91%,
+  functions: 98%,
+  lines: 99%
 }
 ```
 

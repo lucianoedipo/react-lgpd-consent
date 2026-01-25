@@ -348,7 +348,7 @@ concurrency:
 
 ---
 
-## � Acesso a Artefatos de CI
+## 📦 Acesso a Artefatos de CI
 
 ### Via GitHub UI
 
@@ -390,7 +390,7 @@ curl -L -H "Authorization: token $GITHUB_TOKEN" \
 
 ### Formatos de Coverage Disponíveis
 
-Para detalhes completos sobre os formatos exportados, consulte [COVERAGE.md](COVERAGE.md).
+Para detalhes completos sobre os formatos exportados, consulte [COVERAGE.md](./COVERAGE.md).
 
 **Resumo**:
 - `lcov.info` - Codecov, Coveralls, SonarQube, IDE extensions
@@ -402,7 +402,7 @@ Para detalhes completos sobre os formatos exportados, consulte [COVERAGE.md](COV
 
 ---
 
-## �🚨 Troubleshooting
+## 🚨 Troubleshooting
 
 ### Versões desincronizadas
 

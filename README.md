@@ -5,7 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/react-lgpd-consent.svg)](https://www.npmjs.com/package/react-lgpd-consent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
-[![React 19 Ready](https://img.shields.io/badge/React%2019-StrictMode%20Ready-61dafb.svg)](./REACT19-STRICTMODE.md)
+[![React 19 Ready](https://img.shields.io/badge/React%2019-StrictMode%20Ready-61dafb.svg)](./doc/REACT19-STRICTMODE.md)
 [![Coverage](https://img.shields.io/codecov/c/github/lucianoedipo/react-lgpd-consent?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/lucianoedipo/react-lgpd-consent)
 
 **Documentação**: https://lucianoedipo.github.io/react-lgpd-consent  
@@ -155,7 +155,7 @@ O `ConsentProvider` do pacote principal ja traz banner, modal e botao flutuante 
 
 **💡 Dica:** Use as props `position`, `anchor` e `offset` para evitar colisões com footers fixos, chat widgets e outros elementos flutuantes da sua UI.
 
-Veja variações para Next.js/Vite e Consent Mode v2 em **[QUICKSTART.md](./QUICKSTART.md)** e detalhes de integrações em **[INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md)**.
+Veja variações para Next.js/Vite e Consent Mode v2 em **[QUICKSTART.md](./doc/QUICKSTART.md)** e detalhes de integrações em **[INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md)**.
 
 ---
 
@@ -202,7 +202,7 @@ export default defineConfig({
 })
 ```
 
-Mais detalhes e variações em **[RECIPES.md](./RECIPES.md)**.
+Mais detalhes e variações em **[RECIPES.md](./doc/RECIPES.md)**.
 
 ---
 
@@ -296,24 +296,24 @@ const audit = createConsentAuditEntry(
 )
 ```
 
-📖 **Veja mais:** [TROUBLESHOOTING.md](./TROUBLESHOOTING.md) | [API.md](./packages/react-lgpd-consent/API.md)
+📖 **Veja mais:** [TROUBLESHOOTING.md](./doc/TROUBLESHOOTING.md) | [API.md](./packages/react-lgpd-consent/API.md)
 
 ---
 
 ## 📚 Documentação
 
-- **[🚀 Quickstart](./QUICKSTART.md)**: Tutorial passo-a-passo
-- **[📖 Receitas](./RECIPES.md)**: Guia prático com casos de uso comuns (Next.js, CSP, Consent Mode v2)
-- **[🔧 Troubleshooting](./TROUBLESHOOTING.md)**: Soluções para problemas comuns
-- **[⚙️ Workflows CI/CD](./WORKFLOWS.md)**: Documentação dos workflows de release e deploy
-- **[📊 Coverage Reports](./COVERAGE.md)**: Relatórios de cobertura de testes e formatos CI
-- **[React 19 StrictMode](./REACT19-STRICTMODE.md)**: Compatibilidade e idempotência de efeitos
-- **[Versionamento e Release](./VERSIONING.md)**: Guia de Changesets e Turborepo
+- **[🚀 Quickstart](./doc/QUICKSTART.md)**: Tutorial passo-a-passo
+- **[📖 Receitas](./doc/RECIPES.md)**: Guia prático com casos de uso comuns (Next.js, CSP, Consent Mode v2)
+- **[🔧 Troubleshooting](./doc/TROUBLESHOOTING.md)**: Soluções para problemas comuns
+- **[⚙️ Workflows CI/CD](./doc/WORKFLOWS.md)**: Documentação dos workflows de release e deploy
+- **[📊 Coverage Reports](./doc/COVERAGE.md)**: Relatórios de cobertura de testes e formatos CI
+- **[React 19 StrictMode](./doc/REACT19-STRICTMODE.md)**: Compatibilidade e idempotência de efeitos
+- **[Versionamento e Release](./doc/VERSIONING.md)**: Guia de Changesets e Turborepo
 - **[API Reference](./packages/react-lgpd-consent/API.md)**: Referência completa
-- **[Conformidade LGPD](./CONFORMIDADE.md)**: Compliance e auditoria
+- **[Conformidade LGPD](./doc/CONFORMIDADE.md)**: Compliance e auditoria
 - **[Integrações](./packages/react-lgpd-consent/INTEGRACOES.md)**: GA4, GTM, Facebook Pixel
-- **[Arquitetura](./ARCHITECTURE.md)**: Detalhes do monorepo v0.5.0
-- **[Migração v0.4.x → v0.5.0](./MIGRATION.md)**: Guia de migração
+- **[Arquitetura](./doc/ARCHITECTURE.md)**: Detalhes do monorepo v0.5.0
+- **[Migração v0.4.x → v0.5.0](./doc/MIGRATION.md)**: Guia de migração
 - **[Changelog](./packages/react-lgpd-consent/CHANGELOG.md)**: Histórico de versões
 
 ### 🎨 Documentação Interativa (GitHub Pages)
