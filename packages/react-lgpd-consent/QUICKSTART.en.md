@@ -9,7 +9,7 @@ This quickstart gives everything you need to integrate `react-lgpd-consent` into
 - ✅ **Audit Logging** - `createConsentAuditEntry()` for compliance tracking
 - ✅ **Better DX** - Clear error messages when hooks are used incorrectly
 
-📖 **Documentation:** [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md) | [API.md](./API.md)
+📖 **Documentation:** [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md) | [API.md](./API.md)
 
 ---
 

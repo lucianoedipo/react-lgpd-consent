@@ -122,14 +122,14 @@ const audit = createConsentAuditEntry(
 )
 ```
 
-📖 **Saiba mais:** [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+📖 **Saiba mais:** [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md)
 
 ## 📚 Documentação
 
 Para documentação completa, exemplos e API reference:
 - [Documentação Principal](https://lucianoedipo.github.io/react-lgpd-consent/)
-- [Guia de Início Rápido](../../QUICKSTART.md)
-- [Conformidade LGPD](../../CONFORMIDADE.md)
+- [Guia de Início Rápido](../../doc/QUICKSTART.md)
+- [Conformidade LGPD](../../doc/CONFORMIDADE.md)
 
 ## 🔗 Pacotes Relacionados
 

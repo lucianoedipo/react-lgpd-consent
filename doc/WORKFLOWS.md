@@ -26,9 +26,36 @@ Este documento explica a estrutura otimizada e resiliente dos workflows de CI/CD
 2. Type-check (TypeScript)
 3. Tests com coverage
 4. Coverage threshold check
-5. Build de todos os pacotes
-6. Bundle size check
-7. Upload para Codecov
+5. Upload de artefatos de coverage (30 dias de retenção)
+6. Build de todos os pacotes
+7. Bundle size check
+8. Upload de build artifacts (apenas main, 1 dia)
+9. Upload para Codecov (com múltiplos formatos)
+10. Comentário automático de coverage em PRs
+
+**Artefatos Gerados**:
+
+- **coverage-reports-{sha}**: Relatórios completos de coverage em múltiplos formatos
+  - LCOV (`lcov.info`) - Para Codecov, Coveralls, SonarQube
+  - Cobertura XML (`cobertura-coverage.xml`) - Para Azure DevOps, GitLab
+  - Clover XML (`clover.xml`) - Para Jenkins, Atlassian
+  - JSON (`coverage-final.json`) - Para análise programática
+  - JSON Summary (`coverage-summary.json`) - Para badges e dashboards
+  - HTML (`lcov-report/`) - Para visualização local
+  - Retenção: 30 dias
+  
+- **build-artifacts-{sha}**: Pacotes compilados (apenas em `main`)
+  - Todos os `dist/` de cada pacote
+  - Retenção: 1 dia
+
+**Comentários em PRs**:
+
+Em cada Pull Request, o CI adiciona automaticamente um comentário com:
+- Resumo visual de coverage
+- Comparação com a branch base
+- Badge de status (✅/⚠️/❌)
+- Breakdown detalhado por métrica
+- Indicadores visuais de progresso
 
 **Otimizações**:
 
@@ -318,6 +345,60 @@ concurrency:
   group: publish-${{ github.ref }}
   cancel-in-progress: false
 ```
+
+---
+
+## 📦 Acesso a Artefatos de CI
+
+### Via GitHub UI
+
+1. Acesse a aba **Actions** no repositório
+2. Clique no workflow run desejado (ex: CI #123)
+3. Role até a seção **Artifacts** no final da página
+4. Clique no artefato desejado para download:
+   - `coverage-reports-{sha}` - Relatórios de coverage completos
+   - `build-artifacts-{sha}` - Pacotes compilados (apenas main)
+
+### Via GitHub CLI
+
+```bash
+# Listar runs recentes
+gh run list --workflow=ci.yml
+
+# Ver detalhes de um run específico
+gh run view <run-id>
+
+# Baixar artefato de coverage
+gh run download <run-id> -n coverage-reports-<sha>
+
+# Baixar todos os artefatos de um run
+gh run download <run-id>
+```
+
+### Via API do GitHub
+
+```bash
+# Listar artefatos de um workflow run
+curl -H "Authorization: token $GITHUB_TOKEN" \
+  https://api.github.com/repos/lucianoedipo/react-lgpd-consent/actions/runs/<run-id>/artifacts
+
+# Download direto de um artefato
+curl -L -H "Authorization: token $GITHUB_TOKEN" \
+  https://api.github.com/repos/lucianoedipo/react-lgpd-consent/actions/artifacts/<artifact-id>/zip \
+  -o coverage.zip
+```
+
+### Formatos de Coverage Disponíveis
+
+Para detalhes completos sobre os formatos exportados, consulte [COVERAGE.md](./COVERAGE.md).
+
+**Resumo**:
+- `lcov.info` - Codecov, Coveralls, SonarQube, IDE extensions
+- `cobertura-coverage.xml` - Azure DevOps, GitLab CI
+- `clover.xml` - Jenkins, Atlassian Bamboo
+- `coverage-final.json` - Análise programática
+- `coverage-summary.json` - Badges e dashboards
+- `lcov-report/index.html` - Visualização interativa
 
 ---
 

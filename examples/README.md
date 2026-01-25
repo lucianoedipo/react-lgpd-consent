@@ -11,7 +11,7 @@ Todos os exemplos foram atualizados com:
 - ✅ **Auditoria** - `createConsentAuditEntry()` para compliance
 - ✅ **Mensagens de erro claras** - Hooks com erros em pt-BR
 
-📖 **Documentação:** [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) | [API.md](../packages/react-lgpd-consent/API.md)
+📖 **Documentação:** [TROUBLESHOOTING.md](../doc/TROUBLESHOOTING.md) | [API.md](../packages/react-lgpd-consent/API.md)
 
 ---
 
@@ -157,9 +157,9 @@ import { ConsentProvider, PreferencesModal } from '@react-lgpd-consent/mui'
 
 ## 📖 Documentação
 
-- [Guia de Início Rápido](../QUICKSTART.md)
+- [Guia de Início Rápido](../doc/QUICKSTART.md)
 - [API Completa](../packages/react-lgpd-consent/API.md)
-- [Guia de Migração](../MIGRATION.md)
+- [Guia de Migração](../doc/MIGRATION.md)
 - [Integrações](../packages/react-lgpd-consent/INTEGRACOES.md)
 
 ## 🐛 Troubleshooting

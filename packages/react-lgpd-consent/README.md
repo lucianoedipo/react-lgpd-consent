@@ -118,7 +118,7 @@ const audit = createConsentAuditEntry(state, {
 })
 ```
 
-📖 **Documentação completa:** [API.md](./API.md) | [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+📖 **Documentação completa:** [API.md](./API.md) | [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md)
 
 ---
 

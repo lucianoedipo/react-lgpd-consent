@@ -1,1 +1,5 @@
 * text=auto eol=lf
+
+# Coverage report formats
+coverage/** linguist-generated=true
+lcov.info linguist-generated=true
