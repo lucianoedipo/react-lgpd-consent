@@ -1,5 +1,11 @@
 # Changelog - @react-lgpd-consent/core
 
+## 0.9.3
+
+### Patch Changes
+
+- [`e567094`](https://github.com/lucianoedipo/react-lgpd-consent/commit/e567094c999a9727cdbf6c31362d14759f7eba2e) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - chore: atualização de dependências
+
 ## 0.9.2
 
 ### Patch Changes
