@@ -30,7 +30,6 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          persist-credentials: true
 
       # Garantir que tags estejam disponíveis
       - name: Fetch all tags
@@ -39,7 +38,6 @@ jobs:
       # Setup PNPM
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-
 
       # Setup Node
       - name: Setup Node.js
