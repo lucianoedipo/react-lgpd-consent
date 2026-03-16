@@ -92,8 +92,11 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
-      - name: Publish to NPM with Provenance (Trusted Publishing)
+      - name: Publish to NPM with Provenance
         run: pnpm run changeset:publish --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

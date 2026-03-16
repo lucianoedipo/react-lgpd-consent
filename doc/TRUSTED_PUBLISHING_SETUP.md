@@ -1,8 +1,42 @@
-# Configuração do Trusted Publishing no npm
+# Configuração de Publicação Segura no npm
 
-Este guia explica como configurar o **Trusted Publishing** (OIDC) para publicação automática sem tokens.
+Este guia explica duas formas de publicar pacotes de forma segura:
 
-## 🔒 O que é Trusted Publishing?
+1. **Token de Automação** (mais rápido, funciona imediatamente)
+2. **Trusted Publishing OIDC** (mais seguro, requer configuração no npm)
+
+## 🚀 Opção 1: Token de Automação (Recomendado para início rápido)
+
+### Vantagens
+
+- ✅ Funciona imediatamente após configuração
+- ✅ Suporta provenance (`--provenance`)
+- ✅ Não requer 2FA/OTP em CI
+- ✅ Configuração simples
+
+### Passos
+
+1. **Criar Token de Automação no npm:**
+   - Acesse: https://www.npmjs.com/settings/[seu-usuario]/tokens
+   - Clique em **"Generate New Token"**
+   - Selecione **"Automation"** (não Classic!)
+   - Dê um nome: `GitHub Actions CI`
+   - **Copie o token** (você só verá uma vez!)
+
+2. **Adicionar ao GitHub Secrets:**
+   - Vá em: https://github.com/lucianoedipo/react-lgpd-consent/settings/secrets/actions
+   - Clique em **"New repository secret"** (ou edite o existente)
+   - Nome: `NPM_TOKEN`
+   - Valor: cole o token de automação
+   - Salve
+
+3. **Pronto!** O workflow já está configurado para usar o token.
+
+---
+
+## 🔒 Opção 2: Trusted Publishing (OIDC) - Mais Seguro
+
+### O que é Trusted Publishing?
 
 É um método de autenticação que usa **OpenID Connect (OIDC)** para verificar a identidade do GitHub Actions diretamente com o npm, eliminando a necessidade de tokens de longa duração.
 
@@ -13,7 +47,12 @@ Este guia explica como configurar o **Trusted Publishing** (OIDC) para publicaç
 - ✅ Provenance automático (assinatura criptográfica dos pacotes)
 - ✅ Recomendação oficial do npm
 
-## 📝 Passo a Passo
+**Desvantagens:**
+
+- ⚠️ Requer configuração manual em cada pacote no npm
+- ⚠️ Mais complexo para configurar inicialmente
+
+## 📝 Passo a Passo (Opção 2)
 
 ### 1. Configurar cada pacote no npm
 
@@ -43,19 +82,28 @@ Você precisa configurar o Trusted Publishing para **cada pacote** individualmen
 1. Acesse: https://www.npmjs.com/package/react-lgpd-consent
 2. Repita os mesmos passos acima
 
-### 2. Remover o NPM_TOKEN do GitHub (Opcional)
+### 2. Remover o NPM_TOKEN do workflow (Apenas para OIDC puro)
 
-Como agora você não precisa mais do token, pode removê-lo:
+**⚠️ Atenção:** Só faça isso se configurou o Trusted Publishing em TODOS os 3 pacotes!
 
-1. Acesse: https://github.com/lucianoedipo/react-lgpd-consent/settings/secrets/actions
-2. Encontre `NPM_TOKEN`
-3. Clique em **"Remove"**
+Se quiser usar **apenas OIDC** (sem fallback de token):
 
-**Nota:** Você pode mantê-lo inicialmente como fallback durante os testes.
+1. Remova o `NPM_TOKEN` do GitHub Secrets:
+   - https://github.com/lucianoedipo/react-lgpd-consent/settings/secrets/actions
+
+2. Remova as linhas `env:` do workflow `publish.yml`:
+   ```yaml
+   # Remover estas linhas:
+   env:
+     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+   ```
+
+**Nota:** O workflow atual mantém o token como fallback, o que é recomendado durante a transição.
 
 ### 3. Testar a Publicação
 
-Após configurar, faça um teste:
+Após configurar o Trusted Publishing, faça um teste:
 
 1. **Crie um PR de version** (se ainda não existir):
 
@@ -125,12 +173,22 @@ Procure pela seção `publishConfig` ou acesse a página do pacote no npm - ver�
 
 ## 🎯 Status da Configuração
 
+**Escolha uma opção:**
+
+### Opção 1: Token de Automação (início rápido)
+
+- [ ] Token de automação criado no npm
+- [ ] `NPM_TOKEN` adicionado aos GitHub Secrets
+- [x] Workflow configurado
+- [ ] Teste de publicação realizado
+
+### Opção 2: Trusted Publishing OIDC (mais seguro)
+
 - [ ] `@react-lgpd-consent/core` configurado no npm
 - [ ] `@react-lgpd-consent/mui` configurado no npm
 - [ ] `react-lgpd-consent` configurado no npm
-- [x] Workflow atualizado (já feito!)
+- [x] Workflow configurado com fallback
 - [ ] Teste de publicação realizado
-- [ ] NPM_TOKEN removido do GitHub (opcional)
 
 ---
 
