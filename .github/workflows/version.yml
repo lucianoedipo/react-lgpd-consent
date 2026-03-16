@@ -30,6 +30,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          token: ${{ secrets.PAT_TOKEN || github.token }}
 
       # Garantir que tags estejam disponíveis
       - name: Fetch all tags
@@ -90,6 +91,8 @@ jobs:
       # Criar tag de release (somente se ainda não existir)
       - name: Create git tag
         if: steps.detect.outputs.is_release_commit == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN || github.token }}
         run: |
           VERSION="${{ steps.extract.outputs.version }}"
 
