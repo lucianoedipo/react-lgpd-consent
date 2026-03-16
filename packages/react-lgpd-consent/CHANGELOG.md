@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.9.4
+
+### Patch Changes
+
+- [`e85a8c9`](https://github.com/lucianoedipo/react-lgpd-consent/commit/e85a8c936895af2c38ff2842f892058be4fc9ec7) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - ## Manutenção e Melhorias
+
+  ### 🔧 Refatorações
+  - Melhoria na clareza das etapas e mensagens do workflow de versionamento
+  - Reestruturação do código para melhor legibilidade e manutenibilidade
+  - Remoção da especificação de versão na instalação do pnpm
+
+  ### 📦 Atualizações de Dependências
+  - Atualização do typescript-eslint (8.54.0 → 8.55.0)
+  - Atualização do typedoc (0.28.16 → 0.28.17)
+  - Atualização do @mui/material (7.3.7 → 7.3.8)
+  - Atualização do storybook (10.2.7 → 10.2.8)
+  - Atualização do @types/node (25.2.2 → 25.2.3)
+  - Atualização do @chromatic-com/storybook (5.0.0 → 5.0.1)
+  - Atualização do eslint-plugin-jest (29.12.2 → 29.13.0)
+
+- Updated dependencies [[`e85a8c9`](https://github.com/lucianoedipo/react-lgpd-consent/commit/e85a8c936895af2c38ff2842f892058be4fc9ec7)]:
+  - @react-lgpd-consent/core@0.9.4
+  - @react-lgpd-consent/mui@0.9.4
+
 ## 0.9.3
 
 ### Patch Changes
