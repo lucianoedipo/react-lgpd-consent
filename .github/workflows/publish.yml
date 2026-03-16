@@ -70,17 +70,17 @@ jobs:
           CORE_VERSION=$(node -p "require('./packages/core/package.json').version")
           MUI_VERSION=$(node -p "require('./packages/mui/package.json').version")
           MAIN_VERSION=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
-          
+
           echo "Expected: ${EXPECTED}"
           echo "Core: ${CORE_VERSION}"
           echo "MUI: ${MUI_VERSION}"
           echo "Main: ${MAIN_VERSION}"
-          
+
           if [ "${MAIN_VERSION}" != "${EXPECTED}" ]; then
             echo "❌ Version mismatch! Main package is ${MAIN_VERSION} but tag is ${EXPECTED}"
             exit 1
           fi
-          
+
           echo "✅ Version verification passed"
 
       - name: Run CI checks (Lint, Type-check, Test)
@@ -92,11 +92,8 @@ jobs:
       - name: Build packages
         run: pnpm run build
 
-      - name: Publish to NPM
-        run: pnpm run changeset:publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to NPM with Provenance (Trusted Publishing)
+        run: pnpm run changeset:publish --provenance
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -114,7 +111,7 @@ jobs:
 
             - [TypeDoc](https://lucianoedipo.github.io/react-lgpd-consent/)
             - [Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)
-            
+
             Veja o [CHANGELOG](https://github.com/lucianoedipo/react-lgpd-consent/blob/main/packages/react-lgpd-consent/CHANGELOG.md) para detalhes das mudanças.
           draft: false
           prerelease: false
