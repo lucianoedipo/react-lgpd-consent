@@ -62,8 +62,8 @@
     "test": "jest --config ../../jest.config.mjs"
   },
   "peerDependencies": {
-    "@mui/material": "^7.3.7",
-    "@mui/icons-material": "^7.3.7",
+    "@mui/material": "^7.3.9",
+    "@mui/icons-material": "^7.3.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
