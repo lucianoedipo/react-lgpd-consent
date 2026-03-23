@@ -48,7 +48,7 @@
     "@axe-core/react": "^4.11.1",
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.30.0",
-    "@chromatic-com/storybook": "5.0.1",
+    "@chromatic-com/storybook": "5.0.2",
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
     "@eslint/compat": "2.0.3",
