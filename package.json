@@ -95,7 +95,7 @@
     "ts-node": "10.9.2",
     "tsup": "8.5.1",
     "tsx": "^4.21.0",
-    "turbo": "^2.8.17",
+    "turbo": "^2.8.20",
     "typedoc": "0.28.17",
     "typescript": "5.9.3",
     "typescript-eslint": "8.57.0"
