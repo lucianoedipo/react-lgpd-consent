@@ -201,7 +201,7 @@ importers:
         specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
         version: 7.3.10(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.5))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.14)(react@19.2.5))(@types/react@19.2.14)(react@19.2.5))(@types/react@19.2.14)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@react-lgpd-consent/core':
-        specifier: workspace:^0.9.6
+        specifier: workspace:^0.9.7
         version: link:../core
       react:
         specifier: 19.2.5
@@ -213,10 +213,10 @@ importers:
   packages/react-lgpd-consent:
     dependencies:
       '@react-lgpd-consent/core':
-        specifier: workspace:^0.9.6
+        specifier: workspace:^0.9.7
         version: link:../core
       '@react-lgpd-consent/mui':
-        specifier: workspace:^0.9.6
+        specifier: workspace:^0.9.7
         version: link:../mui
       react:
         specifier: 19.2.5
@@ -9978,11 +9978,11 @@ snapshots:
   vite@7.1.12(@types/node@25.6.0)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       esbuild: 0.25.12
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
       postcss: 8.5.8
       rollup: 4.59.0
-      tinyglobby: 0.2.15
+      tinyglobby: 0.2.16
     optionalDependencies:
       '@types/node': 25.6.0
       fsevents: 2.3.3
