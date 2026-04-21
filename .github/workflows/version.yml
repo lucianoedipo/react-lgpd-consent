@@ -14,6 +14,7 @@ jobs:
   version:
     name: Create Version PR or Tag Release
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     permissions:
       contents: write
@@ -44,7 +45,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: pnpm
 
       # Instalar dependências
@@ -87,6 +88,16 @@ jobs:
           VERSION=$(node -p "require('./packages/react-lgpd-consent/package.json').version")
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "📦 Versão encontrada: v$VERSION"
+
+      - name: Validate release trigger token
+        if: steps.detect.outputs.is_release_commit == 'true'
+        env:
+          HAS_PAT_TOKEN: ${{ secrets.PAT_TOKEN != '' }}
+        run: |
+          if [ "${HAS_PAT_TOKEN}" != "true" ]; then
+            echo "::error::PAT_TOKEN não configurado. Tags criadas apenas com GITHUB_TOKEN não disparam os workflows publish.yml/docs.yml. Configure PAT_TOKEN ou dispare publish/docs manualmente."
+            exit 1
+          fi
 
       # Criar tag de release (somente se ainda não existir)
       - name: Create git tag

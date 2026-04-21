@@ -119,7 +119,7 @@ npm run dev
 5. Aceite cookies e verifique se scripts carregam
 
 ### 🔗 Referências
-- [Exemplos completos](./examples/README.md)
+- [Exemplos completos](../examples/README.md)
 - [QUICKSTART.md - Next.js App Router](./QUICKSTART.md#nextjs-1415-app-router-ssr-safe)
 
 ---
@@ -299,7 +299,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
 ### 🔗 Referências
 - [Google Consent Mode v2 Docs](https://developers.google.com/tag-platform/security/guides/consent)
-- [Exemplo: examples/next-app-router/components/ClientConsent.tsx](./examples/next-app-router/components/ClientConsent.tsx)
+- [Exemplo: examples/next-app-router/components/ClientConsent.tsx](../examples/next-app-router/components/ClientConsent.tsx)
 
 ---
 
@@ -595,7 +595,7 @@ npm run dev
 4. Aceite cookies e valide carga de scripts
 
 ### 🔗 Referências
-- [Exemplos completos](./examples/README.md)
+- [Exemplos completos](../examples/README.md)
 
 ---
 
@@ -820,7 +820,7 @@ import { ConsentProvider, EXPANDED_DEFAULT_TEXTS } from 'react-lgpd-consent'
 4. Verifique que nomes de categorias são traduzidos
 
 ### 🔗 Referências
-- [API.md - Textos Customizados](./packages/react-lgpd-consent/API.md)
+- [API.md - Textos Customizados](../packages/react-lgpd-consent/API.md)
 
 ---
 
@@ -884,17 +884,17 @@ import { ConsentProvider as ConsentProviderHeadless } from 'react-lgpd-consent/c
 ```
 
 ### 🔗 Referências
-- [API.md - Exports](./packages/react-lgpd-consent/API.md)
+- [API.md - Exports](../packages/react-lgpd-consent/API.md)
 
 ---
 
 ## 🔗 Links Úteis
 
 - [QUICKSTART.md](./QUICKSTART.md) - Início rápido geral
-- [INTEGRACOES.md](./packages/react-lgpd-consent/INTEGRACOES.md) - Integrações nativas
+- [INTEGRACOES.md](../packages/react-lgpd-consent/INTEGRACOES.md) - Integrações nativas
 - [CONFORMIDADE.md](./CONFORMIDADE.md) - Conformidade LGPD
-- [API.md](./packages/react-lgpd-consent/API.md) - Referência completa da API
-- [Examples](./examples/README.md) - Projetos completos
+- [API.md](../packages/react-lgpd-consent/API.md) - Referência completa da API
+- [Examples](../examples/README.md) - Projetos completos
 
 ---
 

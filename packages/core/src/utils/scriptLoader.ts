@@ -28,6 +28,12 @@ export interface LoadScriptOptions {
 
 const DEFAULT_POLL_INTERVAL = 100
 
+function scheduleConsentCheck(callback: () => void, delay: number) {
+  const timer = setTimeout(callback, delay)
+  const maybeNodeTimer = timer as ReturnType<typeof setTimeout> & { unref?: () => void }
+  maybeNodeTimer.unref?.()
+}
+
 function resolveCookieNames(preferred?: string): string[] {
   const inferred =
     (globalThis as unknown as { __LGPD_CONSENT_COOKIE__?: string }).__LGPD_CONSENT_COOKIE__ ?? null
@@ -168,12 +174,12 @@ export function loadScript(
     const checkConsent = () => {
       const consent = parseConsentFromCookie(names)
       if (!consent) {
-        setTimeout(checkConsent, pollInterval)
+        scheduleConsentCheck(checkConsent, pollInterval)
         return
       }
 
       if (!hasCategoryConsent(consent, category)) {
-        setTimeout(checkConsent, pollInterval)
+        scheduleConsentCheck(checkConsent, pollInterval)
         return
       }
 

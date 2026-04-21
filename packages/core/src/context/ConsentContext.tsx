@@ -310,6 +310,9 @@ export function ConsentProvider({
   onConsentChange,
   onAuditLog,
 }: Readonly<ConsentProviderProps>) {
+  const storageDomain = storage?.domain
+  const storageNamespace = storage?.namespace
+  const storageVersion = storage?.version
   const mergedTexts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
   const texts = React.useMemo(
     () => resolveTexts(mergedTexts, { language, variant: textVariant }),
@@ -320,15 +323,15 @@ export function ConsentProvider({
     base.name =
       cookieOpts?.name ??
       buildConsentStorageKey({
-        namespace: storage?.namespace,
-        version: storage?.version,
+        namespace: storageNamespace,
+        version: storageVersion,
       })
-    if (!base.domain && storage?.domain) {
-      base.domain = storage.domain
+    if (!base.domain && storageDomain) {
+      base.domain = storageDomain
     }
     return base
-  }, [cookieOpts, storage?.domain, storage?.namespace, storage?.version])
-  const consentVersion = storage?.version?.trim() || '1'
+  }, [cookieOpts, storageDomain, storageNamespace, storageVersion])
+  const consentVersion = storageVersion?.trim() || '1'
 
   React.useEffect(() => {
     try {
@@ -388,6 +391,47 @@ export function ConsentProvider({
     }
   }, [PreferencesModalComponent])
 
+  React.useEffect(() => {
+    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
+    if (
+      isProd ||
+      globalThis.window === undefined ||
+      didWarnAboutMissingUI.current ||
+      PreferencesModalComponent ||
+      CookieBannerComponent ||
+      FloatingPreferencesButtonComponent
+    ) {
+      return
+    }
+
+    didWarnAboutMissingUI.current = true
+    console.warn(
+      '%c[@react-lgpd-consent/core] Aviso: Nenhum componente UI fornecido',
+      'color: #ff9800; font-weight: bold; font-size: 14px',
+      `\n\n` +
+        `⚠️  O ConsentProvider do core é HEADLESS (sem interface visual).\n` +
+        `    Usuários não verão banner de consentimento nem conseguirão gerenciar preferências.\n\n` +
+        `📦 Componentes UI ausentes:\n` +
+        `   • CookieBanner - Banner de consentimento inicial\n` +
+        `   • PreferencesModal - Modal de gerenciamento de preferências\n` +
+        `   • FloatingPreferencesButton - Botão para reabrir preferências\n\n` +
+        `✅ Soluções:\n\n` +
+        `   1️⃣  Usar pacote MUI (RECOMENDADO - componentes prontos):\n` +
+        `       import { ConsentProvider } from '@react-lgpd-consent/mui'\n` +
+        `       // Modal, banner e botão injetados automaticamente!\n\n` +
+        `   2️⃣  Fornecer seus próprios componentes:\n` +
+        `       <ConsentProvider\n` +
+        `         CookieBannerComponent={YourBanner}\n` +
+        `         PreferencesModalComponent={YourModal}\n` +
+        `         FloatingPreferencesButtonComponent={YourButton}\n` +
+        `       />\n\n` +
+        `   3️⃣  Usar headless (sem UI - intencional):\n` +
+        `       // Use hooks como useConsent() para criar UI customizada\n` +
+        `       // Ignore este aviso se for intencional\n\n` +
+        `📚 Docs: https://github.com/lucianoedipo/react-lgpd-consent#usage\n`,
+    )
+  }, [PreferencesModalComponent, CookieBannerComponent, FloatingPreferencesButtonComponent])
+
   // Boot state: prioriza initialState; senão, estado padrão (cookie será lido no useEffect)
   const boot = React.useMemo<ConsentState>(() => {
     if (initialState) return { ...initialState, isModalOpen: false }
@@ -407,12 +451,22 @@ export function ConsentProvider({
   // Ref usado para evitar persistência do cookie imediatamente após detecção de mudança de versão.
   // Isso é necessário para evitar gravar um estado antigo/obsoleto antes que o reset de consentimento seja concluído.
   const skipCookiePersistRef = React.useRef(false)
-  const [isHydrated, setIsHydrated] = React.useState(false)
+  const [isHydrated, markHydrated] = React.useReducer(() => true, false)
 
   // Ref para rastrear estado anterior (para detectar mudanças de preferências)
   const previousPreferencesRef = React.useRef<ConsentPreferences>(state.preferences)
   const auditInitEmittedRef = React.useRef(false)
   const previousConsentedAuditRef = React.useRef(state.consented)
+  const pendingCallbackTimersRef = React.useRef<Array<ReturnType<typeof setTimeout>>>([])
+
+  React.useEffect(() => {
+    return () => {
+      for (const timer of pendingCallbackTimersRef.current) {
+        clearTimeout(timer)
+      }
+      pendingCallbackTimersRef.current = []
+    }
+  }, [])
 
   // Hidratação imediata após mount (evita flash do banner)
   React.useEffect(() => {
@@ -428,7 +482,7 @@ export function ConsentProvider({
       }
     }
     // Marca como hidratado para permitir exibição do banner (se necessário)
-    setIsHydrated(true)
+    markHydrated()
   }, [cookie.name, initialState, finalCategoriesConfig]) // Executa apenas uma vez após mount
 
   React.useEffect(() => {
@@ -532,11 +586,13 @@ export function ConsentProvider({
   // Callbacks externos (com pequeno delay para animações)
   const prevConsented = React.useRef(state.consented)
   React.useEffect(() => {
-    if (!prevConsented.current && state.consented && onConsentGiven) {
-      // Pequeno delay para permitir animações de fechamento
-      setTimeout(() => onConsentGiven(state), 150)
-    }
+    const shouldNotifyConsentGiven = !prevConsented.current && state.consented && onConsentGiven
     prevConsented.current = state.consented
+    if (!shouldNotifyConsentGiven) return
+
+    // Pequeno delay para permitir animações de fechamento.
+    const timer = setTimeout(() => onConsentGiven(state), 150)
+    return () => clearTimeout(timer)
   }, [state, onConsentGiven])
 
   // Evento consent_updated: dispara quando preferências mudam
@@ -603,7 +659,13 @@ export function ConsentProvider({
         config: finalCategoriesConfig,
       })
       if (onPreferencesSaved) {
-        setTimeout(() => onPreferencesSaved(sanitized), 150)
+        const timer = setTimeout(() => {
+          onPreferencesSaved(sanitized)
+          pendingCallbackTimersRef.current = pendingCallbackTimersRef.current.filter(
+            (pendingTimer) => pendingTimer !== timer,
+          )
+        }, 150)
+        pendingCallbackTimersRef.current.push(timer)
       }
     }
     const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })
@@ -682,43 +744,7 @@ export function ConsentProvider({
                     texts={texts}
                     {...preferencesModalProps}
                   />
-                ) : (
-                  // Aviso de desenvolvimento: usuário pode estar esquecendo de fornecer componentes UI
-                  process.env.NODE_ENV === 'development' &&
-                  globalThis.window !== undefined &&
-                  !didWarnAboutMissingUI.current &&
-                  !CookieBannerComponent &&
-                  !FloatingPreferencesButtonComponent &&
-                  (() => {
-                    didWarnAboutMissingUI.current = true
-                    console.warn(
-                      '%c[@react-lgpd-consent/core] Aviso: Nenhum componente UI fornecido',
-                      'color: #ff9800; font-weight: bold; font-size: 14px',
-                      `\n\n` +
-                        `⚠️  O ConsentProvider do core é HEADLESS (sem interface visual).\n` +
-                        `    Usuários não verão banner de consentimento nem conseguirão gerenciar preferências.\n\n` +
-                        `📦 Componentes UI ausentes:\n` +
-                        `   • CookieBanner - Banner de consentimento inicial\n` +
-                        `   • PreferencesModal - Modal de gerenciamento de preferências\n` +
-                        `   • FloatingPreferencesButton - Botão para reabrir preferências\n\n` +
-                        `✅ Soluções:\n\n` +
-                        `   1️⃣  Usar pacote MUI (RECOMENDADO - componentes prontos):\n` +
-                        `       import { ConsentProvider } from '@react-lgpd-consent/mui'\n` +
-                        `       // Modal, banner e botão injetados automaticamente!\n\n` +
-                        `   2️⃣  Fornecer seus próprios componentes:\n` +
-                        `       <ConsentProvider\n` +
-                        `         CookieBannerComponent={YourBanner}\n` +
-                        `         PreferencesModalComponent={YourModal}\n` +
-                        `         FloatingPreferencesButtonComponent={YourButton}\n` +
-                        `       />\n\n` +
-                        `   3️⃣  Usar headless (sem UI - intencional):\n` +
-                        `       // Use hooks como useConsent() para criar UI customizada\n` +
-                        `       // Ignore este aviso se for intencional\n\n` +
-                        `📚 Docs: https://github.com/lucianoedipo/react-lgpd-consent#usage\n`,
-                    )
-                    return null
-                  })()
-                )}
+                ) : null}
 
                 {/* Overlay de bloqueio no Provider (opt-in via blockingStrategy) */}
                 {blocking && isHydrated && !state.consented && blockingStrategy === 'provider' && (

@@ -368,11 +368,11 @@ export default {
 
 ## 📖 Recursos
 
-- [README Principal](./README.md)
+- [README Principal](../README.md)
 - [Guia de Migração](./MIGRATION.md)
 - [Quickstart](./QUICKSTART.md)
-- [API Reference](./packages/react-lgpd-consent/API.md)
-- [CHANGELOG](./packages/react-lgpd-consent/CHANGELOG.md)
+- [API Reference](../packages/react-lgpd-consent/API.md)
+- [CHANGELOG](../packages/react-lgpd-consent/CHANGELOG.md)
 - [Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)
 - [TypeDoc](https://lucianoedipo.github.io/react-lgpd-consent/)
 

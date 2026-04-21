@@ -26,6 +26,7 @@ coverage/
 # ---- OS & editor artifacts ----
 .DS_Store
 .vscode/
+.codex
 *.log
 .turbo
 typedoc.temp.json

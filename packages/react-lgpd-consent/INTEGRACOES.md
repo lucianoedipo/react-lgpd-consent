@@ -546,4 +546,4 @@ const customConfig = createAnpdCategoriesConfig({
 - [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md) – Solução de problemas comuns
 - [CONFORMIDADE.md](../../doc/CONFORMIDADE.md) – Conformidade LGPD e ANPD
 
-**Problemas de integração?** Consulte [TROUBLESHOOTING.md - Seção de Integrations](../../TROUBLESHOOTING.md#integrações-de-terceiros).
+**Problemas de integração?** Consulte [TROUBLESHOOTING.md - Seção de Integrations](../../doc/TROUBLESHOOTING.md#integrações-de-terceiros).

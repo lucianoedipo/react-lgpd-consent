@@ -118,7 +118,7 @@ const audit = createConsentAuditEntry(state, {
 })
 ```
 
-📖 **Full documentation:** [API.md](./API.md) | [TROUBLESHOOTING.md](../../TROUBLESHOOTING.md)
+📖 **Full documentation:** [API.md](./API.md) | [TROUBLESHOOTING.md](../../doc/TROUBLESHOOTING.md)
 
 ---
 
@@ -134,9 +134,9 @@ const audit = createConsentAuditEntry(state, {
 
 ## Documentation & Examples
 
-- **[🚀 Quickstart](../../QUICKSTART.en.md)** - Step-by-step tutorial
-- **[📖 Recipes](../../RECIPES.md)** - Practical guide with common use cases (Next.js, CSP, Consent Mode v2)
-- **[⚙️ Workflows](../../WORKFLOWS.md)** - CI/CD workflows documentation
+- **[🚀 Quickstart](../../doc/QUICKSTART.en.md)** - Step-by-step tutorial
+- **[📖 Recipes](../../doc/RECIPES.md)** - Practical guide with common use cases (Next.js, CSP, Consent Mode v2)
+- **[⚙️ Workflows](../../doc/WORKFLOWS.md)** - CI/CD workflows documentation
 - **[API Reference](./API.md)** - Complete API reference
 - **[Integrations](./INTEGRACOES.md)** - GA4, GTM, Facebook Pixel
 - **[Storybook](https://lucianoedipo.github.io/react-lgpd-consent/storybook/)** - Interactive components

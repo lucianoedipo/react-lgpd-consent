@@ -19,6 +19,7 @@ jobs:
   publish:
     name: Publish packages to NPM
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     permissions:
       contents: write
       id-token: write
@@ -48,7 +49,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
 
@@ -76,8 +77,8 @@ jobs:
           echo "MUI: ${MUI_VERSION}"
           echo "Main: ${MAIN_VERSION}"
 
-          if [ "${MAIN_VERSION}" != "${EXPECTED}" ]; then
-            echo "❌ Version mismatch! Main package is ${MAIN_VERSION} but tag is ${EXPECTED}"
+          if [ "${CORE_VERSION}" != "${EXPECTED}" ] || [ "${MUI_VERSION}" != "${EXPECTED}" ] || [ "${MAIN_VERSION}" != "${EXPECTED}" ]; then
+            echo "❌ Version mismatch! Expected ${EXPECTED}, got core=${CORE_VERSION}, mui=${MUI_VERSION}, main=${MAIN_VERSION}"
             exit 1
           fi
 

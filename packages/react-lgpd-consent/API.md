@@ -841,4 +841,4 @@ await fetch('/api/audit', {
 })
 ```
 
-Consulte [TROUBLESHOOTING.md - Auditoria e log de consentimento](../../TROUBLESHOOTING.md#auditoria-e-log-de-consentimento) para exemplos completos de integração com backend.
+Consulte [TROUBLESHOOTING.md - Auditoria e log de consentimento](../../doc/TROUBLESHOOTING.md#auditoria-e-log-de-consentimento) para exemplos completos de integração com backend.

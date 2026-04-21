@@ -820,10 +820,10 @@ function App() {
 
 ## 📚 Recursos Adicionais
 
-- [README Principal](./README.md) - Documentação geral
-- [API Reference](./packages/react-lgpd-consent/API.md) - API completa
-- [Exemplos](./examples/README.md) - Exemplos práticos
-- [CHANGELOG](./packages/react-lgpd-consent/CHANGELOG.md) - Histórico de mudanças
+- [README Principal](../README.md) - Documentação geral
+- [API Reference](../packages/react-lgpd-consent/API.md) - API completa
+- [Exemplos](../examples/README.md) - Exemplos práticos
+- [CHANGELOG](../packages/react-lgpd-consent/CHANGELOG.md) - Histórico de mudanças
 
 ## ❓ Perguntas Frequentes
 
@@ -860,4 +860,4 @@ Após migrar:
 
 ---
 
-**Precisa de ajuda?** Abra uma [issue no GitHub](https://github.com/lucianoedipo/react-lgpd-consent/issues) ou consulte a [documentação completa](./README.md).
+**Precisa de ajuda?** Abra uma [issue no GitHub](https://github.com/lucianoedipo/react-lgpd-consent/issues) ou consulte a [documentação completa](../README.md).

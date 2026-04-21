@@ -10,11 +10,6 @@ on:
         description: 'Tag to deploy docs from (e.g., v0.6.4) or leave empty for current branch'
         required: false
         type: string
-      skip_ci_check:
-        description: 'Skip waiting for CI (use with caution)'
-        required: false
-        type: boolean
-        default: false
 
 permissions:
   contents: read
@@ -29,6 +24,7 @@ jobs:
   build:
     name: Build Documentation
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Extract version
         id: version
@@ -62,7 +58,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: Setup Turbo cache
@@ -84,36 +80,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-typescript-
 
-      - name: Wait for CI to complete
-        # Só espera CI em workflow_dispatch manual E quando skip_ci_check=false
-        # Push de tags NÃO precisa esperar CI (CI não roda em tags)
-        if: github.event_name == 'workflow_dispatch' && inputs.skip_ci_check != true && !startsWith(steps.version.outputs.tag, 'v')
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ steps.version.outputs.tag }}
-          check-name: 'Lint, Type-check, Test & Build'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Download build artifacts from CI
-        # Só tenta baixar artifacts em workflow_dispatch manual E quando skip_ci_check=false
-        # Push de tags builda localmente (próximo step)
-        if: github.event_name == 'workflow_dispatch' && inputs.skip_ci_check != true && !startsWith(steps.version.outputs.tag, 'v')
-        uses: dawidd6/action-download-artifact@v6
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          workflow: ci.yml
-          commit: ${{ github.sha }}
-          name: build-artifacts-${{ github.sha }}
-          path: .
-          if_no_artifact_found: ignore
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build packages (if no artifacts)
-        # Builda em push de tags OU quando workflow_dispatch com skip_ci_check=true
-        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.skip_ci_check == true)
+      - name: Build packages
         run: pnpm run build
 
       - name: Set TypeDoc version
@@ -323,6 +293,7 @@ jobs:
     name: Deploy to GitHub Pages
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write
