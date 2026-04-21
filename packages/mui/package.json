@@ -1,6 +1,6 @@
 {
   "name": "@react-lgpd-consent/mui",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "description": "Componentes Material-UI prontos para gerenciamento de consentimento LGPD",
   "keywords": [
     "lgpd",
@@ -73,6 +73,14 @@
     }
   },
   "dependencies": {
-    "@react-lgpd-consent/core": "workspace:^0.9.6"
-  }
+    "@react-lgpd-consent/core": "workspace:^0.9.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucianoedipo/react-lgpd-consent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
+  },
+  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/"
 }
