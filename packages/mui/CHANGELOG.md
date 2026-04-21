@@ -1,5 +1,18 @@
 # @react-lgpd-consent/mui
 
+## 0.9.7
+
+### Patch Changes
+
+- [`679fde1`](https://github.com/lucianoedipo/react-lgpd-consent/commit/679fde1f64980fde3026c9a4d5f548468e422f30) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - fix: preparar release após atualização de dependências
+  - Ajusta compatibilidade com as regras atuais do React Hooks/React Compiler.
+  - Mantém os peer dependencies compatíveis com React 18/19 e MUI 5/6/7.
+  - Corrige referências de documentação usadas pelo TypeDoc.
+  - Fortalece workflows de CI/CD contra falhas de fork, tags que não disparam release e versões desalinhadas.
+
+- Updated dependencies [[`679fde1`](https://github.com/lucianoedipo/react-lgpd-consent/commit/679fde1f64980fde3026c9a4d5f548468e422f30)]:
+  - @react-lgpd-consent/core@0.9.7
+
 ## 0.9.6
 
 ### Patch Changes
