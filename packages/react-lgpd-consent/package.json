@@ -139,7 +139,7 @@
     }
   ],
   "devDependencies": {
-    "@mui/icons-material": "7.3.9",
+    "@mui/icons-material": "7.3.10",
     "@mui/material": "7.3.10"
   }
 }
