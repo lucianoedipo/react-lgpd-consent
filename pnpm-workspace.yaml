@@ -6,4 +6,4 @@ allowBuilds:
 onlyBuiltDependencies:
   - esbuild
   - unrs-resolver
-minimumReleaseAge: 0
+minimumReleaseAge: 60
