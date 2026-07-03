@@ -36,6 +36,17 @@ describe('peerDepsCheck', () => {
       expect(result.warnings).toHaveLength(0)
     })
 
+    it('deve retornar ok:true em SSR mesmo com skipInProduction=false', () => {
+      // @ts-expect-error - Simulando SSR
+      globalThis.window = undefined
+
+      const result = checkPeerDeps({ skipInProduction: false, logWarnings: false })
+
+      expect(result.ok).toBe(true)
+      expect(result.errors).toHaveLength(0)
+      expect(result.warnings).toHaveLength(0)
+    })
+
     it('deve retornar ok:true quando não há problemas detectados', () => {
       const result = checkPeerDeps()
 
@@ -345,6 +356,21 @@ describe('peerDepsCheck', () => {
       // Com apenas 1 renderer, não deve detectar múltiplas instâncias
       expect(result.ok).toBe(true)
     })
+
+    it('deve cair no catch quando Object.getOwnPropertySymbols falha', () => {
+      const getOwnPropertySymbolsSpy = jest
+        .spyOn(Object, 'getOwnPropertySymbols')
+        .mockImplementation(() => {
+          throw new Error('Falha ao listar propriedades')
+        })
+
+      const result = checkPeerDeps({ logWarnings: false, skipInProduction: false })
+
+      expect(result.ok).toBe(true)
+      expect(result.errors).toHaveLength(0)
+
+      getOwnPropertySymbolsSpy.mockRestore()
+    })
   })
 
   describe('getPackageVersion - todos os caminhos', () => {
@@ -399,6 +425,37 @@ describe('peerDepsCheck', () => {
       expect(result.ok).toBe(true)
 
       globalThis.window = originalWindow
+    })
+
+    it('deve cair no catch quando leitura de propriedade lança erro', () => {
+      Object.defineProperty(globalThis.window, 'react', {
+        get() {
+          throw new Error('Falha de acesso')
+        },
+        configurable: true,
+      })
+
+      const result = checkPeerDeps({ logWarnings: false, skipInProduction: false })
+
+      expect(result.ok).toBe(true)
+      expect(result.errors).toHaveLength(0)
+
+      // @ts-expect-error - Limpeza
+      delete globalThis.window.react
+    })
+
+    it('deve usar fallback de versão quando react (lowercase) está disponível no window', () => {
+      // @ts-expect-error - Teste
+      globalThis.window.react = { version: '18.2.0' }
+      // @ts-expect-error - Garantir fallback em lowercase
+      delete globalThis.window.React
+
+      const result = checkPeerDeps({ logWarnings: false, skipInProduction: false })
+
+      expect(result.ok).toBe(true)
+
+      // @ts-expect-error - Limpeza
+      delete globalThis.window.react
     })
   })
 
@@ -697,6 +754,20 @@ describe('peerDepsCheck', () => {
 
       // @ts-expect-error - Limpeza
       delete globalThis.window.React
+    })
+
+    it('deve usar template completo de aviso de MUI em inglês quando logWarnings=true', () => {
+      setPeerDepsLocale('en')
+
+      // @ts-expect-error - Teste
+      globalThis.window['@mui/material'] = { version: '4.0.0' }
+
+      const result = checkPeerDeps({ logWarnings: true, skipInProduction: false })
+
+      expect(result.warnings[0]).toContain('Supported versions: 5.15.0+, 6.x or 7.x')
+
+      // @ts-expect-error - Limpeza
+      delete globalThis.window['@mui/material']
     })
   })
 })
