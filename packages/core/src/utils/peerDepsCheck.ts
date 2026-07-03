@@ -488,6 +488,7 @@ function getMessages(): PeerDepsMessages {
  */
 function detectMultipleReactInstances(): boolean {
   const currentWindow = globalThis.window
+  /* istanbul ignore next -- defensive guard for direct/internal invocation */
   if (currentWindow === undefined) return false
 
   try {
@@ -537,6 +538,7 @@ function detectMultipleReactInstances(): boolean {
  */
 function getPackageVersion(packageName: string): string | null {
   const currentWindow = globalThis.window
+  /* istanbul ignore next -- defensive guard for direct/internal invocation */
   if (currentWindow === undefined) return null
 
   try {
