@@ -329,7 +329,7 @@ export function CookieBanner({
   const { consented, acceptAll, rejectAll, openPreferences } = useConsent()
   const baseTexts = useConsentTexts()
   const mergedTexts = React.useMemo(
-    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    () => (textsProp ? { ...baseTexts, ...textsProp } : baseTexts),
     [baseTexts, textsProp],
   )
   const texts = React.useMemo(
@@ -573,19 +573,18 @@ export function CookieBanner({
     horizontal: SnackbarProps?.anchorOrigin?.horizontal ?? resolvedAnchor,
   }
 
-  const offsetSx: SxProps<Theme> | undefined =
-    resolvedOffset > 0
-      ? resolvedAnchorOrigin.vertical === 'top'
-        ? { top: resolvedOffset }
-        : { bottom: resolvedOffset }
-      : undefined
+  let offsetSx: SxProps<Theme> | undefined
+  if (resolvedOffset > 0) {
+    offsetSx =
+      resolvedAnchorOrigin.vertical === 'top' ? { top: resolvedOffset } : { bottom: resolvedOffset }
+  }
 
-  const snackbarSx: SxProps<Theme> | undefined =
-    offsetSx && SnackbarProps?.sx
-      ? Array.isArray(SnackbarProps.sx)
-        ? [offsetSx, ...SnackbarProps.sx]
-        : [offsetSx, SnackbarProps.sx]
-      : (offsetSx ?? SnackbarProps?.sx)
+  let snackbarSx: SxProps<Theme> | undefined = offsetSx ?? SnackbarProps?.sx
+  if (offsetSx && SnackbarProps?.sx) {
+    snackbarSx = Array.isArray(SnackbarProps.sx)
+      ? [offsetSx, ...SnackbarProps.sx]
+      : [offsetSx, SnackbarProps.sx]
+  }
 
   return (
     <Snackbar open={open} anchorOrigin={resolvedAnchorOrigin} {...SnackbarProps} sx={snackbarSx}>

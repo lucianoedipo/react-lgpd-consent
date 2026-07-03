@@ -57,8 +57,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check changeset
+        if: github.event_name == 'pull_request'
+        run: |
+          BASE_BRANCH="${{ github.base_ref }}"
+          git fetch origin "${BASE_BRANCH}" --depth=1
+          pnpm changeset status --since="origin/${BASE_BRANCH}"
+
       - name: Lint
-        run: pnpm run lint
+        run: pnpm run lint:ci
 
       - name: Type check
         run: pnpm run type-check

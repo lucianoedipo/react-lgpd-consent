@@ -10,6 +10,7 @@
 O pacote `@react-lgpd-consent/core` contém toda a lógica de negócio e gerenciamento de estado da biblioteca `react-lgpd-consent`, **sem dependências de componentes UI**.
 
 ### Ideal para:
+
 - ✅ Criar sua própria camada de UI customizada
 - ✅ Integrar com outras bibliotecas de componentes (não-MUI)
 - ✅ Aplicações headless que precisam apenas da lógica de consentimento
@@ -41,9 +42,9 @@ function App() {
 
 function MyCustomBanner() {
   const { consented, acceptAll, rejectAll } = useConsent()
-  
+
   if (consented) return null
-  
+
   return (
     <div>
       <p>Usamos cookies para melhorar sua experiência</p>
@@ -76,6 +77,7 @@ function MyCustomBanner() {
   })
   ```
 - **Consent Mode v2 nativo**: `createGoogleAnalyticsIntegration` e `createGoogleTagManagerIntegration` inicializam `consent=default` (denied) e enviam `consent=update` conforme as preferências do usuário, sem snippet manual.
+- **Compatibilidade com APIs atuais de terceiros**: GTM propaga `dataLayerName` na URL do container, Clarity usa Consent API v2, Intercom sincroniza `update`/`shutdown` e Zendesk Messaging sincroniza o intervalo de cookies.
 - **Observabilidade dev-only**: logs ordenados de execução para depurar a fila (silenciados em produção).
 
 ## 🆕 Novidades v0.7.0
@@ -107,7 +109,7 @@ const basic = createAnpdCategoriesConfig({ include: ['analytics'] })
 
 // Preset COMPLETO
 const full = createAnpdCategoriesConfig({
-  include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
+  include: ['analytics', 'marketing', 'functional', 'social', 'personalization'],
 })
 ```
 
@@ -118,7 +120,7 @@ import { createConsentAuditEntry } from '@react-lgpd-consent/core'
 
 const audit = createConsentAuditEntry(
   { consented: true, preferences: { analytics: true } },
-  { action: 'update', storageKey: 'lgpd-consent__v1' }
+  { action: 'update', storageKey: 'lgpd-consent__v1' },
 )
 ```
 
@@ -127,6 +129,7 @@ const audit = createConsentAuditEntry(
 ## 📚 Documentação
 
 Para documentação completa, exemplos e API reference:
+
 - [Documentação Principal](https://lucianoedipo.github.io/react-lgpd-consent/)
 - [Guia de Início Rápido](../../doc/QUICKSTART.md)
 - [Conformidade LGPD](../../doc/CONFORMIDADE.md)

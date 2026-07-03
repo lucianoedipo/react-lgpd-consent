@@ -17,15 +17,18 @@
 7. [UI Customizada sem MUI](#7-ui-customizada-sem-mui)
 8. [Múltiplos Idiomas](#8-múltiplos-idiomas)
 9. [Jest/Vitest (ESM + CJS)](#9-jestvitest-esm--cjs)
+10. [Integrações Externas e Consentimento](#10-integrações-externas-e-consentimento)
 
 ---
 
 ## 1. Next.js App Router (SSR)
 
 ### 🎯 Objetivo
+
 Implementar consentimento LGPD em Next.js 14/15 com App Router, garantindo SSR-safe e bloqueio de scripts até consentimento.
 
 ### ✅ Pré-requisitos
+
 - Next.js 14+ com App Router
 - Node.js 20+
 - Conta Google Analytics/GTM
@@ -54,24 +57,29 @@ Crie `app/components/ClientConsent.tsx`:
 ```tsx
 'use client'
 
-import { ConsentProvider, ConsentScriptLoader, createGoogleAnalyticsIntegration, createGoogleTagManagerIntegration } from 'react-lgpd-consent'
+import {
+  ConsentProvider,
+  ConsentScriptLoader,
+  createGoogleAnalyticsIntegration,
+  createGoogleTagManagerIntegration,
+} from 'react-lgpd-consent'
 import { useEffect } from 'react'
 
 const integrations = [
   createGoogleAnalyticsIntegration({ measurementId: process.env.NEXT_PUBLIC_GA_ID! }),
-  createGoogleTagManagerIntegration({ containerId: process.env.NEXT_PUBLIC_GTM_ID! })
+  createGoogleTagManagerIntegration({ containerId: process.env.NEXT_PUBLIC_GTM_ID! }),
 ]
 
 export function ClientConsent({ children }: { children: React.ReactNode }) {
   return (
     <ConsentProvider
       categories={{
-        enabledCategories: ['analytics', 'marketing', 'functional']
+        enabledCategories: ['analytics', 'marketing', 'functional'],
       }}
       cookieOptions={{
         domain: undefined, // ou '.seudominio.com.br' para subdomínios
         path: '/',
-        maxAge: 365 * 24 * 60 * 60 // 1 ano
+        maxAge: 365 * 24 * 60 * 60, // 1 ano
       }}
     >
       <ConsentScriptLoader integrations={integrations} />
@@ -90,16 +98,14 @@ import { ClientConsent } from './components/ClientConsent'
 
 export const metadata = {
   title: 'Minha App',
-  description: 'Exemplo com Consent Mode v2'
+  description: 'Exemplo com Consent Mode v2',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
       <body>
-        <ClientConsent>
-          {children}
-        </ClientConsent>
+        <ClientConsent>{children}</ClientConsent>
       </body>
     </html>
   )
@@ -119,6 +125,7 @@ npm run dev
 5. Aceite cookies e verifique se scripts carregam
 
 ### 🔗 Referências
+
 - [Exemplos completos](../examples/README.md)
 - [QUICKSTART.md - Next.js App Router](./QUICKSTART.md#nextjs-1415-app-router-ssr-safe)
 
@@ -127,6 +134,7 @@ npm run dev
 ## 2. Configuração de Subdomínios
 
 ### 🎯 Objetivo
+
 Compartilhar consentimento entre subdomínios (ex: `www.exemplo.com` e `blog.exemplo.com`).
 
 ### 📝 Passo a Passo
@@ -141,7 +149,7 @@ Configure `cookieOptions.domain` com o domínio principal (prefixo `.`):
   cookieOptions={{
     domain: '.exemplo.com.br', // ← Atenção ao ponto inicial
     path: '/',
-    maxAge: 365 * 24 * 60 * 60
+    maxAge: 365 * 24 * 60 * 60,
   }}
 >
   {/* ... */}
@@ -180,10 +188,12 @@ cookieOptions={{
 5. Verifique que o consentimento persiste (cookie compartilhado)
 
 ### ⚠️ Observações
+
 - **Localhost**: não suporta subdomínios com `.` prefix; teste em staging
 - **SameSite**: `Lax` é recomendado; evite `None` sem necessidade
 
 ### 🔗 Referências
+
 - [MDN - Domain Cookie Attribute](https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#define_where_cookies_are_sent)
 
 ---
@@ -191,6 +201,7 @@ cookieOptions={{
 ## 3. Google Consent Mode v2
 
 ### 🎯 Objetivo
+
 Implementar Google Consent Mode v2 para sincronizar sinais de consentimento com GTM/GA4.
 
 ### 📝 Passo a Passo
@@ -220,7 +231,7 @@ export function GtagConsentBootstrap() {
         analytics_storage: 'denied',
         personalization_storage: 'denied',
         functionality_storage: 'denied',
-        security_storage: 'granted' // sempre permitido
+        security_storage: 'granted', // sempre permitido
       })
     }
   }, [])
@@ -258,7 +269,7 @@ export function ConsentModeSync() {
       ad_personalization: preferences.marketing ? 'granted' : 'denied',
       analytics_storage: preferences.analytics ? 'granted' : 'denied',
       personalization_storage: preferences.functional ? 'granted' : 'denied',
-      functionality_storage: preferences.functional ? 'granted' : 'denied'
+      functionality_storage: preferences.functional ? 'granted' : 'denied',
     })
   }, [preferences, consented])
 
@@ -298,7 +309,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 4. No GTM Preview Mode, confirme que os sinais estão corretos
 
 ### 🔗 Referências
+
 - [Google Consent Mode v2 Docs](https://developers.google.com/tag-platform/security/guides/consent)
+- [Google tag (gtag.js)](https://developers.google.com/tag-platform/gtagjs)
 - [Exemplo: examples/next-app-router/components/ClientConsent.tsx](../examples/next-app-router/components/ClientConsent.tsx)
 
 ---
@@ -306,6 +319,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 ## 4. Bump de Versão de Consentimento
 
 ### 🎯 Objetivo
+
 Forçar usuários a reconsentir quando a política de privacidade mudar.
 
 ### 📝 Passo a Passo
@@ -342,7 +356,7 @@ Mantenha um registro:
 export const CONSENT_VERSIONS = {
   '1.0.0': '01/01/2024 - Política inicial',
   '1.1.0': '15/03/2024 - Adicionado Hotjar',
-  '2.0.0': '01/12/2024 - Nova política LGPD' // ← Atual
+  '2.0.0': '01/12/2024 - Nova política LGPD', // ← Atual
 }
 
 export const CURRENT_VERSION = '2.0.0'
@@ -351,7 +365,7 @@ export const CURRENT_VERSION = '2.0.0'
 ```tsx
 import { CURRENT_VERSION } from './versions'
 
-<ConsentProvider cookieVersion={CURRENT_VERSION} {...props}>
+;<ConsentProvider cookieVersion={CURRENT_VERSION} {...props}>
   {children}
 </ConsentProvider>
 ```
@@ -367,10 +381,11 @@ Customize o banner para informar sobre mudanças:
   customTexts={{
     banner: {
       title: '🔄 Política de Privacidade Atualizada',
-      message: 'Atualizamos nossa política de privacidade. Por favor, revise suas preferências de cookies.',
+      message:
+        'Atualizamos nossa política de privacidade. Por favor, revise suas preferências de cookies.',
       acceptButton: 'Aceitar nova política',
-      rejectButton: 'Revisar opções'
-    }
+      rejectButton: 'Revisar opções',
+    },
   }}
 >
   {/* ... */}
@@ -387,11 +402,13 @@ Customize o banner para informar sobre mudanças:
 6. Banner deve reaparecer solicitando novo consentimento
 
 ### ⚠️ Observações
+
 - **SemVer**: use versionamento semântico (major.minor.patch)
 - **Breaking Changes**: apenas major bumps (2.0.0 → 3.0.0) invalidam completamente
 - **Auditoria**: o cookie mantém `consentDate` e `lastUpdate` para auditoria
 
 ### 🔗 Referências
+
 - [CONFORMIDADE.md - Auditoria](./CONFORMIDADE.md)
 
 ---
@@ -399,6 +416,7 @@ Customize o banner para informar sobre mudanças:
 ## 5. Content Security Policy (CSP) e Nonce
 
 ### 🎯 Objetivo
+
 Implementar CSP rigoroso permitindo apenas scripts autorizados via nonce.
 
 ### 📝 Passo a Passo
@@ -419,11 +437,11 @@ export function middleware(request: NextRequest) {
 
   response.headers.set(
     'Content-Security-Policy',
-    `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com; object-src 'none'; base-uri 'self';`
+    `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://www.google-analytics.com; object-src 'none'; base-uri 'self';`,
   )
-  
+
   response.headers.set('x-nonce', nonce)
-  
+
   return response
 }
 ```
@@ -441,9 +459,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="pt-BR">
       <body>
-        <ClientConsent nonce={nonce}>
-          {children}
-        </ClientConsent>
+        <ClientConsent nonce={nonce}>{children}</ClientConsent>
       </body>
     </html>
   )
@@ -462,7 +478,7 @@ import { ConsentScriptLoader } from 'react-lgpd-consent'
 export function ClientConsent({ nonce, children }: { nonce: string; children: React.ReactNode }) {
   return (
     <ConsentProvider {...}>
-      <ConsentScriptLoader 
+      <ConsentScriptLoader
         integrations={integrations}
         scriptAttributes={{ nonce }} // ← Propaga nonce para scripts
       />
@@ -499,12 +515,14 @@ Content-Security-Policy: ... report-uri /api/csp-report
 4. Teste bloqueio: remova nonce de um script e confirme erro CSP
 
 ### ⚠️ Observações
+
 - **Nonce**: deve ser único por request (não reutilizar)
 - **SSR**: nonce deve ser gerado no servidor, nunca no client
 - **Inline Scripts**: sempre use nonce para scripts inline
 - **Hashes**: alternativa a nonce para scripts estáticos
 
 ### 🔗 Referências
+
 - [MDN - Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP)
 - [Next.js - Nonce](https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy)
 
@@ -513,6 +531,7 @@ Content-Security-Policy: ... report-uri /api/csp-report
 ## 6. Vite + React SPA
 
 ### 🎯 Objetivo
+
 Implementar consentimento LGPD em SPA Vite + React.
 
 ### 📝 Passo a Passo
@@ -542,23 +561,25 @@ Atualize `src/main.tsx`:
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { ConsentProvider, ConsentScriptLoader, createGoogleAnalyticsIntegration } from 'react-lgpd-consent'
+import {
+  ConsentProvider,
+  ConsentScriptLoader,
+  createGoogleAnalyticsIntegration,
+} from 'react-lgpd-consent'
 
 const integrations = [
-  createGoogleAnalyticsIntegration({ 
-    measurementId: import.meta.env.VITE_GA_ID 
-  })
+  createGoogleAnalyticsIntegration({
+    measurementId: import.meta.env.VITE_GA_ID,
+  }),
 ]
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ConsentProvider
-      categories={{ enabledCategories: ['analytics', 'marketing'] }}
-    >
+    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       <ConsentScriptLoader integrations={integrations} />
       <App />
     </ConsentProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 )
 ```
 
@@ -595,6 +616,7 @@ npm run dev
 4. Aceite cookies e valide carga de scripts
 
 ### 🔗 Referências
+
 - [Exemplos completos](../examples/README.md)
 
 ---
@@ -602,6 +624,7 @@ npm run dev
 ## 7. UI Customizada sem MUI
 
 ### 🎯 Objetivo
+
 Criar UI de consentimento personalizada usando apenas `@react-lgpd-consent/core` (headless).
 
 ### 📝 Passo a Passo
@@ -667,7 +690,7 @@ export function CustomPreferencesModal() {
     <div className="modal-overlay">
       <div className="modal">
         <h2>Preferências de Cookies</h2>
-        {categories.map(cat => (
+        {categories.map((cat) => (
           <label key={cat.id}>
             <input
               type="checkbox"
@@ -692,6 +715,7 @@ export function CustomPreferencesModal() {
 3. Teste todos os fluxos (aceitar/recusar/personalizar)
 
 ### 🔗 Referências
+
 - [packages/core/README.md](../packages/core/README.md)
 - [ARCHITECTURE.md - Headless Core](./ARCHITECTURE.md)
 
@@ -700,6 +724,7 @@ export function CustomPreferencesModal() {
 ## 8. Múltiplos Idiomas
 
 ### 🎯 Objetivo
+
 Implementar consentimento com suporte a múltiplos idiomas (pt-BR, en-US, es-ES).
 
 ### 📝 Passo a Passo
@@ -714,27 +739,27 @@ export const translations = {
       title: 'Este site usa cookies',
       message: 'Usamos cookies para melhorar sua experiência. Aceita?',
       acceptButton: 'Aceitar Tudo',
-      rejectButton: 'Recusar'
+      rejectButton: 'Recusar',
     },
     categories: {
       necessary: { name: 'Necessários', description: 'Essenciais para funcionamento' },
       analytics: { name: 'Analíticos', description: 'Análise de uso' },
-      marketing: { name: 'Marketing', description: 'Publicidade personalizada' }
-    }
+      marketing: { name: 'Marketing', description: 'Publicidade personalizada' },
+    },
   },
   'en-US': {
     banner: {
       title: 'This website uses cookies',
       message: 'We use cookies to improve your experience. Accept?',
       acceptButton: 'Accept All',
-      rejectButton: 'Reject'
+      rejectButton: 'Reject',
     },
     categories: {
       necessary: { name: 'Necessary', description: 'Essential for operation' },
       analytics: { name: 'Analytics', description: 'Usage analysis' },
-      marketing: { name: 'Marketing', description: 'Personalized advertising' }
-    }
-  }
+      marketing: { name: 'Marketing', description: 'Personalized advertising' },
+    },
+  },
 }
 ```
 
@@ -774,8 +799,8 @@ export function App() {
         enabledCategories: ['analytics', 'marketing'],
         customCategories: [
           { id: 'analytics', ...texts.categories.analytics },
-          { id: 'marketing', ...texts.categories.marketing }
-        ]
+          { id: 'marketing', ...texts.categories.marketing },
+        ],
       }}
       texts={texts}
     >
@@ -793,7 +818,7 @@ export function App() {
 ```tsx
 import { ConsentProvider, EXPANDED_DEFAULT_TEXTS } from 'react-lgpd-consent'
 
-<ConsentProvider
+;<ConsentProvider
   categories={{ enabledCategories: ['analytics'] }}
   texts={EXPANDED_DEFAULT_TEXTS}
   language={locale === 'en-US' ? 'en' : 'pt'}
@@ -820,6 +845,7 @@ import { ConsentProvider, EXPANDED_DEFAULT_TEXTS } from 'react-lgpd-consent'
 4. Verifique que nomes de categorias são traduzidos
 
 ### 🔗 Referências
+
 - [API.md - Textos Customizados](../packages/react-lgpd-consent/API.md)
 
 ---
@@ -827,9 +853,11 @@ import { ConsentProvider, EXPANDED_DEFAULT_TEXTS } from 'react-lgpd-consent'
 ## 9. Jest/Vitest (ESM + CJS)
 
 ### 🎯 Objetivo
+
 Evitar falhas em Jest CJS ao importar pacotes ESM publicados como dual build.
 
 ### ✅ Pré-requisitos
+
 - Jest 29+ ou Vitest 1+
 - Babel ou ts-jest configurado
 
@@ -840,7 +868,10 @@ Evitar falhas em Jest CJS ao importar pacotes ESM publicados como dual build.
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
+    '^.+\\.(t|j)sx?$': [
+      'babel-jest',
+      { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] },
+    ],
   },
   transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
 }
@@ -884,7 +915,66 @@ import { ConsentProvider as ConsentProviderHeadless } from 'react-lgpd-consent/c
 ```
 
 ### 🔗 Referências
+
 - [API.md - Exports](../packages/react-lgpd-consent/API.md)
+
+---
+
+## 10. Integrações Externas e Consentimento
+
+### 🎯 Objetivo
+
+Configurar integrações que exigem sincronização de consentimento depois do carregamento do script, sem atualizar MUI ou TypeScript.
+
+### Microsoft Clarity Consent API v2
+
+```tsx
+const integrations = [
+  createClarityIntegration({
+    projectId: 'CLARITY_PROJECT_ID',
+    analyticsStorageCategory: 'analytics',
+    adStorageCategory: 'marketing',
+  }),
+]
+```
+
+A integração envia `clarity('consentv2', { ad_Storage, analytics_Storage })` quando as preferências mudam.
+
+### Intercom em SPA
+
+```tsx
+const integrations = [
+  createIntercomIntegration({
+    app_id: 'workspace_id',
+    api_base: 'https://api-iam.eu.intercom.io',
+    settings: { custom_launcher_selector: '#help' },
+  }),
+]
+```
+
+Quando a categoria `functional` permanece consentida, a integração chama `Intercom('update')`. Se a categoria for revogada, chama `Intercom('shutdown')` por padrão.
+
+### Zendesk Messaging
+
+```tsx
+const integrations = [
+  createZendeskChatIntegration({
+    key: 'zendesk_snippet_key',
+    cookieRange: 'functional',
+  }),
+]
+```
+
+A integração usa `zE('messenger:set', 'cookies', 'all' | 'functional' | 'none')` para refletir as escolhas atuais.
+
+### 🔗 Fontes Oficiais
+
+- [Microsoft Clarity Consent Mode](https://learn.microsoft.com/en-us/clarity/setup-and-installation/consent-mode)
+- [Microsoft Clarity Consent API v2](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-consent-api-v2)
+- [Intercom Web installation](https://developers.intercom.com/installing-intercom/web/installation)
+- [Intercom em single-page apps](https://www.intercom.com/help/en/articles/170-integrate-intercom-in-a-single-page-app)
+- [Zendesk Web Widget Messaging API](https://developer.zendesk.com/api-reference/widget-messaging/web/core/)
+- [Mixpanel JavaScript SDK](https://docs.mixpanel.com/docs/tracking-methods/sdks/javascript)
 
 ---
 

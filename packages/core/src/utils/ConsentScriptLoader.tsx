@@ -13,6 +13,7 @@ import {
   validateNecessaryClassification,
 } from './autoConfigureCategories'
 import { logger } from './logger'
+import { isDevelopmentEnv } from './env'
 import type { ScriptIntegration } from './scriptIntegrations'
 import { loadScript } from './scriptLoader'
 
@@ -285,8 +286,7 @@ export function ConsentScriptLoader({
 
   // Validação inteligente das categorias em modo DEV
   React.useEffect(() => {
-    const isDev = process.env.NODE_ENV !== 'production'
-    if (!isDev || integrations.length === 0) return
+    if (!isDevelopmentEnv() || integrations.length === 0) return
 
     // Usar apenas categorias HABILITADAS, não todas as definidas
     const enabledCategories = categories.config.enabledCategories ?? []
@@ -412,7 +412,7 @@ export function ConsentScriptLoader({
 
   React.useEffect(() => {
     if (!isHydrated) return
-    void processQueue({ consented, preferences }, process.env.NODE_ENV !== 'production')
+    void processQueue({ consented, preferences }, isDevelopmentEnv())
   }, [consented, preferences, isHydrated, queueVersion])
 
   React.useEffect(() => {

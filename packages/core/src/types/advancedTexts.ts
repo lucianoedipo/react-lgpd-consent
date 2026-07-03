@@ -79,7 +79,7 @@ type LanguageTexts = Partial<Omit<ConsentTexts, 'i18n' | 'variants' | 'contexts'
  *     },
  *     es: {
  *       bannerMessage: 'Utilizamos cookies para mejorar su experiencia.',
- *       acceptAll: 'Aceptar Todo',
+ *       acceptAll: 'Aceptar todo',
  *       declineAll: 'Rechazar'
  *     }
  *   }

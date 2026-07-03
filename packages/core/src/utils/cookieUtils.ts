@@ -69,6 +69,23 @@ type ResolvedCookieOptions = {
   domain?: string
 }
 
+type LegacyCookieMaxAge = {
+  maxAgeDays?: number
+}
+
+function resolveMaxAgeSeconds(opts?: Partial<ConsentCookieOptions>): number {
+  if (typeof opts?.maxAge === 'number') {
+    return Math.max(0, opts.maxAge)
+  }
+
+  const legacyMaxAgeDays = (opts as LegacyCookieMaxAge | undefined)?.maxAgeDays
+  if (typeof legacyMaxAgeDays === 'number') {
+    return Math.max(0, legacyMaxAgeDays) * 24 * 60 * 60
+  }
+
+  return DEFAULT_MAX_AGE_SECONDS
+}
+
 function resolveCookieOptions(opts?: Partial<ConsentCookieOptions>): ResolvedCookieOptions {
   const currentWindow = globalThis.window
   const currentLocation = globalThis.location
@@ -77,12 +94,7 @@ function resolveCookieOptions(opts?: Partial<ConsentCookieOptions>): ResolvedCoo
     (globalThis as unknown as { __LGPD_FORCE_HTTPS__?: boolean }).__LGPD_FORCE_HTTPS__ === true
   const isHttps = forceHttps || protocols.includes('https:')
 
-  const maxAgeSeconds =
-    typeof opts?.maxAge === 'number'
-      ? Math.max(0, opts.maxAge)
-      : typeof opts?.maxAgeDays === 'number'
-        ? Math.max(0, opts.maxAgeDays) * 24 * 60 * 60
-        : DEFAULT_MAX_AGE_SECONDS
+  const maxAgeSeconds = resolveMaxAgeSeconds(opts)
 
   let secure: boolean
   if (typeof opts?.secure === 'boolean') {

@@ -42,6 +42,7 @@ import {
   _unregisterGlobalOpenPreferences,
 } from '../hooks/useConsent'
 import { DEFAULT_PROJECT_CATEGORIES, useDeveloperGuidance } from '../utils/developerGuidance'
+import { isProductionEnv } from '../utils/env'
 import { logger } from '../utils/logger'
 import { runPeerDepsCheck } from '../utils/peerDepsCheck'
 import { validateConsentProviderProps } from '../utils/validation'
@@ -231,6 +232,19 @@ function buildProviderError(hookName: string) {
   )
 }
 
+function schedulePreferencesSavedCallback(
+  callback: (preferences: ConsentPreferences) => void,
+  preferences: ConsentPreferences,
+  timersRef: { current: Array<ReturnType<typeof setTimeout>> },
+) {
+  const timer = setTimeout(() => {
+    callback(preferences)
+    timersRef.current = timersRef.current.filter((pendingTimer) => pendingTimer !== timer)
+  }, 150)
+
+  timersRef.current.push(timer)
+}
+
 /**
  * @component
  * @category Context
@@ -313,13 +327,16 @@ export function ConsentProvider({
   const storageDomain = storage?.domain
   const storageNamespace = storage?.namespace
   const storageVersion = storage?.version
-  const mergedTexts = React.useMemo(() => ({ ...DEFAULT_TEXTS, ...(textsProp ?? {}) }), [textsProp])
+  const mergedTexts = React.useMemo(
+    () => (textsProp ? { ...DEFAULT_TEXTS, ...textsProp } : DEFAULT_TEXTS),
+    [textsProp],
+  )
   const texts = React.useMemo(
     () => resolveTexts(mergedTexts, { language, variant: textVariant }),
     [mergedTexts, language, textVariant],
   )
   const cookie = React.useMemo(() => {
-    const base = { ...DEFAULT_COOKIE_OPTS, ...(cookieOpts ?? {}) }
+    const base = cookieOpts ? { ...DEFAULT_COOKIE_OPTS, ...cookieOpts } : { ...DEFAULT_COOKIE_OPTS }
     base.name =
       cookieOpts?.name ??
       buildConsentStorageKey({
@@ -349,17 +366,15 @@ export function ConsentProvider({
   // Configuração de categorias (nova API)
   const finalCategoriesConfig = React.useMemo(() => {
     // Executa validação e sanitização em modo DEV; em produção apenas aplica fallback padrão
-    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
     if (!categories) return DEFAULT_PROJECT_CATEGORIES
-    if (isProd) return categories
+    if (isProductionEnv()) return categories
     const { sanitized } = validateConsentProviderProps({ categories })
     return sanitized.categories ?? categories
   }, [categories])
 
   // Aviso explícito em DEV quando categories não é fornecida
   React.useEffect(() => {
-    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
-    if (!isProd && !categories) {
+    if (!isProductionEnv() && !categories) {
       logger.warn(
         "Prop 'categories' não fornecida. A lib aplicará um padrão seguro, mas recomenda-se definir 'categories.enabledCategories' explicitamente para clareza e auditoria.",
       )
@@ -375,16 +390,14 @@ export function ConsentProvider({
   // 🔍 Diagnóstico de peer dependencies (v0.5.4)
   // Executa apenas uma vez no mount e apenas em desenvolvimento
   React.useEffect(() => {
-    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
-    if (!isProd && !disableDeveloperGuidance) {
+    if (!isProductionEnv() && !disableDeveloperGuidance) {
       runPeerDepsCheck()
     }
   }, [disableDeveloperGuidance])
 
   // Logging adicional quando Modal customizado é usado (dev only)
   React.useEffect(() => {
-    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
-    if (!isProd && PreferencesModalComponent) {
+    if (!isProductionEnv() && PreferencesModalComponent) {
       console.info(
         '[LGPD-CONSENT] Dica: seu PreferencesModal é customizado. Garanta exibir os detalhes dos cookies por categoria (nome, finalidade, duração) usando as APIs setCookieCatalogOverrides / setCookieCategoryOverrides e getCookiesInfoForCategory. Consulte QUICKSTART e INTEGRACOES.md.',
       )
@@ -392,9 +405,8 @@ export function ConsentProvider({
   }, [PreferencesModalComponent])
 
   React.useEffect(() => {
-    const isProd = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
     if (
-      isProd ||
+      isProductionEnv() ||
       globalThis.window === undefined ||
       didWarnAboutMissingUI.current ||
       PreferencesModalComponent ||
@@ -659,13 +671,7 @@ export function ConsentProvider({
         config: finalCategoriesConfig,
       })
       if (onPreferencesSaved) {
-        const timer = setTimeout(() => {
-          onPreferencesSaved(sanitized)
-          pendingCallbackTimersRef.current = pendingCallbackTimersRef.current.filter(
-            (pendingTimer) => pendingTimer !== timer,
-          )
-        }, 150)
-        pendingCallbackTimersRef.current.push(timer)
+        schedulePreferencesSavedCallback(onPreferencesSaved, sanitized, pendingCallbackTimersRef)
       }
     }
     const openPreferences = () => dispatch({ type: 'OPEN_MODAL' })

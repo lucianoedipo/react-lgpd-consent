@@ -39,6 +39,22 @@ export interface CategoriesContextValue {
  */
 const CategoriesContext = React.createContext<CategoriesContextValue | null>(null)
 
+function buildCategoriesContextValue(
+  config: ProjectCategoriesConfig | undefined,
+  _impliedVersion: number,
+): CategoriesContextValue {
+  const finalConfig: ProjectCategoriesConfig = config || DEFAULT_PROJECT_CATEGORIES
+  const guidance = analyzeDeveloperConfiguration(config)
+  const toggleableCategories = guidance.activeCategoriesInfo.filter((cat) => cat.uiRequired)
+
+  return {
+    config: finalConfig,
+    guidance,
+    toggleableCategories,
+    allCategories: guidance.activeCategoriesInfo,
+  }
+}
+
 /**
  * @component
  * @category Context
@@ -66,22 +82,10 @@ export function CategoriesProvider({
 
   // Força reavaliação quando integrações anunciam categorias requeridas via evento global
   // impliedVersion é usado como trigger de recálculo
-  const contextValue = React.useMemo(() => {
-    // Usado para forçar recálculo quando integrações anunciam novas categorias.
-    void impliedVersion
-    const finalConfig: ProjectCategoriesConfig = config || DEFAULT_PROJECT_CATEGORIES
-
-    const guidance = analyzeDeveloperConfiguration(config)
-
-    const toggleableCategories = guidance.activeCategoriesInfo.filter((cat) => cat.uiRequired)
-
-    return {
-      config: finalConfig,
-      guidance,
-      toggleableCategories,
-      allCategories: guidance.activeCategoriesInfo,
-    }
-  }, [config, impliedVersion])
+  const contextValue = React.useMemo(
+    () => buildCategoriesContextValue(config, impliedVersion),
+    [config, impliedVersion],
+  )
 
   React.useEffect(() => {
     const currentWindow = globalThis.window

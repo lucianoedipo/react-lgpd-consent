@@ -75,6 +75,22 @@ describe('error handling in integrations', () => {
     )
   })
 
+  test('clarity integration handles consentv2 errors gracefully', () => {
+    const c = createClarityIntegration({ projectId: 'abc' })
+
+    ;(globalThis as any).window.clarity = jest.fn(() => {
+      throw new Error('Consent error')
+    })
+
+    expect(() =>
+      c.onConsentUpdate?.({
+        consented: true,
+        preferences: { necessary: true, analytics: true } as any,
+      }),
+    ).not.toThrow()
+    expect(mockWarn).toHaveBeenCalledWith('[Clarity] Failed to send consentv2:', expect.any(Error))
+  })
+
   test('intercom integration handles boot errors gracefully', () => {
     const i = createIntercomIntegration({ app_id: 'app123' })
 
@@ -87,16 +103,35 @@ describe('error handling in integrations', () => {
     expect(mockWarn).toHaveBeenCalledWith('[Intercom] Failed to boot:', expect.any(Error))
   })
 
-  test('zendesk integration handles identify errors gracefully', () => {
-    const z = createZendeskChatIntegration({ key: 'key123' })
+  test('intercom integration handles consent sync errors gracefully', () => {
+    const i = createIntercomIntegration({ app_id: 'app123' })
+
+    ;(globalThis as any).window.Intercom = jest.fn(() => {
+      throw new Error('Sync error')
+    })
+
+    expect(() =>
+      i.onConsentUpdate?.({
+        consented: true,
+        preferences: { necessary: true, functional: true } as any,
+      }),
+    ).not.toThrow()
+    expect(mockWarn).toHaveBeenCalledWith('[Intercom] Failed to sync consent:', expect.any(Error))
+  })
+
+  test('zendesk integration handles cookie sync errors gracefully', () => {
+    const z = createZendeskChatIntegration({ key: 'key123', cookieRange: 'functional' })
 
     // Mock zE to throw error
     ;(globalThis as any).window.zE = jest.fn(() => {
-      throw new Error('Identify error')
+      throw new Error('Cookie sync error')
     })
 
     expect(() => z.init?.()).not.toThrow()
-    expect(mockWarn).toHaveBeenCalledWith('[Zendesk] Failed to identify:', expect.any(Error))
+    expect(mockWarn).toHaveBeenCalledWith(
+      '[Zendesk] Failed to sync cookie consent:',
+      expect.any(Error),
+    )
   })
 })
 

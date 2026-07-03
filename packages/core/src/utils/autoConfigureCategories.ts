@@ -6,6 +6,7 @@
 
 import type { Category, ProjectCategoriesConfig } from '../types/types'
 import type { ScriptIntegration } from './scriptIntegrations'
+import { isDevelopmentEnv } from './env'
 
 /**
  * Scripts conhecidos que NUNCA devem ser classificados como "necessary"
@@ -184,8 +185,7 @@ function logMissingCategoriesWarning(
   missingCategories: Category[],
   categoryIntegrations: Record<Category, string[]>,
 ): void {
-  const isDev = process.env.NODE_ENV !== 'production'
-  if (!isDev) return
+  if (!isDevelopmentEnv()) return
 
   const PREFIX = '[🍪 LGPD-CONSENT AUTO-CONFIG]'
 
@@ -217,8 +217,7 @@ function logAutoEnabledCategories(
   autoEnabledCategories: Category[],
   categoryIntegrations: Record<Category, string[]>,
 ): void {
-  const isDev = process.env.NODE_ENV !== 'production'
-  if (!isDev) return
+  if (!isDevelopmentEnv()) return
 
   const PREFIX = '[🍪 LGPD-CONSENT AUTO-CONFIG]'
 

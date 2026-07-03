@@ -8,46 +8,46 @@ Este documento é a referência técnica oficial para a API da biblioteca `react
 
 ## Exports Principais
 
-| Nome                                | Tipo       | Descrição                                                                       |
-| ----------------------------------- | ---------- | ------------------------------------------------------------------------------- |
-| `ConsentProvider`                   | Componente | O provedor de contexto principal que gerencia todo o estado e a UI.             |
-| `useConsent`                        | Hook       | Hook principal para interagir com o estado de consentimento.                    |
-| `useCategories`                     | Hook       | Retorna a lista de categorias ativas no projeto.                                |
-| `useCategoryStatus`                 | Hook       | Verifica o status de uma categoria específica.                                  |
-| `useOpenPreferencesModal`           | Hook       | Retorna uma função para abrir o modal de preferências de forma programática.    |
-| `openPreferencesModal`              | Função     | Versão da função acima para ser usada fora do contexto React.                   |
-| `ConsentGate`                       | Componente | Renderiza componentes filhos apenas se uma categoria de cookie for consentida.  |
+| Nome                                | Tipo       | Descrição                                                                                                           |
+| ----------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------- |
+| `ConsentProvider`                   | Componente | O provedor de contexto principal que gerencia todo o estado e a UI.                                                 |
+| `useConsent`                        | Hook       | Hook principal para interagir com o estado de consentimento.                                                        |
+| `useCategories`                     | Hook       | Retorna a lista de categorias ativas no projeto.                                                                    |
+| `useCategoryStatus`                 | Hook       | Verifica o status de uma categoria específica.                                                                      |
+| `useOpenPreferencesModal`           | Hook       | Retorna uma função para abrir o modal de preferências de forma programática.                                        |
+| `openPreferencesModal`              | Função     | Versão da função acima para ser usada fora do contexto React.                                                       |
+| `ConsentGate`                       | Componente | Renderiza componentes filhos apenas se uma categoria de cookie for consentida.                                      |
 | `ConsentScriptLoader`               | Componente | Carrega scripts de terceiros (como Google Analytics) com base no consentimento. Suporta Consent Mode v2 automático. |
-| `registerScript()`                  | Função     | Registra um script na fila global para execução condicional ao consentimento. Retorna função de cleanup. |
-| `RegisteredScript`                  | Tipo       | Interface para scripts registrados programaticamente (id, category, execute, priority, onConsentUpdate). |
-| `buildConsentStorageKey`            | Função     | (v0.5.2) Gera nomes de cookies `namespace__vX` a partir de namespace/versão.     |
-| `createGoogleAnalyticsIntegration`  | Função     | Factory para integração nativa com o Google Analytics.                           |
-| `createGoogleTagManagerIntegration` | Função     | Factory para integração nativa com o Google Tag Manager.                         |
-| `createUserWayIntegration`          | Função     | Factory para integração nativa com o UserWay.                                    |
-| `createFacebookPixelIntegration`    | Função     | (v0.4.1) Integração nativa com Facebook Pixel.                                   |
-| `createHotjarIntegration`           | Função     | (v0.4.1) Integração nativa com Hotjar.                                           |
-| `createMixpanelIntegration`         | Função     | (v0.4.1) Integração nativa com Mixpanel.                                         |
-| `createClarityIntegration`          | Função     | (v0.4.1) Integração nativa com Microsoft Clarity.                                |
-| `createIntercomIntegration`         | Função     | (v0.4.1) Integração nativa com Intercom (chat).                                  |
-| `createZendeskChatIntegration`      | Função     | (v0.4.1) Integração nativa com Zendesk Chat.                                     |
-| `createSuggestedIntegration`        | Função     | (v0.7.2) Cria integração customizada com categoria sugerida automaticamente.    |
-| `suggestCategoryForScript`          | Função     | (v0.4.1) Sugere categoria(s) LGPD para um script conhecido.                      |
-| `discoverRuntimeCookies`            | Função     | (v0.4.1) Descobre cookies em tempo real no navegador.                            |
-| `categorizeDiscoveredCookies`       | Função     | (v0.4.1) Categoriza cookies descobertos usando padrões LGPD.                     |
-| `getCookiesInfoForCategory`         | Função     | Retorna informações detalhadas dos cookies de uma categoria específica.          |
-| `resolveTexts`                      | Função     | (v0.4.1) Resolve textos baseados em templates e contexto.                        |
-| `createConsentAuditEntry`           | Função     | **(v0.7.0)** Cria entrada de auditoria de consentimento para logs.                |
-| `ANPD_CATEGORY_PRESETS`             | Constante  | **(v0.7.0)** Presets de categorias conforme diretrizes LGPD/ANPD.                 |
-| `createAnpdCategoriesConfig`        | Função     | **(v0.7.0)** Helper para gerar configurações tipadas com presets ANPD.            |
-| `TEXT_TEMPLATES`                    | Constante  | (v0.4.1) Templates pré-configurados (ecommerce, saas, governo).                  |
-| `AdvancedConsentTexts`              | Tipo       | (v0.4.1) Interface expandida com i18n e contextos.                               |
-| `DesignTokens`                      | Tipo       | (v0.4.1) Sistema completo com 200+ pontos de customização.                       |
-| `createECommerceIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para e-commerce.                                |
-| `createSaaSIntegrations`            | Função     | (v0.4.1) Cria integrações comuns para SaaS.                                      |
-| `createCorporateIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para ambientes corporativos.                    |
-| `INTEGRATION_TEMPLATES`             | Constante  | (v0.4.1) Presets com IDs essenciais/opcionais e categorias por tipo de negócio.  |
-| `SuggestedIntegrationConfig`        | Tipo       | (v0.7.2) Configuração para integração customizada com categoria sugerida.        |
-| `setDebugLogging`                   | Função     | Habilita/desabilita o logging de debug da biblioteca.                           |
+| `registerScript()`                  | Função     | Registra um script na fila global para execução condicional ao consentimento. Retorna função de cleanup.            |
+| `RegisteredScript`                  | Tipo       | Interface para scripts registrados programaticamente (id, category, execute, priority, onConsentUpdate).            |
+| `buildConsentStorageKey`            | Função     | (v0.5.2) Gera nomes de cookies `namespace__vX` a partir de namespace/versão.                                        |
+| `createGoogleAnalyticsIntegration`  | Função     | Factory para integração nativa com o Google Analytics.                                                              |
+| `createGoogleTagManagerIntegration` | Função     | Factory para integração nativa com o Google Tag Manager.                                                            |
+| `createUserWayIntegration`          | Função     | Factory para integração nativa com o UserWay.                                                                       |
+| `createFacebookPixelIntegration`    | Função     | (v0.4.1) Integração nativa com Facebook Pixel.                                                                      |
+| `createHotjarIntegration`           | Função     | (v0.4.1) Integração nativa com Hotjar.                                                                              |
+| `createMixpanelIntegration`         | Função     | (v0.4.1) Integração nativa com Mixpanel.                                                                            |
+| `createClarityIntegration`          | Função     | (v0.4.1) Integração nativa com Microsoft Clarity.                                                                   |
+| `createIntercomIntegration`         | Função     | (v0.4.1) Integração nativa com Intercom (chat).                                                                     |
+| `createZendeskChatIntegration`      | Função     | (v0.4.1) Integração nativa com Zendesk Chat.                                                                        |
+| `createSuggestedIntegration`        | Função     | (v0.7.2) Cria integração customizada com categoria sugerida automaticamente.                                        |
+| `suggestCategoryForScript`          | Função     | (v0.4.1) Sugere categoria(s) LGPD para um script conhecido.                                                         |
+| `discoverRuntimeCookies`            | Função     | (v0.4.1) Descobre cookies em tempo real no navegador.                                                               |
+| `categorizeDiscoveredCookies`       | Função     | (v0.4.1) Categoriza cookies descobertos usando padrões LGPD.                                                        |
+| `getCookiesInfoForCategory`         | Função     | Retorna informações detalhadas dos cookies de uma categoria específica.                                             |
+| `resolveTexts`                      | Função     | (v0.4.1) Resolve textos baseados em templates e contexto.                                                           |
+| `createConsentAuditEntry`           | Função     | **(v0.7.0)** Cria entrada de auditoria de consentimento para logs.                                                  |
+| `ANPD_CATEGORY_PRESETS`             | Constante  | **(v0.7.0)** Presets de categorias conforme diretrizes LGPD/ANPD.                                                   |
+| `createAnpdCategoriesConfig`        | Função     | **(v0.7.0)** Helper para gerar configurações tipadas com presets ANPD.                                              |
+| `TEXT_TEMPLATES`                    | Constante  | (v0.4.1) Templates pré-configurados (ecommerce, saas, governo).                                                     |
+| `AdvancedConsentTexts`              | Tipo       | (v0.4.1) Interface expandida com i18n e contextos.                                                                  |
+| `DesignTokens`                      | Tipo       | (v0.4.1) Sistema completo com 200+ pontos de customização.                                                          |
+| `createECommerceIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para e-commerce.                                                                   |
+| `createSaaSIntegrations`            | Função     | (v0.4.1) Cria integrações comuns para SaaS.                                                                         |
+| `createCorporateIntegrations`       | Função     | (v0.4.1) Cria integrações comuns para ambientes corporativos.                                                       |
+| `INTEGRATION_TEMPLATES`             | Constante  | (v0.4.1) Presets com IDs essenciais/opcionais e categorias por tipo de negócio.                                     |
+| `SuggestedIntegrationConfig`        | Tipo       | (v0.7.2) Configuração para integração customizada com categoria sugerida.                                           |
+| `setDebugLogging`                   | Função     | Habilita/desabilita o logging de debug da biblioteca.                                                               |
 
 ---
 
@@ -71,7 +71,10 @@ O pacote publica **dual build** (ESM + CJS) via `exports`:
 module.exports = {
   testEnvironment: 'jsdom',
   transform: {
-    '^.+\\.(t|j)sx?$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }],
+    '^.+\\.(t|j)sx?$': [
+      'babel-jest',
+      { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] },
+    ],
   },
   transformIgnorePatterns: ['/node_modules/(?!react-lgpd-consent|@react-lgpd-consent)/'],
 }
@@ -116,9 +119,7 @@ import { ConsentProvider } from 'react-lgpd-consent'
 
 function App() {
   return (
-    <ConsentProvider
-      categories={{ enabledCategories: ['analytics', 'marketing'] }}
-    >
+    <ConsentProvider categories={{ enabledCategories: ['analytics', 'marketing'] }}>
       {/* Seu aplicativo aqui */}
     </ConsentProvider>
   )
@@ -127,35 +128,35 @@ function App() {
 
 **Todas as Props:**
 
-| Prop | Tipo | Descrição |
-| --- | --- | --- |
-| `categories` | `ProjectCategoriesConfig` | **Obrigatório.** Fonte única de verdade sobre as categorias habilitadas; usada por UI, hooks e integrações. |
-| `texts` | `Partial<AdvancedConsentTexts>` | Customiza todos os textos exibidos (banner, modal, botão). |
-| `language` | `'pt' \| 'en' \| 'es' \| 'fr' \| 'de' \| 'it'` | Resolve textos via i18n no Provider. |
-| `textVariant` | `'formal' \| 'casual' \| 'concise' \| 'detailed'` | Aplica variação de tom sobre os textos base. |
-| `designTokens` | `DesignTokens` | Ajuste visual granular (cores, spacing, tipografia, overlays). |
-| `blocking` | `boolean` | Ativa overlay bloqueante até o usuário decidir. Padrão: `false`. |
-| `blockingMode` | `'soft' \| 'hard'` | Intensidade do bloqueio; `hard` torna o conteúdo da aplicação inerte (sem foco/teclado). |
-| `blockingStrategy` | `'auto' \| 'provider' \| 'component'` | Controla quem desenha o overlay quando `blocking` está ativo. |
-| `hideBranding` | `boolean` | Oculta o selo “fornecido por”. |
-| `disableDeveloperGuidance` | `boolean` | Suprime avisos/sugestões no console em desenvolvimento. |
-| `disableFloatingPreferencesButton` | `boolean` | Remove o botão flutuante padrão. |
-| `onConsentGiven` | `(state: ConsentState) => void` | Dispara na primeira vez que o usuário aceita/rejeita. Útil para inicializar analytics. |
-| `onPreferencesSaved` | `(prefs: ConsentPreferences) => void` | Executa toda vez que o usuário salva preferências no modal. |
-| `onConsentInit` | `(state: ConsentState) => void` | **(v0.7.0)** Callback executado após hidratação inicial do consentimento. |
-| `onConsentChange` | `(state: ConsentState, previous: ConsentState) => void` | **(v0.7.0)** Callback executado sempre que o estado de consentimento muda. |
-| `onAuditLog` | `(entry: ConsentAuditEntry) => void` | **(v0.7.0)** Callback para registrar eventos de auditoria (init, update, reset). |
-| `cookie` | `Partial<ConsentCookieOptions>` | Override fino das opções de cookie (nome, expiração, sameSite, secure, path, domain). Se `name` não for informado, o valor deriva de `storage`. |
-| `storage` | `ConsentStorageConfig` | Define namespace, versão e domínio compartilhado. Gera automaticamente o nome da chave (`namespace__vX`). Alterar `version` força re-consentimento. |
-| `onConsentVersionChange` | `(context: ConsentVersionChangeContext) => void` | Notificado após mudança da chave de storage. O reset já é automático; use o hook para limpar caches externos ou registrar eventos. |
-| `CookieBannerComponent` | `React.ComponentType<CustomCookieBannerProps>` | Substitui o banner padrão. |
-| `PreferencesModalComponent` | `React.ComponentType<CustomPreferencesModalProps>` | Substitui o modal padrão. |
-| `FloatingPreferencesButtonComponent` | `React.ComponentType<CustomFloatingPreferencesButtonProps>` | Substitui o botão flutuante padrão. |
-| `cookieBannerProps` | `Record<string, unknown>` | Props adicionais repassadas ao banner (padrão `{}`). |
-| `preferencesModalProps` | `Record<string, unknown>` | Props adicionais repassadas ao modal (padrão `{}`). |
-| `floatingPreferencesButtonProps` | `Record<string, unknown>` | Props adicionais para o botão flutuante (padrão `{}`). |
-| `theme` | `any` (Tema MUI) | Aplica um `ThemeProvider` local aos componentes padrão (apenas no pacote MUI). |
-| `initialState` | `ConsentState` | Hidratação SSR para evitar flash do banner. |
+| Prop                                 | Tipo                                                        | Descrição                                                                                                                                           |
+| ------------------------------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `categories`                         | `ProjectCategoriesConfig`                                   | **Obrigatório.** Fonte única de verdade sobre as categorias habilitadas; usada por UI, hooks e integrações.                                         |
+| `texts`                              | `Partial<AdvancedConsentTexts>`                             | Customiza todos os textos exibidos (banner, modal, botão).                                                                                          |
+| `language`                           | `'pt' \| 'en' \| 'es' \| 'fr' \| 'de' \| 'it'`              | Resolve textos via i18n no Provider.                                                                                                                |
+| `textVariant`                        | `'formal' \| 'casual' \| 'concise' \| 'detailed'`           | Aplica variação de tom sobre os textos base.                                                                                                        |
+| `designTokens`                       | `DesignTokens`                                              | Ajuste visual granular (cores, spacing, tipografia, overlays).                                                                                      |
+| `blocking`                           | `boolean`                                                   | Ativa overlay bloqueante até o usuário decidir. Padrão: `false`.                                                                                    |
+| `blockingMode`                       | `'soft' \| 'hard'`                                          | Intensidade do bloqueio; `hard` torna o conteúdo da aplicação inerte (sem foco/teclado).                                                            |
+| `blockingStrategy`                   | `'auto' \| 'provider' \| 'component'`                       | Controla quem desenha o overlay quando `blocking` está ativo.                                                                                       |
+| `hideBranding`                       | `boolean`                                                   | Oculta o selo “fornecido por”.                                                                                                                      |
+| `disableDeveloperGuidance`           | `boolean`                                                   | Suprime avisos/sugestões no console em desenvolvimento.                                                                                             |
+| `disableFloatingPreferencesButton`   | `boolean`                                                   | Remove o botão flutuante padrão.                                                                                                                    |
+| `onConsentGiven`                     | `(state: ConsentState) => void`                             | Dispara na primeira vez que o usuário aceita/rejeita. Útil para inicializar analytics.                                                              |
+| `onPreferencesSaved`                 | `(prefs: ConsentPreferences) => void`                       | Executa toda vez que o usuário salva preferências no modal.                                                                                         |
+| `onConsentInit`                      | `(state: ConsentState) => void`                             | **(v0.7.0)** Callback executado após hidratação inicial do consentimento.                                                                           |
+| `onConsentChange`                    | `(state: ConsentState, previous: ConsentState) => void`     | **(v0.7.0)** Callback executado sempre que o estado de consentimento muda.                                                                          |
+| `onAuditLog`                         | `(entry: ConsentAuditEntry) => void`                        | **(v0.7.0)** Callback para registrar eventos de auditoria (init, update, reset).                                                                    |
+| `cookie`                             | `Partial<ConsentCookieOptions>`                             | Override fino das opções de cookie (nome, expiração, sameSite, secure, path, domain). Se `name` não for informado, o valor deriva de `storage`.     |
+| `storage`                            | `ConsentStorageConfig`                                      | Define namespace, versão e domínio compartilhado. Gera automaticamente o nome da chave (`namespace__vX`). Alterar `version` força re-consentimento. |
+| `onConsentVersionChange`             | `(context: ConsentVersionChangeContext) => void`            | Notificado após mudança da chave de storage. O reset já é automático; use o hook para limpar caches externos ou registrar eventos.                  |
+| `CookieBannerComponent`              | `React.ComponentType<CustomCookieBannerProps>`              | Substitui o banner padrão.                                                                                                                          |
+| `PreferencesModalComponent`          | `React.ComponentType<CustomPreferencesModalProps>`          | Substitui o modal padrão.                                                                                                                           |
+| `FloatingPreferencesButtonComponent` | `React.ComponentType<CustomFloatingPreferencesButtonProps>` | Substitui o botão flutuante padrão.                                                                                                                 |
+| `cookieBannerProps`                  | `Record<string, unknown>`                                   | Props adicionais repassadas ao banner (padrão `{}`).                                                                                                |
+| `preferencesModalProps`              | `Record<string, unknown>`                                   | Props adicionais repassadas ao modal (padrão `{}`).                                                                                                 |
+| `floatingPreferencesButtonProps`     | `Record<string, unknown>`                                   | Props adicionais para o botão flutuante (padrão `{}`).                                                                                              |
+| `theme`                              | `any` (Tema MUI)                                            | Aplica um `ThemeProvider` local aos componentes padrão (apenas no pacote MUI).                                                                      |
+| `initialState`                       | `ConsentState`                                              | Hidratação SSR para evitar flash do banner.                                                                                                         |
 
 #### Versionamento de consentimento (namespace + versão)
 
@@ -181,7 +182,11 @@ function ConsentBoundary({ children }: { children: React.ReactNode }) {
         // Opcional: persistir um nome de auditoria específico
         name: buildConsentStorageKey({ namespace: 'acme-suite', version: '2025-Q4' }),
       }}
-      onConsentVersionChange={({ previousKey, nextKey, resetConsent }: ConsentVersionChangeContext) => {
+      onConsentVersionChange={({
+        previousKey,
+        nextKey,
+        resetConsent,
+      }: ConsentVersionChangeContext) => {
         audit.log('consent:bump', { previousKey, nextKey })
         localStorage.removeItem('marketingOverrides')
         resetConsent()
@@ -235,9 +240,11 @@ function MyComponent() {
 Gerencia o carregamento de scripts de terceiros (ex: Google Analytics) com base no consentimento do usuário. Veja o guia `INTEGRACOES.md` para mais detalhes.
 
 **Novidades v0.7.1:**
+
 - ✨ **Google Consent Mode v2 automático**: GA4 e GTM agora enviam `consent('default', 'denied')` no bootstrap e `consent('update', 'granted')` após consentimento
 - 🎯 **Sistema de fila com prioridade**: Scripts são executados ordenadamente (necessary → categoria → prioridade → timestamp)
 - 🔄 **Callbacks de atualização**: `onConsentUpdate` dispara quando preferências mudam
+- 🔗 **Compatibilidade externa revisada**: GTM respeita `dataLayerName` na URL, Clarity usa Consent API v2, Intercom sincroniza `update`/`shutdown`, e Zendesk usa a API Messaging de cookies
 
 ```tsx
 import { ConsentScriptLoader, createGoogleAnalyticsIntegration, registerScript } from 'react-lgpd-consent'
@@ -265,6 +272,13 @@ const cleanup = registerScript({
 // Scripts só reexecutam se allowReload=true; sempre use o cleanup ao desmontar.
 ```
 
+Integrações com opções específicas:
+
+- `createGoogleTagManagerIntegration({ dataLayerName })`: quando o layer não é `dataLayer`, a URL do `gtm.js` recebe `&l=<dataLayerName>`.
+- `createClarityIntegration({ consentMode, analyticsStorageCategory, adStorageCategory })`: envia `clarity('consentv2', ...)` em mudanças de consentimento.
+- `createIntercomIntegration({ api_base, settings, updateOnConsent, shutdownOnRevoke })`: configura região/settings e sincroniza lifecycle do Messenger.
+- `createZendeskChatIntegration({ cookieRange, syncCookies })`: sincroniza cookies com `zE('messenger:set', 'cookies', ...)`.
+
 ---
 
 ## Hooks
@@ -275,17 +289,17 @@ O hook principal para interagir com o estado de consentimento.
 
 **Retorno:**
 
-| Chave             | Tipo                                  | Descrição                                                                                |
-| ----------------- | ------------------------------------- | ---------------------------------------------------------------------------------------- |
-| `consented`       | `boolean`                             | `true` se o usuário já interagiu com o banner/modal.                                     |
-| `preferences`     | `ConsentPreferences`                  | Um objeto com o estado de consentimento para cada categoria (ex: `{ analytics: true }`). |
-| `isModalOpen`     | `boolean`                             | `true` se o modal de preferências estiver aberto.                                        |
-| `acceptAll`       | `() => void`                          | Aceita todas as categorias de cookies.                                                   |
-| `rejectAll`       | `() => void`                          | Rejeita todas as categorias não essenciais.                                              |
-| `setPreference`   | `(cat: string, value: boolean) => void` | Define consentimento para uma categoria específica (predefinida ou customizada).      |
-| `setPreferences`  | `(prefs: ConsentPreferences) => void` | Salva um novo conjunto de preferências.                                                  |
-| `openPreferences` | `() => void`                          | Abre o modal de preferências.                                                            |
-| `resetConsent`    | `() => void`                          | Reseta o consentimento, fazendo o banner aparecer novamente.                             |
+| Chave             | Tipo                                    | Descrição                                                                                |
+| ----------------- | --------------------------------------- | ---------------------------------------------------------------------------------------- |
+| `consented`       | `boolean`                               | `true` se o usuário já interagiu com o banner/modal.                                     |
+| `preferences`     | `ConsentPreferences`                    | Um objeto com o estado de consentimento para cada categoria (ex: `{ analytics: true }`). |
+| `isModalOpen`     | `boolean`                               | `true` se o modal de preferências estiver aberto.                                        |
+| `acceptAll`       | `() => void`                            | Aceita todas as categorias de cookies.                                                   |
+| `rejectAll`       | `() => void`                            | Rejeita todas as categorias não essenciais.                                              |
+| `setPreference`   | `(cat: string, value: boolean) => void` | Define consentimento para uma categoria específica (predefinida ou customizada).         |
+| `setPreferences`  | `(prefs: ConsentPreferences) => void`   | Salva um novo conjunto de preferências.                                                  |
+| `openPreferences` | `() => void`                            | Abre o modal de preferências.                                                            |
+| `resetConsent`    | `() => void`                            | Reseta o consentimento, fazendo o banner aparecer novamente.                             |
 
 ### `useCategories()`
 
@@ -572,11 +586,11 @@ Função utilitária que retorna informações detalhadas sobre os cookies de um
 
 ```typescript
 interface CookieDescriptor {
-  name: string        // Nome ou padrão do cookie (ex: '_ga', '_ga_*')
-  purpose?: string    // Finalidade do cookie
-  duration?: string   // Tempo de retenção (ex: '2 anos', '24 horas')
-  domain?: string     // Domínio associado (ex: '.example.com')
-  provider?: string   // Provedor ou serviço (ex: 'Google Analytics')
+  name: string // Nome ou padrão do cookie (ex: '_ga', '_ga_*')
+  purpose?: string // Finalidade do cookie
+  duration?: string // Tempo de retenção (ex: '2 anos', '24 horas')
+  domain?: string // Domínio associado (ex: '.example.com')
+  provider?: string // Provedor ou serviço (ex: 'Google Analytics')
 }
 ```
 
@@ -592,16 +606,13 @@ function DetalhesCookies() {
   return (
     <div>
       {allCategories.map((categoria) => {
-        const cookiesDetalhados = getCookiesInfoForCategory(
-          categoria.id as any,
-          integracoesUsadas
-        )
+        const cookiesDetalhados = getCookiesInfoForCategory(categoria.id as any, integracoesUsadas)
 
         return (
           <div key={categoria.id}>
             <h3>{categoria.name}</h3>
             <p>{categoria.description}</p>
-            
+
             {cookiesDetalhados.map((cookie) => (
               <div key={cookie.name}>
                 <strong>{cookie.name}</strong>
@@ -635,26 +646,28 @@ const ModalPersonalizado: React.FC<CustomPreferencesModalProps> = ({
     <div>
       {allCategories.map((categoria) => {
         const cookies = getCookiesInfoForCategory(categoria.id as any, integracoes)
-        
+
         return (
           <div key={categoria.id}>
             <label>
               <input
                 type="checkbox"
                 checked={preferences[categoria.id] || false}
-                onChange={(e) => setPreferences({
-                  ...preferences,
-                  [categoria.id]: e.target.checked
-                })}
+                onChange={(e) =>
+                  setPreferences({
+                    ...preferences,
+                    [categoria.id]: e.target.checked,
+                  })
+                }
                 disabled={categoria.essential}
               />
               {categoria.name}
             </label>
-            
+
             {/* Detalhes expandíveis dos cookies */}
             <details>
               <summary>Ver cookies ({cookies.length})</summary>
-              {cookies.map(cookie => (
+              {cookies.map((cookie) => (
                 <div key={cookie.name}>
                   <code>{cookie.name}</code>: {cookie.purpose}
                 </div>
@@ -687,6 +700,7 @@ Para customizações avançadas e tipagem, você pode importar os seguintes tipo
 - `ConsentPreferences`: Objeto com as preferências de consentimento para cada categoria.
 - `ConsentTexts`: Tipo base com textos essenciais da UI (pt-BR).
 - `Category`: Objeto que representa a definição de uma categoria de cookie.
+
 ### Exemplos de categorias (mínimo e completo)
 
 Somente necessários (mínimo):
@@ -762,14 +776,18 @@ interface ConsentAuditEntry {
 Use presets conformes com diretrizes da ANPD:
 
 ```tsx
-import { ConsentProvider, createAnpdCategoriesConfig, ANPD_CATEGORY_PRESETS } from 'react-lgpd-consent'
+import {
+  ConsentProvider,
+  createAnpdCategoriesConfig,
+  ANPD_CATEGORY_PRESETS,
+} from 'react-lgpd-consent'
 
 // Preset BÁSICO (necessary + analytics)
 const basicConfig = createAnpdCategoriesConfig({ include: ['analytics'] })
 
 // Preset COMPLETO (todas as categorias)
 const fullConfig = createAnpdCategoriesConfig({
-  include: ['analytics', 'marketing', 'functional', 'social', 'personalization']
+  include: ['analytics', 'marketing', 'functional', 'social', 'personalization'],
 })
 
 // Preset MÍNIMO (apenas necessary)
@@ -779,7 +797,7 @@ const minimalConfig = createAnpdCategoriesConfig({ include: [] })
 const customConfig = createAnpdCategoriesConfig({
   include: ['analytics', 'marketing'],
   names: { analytics: 'Análises' },
-  descriptions: { marketing: 'Anúncios personalizados baseados no seu perfil.' }
+  descriptions: { marketing: 'Anúncios personalizados baseados no seu perfil.' },
 })
 
 function App() {
@@ -795,12 +813,12 @@ function App() {
 
 ```typescript
 export const ANPD_CATEGORY_PRESETS: Record<Category, CategoryDefinition> = {
-  necessary: { /* ... */ },
-  analytics: { /* ... */ },
-  functional: { /* ... */ },
-  marketing: { /* ... */ },
-  social: { /* ... */ },
-  personalization: { /* ... */ }
+  necessary: {/* ... */},
+  analytics: {/* ... */},
+  functional: {/* ... */},
+  marketing: {/* ... */},
+  social: {/* ... */},
+  personalization: {/* ... */},
 }
 ```
 
@@ -830,14 +848,14 @@ const auditEntry = createConsentAuditEntry(
   {
     action: 'update',
     storageKey: 'lgpd-consent__v1',
-    consentVersion: '1'
-  }
+    consentVersion: '1',
+  },
 )
 
 // Enviar para backend
 await fetch('/api/audit', {
   method: 'POST',
-  body: JSON.stringify(auditEntry)
+  body: JSON.stringify(auditEntry),
 })
 ```
 

@@ -20,6 +20,10 @@
       "dependsOn": ["^build"],
       "outputs": [".eslintcache"]
     },
+    "lint:ci": {
+      "dependsOn": ["^build"],
+      "outputs": [".eslintcache"]
+    },
     "type-check": {
       "dependsOn": ["^build"],
       "outputs": []

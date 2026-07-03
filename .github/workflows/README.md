@@ -8,7 +8,8 @@ Os workflows priorizam previsibilidade em release. O CI continua validando PRs e
 
 1. `ci.yml`
    - Roda em `pull_request` e em push para `main`.
-   - Executa lint, type-check, coverage, build e size check.
+   - Em PRs, valida o changeset contra a branch base.
+   - Executa lint estrito (`lint:ci`), type-check, coverage, build e size check.
    - Publica relatório de cobertura como artefato.
    - Comenta cobertura apenas em PRs do próprio repositório para não falhar em forks.
 
@@ -37,11 +38,13 @@ Os workflows priorizam previsibilidade em release. O CI continua validando PRs e
 - Mantenha `timeout-minutes` em todos os jobs para evitar runners presos.
 - Não exija escrita em PRs de forks.
 - Valide todas as versões dos pacotes antes de publicar.
+- Toda mudança publicável deve incluir changeset; mudanças puramente internas podem usar changeset vazio conforme política do Changesets.
 
 ## Troubleshooting
 
 - Publish/docs não rodaram após tag: confirme que `PAT_TOKEN` está configurado e tem permissão para criar tags que disparam workflows.
 - Version mismatch no publish: confira se o PR de versionamento rodou `scripts/sync-versions.mjs` e se a tag aponta para o commit versionado.
 - Falha de cobertura em PR de fork: o comentário é ignorado por design; consulte o artefato `coverage-reports-*`.
+- Falha em `Check changeset`: adicione um arquivo em `.changeset/` descrevendo o impacto nos pacotes publicados ou confirme que a mudança não altera pacotes.
 
-**Última atualização**: 20/04/2026
+**Última atualização**: 02/07/2026

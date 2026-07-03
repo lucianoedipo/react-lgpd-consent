@@ -94,6 +94,7 @@ describe('scriptIntegrations factories', () => {
     })
     expect(gtm.id).toBe('google-tag-manager')
     expect(gtm.category).toBe('analytics')
+    expect(gtm.src).toBe('https://www.googletagmanager.com/gtm.js?id=GTM-ABC&l=customLayer')
     expect(typeof gtm.bootstrap).toBe('function')
     expect(typeof gtm.onConsentUpdate).toBe('function')
 
@@ -236,6 +237,40 @@ describe('scriptIntegrations factories', () => {
     expect((globalThis as any).window.clarity).toHaveBeenCalledWith('set', 'upload', false)
   })
 
+  test('clarity integration sends consentv2 on consent update', () => {
+    const c = createClarityIntegration({ projectId: 'abc123' })
+    ;(globalThis as any).window.clarity = jest.fn()
+
+    c.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, analytics: true, marketing: false } as any,
+    })
+
+    expect((globalThis as any).window.clarity).toHaveBeenCalledWith('consentv2', {
+      ad_Storage: 'denied',
+      analytics_Storage: 'granted',
+    })
+  })
+
+  test('clarity integration allows custom consent categories', () => {
+    const c = createClarityIntegration({
+      projectId: 'abc123',
+      analyticsStorageCategory: 'productAnalytics',
+      adStorageCategory: 'ads',
+    })
+    ;(globalThis as any).window.clarity = jest.fn()
+
+    c.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, productAnalytics: true, ads: true } as any,
+    })
+
+    expect((globalThis as any).window.clarity).toHaveBeenCalledWith('consentv2', {
+      ad_Storage: 'granted',
+      analytics_Storage: 'granted',
+    })
+  })
+
   test('clarity integration ignora quando clarity não é função', () => {
     const c = createClarityIntegration({ projectId: 'abc123', upload: true })
     ;(globalThis as any).window.clarity = {}
@@ -243,27 +278,70 @@ describe('scriptIntegrations factories', () => {
     expect(() => c.init?.()).not.toThrow()
   })
 
-  test('intercom integration boots with app_id', () => {
-    const i = createIntercomIntegration({ app_id: 'xyz789' })
+  test('intercom integration boots with app_id and settings', () => {
+    const i = createIntercomIntegration({
+      app_id: 'xyz789',
+      api_base: 'https://api-iam.eu.intercom.io',
+      settings: { custom_launcher_selector: '#help' },
+    })
     expect(i.id).toBe('intercom')
     expect(i.category).toBe('functional')
 
     // Mock Intercom function
     ;(globalThis as any).window.Intercom = jest.fn()
     i.init?.()
-    expect((globalThis as any).window.Intercom).toHaveBeenCalledWith('boot', { app_id: 'xyz789' })
+    expect((globalThis as any).window.intercomSettings).toMatchObject({
+      api_base: 'https://api-iam.eu.intercom.io',
+      app_id: 'xyz789',
+      custom_launcher_selector: '#help',
+    })
+    expect((globalThis as any).window.Intercom).toHaveBeenCalledWith(
+      'boot',
+      expect.objectContaining({ app_id: 'xyz789' }),
+    )
   })
 
-  test('zendesk integration identifies with key', () => {
-    const z = createZendeskChatIntegration({ key: 'key123' })
+  test('intercom integration updates or shuts down when consent changes', () => {
+    const i = createIntercomIntegration({ app_id: 'xyz789' })
+    ;(globalThis as any).window.Intercom = jest.fn()
+
+    i.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, functional: true } as any,
+    })
+    i.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, functional: false } as any,
+    })
+
+    expect((globalThis as any).window.Intercom).toHaveBeenCalledWith('update')
+    expect((globalThis as any).window.Intercom).toHaveBeenCalledWith('shutdown')
+  })
+
+  test('zendesk integration syncs Messaging cookie range', () => {
+    const z = createZendeskChatIntegration({ key: 'key123', cookieRange: 'functional' })
     expect(z.id).toBe('zendesk-chat')
     expect(z.category).toBe('functional')
 
     // Mock zE function
     ;(globalThis as any).window.zE = jest.fn()
     z.init?.()
-    expect((globalThis as any).window.zE).toHaveBeenCalledWith('webWidget', 'identify', {
-      key: 'key123',
+    expect((globalThis as any).window.zE).toHaveBeenCalledWith(
+      'messenger:set',
+      'cookies',
+      'functional',
+    )
+
+    z.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, functional: true, analytics: true } as any,
     })
+    expect((globalThis as any).window.zE).toHaveBeenCalledWith('messenger:set', 'cookies', 'all')
+
+    z.onConsentUpdate?.({
+      consented: true,
+      preferences: { necessary: true, functional: false, analytics: true } as any,
+    })
+    expect((globalThis as any).window.zE).toHaveBeenCalledWith('messenger:set', 'cookies', 'none')
   })
 })

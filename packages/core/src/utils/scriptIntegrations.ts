@@ -402,7 +402,11 @@ export function createGoogleTagManagerIntegration(
       cookies: ['_gcl_au'],
     }
   }
-  const src = config.scriptUrl ?? `https://www.googletagmanager.com/gtm.js?id=${containerId}`
+  const dataLayerName = config.dataLayerName || 'dataLayer'
+  const dataLayerParam =
+    dataLayerName === 'dataLayer' ? '' : `&l=${encodeURIComponent(dataLayerName)}`
+  const src =
+    config.scriptUrl ?? `https://www.googletagmanager.com/gtm.js?id=${containerId}${dataLayerParam}`
   return {
     id: 'google-tag-manager',
     category,
@@ -417,7 +421,6 @@ export function createGoogleTagManagerIntegration(
     init: () => {
       const currentWindow = globalThis.window
       if (currentWindow !== undefined) {
-        const dataLayerName = config.dataLayerName || 'dataLayer'
         const w = currentWindow as unknown as Record<string, unknown>
         const layer = (w[dataLayerName] as unknown[]) ?? []
         w[dataLayerName] = layer
@@ -579,6 +582,8 @@ export interface MixpanelConfig {
   category?: string
 }
 
+type ConsentStorageValue = 'granted' | 'denied'
+
 /**
  * Configuração para integração do Microsoft Clarity.
  *
@@ -597,7 +602,17 @@ export interface ClarityConfig {
   /** ID do projeto no Microsoft Clarity */
   projectId: string
   /** Configuração de upload de dados. Padrão: indefinido */
+  /**
+   * @deprecated A Microsoft recomenda Consent API v2. A integração agora envia
+   * `clarity('consentv2', ...)` automaticamente em `onConsentUpdate`.
+   */
   upload?: boolean
+  /** Ativa envio automático da Consent API v2 do Clarity. Padrão: true */
+  consentMode?: boolean
+  /** Categoria usada para `analytics_Storage` no Clarity Consent API v2. Padrão: 'analytics'. */
+  analyticsStorageCategory?: string
+  /** Categoria usada para `ad_Storage` no Clarity Consent API v2. Padrão: 'marketing'. */
+  adStorageCategory?: string
   /** URL do script Clarity. Se omitido usa o padrão oficial. */
   scriptUrl?: string
   /** Categoria LGPD customizada (opcional). */
@@ -620,6 +635,16 @@ export interface ClarityConfig {
 export interface IntercomConfig {
   /** ID da aplicação Intercom */
   app_id: string
+  /** Base regional da API Intercom. Padrão: 'https://api-iam.intercom.io'. */
+  api_base?: string
+  /** Configurações adicionais enviadas para `window.intercomSettings` e `Intercom('boot')`. */
+  settings?: Record<string, unknown>
+  /** Se deve executar `Intercom('boot', ...)` após carregar o widget. Padrão: true. */
+  boot?: boolean
+  /** Se deve executar `Intercom('update')` quando o consentimento segue permitido. Padrão: true. */
+  updateOnConsent?: boolean
+  /** Se deve executar `Intercom('shutdown')` quando o consentimento é revogado. Padrão: true. */
+  shutdownOnRevoke?: boolean
   /** URL do script Intercom. Se omitido usa o padrão oficial. */
   scriptUrl?: string
   /** Categoria LGPD customizada (opcional). */
@@ -642,6 +667,13 @@ export interface IntercomConfig {
 export interface ZendeskConfig {
   /** Chave de identificação do Zendesk */
   key: string
+  /**
+   * Intervalo de cookies inicial para o Web Widget Messaging.
+   * Se omitido, a biblioteca só sincroniza quando o consentimento muda.
+   */
+  cookieRange?: 'all' | 'functional' | 'none'
+  /** Se deve sincronizar cookies via API Messaging atual. Padrão: true. */
+  syncCookies?: boolean
   /** URL do script Zendesk. Se omitido usa o padrão oficial. */
   scriptUrl?: string
   /** Categoria LGPD customizada (opcional). */
@@ -933,6 +965,31 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
     }
   }
   const src = config.scriptUrl ?? `https://www.clarity.ms/tag/${projectId}`
+  const consentMode = config.consentMode ?? true
+  const analyticsCategory = config.analyticsStorageCategory ?? 'analytics'
+  const adCategory = config.adStorageCategory ?? 'marketing'
+
+  const buildClarityConsent = (preferences: ConsentPreferences) => ({
+    ad_Storage: (preferences[adCategory] ? 'granted' : 'denied') as ConsentStorageValue,
+    analytics_Storage: (preferences[analyticsCategory]
+      ? 'granted'
+      : 'denied') as ConsentStorageValue,
+  })
+
+  const sendClarityConsent = (preferences: ConsentPreferences) => {
+    const currentWindow = globalThis.window
+    if (currentWindow === undefined || !consentMode) return
+    const w = currentWindow as unknown as { clarity?: (...args: unknown[]) => void }
+    if (typeof w.clarity !== 'function') return
+    try {
+      w.clarity('consentv2', buildClarityConsent(preferences))
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('[Clarity] Failed to send consentv2:', error)
+      }
+    }
+  }
+
   return {
     id: 'clarity',
     category,
@@ -952,6 +1009,9 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
           }
         }
       }
+    },
+    onConsentUpdate: ({ preferences }) => {
+      sendClarityConsent(preferences)
     },
   }
 }
@@ -990,6 +1050,13 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
     }
   }
   const src = config.scriptUrl ?? `https://widget.intercom.io/widget/${appId}`
+  const apiBase = config.api_base ?? 'https://api-iam.intercom.io'
+  const buildSettings = () => ({
+    api_base: apiBase,
+    app_id: appId,
+    ...(config.settings ?? {}),
+  })
+
   return {
     id: 'intercom',
     category,
@@ -998,15 +1065,38 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
     init: () => {
       const currentWindow = globalThis.window
       if (currentWindow !== undefined) {
-        const w = currentWindow as unknown as { Intercom?: (...args: unknown[]) => void }
-        if (typeof w.Intercom === 'function') {
+        const w = currentWindow as unknown as {
+          Intercom?: (...args: unknown[]) => void
+          intercomSettings?: Record<string, unknown>
+        }
+        const settings = buildSettings()
+        w.intercomSettings = settings
+        if (typeof w.Intercom === 'function' && config.boot !== false) {
           try {
-            w.Intercom('boot', { app_id: appId })
+            w.Intercom('boot', settings)
           } catch (error) {
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('[Intercom] Failed to boot:', error)
             }
           }
+        }
+      }
+    },
+    onConsentUpdate: ({ consented, preferences }) => {
+      const currentWindow = globalThis.window
+      if (currentWindow === undefined) return
+      const w = currentWindow as unknown as { Intercom?: (...args: unknown[]) => void }
+      if (typeof w.Intercom !== 'function') return
+      const allowed = consented && Boolean(preferences[category])
+      try {
+        if (allowed && config.updateOnConsent !== false) {
+          w.Intercom('update')
+        } else if (!allowed && config.shutdownOnRevoke !== false) {
+          w.Intercom('shutdown')
+        }
+      } catch (error) {
+        if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+          console.warn('[Intercom] Failed to sync consent:', error)
         }
       }
     },
@@ -1047,25 +1137,41 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
     }
   }
   const src = config.scriptUrl ?? `https://static.zdassets.com/ekr/snippet.js?key=${key}`
+  const resolveZendeskCookieRange = (consent: {
+    consented: boolean
+    preferences: ConsentPreferences
+  }): 'all' | 'functional' | 'none' => {
+    if (!consent.consented || !consent.preferences[category]) return 'none'
+    return consent.preferences.analytics ? 'all' : 'functional'
+  }
+
+  const sendZendeskCookieRange = (range: 'all' | 'functional' | 'none') => {
+    const currentWindow = globalThis.window
+    if (currentWindow === undefined) return
+    const w = currentWindow as unknown as { zE?: (...args: unknown[]) => void }
+    if (typeof w.zE !== 'function') return
+    try {
+      w.zE('messenger:set', 'cookies', range)
+    } catch (error) {
+      if (typeof console !== 'undefined' && typeof console.warn === 'function') {
+        console.warn('[Zendesk] Failed to sync cookie consent:', error)
+      }
+    }
+  }
+
   return {
     id: 'zendesk-chat',
     category,
     src,
     cookies: ['__zlcmid', '_zendesk_shared_session'],
     init: () => {
-      const currentWindow = globalThis.window
-      if (currentWindow !== undefined) {
-        const w = currentWindow as unknown as { zE?: (...args: unknown[]) => void }
-        if (typeof w.zE === 'function') {
-          try {
-            w.zE('webWidget', 'identify', { key })
-          } catch (error) {
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-              console.warn('[Zendesk] Failed to identify:', error)
-            }
-          }
-        }
+      if (config.syncCookies !== false && config.cookieRange) {
+        sendZendeskCookieRange(config.cookieRange)
       }
+    },
+    onConsentUpdate: (consent) => {
+      if (config.syncCookies === false) return
+      sendZendeskCookieRange(resolveZendeskCookieRange(consent))
     },
   }
 }

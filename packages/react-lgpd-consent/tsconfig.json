@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "..",
 
     "paths": {
       "@react-lgpd-consent/core": ["../core/src"],

@@ -44,6 +44,16 @@ O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automa
 
 > 💡 **Procurando exemplos práticos?** Veja [RECIPES.md](../../doc/RECIPES.md) para receitas passo a passo de Google Consent Mode v2, Next.js App Router e CSP/nonce.
 
+### Atualização de compatibilidade externa (02/07/2026)
+
+As integrações nativas foram revisadas contra a documentação oficial dos provedores:
+
+- **GTM com `dataLayerName` customizado**: a URL agora inclui `&l=<dataLayerName>`, como no snippet oficial do Google Tag Manager.
+- **Microsoft Clarity**: a integração envia `clarity('consentv2', ...)` automaticamente em `onConsentUpdate`, preservando `upload` apenas como compatibilidade legada.
+- **Intercom**: suporta `api_base`, `settings`, `Intercom('update')` quando o consentimento segue válido e `Intercom('shutdown')` quando a categoria é revogada.
+- **Zendesk Messaging**: usa `zE('messenger:set', 'cookies', range)` para sincronizar `all`, `functional` ou `none`.
+- **Mixpanel**: mantém `api_host` para projetos com residência regional de dados.
+
 ## 🎯 Integrações Nativas Disponíveis
 
 ### 1. Google Analytics 4 (GA4)
@@ -82,7 +92,7 @@ import { createGoogleTagManagerIntegration } from 'react-lgpd-consent'
 const integrations = [
   createGoogleTagManagerIntegration({
     containerId: 'GTM-XXXXXXX',
-    dataLayerName: 'dataLayer', // opcional
+    dataLayerName: 'customLayer', // opcional; gera &l=customLayer na URL do gtm.js
   }),
 ]
 // ✅ Consent Mode v2 no dataLayer customizado automaticamente
@@ -116,48 +126,72 @@ const integrations = [createHotjarIntegration({ siteId: '123456', version: 6 })]
 
 - **Categoria**: `analytics`
 - **Função**: `createMixpanelIntegration(config)`
-- **Descrição**: Integração com o Mixpanel para análise de produtos. Suporta `token` e configurações customizadas.
+- **Descrição**: Integração com o Mixpanel para análise de produtos. Suporta `token`, configurações customizadas e `api_host` para residência regional de dados.
 
 ```tsx
 import { createMixpanelIntegration } from 'react-lgpd-consent'
 
-const integrations = [createMixpanelIntegration({ token: 'YOUR_TOKEN' })]
+const integrations = [
+  createMixpanelIntegration({
+    token: 'YOUR_TOKEN',
+    api_host: 'https://api-eu.mixpanel.com', // use quando seu projeto exigir endpoint regional
+  }),
+]
 ```
 
 ### 6. Microsoft Clarity
 
 - **Categoria**: `analytics`
 - **Função**: `createClarityIntegration(config)`
-- **Descrição**: Integração com o Microsoft Clarity. Suporta `projectId`.
+- **Descrição**: Integração com o Microsoft Clarity. Suporta `projectId` e sincroniza a Consent API v2 (`consentv2`) quando as preferências mudam.
 
 ```tsx
 import { createClarityIntegration } from 'react-lgpd-consent'
 
-const integrations = [createClarityIntegration({ projectId: 'abcdef' })]
+const integrations = [
+  createClarityIntegration({
+    projectId: 'abcdef',
+    analyticsStorageCategory: 'analytics', // padrão
+    adStorageCategory: 'marketing', // padrão
+  }),
+]
 ```
+
+> A partir de 31/10/2025, a Microsoft exige sinal de consentimento válido para funcionalidade completa do Clarity em visitas originadas de EEA/UK/CH. A integração envia `ad_Storage` e `analytics_Storage` conforme as categorias configuradas.
 
 ### 7. Intercom
 
 - **Categoria**: `functional`
 - **Função**: `createIntercomIntegration(config)`
-- **Descrição**: Adiciona o widget de chat do Intercom. Suporta `app_id`.
+- **Descrição**: Adiciona o widget de chat do Intercom. Suporta `app_id`, `api_base`, `settings`, atualização em SPA e encerramento de sessão na revogação de consentimento.
 
 ```tsx
 import { createIntercomIntegration } from 'react-lgpd-consent'
 
-const integrations = [createIntercomIntegration({ app_id: 'your_app_id' })]
+const integrations = [
+  createIntercomIntegration({
+    app_id: 'your_app_id',
+    api_base: 'https://api-iam.eu.intercom.io', // opcional: US/EU/Australia
+    settings: { custom_launcher_selector: '#help' },
+  }),
+]
 ```
 
 ### 8. Zendesk Chat
 
 - **Categoria**: `functional`
 - **Função**: `createZendeskChatIntegration(config)`
-- **Descrição**: Adiciona o widget do Zendesk Chat. Suporta `key`.
+- **Descrição**: Adiciona o widget do Zendesk Messaging. Suporta `key` e sincronização de cookies via `messenger:set`.
 
 ```tsx
 import { createZendeskChatIntegration } from 'react-lgpd-consent'
 
-const integrations = [createZendeskChatIntegration({ key: 'your_zendesk_key' })]
+const integrations = [
+  createZendeskChatIntegration({
+    key: 'your_zendesk_key',
+    cookieRange: 'functional', // opcional: all | functional | none
+  }),
+]
 ```
 
 ### 9. UserWay (Acessibilidade)
@@ -460,6 +494,21 @@ interface ConsentUpdatedEvent {
 | UserWay/AccessiBe  | `functional`          | Funcionalidade de acessibilidade |
 | Live Chat          | `functional`          | Funcionalidade de suporte        |
 | YouTube/Vimeo      | `social`              | Conteúdo de redes sociais        |
+
+---
+
+## 🔗 Fontes Oficiais Consultadas
+
+- Google tag (`gtag.js`): https://developers.google.com/tag-platform/gtagjs
+- Google Consent Mode: https://developers.google.com/tag-platform/security/guides/consent
+- Google Tag Manager web container: https://support.google.com/tagmanager/answer/14842164
+- Microsoft Clarity setup: https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-setup
+- Microsoft Clarity Consent Mode: https://learn.microsoft.com/en-us/clarity/setup-and-installation/consent-mode
+- Microsoft Clarity Consent API v2: https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-consent-api-v2
+- Intercom Web installation: https://developers.intercom.com/installing-intercom/web/installation
+- Intercom SPA guidance: https://www.intercom.com/help/en/articles/170-integrate-intercom-in-a-single-page-app
+- Mixpanel JavaScript SDK: https://docs.mixpanel.com/docs/tracking-methods/sdks/javascript
+- Zendesk Web Widget Messaging API: https://developer.zendesk.com/api-reference/widget-messaging/web/core/
 
 ---
 

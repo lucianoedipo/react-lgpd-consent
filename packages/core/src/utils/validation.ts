@@ -1,4 +1,5 @@
 import type { ConsentProviderProps, ProjectCategoriesConfig } from '../types/types'
+import { isDevelopmentEnv } from './env'
 import { logger } from './logger'
 
 /**
@@ -37,7 +38,7 @@ export type ValidationResult = {
  * @returns True se for ambiente de desenvolvimento
  * @internal
  */
-const isDev = () => typeof process !== 'undefined' && process.env.NODE_ENV !== 'production'
+const isDev = isDevelopmentEnv
 
 /**
  * Remove duplicatas e filtra 'necessary' das categorias habilitadas.

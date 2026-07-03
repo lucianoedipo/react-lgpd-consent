@@ -158,7 +158,7 @@ export const Branding = React.memo(function Branding({
 }: Readonly<BrandingProps>) {
   const baseTexts = useConsentTexts()
   const mergedTexts = React.useMemo(
-    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    () => (textsProp ? { ...baseTexts, ...textsProp } : baseTexts),
     [baseTexts, textsProp],
   )
   const texts = React.useMemo(

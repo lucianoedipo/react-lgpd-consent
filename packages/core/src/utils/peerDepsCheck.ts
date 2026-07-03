@@ -8,6 +8,7 @@
  */
 
 import { logger } from './logger'
+import { isProductionEnv } from './env'
 
 /**
  * Resultado da verificação de peer dependencies.
@@ -43,6 +44,53 @@ export interface PeerDepsMessages {
   UNSUPPORTED_REACT_VERSION: (version: string) => string
   UNSUPPORTED_MUI_VERSION: (version: string) => string
   MUI_OUT_OF_RANGE: (version: string) => string
+}
+
+function addPeerError(result: PeerDepsCheckResult, message: string, logWarnings: boolean) {
+  result.ok = false
+  result.errors.push(message)
+
+  if (logWarnings) {
+    console.error(message)
+  }
+}
+
+function checkReactPeerVersion(
+  result: PeerDepsCheckResult,
+  messages: PeerDepsMessages,
+  logWarnings: boolean,
+) {
+  if (detectMultipleReactInstances()) {
+    addPeerError(result, messages.MULTIPLE_REACT_INSTANCES, logWarnings)
+  }
+
+  const reactVersion = getPackageVersion('react')
+  if (!reactVersion || isVersionInRange(reactVersion, 18, 19)) {
+    return
+  }
+
+  addPeerError(result, messages.UNSUPPORTED_REACT_VERSION(reactVersion), logWarnings)
+}
+
+function checkMuiPeerVersion(
+  result: PeerDepsCheckResult,
+  messages: PeerDepsMessages,
+  currentWindow: Window,
+  logWarnings: boolean,
+) {
+  const muiVersion = (currentWindow as Window & { '@mui/material'?: { version?: string } })[
+    '@mui/material'
+  ]?.version
+
+  if (!muiVersion || isVersionInRange(muiVersion, 5, 7)) {
+    return
+  }
+
+  result.warnings.push(messages.MUI_OUT_OF_RANGE(muiVersion))
+
+  if (logWarnings) {
+    logger.warn(messages.UNSUPPORTED_MUI_VERSION(muiVersion))
+  }
 }
 
 /**
@@ -574,9 +622,7 @@ export function checkPeerDeps(
   }
 
   // Pular em produção por padrão
-  const isProduction = typeof process !== 'undefined' && process.env?.NODE_ENV === 'production'
-
-  if (skipInProduction && isProduction) {
+  if (skipInProduction && isProductionEnv()) {
     return result
   }
 
@@ -588,42 +634,8 @@ export function checkPeerDeps(
 
   const messages = getMessages()
 
-  // 1. Verificar múltiplas instâncias de React
-  if (detectMultipleReactInstances()) {
-    result.ok = false
-    result.errors.push(messages.MULTIPLE_REACT_INSTANCES)
-
-    if (logWarnings) {
-      console.error(messages.MULTIPLE_REACT_INSTANCES)
-    }
-  }
-
-  // 2. Verificar versão do React
-  const reactVersion = getPackageVersion('react')
-  if (reactVersion) {
-    if (!isVersionInRange(reactVersion, 18, 19)) {
-      result.ok = false
-      const errorMsg = messages.UNSUPPORTED_REACT_VERSION(reactVersion)
-      result.errors.push(errorMsg)
-
-      if (logWarnings) {
-        console.error(errorMsg)
-      }
-    }
-  }
-
-  // 3. Verificar versão do MUI (se estiver carregado)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const muiVersion = (currentWindow as any)['@mui/material']?.version
-  if (muiVersion) {
-    if (!isVersionInRange(muiVersion, 5, 7)) {
-      result.warnings.push(messages.MUI_OUT_OF_RANGE(muiVersion))
-
-      if (logWarnings) {
-        logger.warn(messages.UNSUPPORTED_MUI_VERSION(muiVersion))
-      }
-    }
-  }
+  checkReactPeerVersion(result, messages, logWarnings)
+  checkMuiPeerVersion(result, messages, currentWindow, logWarnings)
 
   return result
 }

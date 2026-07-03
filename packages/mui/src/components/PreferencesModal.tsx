@@ -304,7 +304,7 @@ export function PreferencesModal({
 
   const baseTexts = useConsentTexts()
   const mergedTexts = React.useMemo(
-    () => ({ ...baseTexts, ...(textsProp ?? {}) }),
+    () => (textsProp ? { ...baseTexts, ...textsProp } : baseTexts),
     [baseTexts, textsProp],
   )
   const texts = React.useMemo(
