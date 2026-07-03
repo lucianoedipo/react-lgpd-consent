@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Workspace PNPM para os pacotes react-lgpd-consent.",
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.13.0"
   },
   "packageManager": "pnpm@11.9.0",
   "scripts": {
