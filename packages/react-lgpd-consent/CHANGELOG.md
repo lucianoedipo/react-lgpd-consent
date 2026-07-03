@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.9.8
+
+### Patch Changes
+
+- [`04d07b8`](https://github.com/lucianoedipo/react-lgpd-consent/commit/04d07b8c66287f4a84592d470c7820d9320a661d) Thanks [@lucianoedipo](https://github.com/lucianoedipo)! - Atualiza compatibilidade das integrações externas e estabiliza a configuração TypeScript/CI.
+
+  - GTM passa a incluir `&l=<dataLayerName>` quando um data layer customizado é usado.
+  - Clarity passa a sincronizar consentimento com `clarity('consentv2', ...)`, mantendo `upload` apenas como compatibilidade legada.
+  - Intercom passa a aceitar `api_base`, `settings` e sincronizar `update`/`shutdown` conforme revogação de consentimento.
+  - Zendesk Messaging passa a sincronizar cookies via `zE('messenger:set', 'cookies', ...)`.
+  - Remove usos diretos de `process` no código de produção em favor de leitura SSR-safe via `globalThis`.
+  - Ajusta `rootDir` dos pacotes que resolvem fontes internas por `paths`, evitando diagnósticos TS6059 no monorepo.
+  - Corrige `lint:ci` no Turbo e atualiza o workflow de CI para validar changesets em PRs.
+
+- Updated dependencies [[`04d07b8`](https://github.com/lucianoedipo/react-lgpd-consent/commit/04d07b8c66287f4a84592d470c7820d9320a661d)]:
+  - @react-lgpd-consent/core@0.9.8
+  - @react-lgpd-consent/mui@0.9.8
+
 ## 0.9.7
 
 ### Patch Changes
