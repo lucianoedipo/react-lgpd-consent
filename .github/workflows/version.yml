@@ -64,12 +64,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Detectar se o commit atual é o merge do PR de version
+      #
+      # IMPORTANTE: usamos o contexto do evento (github.event.head_commit.message),
+      # não `git log -1`. O passo "Create Version PR or Tag" (changesets/action) pode
+      # deixar o working directory do runner fazendo checkout da branch da PR de release
+      # (changeset-release/main) como efeito colateral de criá-la/atualizá-la. Se
+      # líssemos `git log -1` aqui, veríamos o commit dessa PR (ainda não mergeada em
+      # main) e marcaríamos erroneamente is_release_commit=true, criando uma tag para
+      # um commit que não está no histórico de main.
       - name: Detect version commit
         id: detect
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         run: |
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-
-          echo "Último commit:"
+          echo "Último commit (push para main):"
           echo "$COMMIT_MSG"
 
           if echo "$COMMIT_MSG" | grep -q "chore(release): version packages"; then
