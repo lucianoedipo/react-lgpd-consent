@@ -17,7 +17,7 @@ O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automa
 - **🎯 Google Consent Mode v2 Automático**: GA4 e GTM agora implementam Consent Mode v2 automaticamente:
   - `bootstrap`: Seta `consent('default', 'denied')` antes de qualquer carregamento
   - `onConsentUpdate`: Envia `consent('update', 'granted')` quando usuário consente
-  - Zero configuração manual necessária!
+  - Configure também as permissões das tags no container GTM; o loader não controla tags externas ao seu fluxo.
 
 - **🔄 Sistema de Fila com Prioridade**: Scripts são executados ordenadamente:
   1. Categoria `necessary` sempre primeiro
@@ -44,12 +44,12 @@ O componente `ConsentScriptLoader` gerencia o carregamento desses scripts automa
 
 > 💡 **Procurando exemplos práticos?** Veja [RECIPES.md](../../doc/RECIPES.md) para receitas passo a passo de Google Consent Mode v2, Next.js App Router e CSP/nonce.
 
-### Atualização de compatibilidade externa (02/07/2026)
+### Atualização de compatibilidade externa (16/09/2026)
 
 As integrações nativas foram revisadas contra a documentação oficial dos provedores:
 
 - **GTM com `dataLayerName` customizado**: a URL agora inclui `&l=<dataLayerName>`, como no snippet oficial do Google Tag Manager.
-- **Microsoft Clarity**: a integração envia `clarity('consentv2', ...)` automaticamente em `onConsentUpdate`, preservando `upload` apenas como compatibilidade legada.
+- **Microsoft Clarity**: a integração envia `clarity('consentv2', ...)` automaticamente em `onConsentUpdate`, `upload` continua aceito no tipo, mas não envia mais uma tag arbitrária nem controla upload; gera aviso de depreciação.
 - **Intercom**: suporta `api_base`, `settings`, `Intercom('update')` quando o consentimento segue válido e `Intercom('shutdown')` quando a categoria é revogada.
 - **Zendesk Messaging**: usa `zE('messenger:set', 'cookies', range)` para sincronizar `all`, `functional` ou `none`.
 - **Mixpanel**: mantém `api_host` para projetos com residência regional de dados.
@@ -69,7 +69,7 @@ import { createGoogleAnalyticsIntegration, ConsentScriptLoader } from 'react-lgp
 const integrations = [
   createGoogleAnalyticsIntegration({
     measurementId: 'G-XXXXXXXXXX',
-    config: { anonymize_ip: true },
+    config: { send_page_view: false },
   })
 ]
 
@@ -83,7 +83,7 @@ const integrations = [
 
 - **Categoria**: `analytics`
 - **Função**: `createGoogleTagManagerIntegration(config)`
-- **Descrição**: Carrega o container do Google Tag Manager. Suporta `containerId` (ou `gtmId` legado) e `dataLayerName`.
+- **Descrição**: Carrega o container do Google Tag Manager. Suporta `containerId` e `dataLayerName`.
 - **✨ Novo v0.7.1**: Google Consent Mode v2 automático com dataLayer customizado
 
 ```tsx
@@ -177,17 +177,17 @@ const integrations = [
 ]
 ```
 
-### 8. Zendesk Chat
+### 8. Zendesk Messaging
 
 - **Categoria**: `functional`
-- **Função**: `createZendeskChatIntegration(config)`
+- **Função**: `createZendeskMessagingIntegration(config)`
 - **Descrição**: Adiciona o widget do Zendesk Messaging. Suporta `key` e sincronização de cookies via `messenger:set`.
 
 ```tsx
-import { createZendeskChatIntegration } from 'react-lgpd-consent'
+import { createZendeskMessagingIntegration } from 'react-lgpd-consent'
 
 const integrations = [
-  createZendeskChatIntegration({
+  createZendeskMessagingIntegration({
     key: 'your_zendesk_key',
     cookieRange: 'functional', // opcional: all | functional | none
   }),
@@ -596,3 +596,82 @@ const customConfig = createAnpdCategoriesConfig({
 - [CONFORMIDADE.md](../../doc/CONFORMIDADE.md) – Conformidade LGPD e ANPD
 
 **Problemas de integração?** Consulte [TROUBLESHOOTING.md - Seção de Integrations](../../doc/TROUBLESHOOTING.md#integrações-de-terceiros).
+
+## Ciclo de vida, revogação e migração
+
+`ConsentScriptLoader` e `useConsentScriptLoader` compartilham o mesmo ciclo:
+
+1. `bootstrap`: preparação local idempotente, sem requisições externas, inclusive antes do aceite.
+2. `beforeLoad(consent)`: configuração/fila do SDK, somente com categoria autorizada.
+3. Download do script com os atributos e nonce configurados.
+4. `init`: inicialização após download, somente se o consentimento continuar válido.
+5. `onConsentUpdate`: sincronização na conclusão e nas mudanças posteriores, inclusive revogação.
+
+Downloads simultâneos são compartilhados. Remontar o componente não repete `init` por padrão.
+`reloadOnChange` permite repetir a preparação e inicialização ao reautorizar a categoria;
+a tag externa já carregada não é baixada novamente. Use IDs distintos para configurações distintas.
+O hook deve permanecer montado enquanto a integração estiver ativa para observar revogações.
+Falhas de rede não são consideradas sucesso e permitem nova tentativa.
+
+### Google GA4 e GTM
+
+`analyticsStorageCategory` mapeia `analytics_storage` e usa `category` como padrão.
+`adStorageCategory` mapeia `ad_storage`, `ad_user_data` e `ad_personalization`, com padrão `marketing`.
+Uma decisão ainda não confirmada (`consented: false`) nunca concede esses sinais.
+Layers customizados não reutilizam o `gtag` de outro layer. O evento `gtm.js` é preparado antes do container.
+
+```tsx
+createGoogleAnalyticsIntegration({
+  measurementId: 'G-XXXX',
+  category: 'estatisticas',
+  analyticsStorageCategory: 'estatisticas',
+  adStorageCategory: 'publicidade',
+})
+```
+
+O loader bloqueia o download até o aceite (Consent Mode básico). Não carrega tags antes do aceite
+para enviar pings sem cookies. Se o banner for integrado **dentro de um template GTM**, utilize
+`setDefaultConsentState` e `updateConsentState` no template, com o gatilho Consent Initialization,
+conforme a [documentação do Google](https://developers.google.com/tag-platform/security/guides/consent).
+Não copie chamadas `gtag('consent', ...)` para uma tag Custom HTML como substituição dessas APIs.
+Configure checks de consentimento para cada tag de terceiros no container.
+
+O inventário padrão de GA4 contém `_ga` e `_ga_*`. `_gid` permanece apenas como padrão legado de
+classificação; não é anunciado como cookie GA4. O GTM não recebe cookies próprios no catálogo:
+registre os cookies das tags realmente configuradas, inclusive Google Ads, via overrides.
+
+### Meta Pixel e Mixpanel
+
+O Pixel prepara a fila antes do download e comunica `consent grant/revoke`. Novo aceite não repete
+`PageView`. O Mixpanel prepara os marcadores exigidos pelo bundle CDN e recebe `api_host` dentro do
+segundo argumento de `init`; o terceiro argumento é nome de instância, não endereço da API.
+Revogar chama `opt_out_tracking`; reautorizar chama `opt_in_tracking` sem gerar evento de opt-in.
+Consulte a [documentação do Mixpanel](https://docs.mixpanel.com/docs/tracking-methods/sdks/javascript).
+
+### Hotjar
+
+`_hjSettings` e `hj` são preparados antes do script externo, incluindo `hjdebug`.
+Não usamos comandos de parada não documentados. Depois de iniciado, revogar a categoria recarrega
+a página para encerrar o SDK. O consentimento deve ser persistido antes dessa recarga (o provider faz isso).
+Para aplicações com persistência externa, `onRevoke` substitui essa ação; o callback deve encerrar
+o documento após persistir a decisão. Remover apenas a tag `<script>` não interrompe o SDK em memória.
+
+### Clarity e Intercom
+
+Clarity prepara sua fila e envia `consentv2` antes do script e após mudanças. `upload` é obsoleto e
+não deve ser usado como controle de coleta. `consentMode: false` desativa a sincronização automática;
+nesse caso o consumidor assume esse controle. Consentimento de armazenamento não equivale a desligar
+inteiramente o SDK: veja a [Consent API v2](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-consent-api-v2).
+
+Intercom prepara settings e fila antes do download, preservando o host regional. A revogação chama
+`shutdown`; um novo aceite chama `boot` novamente quando o boot automático está habilitado.
+
+### Zendesk e UserWay
+
+Prefira `createZendeskMessagingIntegration` ou `COMMON_INTEGRATIONS.zendeskMessaging`.
+`createZendeskChatIntegration` continua disponível com seu ID legado, mas também integra **Messaging**,
+não Chat Classic. Use somente uma das duas fábricas por página. Cookies do Chat Classic não são
+anunciados para Messaging; a API do widget controla também armazenamento local. Declare o inventário
+efetivo da sua configuração com `setCookieCatalogOverrides`.
+
+UserWay mantém a URL oficial e o atributo `data-account`; nenhuma migração de endpoint é necessária.

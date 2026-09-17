@@ -15,7 +15,12 @@ import {
 import { logger } from './logger'
 import { isDevelopmentEnv } from './env'
 import type { ScriptIntegration } from './scriptIntegrations'
-import { loadScript } from './scriptLoader'
+import {
+  bootstrapIntegration,
+  executeIntegration,
+  resetIntegrationRuntime,
+  syncIntegration,
+} from './integrationRuntime'
 
 type ScriptStatus = 'pending' | 'running' | 'executed'
 
@@ -25,6 +30,8 @@ export interface RegisteredScript {
   execute: () => void | Promise<void>
   priority?: number
   allowReload?: boolean
+  /** @internal */
+  managesConsent?: boolean
   onConsentUpdate?: (consent: { consented: boolean; preferences: ConsentPreferences }) => void
 }
 
@@ -101,6 +108,7 @@ export function registerScript(def: RegisteredScript): () => void {
 /** @internal - usado apenas em testes para limpar a fila */
 export function __resetScriptRegistryForTests() {
   scriptRegistry.clear()
+  resetIntegrationRuntime()
 }
 
 function getExecutableScripts(consent: {
@@ -141,6 +149,9 @@ async function processQueue(
   devLogging: boolean,
 ) {
   const scripts = getExecutableScripts(consent)
+  scripts.forEach((script) => {
+    script.status = 'running'
+  })
   let order = 0
 
   for (const script of scripts) {
@@ -157,13 +168,11 @@ async function processQueue(
 
     try {
       await Promise.resolve(script.execute())
-    } catch (error) {
-      logger.error(`❌ Failed to execute script ${script.id}`, error)
-    } finally {
       script.status = 'executed'
-      if (script.onConsentUpdate) {
-        script.onConsentUpdate(consent)
-      }
+      if (script.onConsentUpdate && !script.managesConsent) script.onConsentUpdate(consent)
+    } catch (error) {
+      script.status = 'pending'
+      logger.error(`❌ Failed to execute script ${script.id}`, error)
     }
   }
 }
@@ -227,6 +236,10 @@ export function ConsentScriptLoader({
 }: Readonly<ConsentScriptLoaderProps>) {
   const { preferences, consented } = useConsent()
   const isHydrated = useConsentHydration()
+  const consentRef = React.useRef({ consented, preferences })
+  React.useLayoutEffect(() => {
+    consentRef.current = { consented, preferences }
+  })
   const categories = useCategories()
   const [queueVersion, bumpQueueVersion] = React.useState(0)
 
@@ -339,6 +352,9 @@ export function ConsentScriptLoader({
         priority: integration.priority,
         hasBootstrap: Boolean(integration.bootstrap),
         hasInit: Boolean(integration.init),
+        hasBeforeLoad: Boolean(integration.beforeLoad),
+        attrs: integration.attrs,
+        nonce: integration.nonce ?? nonce,
         hasOnConsentUpdate: Boolean(integration.onConsentUpdate),
       })
 
@@ -359,7 +375,7 @@ export function ConsentScriptLoader({
             id: `${integration.id}__bootstrap`,
             category: 'necessary',
             priority: (integration.priority ?? 0) + 1000,
-            execute: integration.bootstrap,
+            execute: () => bootstrapIntegration(integration),
           }),
         )
       }
@@ -370,22 +386,10 @@ export function ConsentScriptLoader({
           category: integration.category,
           priority: integration.priority,
           allowReload: reloadOnChange,
-          onConsentUpdate: integration.onConsentUpdate,
+          managesConsent: true,
+          onConsentUpdate: () => syncIntegration(integration, consentRef.current),
           execute: async () => {
-            const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
-            const scriptNonce = integration.nonce ?? nonce
-            if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
-            await loadScript(
-              integration.id,
-              integration.src,
-              integration.category,
-              mergedAttrs,
-              scriptNonce,
-              { skipConsentCheck: true },
-            )
-            if (integration.init) {
-              integration.init()
-            }
+            await executeIntegration(integration, () => consentRef.current, nonce, reloadOnChange)
           },
         }),
       )
@@ -418,9 +422,13 @@ export function ConsentScriptLoader({
   React.useEffect(() => {
     if (!isHydrated) return
     scriptRegistry.forEach((script) => {
-      if (script.status !== 'executed') return
+      if (script.status !== 'executed' && script.status !== 'running') return
       if (typeof script.onConsentUpdate !== 'function') return
-      script.onConsentUpdate({ consented, preferences })
+      try {
+        script.onConsentUpdate({ consented, preferences })
+      } catch (error) {
+        logger.error(`Failed to sync consent: ${script.id}`, error)
+      }
     })
   }, [consented, preferences, isHydrated])
 
@@ -459,52 +467,34 @@ export function useConsentScriptLoader() {
   const { preferences, consented } = useConsent()
   const isHydrated = useConsentHydration()
 
+  const consentRef = React.useRef({ consented, preferences })
+  React.useLayoutEffect(() => {
+    consentRef.current = { consented, preferences }
+  })
+  const loaded = React.useRef(new Map<string, ScriptIntegration>())
+
+  React.useEffect(() => {
+    if (!isHydrated) return
+    loaded.current.forEach((integration) => {
+      try {
+        syncIntegration(integration, consentRef.current)
+      } catch (error) {
+        logger.error(`Failed to sync consent: ${integration.id}`, error)
+      }
+    })
+  }, [consented, preferences, isHydrated])
+
   return React.useCallback(
     async (integration: ScriptIntegration, nonce?: string) => {
-      if (!isHydrated) {
-        logger.warn(`⚠️ Cannot load script ${integration.id}: Consent not hydrated yet`)
-        return false
-      }
-      if (!consented) {
-        logger.warn(`⚠️ Cannot load script ${integration.id}: No consent given`)
-        return false
-      }
-
-      const shouldLoad = preferences[integration.category]
-      if (!shouldLoad) {
-        logger.warn(
-          `⚠️ Cannot load script ${integration.id}: Category '${integration.category}' not consented`,
-        )
-        return false
-      }
-
+      if (!isHydrated) return false
+      loaded.current.set(integration.id, integration)
       try {
-        const mergedAttrs = integration.attrs ? { ...integration.attrs } : {}
-        const scriptNonce = integration.nonce ?? nonce
-        if (scriptNonce && !mergedAttrs.nonce) mergedAttrs.nonce = scriptNonce
-
-        await loadScript(
-          integration.id,
-          integration.src,
-          integration.category,
-          mergedAttrs,
-          scriptNonce,
-          {
-            consentSnapshot: { consented, preferences },
-            skipConsentCheck: true,
-          },
-        )
-
-        if (integration.init) {
-          integration.init()
-        }
-
-        return true
+        return await executeIntegration(integration, () => consentRef.current, nonce)
       } catch (error) {
         logger.error(`❌ Failed to load script: ${integration.id}`, error)
         return false
       }
     },
-    [preferences, consented, isHydrated],
+    [isHydrated],
   )
 }

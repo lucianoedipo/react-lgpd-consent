@@ -114,12 +114,10 @@ export function loadScript(
   const currentDocument = globalThis.document
   if (!src || currentDocument === undefined) return Promise.resolve()
 
-  // Se script já existe no DOM, resolve imediatamente
-  if (currentDocument.getElementById(id)) return Promise.resolve()
-
-  // Se já está sendo carregado, retorna a Promise existente (previne duplicação)
+  // A tag pode existir enquanto o download ainda está em andamento.
   const existingPromise = LOADING_SCRIPTS.get(id)
   if (existingPromise) return existingPromise
+  if (currentDocument.getElementById(attrs.id ?? id)) return Promise.resolve()
 
   const pollInterval = options?.pollIntervalMs ?? DEFAULT_POLL_INTERVAL
   const names = resolveCookieNames(options?.cookieName)
@@ -143,6 +141,7 @@ export function loadScript(
         resolve()
       }
       s.onerror = () => {
+        s.remove()
         LOADING_SCRIPTS.delete(id)
         reject(new Error(`Failed to load script: ${src}`))
       }

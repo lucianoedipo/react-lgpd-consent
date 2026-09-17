@@ -156,8 +156,8 @@ describe('ConsentScriptLoader component', () => {
     )
 
     await waitFor(() => {
-      expect((loadScript as jest.Mock).mock.calls.length).toBeGreaterThan(initialLoadCalls)
-      expect(integration.bootstrap.mock.calls.length).toBeGreaterThan(initialBootstrapCalls)
+      expect((loadScript as jest.Mock).mock.calls.length).toBe(initialLoadCalls)
+      expect(integration.bootstrap.mock.calls.length).toBe(initialBootstrapCalls)
       expect(integration.init.mock.calls.length).toBeGreaterThan(0)
     })
   })

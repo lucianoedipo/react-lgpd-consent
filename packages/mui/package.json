@@ -82,5 +82,8 @@
   "bugs": {
     "url": "https://github.com/lucianoedipo/react-lgpd-consent/issues"
   },
-  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/"
+  "homepage": "https://lucianoedipo.github.io/react-lgpd-consent/",
+  "devDependencies": {
+    "js-cookie": "^3.0.8"
+  }
 }

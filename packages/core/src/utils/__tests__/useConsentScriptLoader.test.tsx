@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react'
 import * as React from 'react'
 import { ConsentProvider } from '../../context/ConsentContext'
-import { useConsentScriptLoader } from '../ConsentScriptLoader'
+import { __resetScriptRegistryForTests, useConsentScriptLoader } from '../ConsentScriptLoader'
 import type { ScriptIntegration } from '../scriptIntegrations'
 
 // mock loadScript
@@ -10,6 +10,10 @@ jest.mock('../scriptLoader', () => ({
 }))
 
 describe('useConsentScriptLoader', () => {
+  beforeEach(() => {
+    __resetScriptRegistryForTests()
+    jest.clearAllMocks()
+  })
   function TestComponent({ integration }: any) {
     const load = useConsentScriptLoader()
     React.useEffect(() => {

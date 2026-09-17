@@ -11,6 +11,7 @@
  */
 // Removed import of Category as it's no longer used - ScriptIntegration now uses string
 import type { ConsentPreferences } from '../types/types'
+import { logger } from './logger'
 
 /**
  * Integração de script de terceiros condicionada a consentimento.
@@ -34,6 +35,16 @@ import type { ConsentPreferences } from '../types/types'
  * }
  * ```
  */
+export type IntegrationConsent = { consented: boolean; preferences: ConsentPreferences }
+
+/** @category Types */
+export interface GoogleConsentConfig {
+  /** Categoria para analytics_storage. Padrão: categoria da integração. */
+  analyticsStorageCategory?: string
+  /** Categoria para os sinais de publicidade. Padrão: marketing. */
+  adStorageCategory?: string
+}
+
 export interface ScriptIntegration {
   /** Identificador único da integração */
   id: string
@@ -54,6 +65,8 @@ export interface ScriptIntegration {
   config?: Record<string, unknown>
   /** Função de inicialização executada após carregamento do script */
   init?: () => void
+  /** Preparação local após autorização, antes de inserir o script externo. */
+  beforeLoad?: (consent: IntegrationConsent) => void
   /** Atributos HTML adicionais para a tag script */
   attrs?: Record<string, string>
   /** Nonce CSP opcional aplicado à tag script */
@@ -134,10 +147,14 @@ const resolveRequiredString = (value: string, field: string, integrationId: stri
   return value.trim()
 }
 
-function buildConsentModeSignals(preferences: ConsentPreferences) {
-  const analytics = preferences.analytics ? 'granted' : 'denied'
-  const marketing = preferences.marketing ? 'granted' : 'denied'
-
+function buildConsentModeSignals(
+  preferences: ConsentPreferences,
+  config: GoogleConsentConfig = {},
+) {
+  const analytics = preferences[config.analyticsStorageCategory ?? 'analytics']
+    ? 'granted'
+    : 'denied'
+  const marketing = preferences[config.adStorageCategory ?? 'marketing'] ? 'granted' : 'denied'
   return {
     ad_storage: marketing,
     ad_user_data: marketing,
@@ -146,53 +163,34 @@ function buildConsentModeSignals(preferences: ConsentPreferences) {
   }
 }
 
-function pushToLayer(entry: unknown[], dataLayerName?: string) {
-  const currentWindow = globalThis.window
-  if (currentWindow === undefined) return
-  const registry = currentWindow as unknown as Record<string, unknown>
-  const name = dataLayerName ?? 'dataLayer'
-  const layer = (registry[name] as unknown[]) ?? []
-  registry[name] = layer
-  layer.push(entry)
-}
-
-function ensureGtag(dataLayerName: string = 'dataLayer') {
-  const currentWindow = globalThis.window
-  if (currentWindow === undefined) return null
-  type Gtag = (...args: unknown[]) => void
-  const w = currentWindow as Window & { dataLayer?: unknown[]; gtag?: Gtag }
-  const registry = w as unknown as Record<string, unknown>
-  const layer = (registry[dataLayerName] as unknown[]) ?? []
-  registry[dataLayerName] = layer
-  if (typeof w.gtag !== 'function') {
-    const gtag: Gtag = (...args: unknown[]) => {
-      layer.push(args)
-    }
-    w.gtag = gtag
+function ensureGtag(dataLayerName = 'dataLayer') {
+  if (globalThis.window === undefined) return null
+  const w = window as unknown as Record<string, unknown>
+  const layer = (w[dataLayerName] ??= []) as unknown[]
+  // O snippet oficial usa Arguments, não Array. Layers customizados não reutilizam window.gtag.
+  const send = function (..._args: unknown[]) {
+    // eslint-disable-next-line prefer-rest-params -- snippet oficial usa Arguments, não Array
+    layer.push(arguments)
   }
-  return w.gtag
+  if (dataLayerName !== 'dataLayer') return send
+  if (typeof w.gtag !== 'function') w.gtag = send
+  return w.gtag as (...args: unknown[]) => void
 }
 
 function applyDefaultConsentMode(dataLayerName?: string) {
-  const payload = buildConsentModeSignals({
-    necessary: true,
-    analytics: false,
-    marketing: false,
-  })
-  const gtag = ensureGtag(dataLayerName)
-  if (gtag) {
-    gtag('consent', 'default', payload)
-  }
-  pushToLayer(['consent', 'default', payload], dataLayerName)
+  ensureGtag(dataLayerName)?.('consent', 'default', buildConsentModeSignals({ necessary: true }))
 }
 
-function applyConsentModeUpdate(preferences: ConsentPreferences, dataLayerName?: string) {
-  const payload = buildConsentModeSignals(preferences)
-  const gtag = ensureGtag(dataLayerName)
-  if (gtag) {
-    gtag('consent', 'update', payload)
-  }
-  pushToLayer(['consent', 'update', payload], dataLayerName)
+function applyConsentModeUpdate(
+  consent: IntegrationConsent,
+  config: GoogleConsentConfig,
+  dataLayerName?: string,
+) {
+  ensureGtag(dataLayerName)?.(
+    'consent',
+    'update',
+    buildConsentModeSignals(consent.consented ? consent.preferences : { necessary: true }, config),
+  )
 }
 
 /**
@@ -205,11 +203,11 @@ function applyConsentModeUpdate(preferences: ConsentPreferences, dataLayerName?:
  * ```typescript
  * const config: GoogleAnalyticsConfig = {
  *   measurementId: 'G-XXXXXXXXXX',
- *   config: { anonymize_ip: true }
+ *   config: { send_page_view: false }
  * }
  * ```
  */
-export interface GoogleAnalyticsConfig {
+export interface GoogleAnalyticsConfig extends GoogleConsentConfig {
   /** ID de medição do GA4 (formato: G-XXXXXXXXXX) */
   measurementId: string
   /** Configurações adicionais para o gtag */
@@ -234,7 +232,7 @@ export interface GoogleAnalyticsConfig {
  * }
  * ```
  */
-export interface GoogleTagManagerConfig {
+export interface GoogleTagManagerConfig extends GoogleConsentConfig {
   /** ID do container GTM (formato: GTM-XXXXXXX) */
   containerId: string
   /** Nome customizado para o dataLayer. Padrão: 'dataLayer' */
@@ -280,12 +278,12 @@ export interface UserWayConfig {
  * ```typescript
  * const ga = createGoogleAnalyticsIntegration({
  *   measurementId: 'G-XXXXXXXXXX',
- *   config: { anonymize_ip: true }
+ *   config: { send_page_view: false }
  * })
  * ```
  *
  * @remarks
- * - Define cookies: _ga, _ga_*, _gid
+ * - Define cookies: _ga, _ga_*
  * - Categoria padrão: 'analytics'
  * - SSR-safe: verifica disponibilidade do window
  */
@@ -301,7 +299,7 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
       id: 'google-analytics',
       category,
       src: '',
-      cookies: ['_ga', '_ga_*', '_gid'],
+      cookies: ['_ga', '_ga_*'],
       cookiesInfo: [
         {
           name: '_ga',
@@ -315,12 +313,6 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
           duration: '2 anos',
           provider: 'Google Analytics',
         },
-        {
-          name: '_gid',
-          purpose: 'Distinção de visitantes únicos em período de 24h',
-          duration: '24 horas',
-          provider: 'Google Analytics',
-        },
       ],
       attrs: { async: 'true' },
     }
@@ -330,7 +322,7 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
     id: 'google-analytics',
     category,
     src,
-    cookies: ['_ga', '_ga_*', '_gid'],
+    cookies: ['_ga', '_ga_*'],
     cookiesInfo: [
       {
         name: '_ga',
@@ -344,19 +336,20 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
         duration: '2 anos',
         provider: 'Google Analytics',
       },
-      {
-        name: '_gid',
-        purpose: 'Distinção de visitantes únicos em período de 24h',
-        duration: '24 horas',
-        provider: 'Google Analytics',
-      },
     ],
     bootstrap: () => {
       applyDefaultConsentMode()
     },
-    onConsentUpdate: ({ preferences }) => {
-      applyConsentModeUpdate(preferences)
-    },
+    beforeLoad: (consent) =>
+      applyConsentModeUpdate(consent, {
+        ...config,
+        analyticsStorageCategory: config.analyticsStorageCategory ?? category,
+      }),
+    onConsentUpdate: (consent) =>
+      applyConsentModeUpdate(consent, {
+        ...config,
+        analyticsStorageCategory: config.analyticsStorageCategory ?? category,
+      }),
     init: () => {
       const gtag = ensureGtag()
       if (!gtag) return
@@ -385,7 +378,7 @@ export function createGoogleAnalyticsIntegration(config: GoogleAnalyticsConfig):
  * ```
  *
  * @remarks
- * - Define cookies: _gcl_au
+ * - O container não define cookies próprios; declare os cookies das tags configuradas.
  * - Categoria padrão: 'analytics'
  * - SSR-safe: verifica disponibilidade do window
  */
@@ -399,7 +392,7 @@ export function createGoogleTagManagerIntegration(
       id: 'google-tag-manager',
       category,
       src: '',
-      cookies: ['_gcl_au'],
+      cookies: [],
     }
   }
   const dataLayerName = config.dataLayerName || 'dataLayer'
@@ -411,14 +404,22 @@ export function createGoogleTagManagerIntegration(
     id: 'google-tag-manager',
     category,
     src,
-    cookies: ['_gcl_au'],
+    cookies: [],
     bootstrap: () => {
       applyDefaultConsentMode(config.dataLayerName)
     },
-    onConsentUpdate: ({ preferences }) => {
-      applyConsentModeUpdate(preferences, config.dataLayerName)
-    },
-    init: () => {
+    onConsentUpdate: (consent) =>
+      applyConsentModeUpdate(
+        consent,
+        { ...config, analyticsStorageCategory: config.analyticsStorageCategory ?? category },
+        dataLayerName,
+      ),
+    beforeLoad: (consent) => {
+      applyConsentModeUpdate(
+        consent,
+        { ...config, analyticsStorageCategory: config.analyticsStorageCategory ?? category },
+        dataLayerName,
+      )
       const currentWindow = globalThis.window
       if (currentWindow !== undefined) {
         const w = currentWindow as unknown as Record<string, unknown>
@@ -542,6 +543,8 @@ export interface FacebookPixelConfig {
  * ```
  */
 export interface HotjarConfig {
+  /** Após revogação, encerra a sessão recarregando a página. Pode ser substituído pelo host. */
+  onRevoke?: () => void
   /** ID do site no Hotjar */
   siteId: string
   /** Versão do script Hotjar. Padrão: 6 */
@@ -594,7 +597,7 @@ type ConsentStorageValue = 'granted' | 'denied'
  * ```typescript
  * const config: ClarityConfig = {
  *   projectId: 'abcdefghij',
- *   upload: true
+ *   consentMode: true
  * }
  * ```
  */
@@ -665,6 +668,8 @@ export interface IntercomConfig {
  * ```
  */
 export interface ZendeskConfig {
+  /** Categoria de analytics usada para liberar todos os cookies. Padrão: analytics. */
+  analyticsStorageCategory?: string
   /** Chave de identificação do Zendesk */
   key: string
   /**
@@ -713,33 +718,55 @@ export function createFacebookPixelIntegration(config: FacebookPixelConfig): Scr
       cookies: ['_fbp', 'fr'],
     }
   }
+  const prepare = () => {
+    const currentWindow = globalThis.window
+    if (currentWindow !== undefined) {
+      type FbqFn = ((...args: unknown[]) => void) & {
+        queue?: unknown[]
+        loaded?: boolean
+        push?: FbqFn
+        version?: string
+        callMethod?: (...args: unknown[]) => void
+      }
+      const w = currentWindow as unknown as { fbq?: FbqFn; _fbq?: FbqFn }
+      if (!w.fbq) {
+        const fbq: FbqFn = (...args: unknown[]) => {
+          if (w.fbq && typeof w.fbq.callMethod === 'function') {
+            w.fbq.callMethod(...args)
+          } else {
+            fbq.queue = fbq.queue || []
+            fbq.queue.push(args)
+          }
+        }
+        fbq.loaded = true
+        fbq.version = '2.0'
+        fbq.queue = []
+        fbq.push = fbq
+        w.fbq = fbq
+        w._fbq ??= fbq
+      }
+    }
+  }
   const src = config.scriptUrl ?? 'https://connect.facebook.net/en_US/fbevents.js'
   return {
     id: 'facebook-pixel',
     category,
     src,
     cookies: ['_fbp', 'fr'],
+    beforeLoad: (consent) => {
+      prepare()
+      const w = globalThis.window as unknown as { fbq?: (...args: unknown[]) => void }
+      w?.fbq?.('consent', consent.consented && consent.preferences[category] ? 'grant' : 'revoke')
+    },
+    onConsentUpdate: (consent) => {
+      if (globalThis.window === undefined) return
+      const w = window as unknown as { fbq?: (...args: unknown[]) => void }
+      w.fbq?.('consent', consent.consented && consent.preferences[category] ? 'grant' : 'revoke')
+    },
     init: () => {
-      const currentWindow = globalThis.window
-      if (currentWindow !== undefined) {
-        type FbqFn = ((...args: unknown[]) => void) & {
-          queue?: unknown[]
-          loaded?: boolean
-          callMethod?: (...args: unknown[]) => void
-        }
-        const w = currentWindow as unknown as { fbq?: FbqFn }
-        if (!w.fbq) {
-          const fbq: FbqFn = (...args: unknown[]) => {
-            if (w.fbq && typeof w.fbq.callMethod === 'function') {
-              w.fbq.callMethod(...args)
-            } else {
-              fbq.queue = fbq.queue || []
-              fbq.queue.push(args)
-            }
-          }
-          fbq.loaded = true
-          w.fbq = fbq
-        }
+      prepare()
+      if (globalThis.window !== undefined) {
+        const w = window as unknown as { fbq: (...args: unknown[]) => void }
         w.fbq('init', pixelId, config.advancedMatching ?? {})
         if (config.autoTrack !== false) w.fbq('track', 'PageView')
       }
@@ -787,6 +814,7 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
       ],
     }
   }
+  let started = false
   const src = config.scriptUrl ?? `https://static.hotjar.com/c/hotjar-${siteId}.js?sv=${v}`
   return {
     id: 'hotjar',
@@ -831,15 +859,23 @@ export function createHotjarIntegration(config: HotjarConfig): ScriptIntegration
         provider: 'Hotjar',
       },
     ],
-    init: () => {
+    onConsentUpdate: ({ consented, preferences }) => {
+      if (started && !(consented && preferences[category])) {
+        started = false
+        if (config.onRevoke) config.onRevoke()
+        else globalThis.window?.location.reload()
+      }
+    },
+    beforeLoad: () => {
+      started = true
       const currentWindow = globalThis.window
       if (currentWindow !== undefined) {
         type HjFn = ((...args: unknown[]) => void) & { q?: unknown[] }
         const w = currentWindow as unknown as {
           hj?: HjFn
-          _hjSettings?: { hjid: string; hjsv: number }
+          _hjSettings?: { hjid: number; hjsv: number; hjdebug: boolean }
         }
-        w._hjSettings = { hjid: siteId, hjsv: v }
+        w._hjSettings = { hjid: Number(siteId), hjsv: v, hjdebug: config.debug ?? false }
         if (!w.hj) {
           const hj: HjFn = (...args: unknown[]) => {
             hj.q = hj.q || []
@@ -911,14 +947,33 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
         provider: 'Mixpanel',
       },
     ],
+    beforeLoad: () => {
+      if (globalThis.window === undefined) return
+      const w = window as unknown as { mixpanel?: unknown }
+      if (!w.mixpanel) {
+        // O bundle CDN exige o marcador do snippet, mesmo com init após onload.
+        w.mixpanel = Object.assign([], { __SV: 1.2, _i: [], people: [] })
+      }
+    },
+    onConsentUpdate: ({ consented, preferences }) => {
+      if (globalThis.window === undefined) return
+      const w = window as unknown as {
+        mixpanel?: { opt_in_tracking?: (options: object) => void; opt_out_tracking?: () => void }
+      }
+      if (consented && preferences[category]) w.mixpanel?.opt_in_tracking?.({ track: false })
+      else w.mixpanel?.opt_out_tracking?.()
+    },
     init: () => {
       const currentWindow = globalThis.window
       if (currentWindow !== undefined) {
         const w = currentWindow as unknown as { mixpanel?: { init?: (...a: unknown[]) => void } }
-        w.mixpanel = w.mixpanel || { init: () => undefined }
+        w.mixpanel = w.mixpanel || {}
         if (w.mixpanel && typeof w.mixpanel.init === 'function') {
           try {
-            w.mixpanel.init(token, config.config ?? {}, config.api_host)
+            w.mixpanel.init(token, {
+              ...config.config,
+              ...(config.api_host ? { api_host: config.api_host } : {}),
+            })
           } catch (error) {
             if (typeof console !== 'undefined' && typeof console.warn === 'function') {
               console.warn('[Mixpanel] Failed to initialize:', error)
@@ -943,7 +998,7 @@ export function createMixpanelIntegration(config: MixpanelConfig): ScriptIntegra
  * ```typescript
  * const clarity = createClarityIntegration({
  *   projectId: 'abcdefghij',
- *   upload: false
+ *   consentMode: true
  * })
  * ```
  *
@@ -966,7 +1021,7 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
   }
   const src = config.scriptUrl ?? `https://www.clarity.ms/tag/${projectId}`
   const consentMode = config.consentMode ?? true
-  const analyticsCategory = config.analyticsStorageCategory ?? 'analytics'
+  const analyticsCategory = config.analyticsStorageCategory ?? category
   const adCategory = config.adStorageCategory ?? 'marketing'
 
   const buildClarityConsent = (preferences: ConsentPreferences) => ({
@@ -995,23 +1050,28 @@ export function createClarityIntegration(config: ClarityConfig): ScriptIntegrati
     category,
     src,
     cookies: ['_clck', '_clsk', 'CLID', 'ANONCHK', 'MR', 'MUID', 'SM'],
-    init: () => {
-      const currentWindow = globalThis.window
-      if (currentWindow !== undefined && typeof config.upload !== 'undefined') {
-        const w = currentWindow as unknown as { clarity?: (...args: unknown[]) => void }
-        if (typeof w.clarity === 'function') {
-          try {
-            w.clarity('set', 'upload', config.upload)
-          } catch (error) {
-            if (typeof console !== 'undefined' && typeof console.warn === 'function') {
-              console.warn('[Clarity] Failed to configure upload setting:', error)
-            }
-          }
-        }
+    beforeLoad: ({ consented, preferences }) => {
+      if (globalThis.window === undefined) return
+      const w = window as unknown as {
+        clarity?: ((...args: unknown[]) => void) & { q?: unknown[] }
       }
+      if (typeof w.clarity !== 'function') {
+        const clarity = Object.assign(
+          (...args: unknown[]) => {
+            clarity.q.push(args)
+          },
+          { q: [] as unknown[] },
+        )
+        w.clarity = clarity
+      }
+      sendClarityConsent(consented ? preferences : { necessary: true })
     },
-    onConsentUpdate: ({ preferences }) => {
-      sendClarityConsent(preferences)
+    init: () => {
+      if (config.upload !== undefined)
+        logger.warn('[Clarity] upload is deprecated and has no effect; use consentMode.')
+    },
+    onConsentUpdate: ({ consented, preferences }) => {
+      sendClarityConsent(consented ? preferences : { necessary: true })
     },
   }
 }
@@ -1051,6 +1111,7 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
   }
   const src = config.scriptUrl ?? `https://widget.intercom.io/widget/${appId}`
   const apiBase = config.api_base ?? 'https://api-iam.intercom.io'
+  let shutDown = false
   const buildSettings = () => ({
     api_base: apiBase,
     app_id: appId,
@@ -1062,6 +1123,23 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
     category,
     src,
     cookies: ['intercom-id-*', 'intercom-session-*'],
+    beforeLoad: () => {
+      if (globalThis.window === undefined) return
+      const w = window as unknown as {
+        Intercom?: ((...args: unknown[]) => void) & { q?: unknown[] }
+        intercomSettings?: Record<string, unknown>
+      }
+      w.intercomSettings = buildSettings()
+      if (typeof w.Intercom !== 'function') {
+        const intercom = Object.assign(
+          (...args: unknown[]) => {
+            intercom.q.push(args)
+          },
+          { q: [] as unknown[] },
+        )
+        w.Intercom = intercom
+      }
+    },
     init: () => {
       const currentWindow = globalThis.window
       if (currentWindow !== undefined) {
@@ -1089,10 +1167,14 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
       if (typeof w.Intercom !== 'function') return
       const allowed = consented && Boolean(preferences[category])
       try {
-        if (allowed && config.updateOnConsent !== false) {
+        if (allowed && shutDown && config.boot !== false) {
+          w.Intercom('boot', buildSettings())
+          shutDown = false
+        } else if (allowed && config.updateOnConsent !== false) {
           w.Intercom('update')
         } else if (!allowed && config.shutdownOnRevoke !== false) {
           w.Intercom('shutdown')
+          shutDown = true
         }
       } catch (error) {
         if (typeof console !== 'undefined' && typeof console.warn === 'function') {
@@ -1104,7 +1186,7 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
 }
 
 /**
- * Cria integração do Zendesk Chat.
+ * Cria integração do Zendesk Messaging (nome legado preservado).
  * Configura o widget de chat e suporte do Zendesk.
  *
  * @category Utils
@@ -1120,7 +1202,7 @@ export function createIntercomIntegration(config: IntercomConfig): ScriptIntegra
  * ```
  *
  * @remarks
- * - Define cookies: __zlcmid, _zendesk_shared_session
+ * - Messaging utiliza também localStorage; não reutiliza o catálogo do Chat Classic.
  * - Categoria padrão: 'functional'
  * - SSR-safe: verifica disponibilidade do window
  * - Inclui tratamento de erro na identificação
@@ -1133,16 +1215,19 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
       id: 'zendesk-chat',
       category,
       src: '',
-      cookies: ['__zlcmid', '_zendesk_shared_session'],
+      cookies: [],
     }
   }
   const src = config.scriptUrl ?? `https://static.zdassets.com/ekr/snippet.js?key=${key}`
+  let preparedRange: 'all' | 'functional' | 'none' | undefined
   const resolveZendeskCookieRange = (consent: {
     consented: boolean
     preferences: ConsentPreferences
   }): 'all' | 'functional' | 'none' => {
     if (!consent.consented || !consent.preferences[category]) return 'none'
-    return consent.preferences.analytics ? 'all' : 'functional'
+    return consent.preferences[config.analyticsStorageCategory ?? 'analytics']
+      ? 'all'
+      : 'functional'
   }
 
   const sendZendeskCookieRange = (range: 'all' | 'functional' | 'none') => {
@@ -1163,10 +1248,33 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
     id: 'zendesk-chat',
     category,
     src,
-    cookies: ['__zlcmid', '_zendesk_shared_session'],
+    attrs: { id: 'ze-snippet' },
+    cookies: [],
+    beforeLoad: (consent) => {
+      if (globalThis.window === undefined || config.syncCookies === false) return
+      const w = window as unknown as { zE?: ((...args: unknown[]) => void) & { q?: unknown[] } }
+      if (typeof w.zE !== 'function') {
+        const zE = Object.assign(
+          function (..._args: unknown[]) {
+            // eslint-disable-next-line prefer-rest-params -- snippet oficial usa Arguments, não Array
+            zE.q.push(arguments)
+          },
+          { q: [] as unknown[] },
+        )
+        w.zE = zE
+      }
+      const permitted = resolveZendeskCookieRange(consent)
+      preparedRange =
+        permitted === 'none' || config.cookieRange === 'none'
+          ? 'none'
+          : permitted === 'functional' || config.cookieRange === 'functional'
+            ? 'functional'
+            : 'all'
+      sendZendeskCookieRange(preparedRange)
+    },
     init: () => {
-      if (config.syncCookies !== false && config.cookieRange) {
-        sendZendeskCookieRange(config.cookieRange)
+      if (config.syncCookies !== false && (preparedRange ?? config.cookieRange)) {
+        sendZendeskCookieRange((preparedRange ?? config.cookieRange)!)
       }
     },
     onConsentUpdate: (consent) => {
@@ -1174,6 +1282,17 @@ export function createZendeskChatIntegration(config: ZendeskConfig): ScriptInteg
       sendZendeskCookieRange(resolveZendeskCookieRange(consent))
     },
   }
+}
+
+/**
+ * Cria integração do Zendesk Web Widget Messaging. Não suporta Chat Classic.
+ * @category Utils
+ * @param config Configuração do widget Messaging.
+ * @returns Integração do widget com sincronização de cookies.
+ * @example createZendeskMessagingIntegration({ key: 'widget-key' })
+ */
+export function createZendeskMessagingIntegration(config: ZendeskConfig): ScriptIntegration {
+  return { ...createZendeskChatIntegration(config), id: 'zendesk-messaging' }
 }
 
 /**

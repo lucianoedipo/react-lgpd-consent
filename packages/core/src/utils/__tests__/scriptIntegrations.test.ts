@@ -105,7 +105,7 @@ describe('scriptIntegrations factories', () => {
     expect(firstPush[1]).toBe('default')
 
     // init mantém dataLayer e adiciona evento de bootstrap do GTM
-    gtm.init?.()
+    gtm.beforeLoad?.({ consented: true, preferences: { necessary: true, analytics: true } })
     expect((globalThis as any).window.customLayer.length).toBeGreaterThanOrEqual(2)
 
     gtm.onConsentUpdate?.({
@@ -124,7 +124,7 @@ describe('scriptIntegrations factories', () => {
       dataLayerName: 'customLayer',
     })
 
-    gtm.init?.()
+    gtm.beforeLoad?.({ consented: true, preferences: { necessary: true, analytics: true } })
     expect((globalThis as any).window.customLayer[0]).toMatchObject({ event: 'preexisting' })
   })
 
@@ -182,14 +182,14 @@ describe('scriptIntegrations factories', () => {
     const hj = createHotjarIntegration({ siteId: '999', version: 6, debug: true })
     expect(hj.id).toBe('hotjar')
     expect(hj.category).toBe('analytics')
-    hj.init?.()
+    hj.beforeLoad?.({ consented: true, preferences: { necessary: true, analytics: true } })
     expect((globalThis as any).window._hjSettings).toBeDefined()
     expect(typeof (globalThis as any).window.hj).toBe('function')
   })
 
   test('hotjar queue captures events when hj is invoked', () => {
     const hj = createHotjarIntegration({ siteId: '777', version: 6 })
-    hj.init?.()
+    hj.beforeLoad?.({ consented: true, preferences: { necessary: true, analytics: true } })
     ;(globalThis as any).window.hj('event', 'signup')
 
     expect((globalThis as any).window.hj.q).toHaveLength(1)
@@ -198,7 +198,7 @@ describe('scriptIntegrations factories', () => {
   test('hotjar integration logs info when debug=true', () => {
     const infoSpy = jest.spyOn(console, 'info').mockImplementation(() => undefined)
     const hj = createHotjarIntegration({ siteId: '888', debug: true })
-    hj.init?.()
+    hj.beforeLoad?.({ consented: true, preferences: { necessary: true, analytics: true } })
     expect(infoSpy).toHaveBeenCalledWith('[Hotjar] initialized with siteId', '888')
     infoSpy.mockRestore()
   })
@@ -225,16 +225,11 @@ describe('scriptIntegrations factories', () => {
     expect((globalThis as any).window.clarity).not.toHaveBeenCalled()
   })
 
-  test('clarity integration calls clarity set when upload is configured', () => {
+  test('clarity upload legado não é enviado como tag de rastreamento', () => {
     const c = createClarityIntegration({ projectId: 'abc123', upload: false })
-    expect(c.id).toBe('clarity')
-    expect(c.category).toBe('analytics')
-    expect(c.src).toBe('https://www.clarity.ms/tag/abc123')
-
-    // Mock clarity function
     ;(globalThis as any).window.clarity = jest.fn()
     c.init?.()
-    expect((globalThis as any).window.clarity).toHaveBeenCalledWith('set', 'upload', false)
+    expect((globalThis as any).window.clarity).not.toHaveBeenCalled()
   })
 
   test('clarity integration sends consentv2 on consent update', () => {

@@ -2,16 +2,16 @@ import type { Category, CookieDescriptor } from '../types/types'
 
 export const COOKIE_PATTERNS_BY_CATEGORY: Record<Category, string[]> = {
   necessary: ['cookieConsent'],
-  analytics: ['_ga', '_ga_*', '_gid', '_gcl_au', '_hj*', 'mp_*', '_clck', '_clsk'],
+  analytics: ['_ga', '_ga_*', '_gid', '_hj*', 'mp_*', '_clck', '_clsk'],
   functional: ['intercom-*', '__zlcmid', '_zendesk_shared_session', '_userway_*'],
-  marketing: ['_fbp', 'fr'],
+  marketing: ['_fbp', '_fbc', 'fr', '_gcl_au'],
   social: [],
   personalization: [],
 }
 
 export const INTEGRATION_COOKIE_PATTERNS: Record<string, string[]> = {
-  'google-analytics': ['_ga', '_ga_*', '_gid'],
-  'google-tag-manager': ['_gcl_au'],
+  'google-analytics': ['_ga', '_ga_*'],
+  'google-tag-manager': [],
   hotjar: [
     '_hjSession_*',
     '_hjSessionUser_*',
@@ -22,7 +22,8 @@ export const INTEGRATION_COOKIE_PATTERNS: Record<string, string[]> = {
   mixpanel: ['mp_*'],
   clarity: ['_clck', '_clsk', 'CLID', 'ANONCHK', 'MR', 'MUID', 'SM'],
   intercom: ['intercom-id-*', 'intercom-session-*'],
-  'zendesk-chat': ['__zlcmid', '_zendesk_shared_session'],
+  'zendesk-chat': [],
+  'zendesk-messaging': [],
   userway: ['_userway_*'],
   'facebook-pixel': ['_fbp', 'fr'],
 }
@@ -41,21 +42,8 @@ export const COOKIE_INFO_BY_INTEGRATION: Record<string, CookieDescriptor[]> = {
       duration: '2 anos',
       provider: 'Google Analytics',
     },
-    {
-      name: '_gid',
-      purpose: 'Distinção de visitantes únicos em período de 24h',
-      duration: '24 horas',
-      provider: 'Google Analytics',
-    },
   ],
-  'google-tag-manager': [
-    {
-      name: '_gcl_au',
-      purpose: 'Rastreamento de conversões de anúncios',
-      duration: '90 dias',
-      provider: 'Google',
-    },
-  ],
+  'google-tag-manager': [],
   hotjar: [
     {
       name: '_hjSession_*',
@@ -107,20 +95,8 @@ export const COOKIE_INFO_BY_INTEGRATION: Record<string, CookieDescriptor[]> = {
       provider: 'Intercom',
     },
   ],
-  'zendesk-chat': [
-    {
-      name: '__zlcmid',
-      purpose: 'Identificador de sessão de chat',
-      duration: '1 ano',
-      provider: 'Zendesk',
-    },
-    {
-      name: '_zendesk_shared_session',
-      purpose: 'Gerenciamento de sessão',
-      duration: 'Sessão',
-      provider: 'Zendesk',
-    },
-  ],
+  'zendesk-chat': [],
+  'zendesk-messaging': [],
   userway: [
     {
       name: '_userway_*',
@@ -143,6 +119,7 @@ export const INTEGRATION_DEFAULT_CATEGORY: Record<string, Category> = {
   clarity: 'analytics',
   intercom: 'functional',
   'zendesk-chat': 'functional',
+  'zendesk-messaging': 'functional',
   userway: 'functional',
   'facebook-pixel': 'marketing',
 }

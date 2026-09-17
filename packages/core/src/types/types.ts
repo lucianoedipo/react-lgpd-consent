@@ -37,12 +37,7 @@ import type { AdvancedConsentTexts } from './advancedTexts'
  * @public
  */
 export type Category =
-  | 'necessary'
-  | 'analytics'
-  | 'functional'
-  | 'marketing'
-  | 'social'
-  | 'personalization'
+  'necessary' | 'analytics' | 'functional' | 'marketing' | 'social' | 'personalization'
 
 /**
  * Definição detalhada de uma categoria de cookie para uso interno.

@@ -60,21 +60,6 @@ describe('error handling in integrations', () => {
     expect(mockWarn).toHaveBeenCalledWith('[Mixpanel] Failed to initialize:', expect.any(Error))
   })
 
-  test('clarity integration handles config errors gracefully', () => {
-    const c = createClarityIntegration({ projectId: 'abc', upload: true })
-
-    // Mock clarity to throw error
-    ;(globalThis as any).window.clarity = jest.fn(() => {
-      throw new Error('Config error')
-    })
-
-    expect(() => c.init?.()).not.toThrow()
-    expect(mockWarn).toHaveBeenCalledWith(
-      '[Clarity] Failed to configure upload setting:',
-      expect.any(Error),
-    )
-  })
-
   test('clarity integration handles consentv2 errors gracefully', () => {
     const c = createClarityIntegration({ projectId: 'abc' })
 

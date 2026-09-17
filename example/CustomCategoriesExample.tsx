@@ -1,13 +1,13 @@
 /**
  * @fileoverview
  * Exemplo demonstrando uso de categorias customizadas no react-lgpd-consent.
- * 
+ *
  * Este exemplo mostra como:
  * - Definir categorias customizadas além das padrão
  * - Usar o ConsentGate com categorias customizadas
  * - Criar integrações específicas para categorias customizadas
  * - Verificar estado de consentimento para categorias customizadas
- * 
+ *
  * @author Luciano Édipo
  * @since 0.4.1
  */
@@ -62,7 +62,7 @@ const customIntegrations: ScriptIntegration[] = [
   createGoogleAnalyticsIntegration({
     measurementId: 'G-GOVERNMENT123',
     config: {
-      anonymize_ip: true,
+      send_page_view: false,
       allow_google_signals: false,
     },
   }),
@@ -142,7 +142,12 @@ function CustomCategoriesStatus() {
     )
   }
 
-  const customCats = allCategories.filter(cat => !['necessary', 'analytics', 'functional', 'marketing', 'social', 'personalization'].includes(cat.id))
+  const customCats = allCategories.filter(
+    (cat) =>
+      !['necessary', 'analytics', 'functional', 'marketing', 'social', 'personalization'].includes(
+        cat.id,
+      ),
+  )
 
   return (
     <div style={{ padding: '20px', backgroundColor: '#d4edda', borderRadius: '8px' }}>
@@ -152,13 +157,25 @@ function CustomCategoriesStatus() {
       ) : (
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {customCats.map((category) => (
-            <li key={category.id} style={{ margin: '12px 0', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '4px' }}>
+            <li
+              key={category.id}
+              style={{
+                margin: '12px 0',
+                padding: '10px',
+                backgroundColor: '#f8f9fa',
+                borderRadius: '4px',
+              }}
+            >
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
                 <span style={{ fontSize: '18px', marginRight: '8px' }}>
                   {preferences[category.id] ? '✅' : '❌'}
                 </span>
                 <strong>{category.name}</strong>
-                {category.essential && <span style={{ marginLeft: '8px', fontSize: '12px', color: '#dc3545' }}>(obrigatório)</span>}
+                {category.essential && (
+                  <span style={{ marginLeft: '8px', fontSize: '12px', color: '#dc3545' }}>
+                    (obrigatório)
+                  </span>
+                )}
               </div>
               <p style={{ margin: '5px 0', color: '#666', fontSize: '14px' }}>
                 {category.description}
@@ -169,8 +186,10 @@ function CustomCategoriesStatus() {
                     Ver cookies utilizados ({category.cookies.length})
                   </summary>
                   <ul style={{ fontSize: '11px', color: '#666', marginTop: '5px' }}>
-                    {category.cookies.map(cookie => (
-                      <li key={cookie}><code>{cookie}</code></li>
+                    {category.cookies.map((cookie) => (
+                      <li key={cookie}>
+                        <code>{cookie}</code>
+                      </li>
                     ))}
                   </ul>
                 </details>
@@ -188,10 +207,20 @@ function CustomCategoriesDemo() {
   const { preferences, setPreference } = useConsent()
 
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div
+      style={{
+        fontFamily: 'Arial, sans-serif',
+        padding: '20px',
+        maxWidth: '1200px',
+        margin: '0 auto',
+      }}
+    >
       <header>
         <h1>🏛️ Portal do Cidadão - Categorias Customizadas</h1>
-        <p>Exemplo demonstrando uso de categorias customizadas específicas para um portal governamental.</p>
+        <p>
+          Exemplo demonstrando uso de categorias customizadas específicas para um portal
+          governamental.
+        </p>
       </header>
 
       <main>
@@ -204,7 +233,14 @@ function CustomCategoriesDemo() {
           <h2>🎯 Recursos Condicionais por Categoria</h2>
 
           {/* Login GOV.BR */}
-          <div style={{ margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
+          <div
+            style={{
+              margin: '20px 0',
+              padding: '15px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+            }}
+          >
             <h3>🏛️ Login GOV.BR</h3>
             <ConsentGate category="government-integration">
               <div style={{ padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
@@ -212,15 +248,24 @@ function CustomCategoriesDemo() {
                 <br />
                 <small>Sistema de autenticação único do governo federal disponível.</small>
                 <br />
-                <button style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px' }}>
+                <button
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                  }}
+                >
                   Fazer Login com GOV.BR
                 </button>
               </div>
             </ConsentGate>
             {!preferences['government-integration'] && (
               <div style={{ padding: '10px', backgroundColor: '#f8d7da', borderRadius: '4px' }}>
-                ❌ Login GOV.BR desabilitado. 
-                <button 
+                ❌ Login GOV.BR desabilitado.
+                <button
                   onClick={() => setPreference('government-integration', true)}
                   style={{ margin: '0 10px', padding: '4px 8px', fontSize: '12px' }}
                 >
@@ -231,7 +276,14 @@ function CustomCategoriesDemo() {
           </div>
 
           {/* Assinatura Digital */}
-          <div style={{ margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
+          <div
+            style={{
+              margin: '20px 0',
+              padding: '15px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+            }}
+          >
             <h3>📄 Assinatura Digital ICP-Brasil</h3>
             <ConsentGate category="document-processing">
               <div style={{ padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
@@ -239,7 +291,16 @@ function CustomCategoriesDemo() {
                 <br />
                 <small>Você pode assinar documentos digitalmente com certificado ICP-Brasil.</small>
                 <br />
-                <button style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px' }}>
+                <button
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: '#007bff',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                  }}
+                >
                   Assinar Documento
                 </button>
               </div>
@@ -247,7 +308,7 @@ function CustomCategoriesDemo() {
             {!preferences['document-processing'] && (
               <div style={{ padding: '10px', backgroundColor: '#f8d7da', borderRadius: '4px' }}>
                 ❌ Assinatura digital desabilitada.
-                <button 
+                <button
                   onClick={() => setPreference('document-processing', true)}
                   style={{ margin: '0 10px', padding: '4px 8px', fontSize: '12px' }}
                 >
@@ -258,7 +319,14 @@ function CustomCategoriesDemo() {
           </div>
 
           {/* Chat do Cidadão */}
-          <div style={{ margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
+          <div
+            style={{
+              margin: '20px 0',
+              padding: '15px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+            }}
+          >
             <h3>💬 Chat do Cidadão</h3>
             <ConsentGate category="citizen-chat">
               <div style={{ padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
@@ -266,7 +334,16 @@ function CustomCategoriesDemo() {
                 <br />
                 <small>Atendimento direto para dúvidas e suporte (08:00-18:00).</small>
                 <br />
-                <button style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#6f42c1', color: 'white', border: 'none', borderRadius: '4px' }}>
+                <button
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: '#6f42c1',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                  }}
+                >
                   Iniciar Chat
                 </button>
               </div>
@@ -274,7 +351,7 @@ function CustomCategoriesDemo() {
             {!preferences['citizen-chat'] && (
               <div style={{ padding: '10px', backgroundColor: '#f8d7da', borderRadius: '4px' }}>
                 ❌ Chat do cidadão desabilitado.
-                <button 
+                <button
                   onClick={() => setPreference('citizen-chat', true)}
                   style={{ margin: '0 10px', padding: '4px 8px', fontSize: '12px' }}
                 >
@@ -285,15 +362,33 @@ function CustomCategoriesDemo() {
           </div>
 
           {/* Acessibilidade Avançada */}
-          <div style={{ margin: '20px 0', padding: '15px', border: '1px solid #ddd', borderRadius: '8px' }}>
+          <div
+            style={{
+              margin: '20px 0',
+              padding: '15px',
+              border: '1px solid #ddd',
+              borderRadius: '8px',
+            }}
+          >
             <h3>♿ Acessibilidade Avançada</h3>
             <ConsentGate category="accessibility-enhanced">
               <div style={{ padding: '10px', backgroundColor: '#e8f5e8', borderRadius: '4px' }}>
                 ✅ <strong>Recursos avançados de acessibilidade ativos!</strong>
                 <br />
-                <small>Leitor de tela avançado, alto contraste e navegação por voz disponíveis.</small>
+                <small>
+                  Leitor de tela avançado, alto contraste e navegação por voz disponíveis.
+                </small>
                 <br />
-                <button style={{ marginTop: '10px', padding: '8px 16px', backgroundColor: '#fd7e14', color: 'white', border: 'none', borderRadius: '4px' }}>
+                <button
+                  style={{
+                    marginTop: '10px',
+                    padding: '8px 16px',
+                    backgroundColor: '#fd7e14',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                  }}
+                >
                   Configurar Acessibilidade
                 </button>
               </div>
@@ -301,7 +396,7 @@ function CustomCategoriesDemo() {
             {!preferences['accessibility-enhanced'] && (
               <div style={{ padding: '10px', backgroundColor: '#f8d7da', borderRadius: '4px' }}>
                 ❌ Recursos avançados de acessibilidade desabilitados.
-                <button 
+                <button
                   onClick={() => setPreference('accessibility-enhanced', true)}
                   style={{ margin: '0 10px', padding: '4px 8px', fontSize: '12px' }}
                 >
@@ -316,7 +411,7 @@ function CustomCategoriesDemo() {
           <h2>⚙️ Controles Avançados</h2>
           <div style={{ padding: '15px', backgroundColor: '#f8f9fa', borderRadius: '8px' }}>
             <h4>Controle Granular das Categorias Customizadas</h4>
-            {customCategories.map(category => (
+            {customCategories.map((category) => (
               <label key={category.id} style={{ display: 'block', margin: '10px 0' }}>
                 <input
                   type="checkbox"
@@ -346,16 +441,19 @@ export function CustomCategoriesExample() {
         customCategories, // Categorias customizadas definidas acima
       }}
       texts={{
-        bannerMessage: 'Este portal governamental utiliza cookies para funcionalidades essenciais e serviços ao cidadão.',
+        bannerMessage:
+          'Este portal governamental utiliza cookies para funcionalidades essenciais e serviços ao cidadão.',
         acceptAll: 'Aceitar Todos os Cookies',
         declineAll: 'Apenas Essenciais',
         preferences: 'Configurar Preferências',
         modalTitle: 'Configurações de Privacidade - Portal do Cidadão',
-        modalIntro: 'Configure suas preferências de cookies. Você pode alterá-las a qualquer momento.',
+        modalIntro:
+          'Configure suas preferências de cookies. Você pode alterá-las a qualquer momento.',
         save: 'Salvar Preferências',
         close: 'Fechar',
         controllerInfo: 'Controlador: Governo do Estado (CNPJ: 03.512.256/0001-48)',
-        userRights: 'Seus direitos: acessar, corrigir, excluir, portar dados e revogar consentimento.',
+        userRights:
+          'Seus direitos: acessar, corrigir, excluir, portar dados e revogar consentimento.',
         contactInfo: 'DPO: dpo@governo.ms.gov.br | Tel: (67) 3318-1000',
       }}
       onConsentGiven={(state) => {

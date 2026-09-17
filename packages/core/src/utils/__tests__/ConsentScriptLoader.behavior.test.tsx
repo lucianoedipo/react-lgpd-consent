@@ -18,6 +18,7 @@ jest.mock('../scriptLoader', () => ({
 describe('ConsentScriptLoader behavior', () => {
   beforeEach(() => {
     document.cookie = ''
+    delete (globalThis as any).window.gtag
     ;(globalThis as any).window.dataLayer = []
     jest.clearAllMocks()
     __resetScriptRegistryForTests()
@@ -367,6 +368,7 @@ describe('ConsentScriptLoader behavior', () => {
   test('GA4 envia consent mode v2 (default denied -> update) via ConsentScriptLoader', async () => {
     const integration = createGoogleAnalyticsIntegration({ measurementId: 'G-CMODE' })
     const { loadScript } = require('../scriptLoader')
+    delete (globalThis as any).window.gtag
     ;(globalThis as any).window.dataLayer = []
 
     const controlsRef = {
@@ -402,8 +404,12 @@ describe('ConsentScriptLoader behavior', () => {
     )
 
     await waitFor(() => {
-      expect((globalThis as any).window.dataLayer[0][1]).toBe('default')
-      expect((globalThis as any).window.dataLayer[0][2]).toMatchObject({
+      expect(
+        (globalThis as any).window.dataLayer.find((entry: any) => entry[1] === 'default'),
+      ).toBeDefined()
+      expect(
+        (globalThis as any).window.dataLayer.find((entry: any) => entry[1] === 'default')[2],
+      ).toMatchObject({
         analytics_storage: 'denied',
         ad_storage: 'denied',
       })
