@@ -359,7 +359,7 @@ importers:
         specifier: ^7.0.0 || ^6.0.0 || ^5.15.0
         version: 7.3.11(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react@19.3.0)(supports-color@8.1.1))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@react-lgpd-consent/core':
-        specifier: workspace:^0.10.0
+        specifier: workspace:^0.10.1
         version: link:../core
       react:
         specifier: ^18.2.0 || ^19.0.0
@@ -375,10 +375,10 @@ importers:
   packages/react-lgpd-consent:
     dependencies:
       '@react-lgpd-consent/core':
-        specifier: workspace:^0.10.0
+        specifier: workspace:^0.10.1
         version: link:../core
       '@react-lgpd-consent/mui':
-        specifier: workspace:^0.10.0
+        specifier: workspace:^0.10.1
         version: link:../mui
       react:
         specifier: ^18.2.0 || ^19.0.0
