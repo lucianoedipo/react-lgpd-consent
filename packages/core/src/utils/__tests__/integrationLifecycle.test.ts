@@ -7,6 +7,7 @@ import {
   createHotjarIntegration,
   createIntercomIntegration,
   createMixpanelIntegration,
+  createZendeskChatIntegration,
   createZendeskMessagingIntegration,
   type IntegrationConsent,
   type ScriptIntegration,
@@ -98,6 +99,15 @@ test('bootstrap local pode rodar sem permissão, mas preparação e download nã
   expect(load).not.toHaveBeenCalled()
 })
 
+test('bootstrap que falha não fica em cache e permite nova tentativa', async () => {
+  const bootstrap = jest.fn().mockRejectedValueOnce(new Error('bootstrap-error')).mockResolvedValueOnce(undefined)
+  const integration = { id: 'bootstrap-retry', category: 'analytics', src: 'sdk.js', bootstrap }
+  await expect(executeIntegration(integration, () => granted)).rejects.toThrow('bootstrap-error')
+  expect(load).not.toHaveBeenCalled()
+  expect(await executeIntegration(integration, () => granted)).toBe(true)
+  expect(bootstrap).toHaveBeenCalledTimes(2)
+})
+
 test('revogação durante download impede init e é transmitida ao SDK; novo aceite inicializa uma vez', async () => {
   const download = deferred()
   load.mockReturnValue(download.promise)
@@ -173,6 +183,8 @@ test('GTM prepara evento gtm.js antes de inserir o container', async () => {
   })
   await executeIntegration(integration, () => granted)
   expect(load).toHaveBeenCalledTimes(1)
+  integration.beforeLoad?.(granted)
+  expect(globals.dataLayer.filter((event: any) => event.event === 'gtm.js')).toHaveLength(2)
 })
 
 test('Meta prepara fila oficial antes do SDK, revoga e concede sem repetir PageView', async () => {
@@ -190,6 +202,17 @@ test('Meta prepara fila oficial antes do SDK, revoga e concede sem repetir PageV
   syncIntegration(integration, granted)
   expect(fbq).toHaveBeenLastCalledWith('consent', 'grant')
   expect(fbq.mock.calls.filter((args) => args[0] === 'track')).toEqual([['track', 'PageView']])
+})
+
+test('Meta delega para callMethod quando o SDK real já expõe esse método', async () => {
+  const integration = createFacebookPixelIntegration({ pixelId: '123' })
+  load.mockImplementation(async () => undefined)
+  await executeIntegration(integration, () => granted)
+  const shim = globals.fbq
+  const callMethod = jest.fn()
+  shim.callMethod = callMethod
+  shim('track', 'CustomEvent')
+  expect(callMethod).toHaveBeenCalledWith('track', 'CustomEvent')
 })
 
 test('Hotjar prepara settings antes do SDK e encerra uma vez na revogação', async () => {
@@ -280,4 +303,26 @@ test('Zendesk Messaging tem nome explícito e não anuncia cookies do Chat Class
   expect(globals.zE).toHaveBeenLastCalledWith('messenger:set', 'cookies', 'all')
   integration.onConsentUpdate?.(denied)
   expect(globals.zE).toHaveBeenLastCalledWith('messenger:set', 'cookies', 'none')
+})
+
+test('Hotjar aciona o fallback padrão (reload) quando nenhum onRevoke é fornecido', () => {
+  const integration = createHotjarIntegration({ siteId: '123' })
+  integration.beforeLoad?.(granted)
+  expect(() => integration.onConsentUpdate?.(denied)).not.toThrow()
+})
+
+test('Intercom cria um shim que enfileira chamadas antes do SDK real carregar', () => {
+  const integration = createIntercomIntegration({ app_id: 'app' })
+  integration.beforeLoad?.(granted)
+  expect(typeof globals.Intercom).toBe('function')
+  globals.Intercom('update', { foo: 'bar' })
+  expect(globals.Intercom.q).toContainEqual(['update', { foo: 'bar' }])
+})
+
+test('Zendesk Chat (legado) cria um shim de zE que enfileira chamadas em Arguments', () => {
+  const integration = createZendeskChatIntegration({ key: 'legacy-key' })
+  integration.beforeLoad?.(granted)
+  expect(typeof globals.zE).toBe('function')
+  expect(globals.zE.q).toHaveLength(1)
+  expect(Object.prototype.toString.call(globals.zE.q[0])).toBe('[object Arguments]')
 })

@@ -116,3 +116,35 @@ test('hook consulta consentimento atual quando download termina após revogaçã
     expect.objectContaining({ preferences: expect.objectContaining({ analytics: false }) }),
   )
 })
+
+test('hook registra erro e não propaga quando onConsentUpdate lança exceção', async () => {
+  const integration: ScriptIntegration = {
+    id: 'manual-throws',
+    category: 'analytics',
+    src: 'sdk-throws.js',
+    onConsentUpdate: jest.fn(() => {
+      throw new Error('boom')
+    }),
+  }
+  let setPreference!: ReturnType<typeof useConsent>['setPreference']
+  function Runner() {
+    const run = useConsentScriptLoader()
+    setPreference = useConsent().setPreference
+    React.useEffect(() => {
+      void run(integration)
+    }, [run])
+    return null
+  }
+  render(
+    <ConsentProvider categories={{ enabledCategories: ['analytics'] }} initialState={initialState}>
+      <Runner />
+    </ConsentProvider>,
+  )
+  await waitFor(() => expect(load).toHaveBeenCalledTimes(1))
+  await expect(
+    act(async () => {
+      setPreference('analytics', false)
+    }),
+  ).resolves.toBeUndefined()
+  expect(integration.onConsentUpdate).toHaveBeenCalled()
+})

@@ -47,6 +47,15 @@ describe('template functions', () => {
     expect(result).toEqual([])
   })
 
+  test('createSaaSIntegrations inclui googleAnalytics e hotjar quando fornecidos', () => {
+    const result = createSaaSIntegrations({
+      googleAnalytics: { measurementId: 'G-SAAS' },
+      hotjar: { siteId: '111' },
+    })
+
+    expect(result.map((i) => i.id)).toEqual(['google-analytics', 'hotjar'])
+  })
+
   test('createCorporateIntegrations creates array with provided configs', () => {
     const result = createCorporateIntegrations({
       googleAnalytics: { measurementId: 'G-CORP' },

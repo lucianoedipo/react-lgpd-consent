@@ -110,8 +110,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          if git rev-parse "v$VERSION" >/dev/null 2>&1; then
-            echo "⚠️ Tag v$VERSION já existe — nada a fazer"
+          if git ls-remote --exit-code --tags origin "refs/tags/v$VERSION" >/dev/null 2>&1; then
+            echo "⚠️ Tag v$VERSION já existe no remoto — nada a fazer"
           else
             echo "🚀 Criando tag v$VERSION"
 
